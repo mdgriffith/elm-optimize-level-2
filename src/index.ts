@@ -1,0 +1,77 @@
+import ts from 'typescript';
+import {
+  VariantReplacement,
+  createCustomTypesTransformer,
+} from './experiments/variantShapes';
+import {
+  createSplitFunctionDeclarationsTransformer,
+  FuncSplit,
+  createFuncInlineTransformer,
+} from './experiments/inlineWrappedFunctions';
+
+const elmOutput = `
+var $elm$core$Maybe$Nothing = {$: 'Nothing'};
+
+var $elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+
+var $author$project$Main$Three = F3(
+  function (a, b, c) {
+      return {$: 'Three', a: a, b: b, c: c};
+  });
+
+var _v1 = A3($author$project$Main$Three, a, b, c);
+`;
+
+const source = ts.createSourceFile('elm.js', elmOutput, ts.ScriptTarget.ES2018);
+
+const replacements: VariantReplacement[] = [
+  {
+    symbolName: '$elm$core$Maybe$Nothing',
+    variantName: 'Nothing',
+    maximumNumberOfArgs: 1,
+    numberOfArgs: 0,
+  },
+
+  {
+    symbolName: '$elm$core$Maybe$Just',
+    variantName: 'Just',
+    numberOfArgs: 1,
+    maximumNumberOfArgs: 2,
+  },
+  {
+    symbolName: '$author$project$Main$Three',
+    variantName: 'Three',
+    numberOfArgs: 3,
+    maximumNumberOfArgs: 4,
+  },
+];
+
+const customTypeTransformer = createCustomTypesTransformer(replacements);
+const [newFile] = ts.transform(source, [customTypeTransformer]).transformed;
+
+const printer = ts.createPrinter();
+console.log('----------AFTER CUSTOM TYPE SHAPES TRANSFORM ----------------');
+console.log(printer.printFile(source));
+console.log(printer.printFile(newFile));
+console.log('----------AFTER SPLIT TRANSFORM ----------------');
+
+const collectedSplits: FuncSplit[] = [];
+const splitTransformer = createSplitFunctionDeclarationsTransformer(split =>
+  collectedSplits.push(split)
+);
+const [sourceWithSplittedFunctions] = ts.transform(newFile, [
+  splitTransformer,
+]).transformed;
+
+console.log(printer.printFile(sourceWithSplittedFunctions));
+console.log(collectedSplits);
+
+console.log('----------AFTER SPLIT TRANSFORM ----------------');
+const funcInlineTransformer = createFuncInlineTransformer(collectedSplits);
+const [sourceWithInlinedFuntioncs] = ts.transform(sourceWithSplittedFunctions, [
+  funcInlineTransformer,
+]).transformed;
+
+console.log(printer.printFile(sourceWithInlinedFuntioncs));
