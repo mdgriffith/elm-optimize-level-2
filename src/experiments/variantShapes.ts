@@ -1,8 +1,10 @@
 import ts from 'typescript';
+import { Mode } from './types';
 
 export type VariantReplacement = {
   symbolName: string;
   variantName: string;
+  variantIndex: number;
   maximumNumberOfArgs: number;
   numberOfArgs: number;
 };
@@ -10,17 +12,22 @@ export type VariantReplacement = {
 // TODO fill a proper array
 const argNames = ['a', 'b', 'c', 'd', 'e'];
 
-const createVariantObjectLiteral = ({
-  variantName,
-  maximumNumberOfArgs,
-  numberOfArgs,
-}: {
-  variantName: string;
-  maximumNumberOfArgs: number;
-  numberOfArgs: number;
-}): ts.ObjectLiteralExpression => {
+const createVariantObjectLiteral = (
+  {
+    variantName,
+    maximumNumberOfArgs,
+    numberOfArgs,
+    variantIndex,
+  }: VariantReplacement,
+  mode: Mode
+): ts.ObjectLiteralExpression => {
   return ts.createObjectLiteral([
-    ts.createPropertyAssignment('$', ts.createStringLiteral(variantName)),
+    ts.createPropertyAssignment(
+      '$',
+      mode === Mode.Dev
+        ? ts.createStringLiteral(variantName)
+        : ts.createNumericLiteral(variantIndex.toString())
+    ),
     // existing arguments
     ...argNames
       .slice(0, numberOfArgs)
@@ -32,11 +39,11 @@ const createVariantObjectLiteral = ({
   ]);
 };
 
-const createCtorVariant = ({
-  variantName,
-  maximumNumberOfArgs,
-  numberOfArgs,
-}: VariantReplacement): ts.Expression => {
+const createCtorVariant = (
+  replacement: VariantReplacement,
+  mode: Mode
+): ts.Expression => {
+  const { numberOfArgs } = replacement;
   const funcExpression = ts.createArrowFunction(
     undefined,
     undefined,
@@ -55,11 +62,7 @@ const createCtorVariant = ({
       ),
     undefined,
     undefined,
-    createVariantObjectLiteral({
-      variantName,
-      maximumNumberOfArgs,
-      numberOfArgs,
-    })
+    createVariantObjectLiteral(replacement, mode)
   );
 
   if (numberOfArgs > 1) {
@@ -75,7 +78,8 @@ const createCtorVariant = ({
 };
 
 export const createCustomTypesTransformer = (
-  replacements: VariantReplacement[]
+  replacements: VariantReplacement[],
+  mode: Mode
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.Node => {
@@ -83,16 +87,11 @@ export const createCustomTypesTransformer = (
         for (const replacement of replacements) {
           if (node.name.text === replacement.symbolName) {
             if (replacement.numberOfArgs === 0) {
-              const { variantName, maximumNumberOfArgs } = replacement;
               return ts.updateVariableDeclaration(
                 node,
                 node.name,
                 node.type,
-                createVariantObjectLiteral({
-                  variantName,
-                  maximumNumberOfArgs,
-                  numberOfArgs: 0,
-                })
+                createVariantObjectLiteral(replacement, mode)
               );
             }
 
@@ -100,7 +99,7 @@ export const createCustomTypesTransformer = (
               node,
               node.name,
               node.type,
-              createCtorVariant(replacement)
+              createCtorVariant(replacement, mode)
             );
           }
         }
