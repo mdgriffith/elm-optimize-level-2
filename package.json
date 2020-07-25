@@ -16,8 +16,8 @@
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepare": "tsdx build",
-    "run": "ts-node -O \"{\\\"module\\\": \\\"CommonJS\\\"}\" src/index.ts",
-    "testcases": "ts-node src/compile-testcases.ts"
+    "run": "ts-node src/index.ts",
+    "testcases": "ts-node -T src/compile-testcases.ts"
   },
   "peerDependencies": {},
   "husky": {

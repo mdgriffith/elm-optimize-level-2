@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "run testcases",
+      "runtimeArgs": ["-r", "ts-node/register/transpile-only.js"],
+      "args": ["${workspaceFolder}/src/compile-testcases.ts"]
+    }
+  ]
+}
