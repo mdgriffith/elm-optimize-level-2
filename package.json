@@ -16,7 +16,8 @@
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepare": "tsdx build",
-    "run": "ts-node -O \"{\\\"module\\\": \\\"CommonJS\\\"}\" src/index.ts"
+    "run": "ts-node -O \"{\\\"module\\\": \\\"CommonJS\\\"}\" src/index.ts",
+    "examples": "ts-node ./scripts/compile-examples.ts"
   },
   "peerDependencies": {},
   "husky": {
@@ -35,9 +36,10 @@
   "module": "dist/lib.esm.js",
   "devDependencies": {
     "husky": "^4.2.5",
+    "node-elm-compiler": "^5.0.4",
+    "ts-node": "^8.10.2",
     "tsdx": "^0.13.2",
     "tslib": "^2.0.0",
-    "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
   "dependencies": {}
