@@ -8,6 +8,7 @@ import {
   FuncSplit,
   createFuncInlineTransformer,
 } from './experiments/inlineWrappedFunctions';
+import { Mode } from './experiments/types';
 
 const elmOutput = `
 var $elm$core$Maybe$Nothing = {$: 'Nothing'};
@@ -31,6 +32,7 @@ const replacements: VariantReplacement[] = [
     symbolName: '$elm$core$Maybe$Nothing',
     variantName: 'Nothing',
     maximumNumberOfArgs: 1,
+    variantIndex: 1,
     numberOfArgs: 0,
   },
 
@@ -38,17 +40,22 @@ const replacements: VariantReplacement[] = [
     symbolName: '$elm$core$Maybe$Just',
     variantName: 'Just',
     numberOfArgs: 1,
+    variantIndex: 0,
     maximumNumberOfArgs: 2,
   },
   {
     symbolName: '$author$project$Main$Three',
     variantName: 'Three',
     numberOfArgs: 3,
+    variantIndex: 100500,
     maximumNumberOfArgs: 4,
   },
 ];
 
-const customTypeTransformer = createCustomTypesTransformer(replacements);
+const customTypeTransformer = createCustomTypesTransformer(
+  replacements,
+  Mode.Prod
+);
 const [newFile] = ts.transform(source, [customTypeTransformer]).transformed;
 
 const printer = ts.createPrinter();
