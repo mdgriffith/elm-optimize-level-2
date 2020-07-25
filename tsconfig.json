@@ -1,5 +1,5 @@
 {
-  "include": ["src", "types", "decs.d.ts"],
+  "include": ["src", "types"],
   "compilerOptions": {
     "target": "es2018",
     "module": "esnext",
