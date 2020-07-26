@@ -2,6 +2,7 @@ import { compile } from 'node-elm-compiler';
 import Parser from 'tree-sitter';
 import Elm from 'tree-sitter-elm';
 import * as fs from 'fs';
+import { isJsxOpeningFragment } from 'typescript';
 // Compile examples in `testcases/*` folder as js
 // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
 compile(['Main.elm'], {
@@ -21,13 +22,17 @@ elmParser.setLanguage(Elm);
 interface ElmVariant {
   typeName: string;
   name: string;
+  jsName: string;
   index: number;
   slots: [string];
-
   totalTypeSlotCount: number;
 }
 
-const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
+const parseElm = (
+  author: string,
+  project: string,
+  filename: string
+): { [id: string]: [ElmVariant] } => {
   const source = fs.readFileSync(filename, 'utf8');
   const tree = elmParser.parse(source);
   const found: { [id: string]: [ElmVariant] } = {};
@@ -55,75 +60,103 @@ const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
             Render the literal text for that node.
 
   */
+  let moduleName = 'Unknown';
 
   for (let child of tree.rootNode.namedChildren) {
-    if (child.type == 'type_declaration') {
-      let name = '';
-      let index = 0;
-      let totalTypeSlotCount = 0;
-
-      for (let variant of child.namedChildren) {
-        switch (variant.type) {
-          case 'upper_case_identifier': {
-            name = variant.text;
-            break;
-          }
-          case 'union_variant': {
-            let foundVariantName = '';
-            let slots: string[] = [];
-
-            for (let detail of variant.namedChildren) {
-              switch (detail.type) {
-                case 'upper_case_identifier': {
-                  foundVariantName = detail.text;
-                  break;
-                }
-
-                default: {
-                  slots.push(detail.text);
-                  break;
-                }
-              }
-            }
-            totalTypeSlotCount = Math.max(totalTypeSlotCount, slots.length);
-
-            if (name in found) {
-              found[name].push({
-                typeName: name,
-                name: foundVariantName,
-                index: index,
-                slots: slots,
-                totalTypeSlotCount: totalTypeSlotCount,
-              });
-            } else {
-              found[name] = [
-                {
-                  typeName: name,
-                  name: foundVariantName,
-                  index: index,
-                  slots: slots,
-                  totalTypeSlotCount: totalTypeSlotCount,
-                },
-              ];
-            }
-
-            index = index + 1;
-            break;
-          }
-          default: {
+    switch (child.type) {
+      case 'module_declaration': {
+        for (let module of child.namedChildren) {
+          if (module.type == 'upper_case_qid') {
+            moduleName = module.text;
             break;
           }
         }
+        break;
       }
+      case 'type_declaration': {
+        let name = '';
+        let index = 0;
+        let totalTypeSlotCount = 0;
 
-      for (let variant of found[name]) {
-        variant.totalTypeSlotCount = totalTypeSlotCount;
+        for (let variant of child.namedChildren) {
+          switch (variant.type) {
+            case 'upper_case_identifier': {
+              name = variant.text;
+              break;
+            }
+            case 'union_variant': {
+              let foundVariantName = '';
+              let slots: string[] = [];
+
+              for (let detail of variant.namedChildren) {
+                switch (detail.type) {
+                  case 'upper_case_identifier': {
+                    foundVariantName = detail.text;
+                    break;
+                  }
+
+                  default: {
+                    slots.push(detail.text);
+                    break;
+                  }
+                }
+              }
+              totalTypeSlotCount = Math.max(totalTypeSlotCount, slots.length);
+
+              let jsName =
+                '$' +
+                author +
+                '$' +
+                project +
+                '$' +
+                moduleName.replace('.', '$') +
+                '$' +
+                foundVariantName;
+
+              if (name in found) {
+                found[name].push({
+                  typeName: name,
+                  name: foundVariantName,
+                  jsName: jsName,
+                  index: index,
+                  slots: slots,
+                  totalTypeSlotCount: totalTypeSlotCount,
+                });
+              } else {
+                found[name] = [
+                  {
+                    typeName: name,
+                    name: foundVariantName,
+                    index: index,
+                    jsName: jsName,
+                    slots: slots,
+                    totalTypeSlotCount: totalTypeSlotCount,
+                  },
+                ];
+              }
+
+              index = index + 1;
+              break;
+            }
+            default: {
+              break;
+            }
+          }
+        }
+
+        for (let variant of found[name]) {
+          variant.totalTypeSlotCount = totalTypeSlotCount;
+        }
+        break;
+      }
+      default: {
+        break;
       }
     }
   }
   return found;
 };
 
-const result = parseElm('./testcases/simple/Main.elm');
+const result = parseElm('author', 'project', './testcases/simple/Main.elm');
 
 console.log(result);
