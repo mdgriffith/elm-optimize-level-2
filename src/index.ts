@@ -10,7 +10,10 @@ import {
 } from './experiments/inlineWrappedFunctions';
 import { Mode } from './experiments/types';
 
-import { createInlineListFromArrayTransformer } from './experiments/inlineListFromArray';
+import {
+  createInlineListFromArrayTransformer,
+  InlineMode,
+} from './experiments/inlineListFromArray';
 
 const elmOutput = `
 var $elm$core$Maybe$Nothing = {$: 'Nothing'};
@@ -90,7 +93,10 @@ console.log(printer.printFile(sourceWithInlinedFuntioncs));
 console.log(
   '----------AFTER INLINE _List_fromArray TRANSFORM ----------------'
 );
-const inlineListFromArrayCalls = createInlineListFromArrayTransformer();
+const inlineListFromArrayCalls = createInlineListFromArrayTransformer(
+  InlineMode.UsingLiteralObjects(Mode.Prod)
+  // InlineMode.UsingConsFunc
+);
 const [sourceWithInlinedListFromArr] = ts.transform(
   sourceWithInlinedFuntioncs,
   [inlineListFromArrayCalls]
