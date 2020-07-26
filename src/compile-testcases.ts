@@ -23,6 +23,8 @@ interface ElmVariant {
   name: string;
   index: number;
   slots: [string];
+
+  totalTypeSlotCount: number;
 }
 
 const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
@@ -58,6 +60,7 @@ const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
     if (child.type == 'type_declaration') {
       let name = '';
       let index = 0;
+      let totalTypeSlotCount = 0;
 
       for (let variant of child.namedChildren) {
         switch (variant.type) {
@@ -68,6 +71,7 @@ const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
           case 'union_variant': {
             let foundVariantName = '';
             let slots: string[] = [];
+
             for (let detail of variant.namedChildren) {
               switch (detail.type) {
                 case 'upper_case_identifier': {
@@ -81,6 +85,7 @@ const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
                 }
               }
             }
+            totalTypeSlotCount = Math.max(totalTypeSlotCount, slots.length);
 
             if (name in found) {
               found[name].push({
@@ -88,6 +93,7 @@ const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
                 name: foundVariantName,
                 index: index,
                 slots: slots,
+                totalTypeSlotCount: totalTypeSlotCount,
               });
             } else {
               found[name] = [
@@ -96,6 +102,7 @@ const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
                   name: foundVariantName,
                   index: index,
                   slots: slots,
+                  totalTypeSlotCount: totalTypeSlotCount,
                 },
               ];
             }
@@ -107,6 +114,10 @@ const parseElm = (filename: string): { [id: string]: [ElmVariant] } => {
             break;
           }
         }
+      }
+
+      for (let variant of found[name]) {
+        variant.totalTypeSlotCount = totalTypeSlotCount;
       }
     }
   }
