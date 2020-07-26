@@ -10,6 +10,8 @@ import {
 } from './experiments/inlineWrappedFunctions';
 import { Mode } from './experiments/types';
 
+import { createInlineListFromArrayTransformer } from './experiments/inlineListFromArray';
+
 const elmOutput = `
 var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 
@@ -23,6 +25,8 @@ var $author$project$Main$Three = F3(
   });
 
 var _v1 = A3($author$project$Main$Three, a, b, c);
+
+_List_fromArray(['a', 'b', 'c']);
 `;
 
 const source = ts.createSourceFile('elm.js', elmOutput, ts.ScriptTarget.ES2018);
@@ -75,10 +79,21 @@ const [sourceWithSplittedFunctions] = ts.transform(newFile, [
 console.log(printer.printFile(sourceWithSplittedFunctions));
 console.log(collectedSplits);
 
-console.log('----------AFTER SPLIT TRANSFORM ----------------');
+console.log('----------AFTER INLINE A(n) TRANSFORM ----------------');
 const funcInlineTransformer = createFuncInlineTransformer(collectedSplits);
 const [sourceWithInlinedFuntioncs] = ts.transform(sourceWithSplittedFunctions, [
   funcInlineTransformer,
 ]).transformed;
 
 console.log(printer.printFile(sourceWithInlinedFuntioncs));
+
+console.log(
+  '----------AFTER INLINE _List_fromArray TRANSFORM ----------------'
+);
+const inlineListFromArrayCalls = createInlineListFromArrayTransformer();
+const [sourceWithInlinedListFromArr] = ts.transform(
+  sourceWithInlinedFuntioncs,
+  [inlineListFromArrayCalls]
+).transformed;
+
+console.log(printer.printFile(sourceWithInlinedListFromArr));
