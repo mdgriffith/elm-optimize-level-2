@@ -1,14 +1,11 @@
 import ts from 'typescript';
-import {
-  VariantReplacement,
-  createCustomTypesTransformer,
-} from './experiments/variantShapes';
+import { createCustomTypesTransformer } from './experiments/variantShapes';
 import {
   createSplitFunctionDeclarationsTransformer,
   FuncSplit,
   createFuncInlineTransformer,
 } from './experiments/inlineWrappedFunctions';
-import { Mode } from './experiments/types';
+import { Mode, ElmVariant } from './types';
 
 import {
   createInlineListFromArrayTransformer,
@@ -34,28 +31,31 @@ _List_fromArray(['a', 'b', 'c']);
 
 const source = ts.createSourceFile('elm.js', elmOutput, ts.ScriptTarget.ES2018);
 
-const replacements: VariantReplacement[] = [
+const replacements: ElmVariant[] = [
   {
-    symbolName: '$elm$core$Maybe$Nothing',
-    variantName: 'Nothing',
-    maximumNumberOfArgs: 1,
-    variantIndex: 1,
-    numberOfArgs: 0,
+    jsName: '$elm$core$Maybe$Nothing',
+    typeName: 'Maybe',
+    name: 'Nothing',
+    slots: [],
+    index: 1,
+    totalTypeSlotCount: 2,
   },
 
   {
-    symbolName: '$elm$core$Maybe$Just',
-    variantName: 'Just',
-    numberOfArgs: 1,
-    variantIndex: 0,
-    maximumNumberOfArgs: 2,
+    jsName: '$elm$core$Maybe$Just',
+    typeName: 'Maybe',
+    name: 'Just',
+    slots: [],
+    index: 0,
+    totalTypeSlotCount: 2,
   },
   {
-    symbolName: '$author$project$Main$Three',
-    variantName: 'Three',
-    numberOfArgs: 3,
-    variantIndex: 100500,
-    maximumNumberOfArgs: 4,
+    jsName: '$author$project$Main$Three',
+    typeName: 'Bla',
+    name: 'Three',
+    slots: ['a', 'b', 'c'],
+    index: 100500,
+    totalTypeSlotCount: 4,
   },
 ];
 

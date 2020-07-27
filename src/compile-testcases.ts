@@ -1,162 +1,90 @@
 import { compile } from 'node-elm-compiler';
-import Parser from 'tree-sitter';
-import Elm from 'tree-sitter-elm';
 import * as fs from 'fs';
-import { isJsxOpeningFragment } from 'typescript';
+import * as path from 'path';
+import { parseElm } from './parseElm';
+import ts from 'typescript';
+import { createCustomTypesTransformer } from './experiments/variantShapes';
+import { Mode } from './types';
+import {
+  FuncSplit,
+  createSplitFunctionDeclarationsTransformer,
+  createFuncInlineTransformer,
+} from './experiments/inlineWrappedFunctions';
+import {
+  InlineMode,
+  createInlineListFromArrayTransformer,
+} from './experiments/inlineListFromArray';
+
 // Compile examples in `testcases/*` folder as js
 // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
 compile(['Main.elm'], {
   output: 'output/elm.js',
   cwd: 'testcases/simple',
 });
+
 compile(['Main.elm'], {
   output: 'output/elm.opt.js',
   cwd: 'testcases/simple',
   optimize: true,
 });
 
-// Parse the elm file using tree sitter
-const elmParser = new Parser();
-elmParser.setLanguage(Elm);
+const pathInOutput = (p: string) => path.join('./testcases/simple/output', p);
 
-interface ElmVariant {
-  typeName: string;
-  name: string;
-  jsName: string;
-  index: number;
-  slots: [string];
-  totalTypeSlotCount: number;
-}
+const elmSource = fs.readFileSync('./testcases/simple/Main.elm', 'utf8');
 
-const parseElm = (
-  author: string,
-  project: string,
-  filename: string
-): { [id: string]: [ElmVariant] } => {
-  const source = fs.readFileSync(filename, 'utf8');
-  const tree = elmParser.parse(source);
-  const found: { [id: string]: [ElmVariant] } = {};
+const parsedVariants = parseElm({
+  author: 'author',
+  project: 'project',
+  source: elmSource,
+});
 
-  /*
-      A quick reference for using treesitter.
-      Generally it's pretty easy to see what methods are available here: 
-      https://github.com/tree-sitter/node-tree-sitter/blob/master/index.js
+console.log('11', parsedVariants);
+console.log('33', JSON.stringify(parsedVariants, null, 2));
 
-      We usually want these things
+const source = ts.createSourceFile(
+  'elm.js',
+  fs.readFileSync(pathInOutput('elm.opt.js'), 'utf-8'),
+  ts.ScriptTarget.ES2018
+);
 
-        - node.namedChildren 
-            Gives a list of named children for a node.  Unnamed children are things like intermediate characters in the AST.
-            http://tree-sitter.github.io/tree-sitter/using-parsers#named-vs-anonymous-nodes
-        
-        - node.type 
-            The name of the AST node that was parsed.  e.g. upper_case_identifier, or union_variant
+const replacements = Object.values(parsedVariants).flat();
 
-        - node.toString()
-            See the s-expression version of the node.  e.g. (union_variant (upper_case_identifier) (type_ref (upper_case_qid (upper_case_identifier))))
-            May look kinda weird, but it's basically describing the AST for that node.
-            http://tree-sitter.github.io/tree-sitter/using-parsers#query-syntax
+const customTypeTransformer = createCustomTypesTransformer(
+  replacements,
+  Mode.Prod
+);
 
-        - node.text
-            Render the literal text for that node.
+const collectedSplits: FuncSplit[] = [];
+const splitTransformer = createSplitFunctionDeclarationsTransformer(split =>
+  collectedSplits.push(split)
+);
 
-  */
-  let moduleName = 'Unknown';
+const funcInlineTransformer = createFuncInlineTransformer(collectedSplits);
 
-  for (let child of tree.rootNode.namedChildren) {
-    switch (child.type) {
-      case 'module_declaration': {
-        for (let module of child.namedChildren) {
-          if (module.type == 'upper_case_qid') {
-            moduleName = module.text;
-            break;
-          }
-        }
-        break;
-      }
-      case 'type_declaration': {
-        let name = '';
-        let index = 0;
-        let totalTypeSlotCount = 0;
+const inlineListFromArrayCalls = createInlineListFromArrayTransformer(
+  InlineMode.UsingLiteralObjects(Mode.Prod)
+);
 
-        for (let variant of child.namedChildren) {
-          switch (variant.type) {
-            case 'upper_case_identifier': {
-              name = variant.text;
-              break;
-            }
-            case 'union_variant': {
-              let foundVariantName = '';
-              let slots: string[] = [];
+const [result] = ts.transform(source, [
+  customTypeTransformer,
+  splitTransformer,
+  funcInlineTransformer,
+  inlineListFromArrayCalls,
+]).transformed;
 
-              for (let detail of variant.namedChildren) {
-                switch (detail.type) {
-                  case 'upper_case_identifier': {
-                    foundVariantName = detail.text;
-                    break;
-                  }
+const printer = ts.createPrinter();
 
-                  default: {
-                    slots.push(detail.text);
-                    break;
-                  }
-                }
-              }
-              totalTypeSlotCount = Math.max(totalTypeSlotCount, slots.length);
+fs.writeFileSync(
+  pathInOutput('elm.opt.transformed.js'),
+  printer.printFile(result)
+);
 
-              let jsName =
-                '$' +
-                author +
-                '$' +
-                project +
-                '$' +
-                moduleName.replace('.', '$') +
-                '$' +
-                foundVariantName;
+const initialJs = ts.createSourceFile(
+  'elm.js',
+  fs.readFileSync(pathInOutput('elm.opt.js'), 'utf-8'),
+  ts.ScriptTarget.ES2018
+);
 
-              if (name in found) {
-                found[name].push({
-                  typeName: name,
-                  name: foundVariantName,
-                  jsName: jsName,
-                  index: index,
-                  slots: slots,
-                  totalTypeSlotCount: totalTypeSlotCount,
-                });
-              } else {
-                found[name] = [
-                  {
-                    typeName: name,
-                    name: foundVariantName,
-                    index: index,
-                    jsName: jsName,
-                    slots: slots,
-                    totalTypeSlotCount: totalTypeSlotCount,
-                  },
-                ];
-              }
+fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
 
-              index = index + 1;
-              break;
-            }
-            default: {
-              break;
-            }
-          }
-        }
-
-        for (let variant of found[name]) {
-          variant.totalTypeSlotCount = totalTypeSlotCount;
-        }
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-  return found;
-};
-
-const result = parseElm('author', 'project', './testcases/simple/Main.elm');
-
-console.log(result);
+console.log('done!');
