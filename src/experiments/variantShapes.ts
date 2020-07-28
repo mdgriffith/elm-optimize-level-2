@@ -1,49 +1,39 @@
 import ts from 'typescript';
-import { Mode } from './types';
-
-export type VariantReplacement = {
-  symbolName: string;
-  variantName: string;
-  variantIndex: number;
-  maximumNumberOfArgs: number;
-  numberOfArgs: number;
-};
+import { Mode, ElmVariant } from '../types';
 
 // TODO fill a proper array
 const argNames = ['a', 'b', 'c', 'd', 'e'];
 
 const createVariantObjectLiteral = (
-  {
-    variantName,
-    maximumNumberOfArgs,
-    numberOfArgs,
-    variantIndex,
-  }: VariantReplacement,
+  { name, totalTypeSlotCount, slots, index }: ElmVariant,
   mode: Mode
 ): ts.ObjectLiteralExpression => {
   return ts.createObjectLiteral([
     ts.createPropertyAssignment(
       '$',
       mode === Mode.Dev
-        ? ts.createStringLiteral(variantName)
-        : ts.createNumericLiteral(variantIndex.toString())
+        ? ts.createStringLiteral(name)
+        : ts.createNumericLiteral(index.toString())
     ),
     // existing arguments
     ...argNames
-      .slice(0, numberOfArgs)
+      .slice(0, slots.length)
       .map(arg => ts.createShorthandPropertyAssignment(arg)),
     // fillings with nulls for the rest
     ...argNames
-      .slice(numberOfArgs, maximumNumberOfArgs)
+      .slice(slots.length, totalTypeSlotCount)
       .map(arg => ts.createPropertyAssignment(arg, ts.createNull())),
   ]);
 };
 
 const createCtorVariant = (
-  replacement: VariantReplacement,
+  replacement: ElmVariant,
   mode: Mode
 ): ts.Expression => {
-  const { numberOfArgs } = replacement;
+  const { slots } = replacement;
+
+  const numberOfArgs = slots.length;
+
   const funcExpression = ts.createArrowFunction(
     undefined,
     undefined,
@@ -78,15 +68,15 @@ const createCtorVariant = (
 };
 
 export const createCustomTypesTransformer = (
-  replacements: VariantReplacement[],
+  replacements: ElmVariant[],
   mode: Mode
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.Node => {
       if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
         for (const replacement of replacements) {
-          if (node.name.text === replacement.symbolName) {
-            if (replacement.numberOfArgs === 0) {
+          if (node.name.text === replacement.jsName) {
+            if (replacement.slots.length === 0) {
               return ts.updateVariableDeclaration(
                 node,
                 node.name,
