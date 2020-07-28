@@ -6,116 +6,34 @@
     return wrapper;
   }
   function F2(fun) {
-    return F(2, fun, function(a) {
-      return function(b) {
-        return fun(a, b);
-      };
-    });
+    return F(2, fun, a => b => fun(a, b));
   }
   function F3(fun) {
-    return F(3, fun, function(a) {
-      return function(b) {
-        return function(c) {
-          return fun(a, b, c);
-        };
-      };
-    });
+    return F(3, fun, a => b => c => fun(a, b, c));
   }
   function F4(fun) {
-    return F(4, fun, function(a) {
-      return function(b) {
-        return function(c) {
-          return function(d) {
-            return fun(a, b, c, d);
-          };
-        };
-      };
-    });
+    return F(4, fun, a => b => c => d => fun(a, b, c, d));
   }
   function F5(fun) {
-    return F(5, fun, function(a) {
-      return function(b) {
-        return function(c) {
-          return function(d) {
-            return function(e) {
-              return fun(a, b, c, d, e);
-            };
-          };
-        };
-      };
-    });
+    return F(5, fun, a => b => c => d => e => fun(a, b, c, d, e));
   }
   function F6(fun) {
-    return F(6, fun, function(a) {
-      return function(b) {
-        return function(c) {
-          return function(d) {
-            return function(e) {
-              return function(f) {
-                return fun(a, b, c, d, e, f);
-              };
-            };
-          };
-        };
-      };
-    });
+    return F(6, fun, a => b => c => d => e => f => fun(a, b, c, d, e, f));
   }
   function F7(fun) {
-    return F(7, fun, function(a) {
-      return function(b) {
-        return function(c) {
-          return function(d) {
-            return function(e) {
-              return function(f) {
-                return function(g) {
-                  return fun(a, b, c, d, e, f, g);
-                };
-              };
-            };
-          };
-        };
-      };
-    });
+    return F(7, fun, a => b => c => d => e => f => g =>
+      fun(a, b, c, d, e, f, g)
+    );
   }
   function F8(fun) {
-    return F(8, fun, function(a) {
-      return function(b) {
-        return function(c) {
-          return function(d) {
-            return function(e) {
-              return function(f) {
-                return function(g) {
-                  return function(h) {
-                    return fun(a, b, c, d, e, f, g, h);
-                  };
-                };
-              };
-            };
-          };
-        };
-      };
-    });
+    return F(8, fun, a => b => c => d => e => f => g => h =>
+      fun(a, b, c, d, e, f, g, h)
+    );
   }
   function F9(fun) {
-    return F(9, fun, function(a) {
-      return function(b) {
-        return function(c) {
-          return function(d) {
-            return function(e) {
-              return function(f) {
-                return function(g) {
-                  return function(h) {
-                    return function(i) {
-                      return fun(a, b, c, d, e, f, g, h, i);
-                    };
-                  };
-                };
-              };
-            };
-          };
-        };
-      };
-    });
+    return F(9, fun, a => b => c => d => e => f => g => h => i =>
+      fun(a, b, c, d, e, f, g, h, i)
+    );
   }
   function A2(fun, a, b) {
     return fun.a === 2 ? fun.f(a, b) : fun(a)(b);
@@ -192,9 +110,7 @@
     return true;
   }
   var _Utils_equal = F2(_Utils_eq);
-  var _Utils_notEqual_raw = function(a, b) {
-      return !_Utils_eq(a, b);
-    },
+  var _Utils_notEqual_raw = (a, b) => !_Utils_eq(a, b),
     _Utils_notEqual = F2(_Utils_notEqual_raw);
   // COMPARISONS
   // Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
@@ -215,8 +131,8 @@
     if (typeof x.$ === 'undefined') {
       //*/
       /**_UNUSED/
-          if (x.$[0] === '#')
-          //*/
+        if (x.$[0] === '#')
+        //*/
       return (ord = _Utils_cmp(x.a, y.a))
         ? ord
         : (ord = _Utils_cmp(x.b, y.b))
@@ -227,21 +143,13 @@
     for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
     return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
   }
-  var _Utils_lt_raw = function(a, b) {
-      return _Utils_cmp(a, b) < 0;
-    },
+  var _Utils_lt_raw = (a, b) => _Utils_cmp(a, b) < 0,
     _Utils_lt = F2(_Utils_lt_raw);
-  var _Utils_le_raw = function(a, b) {
-      return _Utils_cmp(a, b) < 1;
-    },
+  var _Utils_le_raw = (a, b) => _Utils_cmp(a, b) < 1,
     _Utils_le = F2(_Utils_le_raw);
-  var _Utils_gt_raw = function(a, b) {
-      return _Utils_cmp(a, b) > 0;
-    },
+  var _Utils_gt_raw = (a, b) => _Utils_cmp(a, b) > 0,
     _Utils_gt = F2(_Utils_gt_raw);
-  var _Utils_ge_raw = function(a, b) {
-      return _Utils_cmp(a, b) >= 0;
-    },
+  var _Utils_ge_raw = (a, b) => _Utils_cmp(a, b) >= 0,
     _Utils_ge = F2(_Utils_ge_raw);
   var _Utils_compare_raw = function(x, y) {
       var n = _Utils_cmp(x, y);
@@ -273,17 +181,10 @@
   function _Utils_chr_UNUSED(c) {
     return new String(c);
   }
-  // RECORDS
-  function _Utils_update(oldRecord, updatedFields) {
-    var newRecord = {};
-    for (var key in oldRecord) {
-      newRecord[key] = oldRecord[key];
-    }
-    for (var key in updatedFields) {
-      newRecord[key] = updatedFields[key];
-    }
-    return newRecord;
-  }
+  const _Utils_update = (oldRecord, updatedFields) => ({
+    ...oldRecord,
+    ...updatedFields,
+  });
   // APPEND
   var _Utils_append = F2(_Utils_ap);
   function _Utils_ap(xs, ys) {
@@ -376,16 +277,11 @@
       return _List_fromArray(arr);
     },
     _List_map5 = F6(_List_map5_raw);
-  var _List_sortBy_raw = function(f, xs) {
-      return _List_fromArray(
-        _List_toArray(xs).sort(function(a, b) {
-          return _Utils_cmp(f(a), f(b));
-        })
-      );
-    },
+  var _List_sortBy_raw = (f, xs) =>
+      _List_fromArray(_List_toArray(xs).sort((a, b) => _Utils_cmp(f(a), f(b)))),
     _List_sortBy = F2(_List_sortBy_raw);
-  var _List_sortWith_raw = function(f, xs) {
-      return _List_fromArray(
+  var _List_sortWith_raw = (f, xs) =>
+      _List_fromArray(
         _List_toArray(xs).sort(function(a, b) {
           var ord = A2(f, a, b);
           return ord === $elm$core$Basics$EQ
@@ -394,8 +290,7 @@
             ? -1
             : 1;
         })
-      );
-    },
+      ),
     _List_sortWith = F2(_List_sortWith_raw);
   var _JsArray_empty = [];
   function _JsArray_singleton(value) {
@@ -422,9 +317,7 @@
       return _Utils_Tuple2(result, ls);
     },
     _JsArray_initializeFromList = F2(_JsArray_initializeFromList_raw);
-  var _JsArray_unsafeGet_raw = function(index, array) {
-      return array[index];
-    },
+  var _JsArray_unsafeGet_raw = (index, array) => array[index],
     _JsArray_unsafeGet = F2(_JsArray_unsafeGet_raw);
   var _JsArray_unsafeSet_raw = function(index, value, array) {
       var length = array.length;
@@ -479,9 +372,7 @@
       return result;
     },
     _JsArray_indexedMap = F3(_JsArray_indexedMap_raw);
-  var _JsArray_slice_raw = function(from, to, array) {
-      return array.slice(from, to);
-    },
+  var _JsArray_slice_raw = (from, to, array) => array.slice(from, to),
     _JsArray_slice = F3(_JsArray_slice_raw);
   var _JsArray_appendN_raw = function(n, dest, source) {
       var destLen = dest.length;
@@ -501,9 +392,7 @@
     },
     _JsArray_appendN = F3(_JsArray_appendN_raw);
   // LOG
-  var _Debug_log_raw = function(tag, value) {
-      return value;
-    },
+  var _Debug_log_raw = (tag, value) => value,
     _Debug_log = F2(_Debug_log_raw);
   var _Debug_log_UNUSED_raw = function(tag, value) {
       console.log(tag + ': ' + _Debug_toString(value));
@@ -762,30 +651,18 @@
     return 'on lines ' + region.I.z + ' through ' + region.N.z;
   }
   // MATH
-  var _Basics_add_raw = function(a, b) {
-      return a + b;
-    },
+  var _Basics_add_raw = (a, b) => a + b,
     _Basics_add = F2(_Basics_add_raw);
-  var _Basics_sub_raw = function(a, b) {
-      return a - b;
-    },
+  var _Basics_sub_raw = (a, b) => a - b,
     _Basics_sub = F2(_Basics_sub_raw);
-  var _Basics_mul_raw = function(a, b) {
-      return a * b;
-    },
+  var _Basics_mul_raw = (a, b) => a * b,
     _Basics_mul = F2(_Basics_mul_raw);
-  var _Basics_fdiv_raw = function(a, b) {
-      return a / b;
-    },
+  var _Basics_fdiv_raw = (a, b) => a / b,
     _Basics_fdiv = F2(_Basics_fdiv_raw);
-  var _Basics_idiv_raw = function(a, b) {
-      return (a / b) | 0;
-    },
+  var _Basics_idiv_raw = (a, b) => (a / b) | 0,
     _Basics_idiv = F2(_Basics_idiv_raw);
   var _Basics_pow = F2(Math.pow);
-  var _Basics_remainderBy_raw = function(b, a) {
-      return a % b;
-    },
+  var _Basics_remainderBy_raw = (b, a) => a % b,
     _Basics_remainderBy = F2(_Basics_remainderBy_raw);
   // https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
   var _Basics_modBy_raw = function(modulus, x) {
@@ -827,21 +704,13 @@
   function _Basics_not(bool) {
     return !bool;
   }
-  var _Basics_and_raw = function(a, b) {
-      return a && b;
-    },
+  var _Basics_and_raw = (a, b) => a && b,
     _Basics_and = F2(_Basics_and_raw);
-  var _Basics_or_raw = function(a, b) {
-      return a || b;
-    },
+  var _Basics_or_raw = (a, b) => a || b,
     _Basics_or = F2(_Basics_or_raw);
-  var _Basics_xor_raw = function(a, b) {
-      return a !== b;
-    },
+  var _Basics_xor_raw = (a, b) => a !== b,
     _Basics_xor = F2(_Basics_xor_raw);
-  var _String_cons_raw = function(chr, str) {
-      return chr + str;
-    },
+  var _String_cons_raw = (chr, str) => chr + str,
     _String_cons = F2(_String_cons_raw);
   function _String_uncons(string) {
     var word = string.charCodeAt(0);
@@ -853,9 +722,7 @@
         )
       : $elm$core$Maybe$Nothing;
   }
-  var _String_append_raw = function(a, b) {
-      return a + b;
-    },
+  var _String_append_raw = (a, b) => a + b,
     _String_append = F2(_String_append_raw);
   function _String_length(str) {
     return str.length;
@@ -944,17 +811,11 @@
       return state;
     },
     _String_foldr = F3(_String_foldr_raw);
-  var _String_split_raw = function(sep, str) {
-      return str.split(sep);
-    },
+  var _String_split_raw = (sep, str) => str.split(sep),
     _String_split = F2(_String_split_raw);
-  var _String_join_raw = function(sep, strs) {
-      return strs.join(sep);
-    },
+  var _String_join_raw = (sep, strs) => strs.join(sep),
     _String_join = F2(_String_join_raw);
-  var _String_slice_raw = function(start, end, str) {
-      return str.slice(start, end);
-    },
+  var _String_slice_raw = (start, end, str) => str.slice(start, end),
     _String_slice = F3(_String_slice_raw);
   function _String_trim(str) {
     return str.trim();
@@ -1009,20 +870,13 @@
       return true;
     },
     _String_all = F2(_String_all_raw);
-  var _String_contains_raw = function(sub, str) {
-      return str.indexOf(sub) > -1;
-    },
+  var _String_contains_raw = (sub, str) => str.indexOf(sub) > -1,
     _String_contains = F2(_String_contains_raw);
-  var _String_startsWith_raw = function(sub, str) {
-      return str.indexOf(sub) === 0;
-    },
+  var _String_startsWith_raw = (sub, str) => str.indexOf(sub) === 0,
     _String_startsWith = F2(_String_startsWith_raw);
-  var _String_endsWith_raw = function(sub, str) {
-      return (
-        str.length >= sub.length &&
-        str.lastIndexOf(sub) === str.length - sub.length
-      );
-    },
+  var _String_endsWith_raw = (sub, str) =>
+      str.length >= sub.length &&
+      str.lastIndexOf(sub) === str.length - sub.length,
     _String_endsWith = F2(_String_endsWith_raw);
   var _String_indexes_raw = function(sub, str) {
       var subLen = sub.length;
@@ -1104,11 +958,11 @@
     return _Utils_chr(char.toLocaleLowerCase());
   }
   /**_UNUSED/
-  function _Json_errorToString(error)
-  {
-      return $elm$json$Json$Decode$errorToString(error);
-  }
-  //*/
+    function _Json_errorToString(error)
+    {
+        return $elm$json$Json$Decode$errorToString(error);
+    }
+    //*/
   // CORE DECODERS
   function _Json_succeed(msg) {
     return {
@@ -1125,35 +979,35 @@
   function _Json_decodePrim(decoder) {
     return { $: 2, b: decoder };
   }
-  var _Json_decodeInt = _Json_decodePrim(function(value) {
-    return typeof value !== 'number'
+  var _Json_decodeInt = _Json_decodePrim(value =>
+    typeof value !== 'number'
       ? _Json_expecting('an INT', value)
       : -2147483647 < value && value < 2147483647 && (value | 0) === value
       ? $elm$core$Result$Ok(value)
       : isFinite(value) && !(value % 1)
       ? $elm$core$Result$Ok(value)
-      : _Json_expecting('an INT', value);
-  });
-  var _Json_decodeBool = _Json_decodePrim(function(value) {
-    return typeof value === 'boolean'
+      : _Json_expecting('an INT', value)
+  );
+  var _Json_decodeBool = _Json_decodePrim(value =>
+    typeof value === 'boolean'
       ? $elm$core$Result$Ok(value)
-      : _Json_expecting('a BOOL', value);
-  });
-  var _Json_decodeFloat = _Json_decodePrim(function(value) {
-    return typeof value === 'number'
+      : _Json_expecting('a BOOL', value)
+  );
+  var _Json_decodeFloat = _Json_decodePrim(value =>
+    typeof value === 'number'
       ? $elm$core$Result$Ok(value)
-      : _Json_expecting('a FLOAT', value);
-  });
-  var _Json_decodeValue = _Json_decodePrim(function(value) {
-    return $elm$core$Result$Ok(_Json_wrap(value));
-  });
-  var _Json_decodeString = _Json_decodePrim(function(value) {
-    return typeof value === 'string'
+      : _Json_expecting('a FLOAT', value)
+  );
+  var _Json_decodeValue = _Json_decodePrim(value =>
+    $elm$core$Result$Ok(_Json_wrap(value))
+  );
+  var _Json_decodeString = _Json_decodePrim(value =>
+    typeof value === 'string'
       ? $elm$core$Result$Ok(value)
       : value instanceof String
       ? $elm$core$Result$Ok(value + '')
-      : _Json_expecting('a STRING', value);
-  });
+      : _Json_expecting('a STRING', value)
+  );
   function _Json_decodeList(decoder) {
     return { $: 3, b: decoder };
   }
@@ -1163,21 +1017,17 @@
   function _Json_decodeNull(value) {
     return { $: 5, c: value };
   }
-  var _Json_decodeField_raw = function(field, decoder) {
-      return {
-        $: 6,
-        d: field,
-        b: decoder,
-      };
-    },
+  var _Json_decodeField_raw = (field, decoder) => ({
+      $: 6,
+      d: field,
+      b: decoder,
+    }),
     _Json_decodeField = F2(_Json_decodeField_raw);
-  var _Json_decodeIndex_raw = function(index, decoder) {
-      return {
-        $: 7,
-        e: index,
-        b: decoder,
-      };
-    },
+  var _Json_decodeIndex_raw = (index, decoder) => ({
+      $: 7,
+      e: index,
+      b: decoder,
+    }),
     _Json_decodeIndex = F2(_Json_decodeIndex_raw);
   function _Json_decodeKeyValuePairs(decoder) {
     return {
@@ -1192,13 +1042,11 @@
       g: decoders,
     };
   }
-  var _Json_andThen_raw = function(callback, decoder) {
-      return {
-        $: 10,
-        b: decoder,
-        h: callback,
-      };
-    },
+  var _Json_andThen_raw = (callback, decoder) => ({
+      $: 10,
+      b: decoder,
+      h: callback,
+    }),
     _Json_andThen = F2(_Json_andThen_raw);
   function _Json_oneOf(decoders) {
     return {
@@ -1207,37 +1055,26 @@
     };
   }
   // DECODING OBJECTS
-  var _Json_map1_raw = function(f, d1) {
-      return _Json_mapMany(f, [d1]);
-    },
+  var _Json_map1_raw = (f, d1) => _Json_mapMany(f, [d1]),
     _Json_map1 = F2(_Json_map1_raw);
-  var _Json_map2_raw = function(f, d1, d2) {
-      return _Json_mapMany(f, [d1, d2]);
-    },
+  var _Json_map2_raw = (f, d1, d2) => _Json_mapMany(f, [d1, d2]),
     _Json_map2 = F3(_Json_map2_raw);
-  var _Json_map3_raw = function(f, d1, d2, d3) {
-      return _Json_mapMany(f, [d1, d2, d3]);
-    },
+  var _Json_map3_raw = (f, d1, d2, d3) => _Json_mapMany(f, [d1, d2, d3]),
     _Json_map3 = F4(_Json_map3_raw);
-  var _Json_map4_raw = function(f, d1, d2, d3, d4) {
-      return _Json_mapMany(f, [d1, d2, d3, d4]);
-    },
+  var _Json_map4_raw = (f, d1, d2, d3, d4) =>
+      _Json_mapMany(f, [d1, d2, d3, d4]),
     _Json_map4 = F5(_Json_map4_raw);
-  var _Json_map5_raw = function(f, d1, d2, d3, d4, d5) {
-      return _Json_mapMany(f, [d1, d2, d3, d4, d5]);
-    },
+  var _Json_map5_raw = (f, d1, d2, d3, d4, d5) =>
+      _Json_mapMany(f, [d1, d2, d3, d4, d5]),
     _Json_map5 = F6(_Json_map5_raw);
-  var _Json_map6_raw = function(f, d1, d2, d3, d4, d5, d6) {
-      return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6]);
-    },
+  var _Json_map6_raw = (f, d1, d2, d3, d4, d5, d6) =>
+      _Json_mapMany(f, [d1, d2, d3, d4, d5, d6]),
     _Json_map6 = F7(_Json_map6_raw);
-  var _Json_map7_raw = function(f, d1, d2, d3, d4, d5, d6, d7) {
-      return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7]);
-    },
+  var _Json_map7_raw = (f, d1, d2, d3, d4, d5, d6, d7) =>
+      _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7]),
     _Json_map7 = F8(_Json_map7_raw);
-  var _Json_map8_raw = function(f, d1, d2, d3, d4, d5, d6, d7, d8) {
-      return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7, d8]);
-    },
+  var _Json_map8_raw = (f, d1, d2, d3, d4, d5, d6, d7, d8) =>
+      _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7, d8]),
     _Json_map8 = F9(_Json_map8_raw);
   // DECODE
   var _Json_runOnString_raw = function(decoder, string) {
@@ -1254,9 +1091,8 @@
       }
     },
     _Json_runOnString = F2(_Json_runOnString_raw);
-  var _Json_run_raw = function(decoder, value) {
-      return _Json_runHelp(decoder, _Json_unwrap(value));
-    },
+  var _Json_run_raw = (decoder, value) =>
+      _Json_runHelp(decoder, _Json_unwrap(value)),
     _Json_run = F2(_Json_run_raw);
   function _Json_runHelp(decoder, value) {
     switch (decoder.$) {
@@ -1397,9 +1233,7 @@
     );
   }
   function _Json_toElmArray(array) {
-    return $elm$core$Array$initialize_raw(array.length, function(i) {
-      return array[i];
-    });
+    return $elm$core$Array$initialize_raw(array.length, i => array[i]);
   }
   function _Json_expecting(type, value) {
     return $elm$core$Result$Err(
@@ -1451,9 +1285,8 @@
     return true;
   }
   // ENCODE
-  var _Json_encode_raw = function(indentLevel, value) {
-      return JSON.stringify(_Json_unwrap(value), null, indentLevel) + '';
-    },
+  var _Json_encode_raw = (indentLevel, value) =>
+      JSON.stringify(_Json_unwrap(value), null, indentLevel) + '',
     _Json_encode = F2(_Json_encode_raw);
   function _Json_wrap_UNUSED(value) {
     return { $: 0, a: value };
@@ -1505,21 +1338,17 @@
       c: null,
     };
   }
-  var _Scheduler_andThen_raw = function(callback, task) {
-      return {
-        $: 3,
-        b: callback,
-        d: task,
-      };
-    },
+  var _Scheduler_andThen_raw = (callback, task) => ({
+      $: 3,
+      b: callback,
+      d: task,
+    }),
     _Scheduler_andThen = F2(_Scheduler_andThen_raw);
-  var _Scheduler_onError_raw = function(callback, task) {
-      return {
-        $: 4,
-        b: callback,
-        d: task,
-      };
-    },
+  var _Scheduler_onError_raw = (callback, task) => ({
+      $: 4,
+      b: callback,
+      d: task,
+    }),
     _Scheduler_onError = F2(_Scheduler_onError_raw);
   function _Scheduler_receive(callback) {
     return {
@@ -1549,12 +1378,11 @@
     proc.h.push(msg);
     _Scheduler_enqueue(proc);
   }
-  var _Scheduler_send_raw = function(proc, msg) {
-      return _Scheduler_binding(function(callback) {
+  var _Scheduler_send_raw = (proc, msg) =>
+      _Scheduler_binding(function(callback) {
         _Scheduler_rawSend(proc, msg);
         callback(_Scheduler_succeed(_Utils_Tuple0));
-      });
-    },
+      }),
     _Scheduler_send = F2(_Scheduler_send_raw);
   function _Scheduler_kill(proc) {
     return _Scheduler_binding(function(callback) {
@@ -1567,16 +1395,16 @@
     });
   }
   /* STEP PROCESSES
-  
-  type alias Process =
-    { $ : tag
-    , id : unique_id
-    , root : Task
-    , stack : null | { $: SUCCEED | FAIL, a: callback, b: stack }
-    , mailbox : [msg]
-    }
-  
-  */
+    
+    type alias Process =
+      { $ : tag
+      , id : unique_id
+      , root : Task
+      , stack : null | { $: SUCCEED | FAIL, a: callback, b: stack }
+      , mailbox : [msg]
+      }
+    
+    */
   var _Scheduler_working = false;
   var _Scheduler_queue = [];
   function _Scheduler_enqueue(proc) {
@@ -1635,18 +1463,15 @@
     });
   }
   // PROGRAMS
-  var _Platform_worker_raw = function(impl, flagDecoder, debugMetadata, args) {
-      return _Platform_initialize(
+  var _Platform_worker_raw = (impl, flagDecoder, debugMetadata, args) =>
+      _Platform_initialize(
         flagDecoder,
         args,
         impl.S,
         impl.ah,
         impl.aB,
-        function() {
-          return function() {};
-        }
-      );
-    },
+        () => function() {}
+      ),
     _Platform_worker = F4(_Platform_worker_raw);
   // INITIALIZE A PROGRAM
   function _Platform_initialize(
@@ -1737,29 +1562,25 @@
     ));
   }
   // ROUTING
-  var _Platform_sendToApp_raw = function(router, msg) {
-      return _Scheduler_binding(function(callback) {
+  var _Platform_sendToApp_raw = (router, msg) =>
+      _Scheduler_binding(function(callback) {
         router.g(msg);
         callback(_Scheduler_succeed(_Utils_Tuple0));
-      });
-    },
+      }),
     _Platform_sendToApp = F2(_Platform_sendToApp_raw);
-  var _Platform_sendToSelf_raw = function(router, msg) {
-      return _Scheduler_send_raw(router.h, {
+  var _Platform_sendToSelf_raw = (router, msg) =>
+      _Scheduler_send_raw(router.h, {
         $: 0,
         a: msg,
-      });
-    },
+      }),
     _Platform_sendToSelf = F2(_Platform_sendToSelf_raw);
   // BAGS
   function _Platform_leaf(home) {
-    return function(value) {
-      return {
-        $: 1,
-        k: home,
-        l: value,
-      };
-    };
+    return value => ({
+      $: 1,
+      k: home,
+      l: value,
+    });
   }
   function _Platform_batch(list) {
     return {
@@ -1767,13 +1588,11 @@
       m: list,
     };
   }
-  var _Platform_map_raw = function(tagger, bag) {
-      return {
-        $: 3,
-        n: tagger,
-        o: bag,
-      };
-    },
+  var _Platform_map_raw = (tagger, bag) => ({
+      $: 3,
+      n: tagger,
+      o: bag,
+    }),
     _Platform_map = F2(_Platform_map_raw);
   // PIPE BAGS INTO EFFECT MANAGERS
   //
@@ -1883,9 +1702,7 @@
     };
     return _Platform_leaf(name);
   }
-  var _Platform_outgoingPortMap_raw = function(tagger, value) {
-      return value;
-    },
+  var _Platform_outgoingPortMap_raw = (tagger, value) => value,
     _Platform_outgoingPortMap = F2(_Platform_outgoingPortMap_raw);
   function _Platform_setupOutgoingPort(name) {
     var subs = [];
@@ -1936,11 +1753,8 @@
     };
     return _Platform_leaf(name);
   }
-  var _Platform_incomingPortMap_raw = function(tagger, finalTagger) {
-      return function(value) {
-        return tagger(finalTagger(value));
-      };
-    },
+  var _Platform_incomingPortMap_raw = (tagger, finalTagger) => value =>
+      tagger(finalTagger(value)),
     _Platform_incomingPortMap = F2(_Platform_incomingPortMap_raw);
   function _Platform_setupIncomingPort(name, sendToApp) {
     var subs = _List_Nil;
@@ -2038,8 +1852,8 @@
     };
   }
   // NODE
-  var _VirtualDom_nodeNS_raw = function(namespace, tag) {
-      return F2(function(factList, kidList) {
+  var _VirtualDom_nodeNS_raw = (namespace, tag) =>
+      F2(function(factList, kidList) {
         for (
           var kids = [], descendantsCount = 0;
           kidList.b;
@@ -2058,13 +1872,12 @@
           f: namespace,
           b: descendantsCount,
         };
-      });
-    },
+      }),
     _VirtualDom_nodeNS = F2(_VirtualDom_nodeNS_raw);
   var _VirtualDom_node = _VirtualDom_nodeNS(undefined);
   // KEYED NODE
-  var _VirtualDom_keyedNodeNS_raw = function(namespace, tag) {
-      return F2(function(factList, kidList) {
+  var _VirtualDom_keyedNodeNS_raw = (namespace, tag) =>
+      F2(function(factList, kidList) {
         for (
           var kids = [], descendantsCount = 0;
           kidList.b;
@@ -2083,8 +1896,7 @@
           f: namespace,
           b: descendantsCount,
         };
-      });
-    },
+      }),
     _VirtualDom_keyedNodeNS = F2(_VirtualDom_keyedNodeNS_raw);
   var _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(undefined);
   // CUSTOM
@@ -2098,14 +1910,12 @@
     };
   }
   // MAP
-  var _VirtualDom_map_raw = function(tagger, node) {
-      return {
-        $: 4,
-        j: tagger,
-        k: node,
-        b: 1 + (node.b || 0),
-      };
-    },
+  var _VirtualDom_map_raw = (tagger, node) => ({
+      $: 4,
+      j: tagger,
+      k: node,
+      b: 1 + (node.b || 0),
+    }),
     _VirtualDom_map = F2(_VirtualDom_map_raw);
   // LAZY
   function _VirtualDom_thunk(refs, thunk) {
@@ -2116,94 +1926,66 @@
       k: undefined,
     };
   }
-  var _VirtualDom_lazy_raw = function(func, a) {
-      return _VirtualDom_thunk([func, a], function() {
-        return func(a);
-      });
-    },
+  var _VirtualDom_lazy_raw = (func, a) =>
+      _VirtualDom_thunk([func, a], () => func(a)),
     _VirtualDom_lazy = F2(_VirtualDom_lazy_raw);
-  var _VirtualDom_lazy2_raw = function(func, a, b) {
-      return _VirtualDom_thunk([func, a, b], function() {
-        return A2(func, a, b);
-      });
-    },
+  var _VirtualDom_lazy2_raw = (func, a, b) =>
+      _VirtualDom_thunk([func, a, b], () => A2(func, a, b)),
     _VirtualDom_lazy2 = F3(_VirtualDom_lazy2_raw);
-  var _VirtualDom_lazy3_raw = function(func, a, b, c) {
-      return _VirtualDom_thunk([func, a, b, c], function() {
-        return A3(func, a, b, c);
-      });
-    },
+  var _VirtualDom_lazy3_raw = (func, a, b, c) =>
+      _VirtualDom_thunk([func, a, b, c], () => A3(func, a, b, c)),
     _VirtualDom_lazy3 = F4(_VirtualDom_lazy3_raw);
-  var _VirtualDom_lazy4_raw = function(func, a, b, c, d) {
-      return _VirtualDom_thunk([func, a, b, c, d], function() {
-        return A4(func, a, b, c, d);
-      });
-    },
+  var _VirtualDom_lazy4_raw = (func, a, b, c, d) =>
+      _VirtualDom_thunk([func, a, b, c, d], () => A4(func, a, b, c, d)),
     _VirtualDom_lazy4 = F5(_VirtualDom_lazy4_raw);
-  var _VirtualDom_lazy5_raw = function(func, a, b, c, d, e) {
-      return _VirtualDom_thunk([func, a, b, c, d, e], function() {
-        return A5(func, a, b, c, d, e);
-      });
-    },
+  var _VirtualDom_lazy5_raw = (func, a, b, c, d, e) =>
+      _VirtualDom_thunk([func, a, b, c, d, e], () => A5(func, a, b, c, d, e)),
     _VirtualDom_lazy5 = F6(_VirtualDom_lazy5_raw);
-  var _VirtualDom_lazy6_raw = function(func, a, b, c, d, e, f) {
-      return _VirtualDom_thunk([func, a, b, c, d, e, f], function() {
-        return A6(func, a, b, c, d, e, f);
-      });
-    },
+  var _VirtualDom_lazy6_raw = (func, a, b, c, d, e, f) =>
+      _VirtualDom_thunk([func, a, b, c, d, e, f], () =>
+        A6(func, a, b, c, d, e, f)
+      ),
     _VirtualDom_lazy6 = F7(_VirtualDom_lazy6_raw);
-  var _VirtualDom_lazy7_raw = function(func, a, b, c, d, e, f, g) {
-      return _VirtualDom_thunk([func, a, b, c, d, e, f, g], function() {
-        return A7(func, a, b, c, d, e, f, g);
-      });
-    },
+  var _VirtualDom_lazy7_raw = (func, a, b, c, d, e, f, g) =>
+      _VirtualDom_thunk([func, a, b, c, d, e, f, g], () =>
+        A7(func, a, b, c, d, e, f, g)
+      ),
     _VirtualDom_lazy7 = F8(_VirtualDom_lazy7_raw);
-  var _VirtualDom_lazy8_raw = function(func, a, b, c, d, e, f, g, h) {
-      return _VirtualDom_thunk([func, a, b, c, d, e, f, g, h], function() {
-        return A8(func, a, b, c, d, e, f, g, h);
-      });
-    },
+  var _VirtualDom_lazy8_raw = (func, a, b, c, d, e, f, g, h) =>
+      _VirtualDom_thunk([func, a, b, c, d, e, f, g, h], () =>
+        A8(func, a, b, c, d, e, f, g, h)
+      ),
     _VirtualDom_lazy8 = F9(_VirtualDom_lazy8_raw);
   // FACTS
-  var _VirtualDom_on_raw = function(key, handler) {
-      return {
-        $: 'a0',
-        n: key,
-        o: handler,
-      };
-    },
+  var _VirtualDom_on_raw = (key, handler) => ({
+      $: 'a0',
+      n: key,
+      o: handler,
+    }),
     _VirtualDom_on = F2(_VirtualDom_on_raw);
-  var _VirtualDom_style_raw = function(key, value) {
-      return {
-        $: 'a1',
-        n: key,
-        o: value,
-      };
-    },
+  var _VirtualDom_style_raw = (key, value) => ({
+      $: 'a1',
+      n: key,
+      o: value,
+    }),
     _VirtualDom_style = F2(_VirtualDom_style_raw);
-  var _VirtualDom_property_raw = function(key, value) {
-      return {
-        $: 'a2',
-        n: key,
-        o: value,
-      };
-    },
+  var _VirtualDom_property_raw = (key, value) => ({
+      $: 'a2',
+      n: key,
+      o: value,
+    }),
     _VirtualDom_property = F2(_VirtualDom_property_raw);
-  var _VirtualDom_attribute_raw = function(key, value) {
-      return {
-        $: 'a3',
-        n: key,
-        o: value,
-      };
-    },
+  var _VirtualDom_attribute_raw = (key, value) => ({
+      $: 'a3',
+      n: key,
+      o: value,
+    }),
     _VirtualDom_attribute = F2(_VirtualDom_attribute_raw);
-  var _VirtualDom_attributeNS_raw = function(namespace, key, value) {
-      return {
-        $: 'a4',
-        n: key,
-        o: { f: namespace, o: value },
-      };
-    },
+  var _VirtualDom_attributeNS_raw = (namespace, key, value) => ({
+      $: 'a4',
+      n: key,
+      o: { f: namespace, o: value },
+    }),
     _VirtualDom_attributeNS = F3(_VirtualDom_attributeNS_raw);
   // XSS ATTACK VECTOR CHECKS
   function _VirtualDom_noScript(tag) {
@@ -2232,11 +2014,10 @@
       : value;
   }
   // MAP FACTS
-  var _VirtualDom_mapAttribute_raw = function(func, attr) {
-      return attr.$ === 'a0'
+  var _VirtualDom_mapAttribute_raw = (func, attr) =>
+      attr.$ === 'a0'
         ? _VirtualDom_on_raw(attr.n, _VirtualDom_mapHandler(func, attr.o))
-        : attr;
-    },
+        : attr,
     _VirtualDom_mapAttribute = F2(_VirtualDom_mapAttribute_raw);
   function _VirtualDom_mapHandler(func, handler) {
     var tag = $elm$virtual_dom$VirtualDom$toHandlerInt(handler);
@@ -2247,26 +2028,22 @@
     return {
       $: handler.$,
       a: !tag
-        ? A2($elm$json$Json$Decode$map, func, handler.a)
-        : A3(
-            $elm$json$Json$Decode$map2,
+        ? _Json_map1_raw(func, handler.a)
+        : _Json_map2_raw(
             tag < 3 ? _VirtualDom_mapEventTuple : _VirtualDom_mapEventRecord,
             $elm$json$Json$Decode$succeed(func),
             handler.a
           ),
     };
   }
-  var _VirtualDom_mapEventTuple_raw = function(func, tuple) {
-      return _Utils_Tuple2(func(tuple.a), tuple.b);
-    },
+  var _VirtualDom_mapEventTuple_raw = (func, tuple) =>
+      _Utils_Tuple2(func(tuple.a), tuple.b),
     _VirtualDom_mapEventTuple = F2(_VirtualDom_mapEventTuple_raw);
-  var _VirtualDom_mapEventRecord_raw = function(func, record) {
-      return {
-        o: func(record.o),
-        J: record.J,
-        G: record.G,
-      };
-    },
+  var _VirtualDom_mapEventRecord_raw = (func, record) => ({
+      o: func(record.o),
+      J: record.J,
+      G: record.G,
+    }),
     _VirtualDom_mapEventRecord = F2(_VirtualDom_mapEventRecord_raw);
   // ORGANIZE FACTS
   function _VirtualDom_organizeFacts(factList) {
@@ -3222,24 +2999,18 @@
       }
     },
     $elm$core$Dict$foldr = F3($elm$core$Dict$foldr_raw);
-  var $elm$core$Dict$toList = function(dict) {
-    return $elm$core$Dict$foldr_raw(
-      F3(function(key, value, list) {
-        return A2($elm$core$List$cons, _Utils_Tuple2(key, value), list);
-      }),
+  var $elm$core$Dict$toList = dict =>
+    $elm$core$Dict$foldr_raw(
+      F3((key, value, list) => _List_Cons(_Utils_Tuple2(key, value), list)),
       _List_Nil,
       dict
     );
-  };
-  var $elm$core$Dict$keys = function(dict) {
-    return $elm$core$Dict$foldr_raw(
-      F3(function(key, value, keyList) {
-        return A2($elm$core$List$cons, key, keyList);
-      }),
+  var $elm$core$Dict$keys = dict =>
+    $elm$core$Dict$foldr_raw(
+      F3((key, value, keyList) => _List_Cons(key, keyList)),
       _List_Nil,
       dict
     );
-  };
   var $elm$core$Set$toList = function(_v0) {
     var dict = _v0;
     return $elm$core$Dict$keys(dict);
@@ -3251,69 +3022,47 @@
       var helper = F2(function(node, acc) {
         if (!node.$) {
           var subTree = node.a;
-          return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
+          return _JsArray_foldr_raw(helper, acc, subTree);
         } else {
           var values = node.a;
-          return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
+          return _JsArray_foldr_raw(func, acc, values);
         }
       });
-      return A3(
-        $elm$core$Elm$JsArray$foldr,
+      return _JsArray_foldr_raw(
         helper,
-        A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
+        _JsArray_foldr_raw(func, baseCase, tail),
         tree
       );
     },
     $elm$core$Array$foldr = F3($elm$core$Array$foldr_raw);
-  var $elm$core$Array$toList = function(array) {
-    return $elm$core$Array$foldr_raw($elm$core$List$cons, _List_Nil, array);
-  };
-  var $elm$core$Result$Err = function(a) {
-    return { $: 1, a: a };
-  };
-  var $elm$json$Json$Decode$Failure_raw = function(a, b) {
-      return { $: 3, a: a, b: b };
-    },
+  var $elm$core$Array$toList = array =>
+    $elm$core$Array$foldr_raw($elm$core$List$cons, _List_Nil, array);
+  var $elm$core$Result$Err = a => ({ $: 1, a: a });
+  var $elm$json$Json$Decode$Failure_raw = (a, b) => ({ $: 3, a: a, b: b }),
     $elm$json$Json$Decode$Failure = F2($elm$json$Json$Decode$Failure_raw);
-  var $elm$json$Json$Decode$Field_raw = function(a, b) {
-      return { $: 0, a: a, b: b };
-    },
+  var $elm$json$Json$Decode$Field_raw = (a, b) => ({ $: 0, a: a, b: b }),
     $elm$json$Json$Decode$Field = F2($elm$json$Json$Decode$Field_raw);
-  var $elm$json$Json$Decode$Index_raw = function(a, b) {
-      return { $: 1, a: a, b: b };
-    },
+  var $elm$json$Json$Decode$Index_raw = (a, b) => ({ $: 1, a: a, b: b }),
     $elm$json$Json$Decode$Index = F2($elm$json$Json$Decode$Index_raw);
-  var $elm$core$Result$Ok = function(a) {
-    return { $: 0, a: a };
-  };
-  var $elm$json$Json$Decode$OneOf = function(a) {
-    return { $: 2, a: a };
-  };
+  var $elm$core$Result$Ok = a => ({ $: 0, a: a });
+  var $elm$json$Json$Decode$OneOf = a => ({ $: 2, a: a });
   var $elm$core$Basics$False = 1;
   var $elm$core$Basics$add = _Basics_add;
-  var $elm$core$Maybe$Just = function(a) {
-    return { $: 0, a: a };
-  };
+  var $elm$core$Maybe$Just = a => ({ $: 0, a: a });
   var $elm$core$Maybe$Nothing = { $: 1 };
   var $elm$core$String$all = _String_all;
   var $elm$core$Basics$and = _Basics_and;
   var $elm$core$Basics$append = _Utils_append;
   var $elm$json$Json$Encode$encode = _Json_encode;
   var $elm$core$String$fromInt = _String_fromNumber;
-  var $elm$core$String$join_raw = function(sep, chunks) {
-      return _String_join_raw(sep, _List_toArray(chunks));
-    },
+  var $elm$core$String$join_raw = (sep, chunks) =>
+      _String_join_raw(sep, _List_toArray(chunks)),
     $elm$core$String$join = F2($elm$core$String$join_raw);
-  var $elm$core$String$split_raw = function(sep, string) {
-      return _List_fromArray(_String_split_raw(sep, string));
-    },
+  var $elm$core$String$split_raw = (sep, string) =>
+      _List_fromArray(_String_split_raw(sep, string)),
     $elm$core$String$split = F2($elm$core$String$split_raw);
-  var $elm$json$Json$Decode$indent = function(str) {
-    return $elm$core$String$join_raw(
-      '\n    ',
-      A2($elm$core$String$split, '\n', str)
-    );
-  };
+  var $elm$json$Json$Decode$indent = str =>
+    $elm$core$String$join_raw('\n    ', $elm$core$String$split_raw('\n', str));
   var $elm$core$List$foldl_raw = function(func, acc, list) {
       foldl: while (true) {
         if (!list.b) {
@@ -3332,15 +3081,12 @@
       }
     },
     $elm$core$List$foldl = F3($elm$core$List$foldl_raw);
-  var $elm$core$List$length = function(xs) {
-    return $elm$core$List$foldl_raw(
-      F2(function(_v0, i) {
-        return i + 1;
-      }),
+  var $elm$core$List$length = xs =>
+    $elm$core$List$foldl_raw(
+      F2((_v0, i) => i + 1),
       0,
       xs
     );
-  };
   var $elm$core$List$map2 = _List_map2;
   var $elm$core$Basics$le = _Utils_le;
   var $elm$core$Basics$sub = _Basics_sub;
@@ -3349,7 +3095,7 @@
         if (_Utils_cmp(lo, hi) < 1) {
           var $temp$lo = lo,
             $temp$hi = hi - 1,
-            $temp$list = A2($elm$core$List$cons, hi, list);
+            $temp$list = _List_Cons(hi, list);
           lo = $temp$lo;
           hi = $temp$hi;
           list = $temp$list;
@@ -3360,18 +3106,15 @@
       }
     },
     $elm$core$List$rangeHelp = F3($elm$core$List$rangeHelp_raw);
-  var $elm$core$List$range_raw = function(lo, hi) {
-      return $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil);
-    },
+  var $elm$core$List$range_raw = (lo, hi) =>
+      $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil),
     $elm$core$List$range = F2($elm$core$List$range_raw);
-  var $elm$core$List$indexedMap_raw = function(f, xs) {
-      return A3(
-        $elm$core$List$map2,
+  var $elm$core$List$indexedMap_raw = (f, xs) =>
+      _List_map2_raw(
         f,
         $elm$core$List$range_raw(0, $elm$core$List$length(xs) - 1),
         xs
-      );
-    },
+      ),
     $elm$core$List$indexedMap = F2($elm$core$List$indexedMap_raw);
   var $elm$core$Char$toCode = _Char_toCode;
   var $elm$core$Char$isLower = function(_char) {
@@ -3383,38 +3126,29 @@
     return code <= 90 && 65 <= code;
   };
   var $elm$core$Basics$or = _Basics_or;
-  var $elm$core$Char$isAlpha = function(_char) {
-    return $elm$core$Char$isLower(_char) || $elm$core$Char$isUpper(_char);
-  };
+  var $elm$core$Char$isAlpha = _char =>
+    $elm$core$Char$isLower(_char) || $elm$core$Char$isUpper(_char);
   var $elm$core$Char$isDigit = function(_char) {
     var code = $elm$core$Char$toCode(_char);
     return code <= 57 && 48 <= code;
   };
-  var $elm$core$Char$isAlphaNum = function(_char) {
-    return (
-      $elm$core$Char$isLower(_char) ||
-      $elm$core$Char$isUpper(_char) ||
-      $elm$core$Char$isDigit(_char)
-    );
-  };
-  var $elm$core$List$reverse = function(list) {
-    return $elm$core$List$foldl_raw($elm$core$List$cons, _List_Nil, list);
-  };
+  var $elm$core$Char$isAlphaNum = _char =>
+    $elm$core$Char$isLower(_char) ||
+    $elm$core$Char$isUpper(_char) ||
+    $elm$core$Char$isDigit(_char);
+  var $elm$core$List$reverse = list =>
+    $elm$core$List$foldl_raw($elm$core$List$cons, _List_Nil, list);
   var $elm$core$String$uncons = _String_uncons;
-  var $elm$json$Json$Decode$errorOneOf_raw = function(i, error) {
-      return (
-        '\n\n(' +
-        ($elm$core$String$fromInt(i + 1) +
-          (') ' +
-            $elm$json$Json$Decode$indent(
-              $elm$json$Json$Decode$errorToString(error)
-            )))
-      );
-    },
+  var $elm$json$Json$Decode$errorOneOf_raw = (i, error) =>
+      '\n\n(' +
+      ($elm$core$String$fromInt(i + 1) +
+        (') ' +
+          $elm$json$Json$Decode$indent(
+            $elm$json$Json$Decode$errorToString(error)
+          ))),
     $elm$json$Json$Decode$errorOneOf = F2($elm$json$Json$Decode$errorOneOf_raw);
-  var $elm$json$Json$Decode$errorToString = function(error) {
-    return $elm$json$Json$Decode$errorToStringHelp_raw(error, _List_Nil);
-  };
+  var $elm$json$Json$Decode$errorToString = error =>
+    $elm$json$Json$Decode$errorToStringHelp_raw(error, _List_Nil);
   var $elm$json$Json$Decode$errorToStringHelp_raw = function(error, context) {
       errorToStringHelp: while (true) {
         switch (error.$) {
@@ -3431,13 +3165,13 @@
                 var rest = _v2.b;
                 return (
                   $elm$core$Char$isAlpha(_char) &&
-                  A2($elm$core$String$all, $elm$core$Char$isAlphaNum, rest)
+                  _String_all_raw($elm$core$Char$isAlphaNum, rest)
                 );
               }
             })();
             var fieldName = isSimple ? '.' + f : "['" + (f + "']");
             var $temp$error = err,
-              $temp$context = A2($elm$core$List$cons, fieldName, context);
+              $temp$context = _List_Cons(fieldName, context);
             error = $temp$error;
             context = $temp$context;
             continue errorToStringHelp;
@@ -3446,7 +3180,7 @@
             var err = error.b;
             var indexName = '[' + ($elm$core$String$fromInt(i) + ']');
             var $temp$error = err,
-              $temp$context = A2($elm$core$List$cons, indexName, context);
+              $temp$context = _List_Cons(indexName, context);
             error = $temp$error;
             context = $temp$context;
             continue errorToStringHelp;
@@ -3498,11 +3232,9 @@
                       ' ways:'));
                 return $elm$core$String$join_raw(
                   '\n\n',
-                  A2(
-                    $elm$core$List$cons,
+                  _List_Cons(
                     introduction,
-                    A2(
-                      $elm$core$List$indexedMap,
+                    $elm$core$List$indexedMap_raw(
                       $elm$json$Json$Decode$errorOneOf,
                       errors
                     )
@@ -3529,9 +3261,7 @@
             })();
             return (
               introduction +
-              ($elm$json$Json$Decode$indent(
-                A2($elm$json$Json$Encode$encode, 4, json)
-              ) +
+              ($elm$json$Json$Decode$indent(_Json_encode_raw(4, json)) +
                 ('\n\n' + msg))
             );
         }
@@ -3541,18 +3271,21 @@
       $elm$json$Json$Decode$errorToStringHelp_raw
     );
   var $elm$core$Array$branchFactor = 32;
-  var $elm$core$Array$Array_elm_builtin_raw = function(a, b, c, d) {
-      return { $: 0, a: a, b: b, c: c, d: d };
-    },
+  var $elm$core$Array$Array_elm_builtin_raw = (a, b, c, d) => ({
+      $: 0,
+      a: a,
+      b: b,
+      c: c,
+      d: d,
+    }),
     $elm$core$Array$Array_elm_builtin = F4(
       $elm$core$Array$Array_elm_builtin_raw
     );
   var $elm$core$Elm$JsArray$empty = _JsArray_empty;
   var $elm$core$Basics$ceiling = _Basics_ceiling;
   var $elm$core$Basics$fdiv = _Basics_fdiv;
-  var $elm$core$Basics$logBase_raw = function(base, number) {
-      return _Basics_log(number) / _Basics_log(base);
-    },
+  var $elm$core$Basics$logBase_raw = (base, number) =>
+      _Basics_log(number) / _Basics_log(base),
     $elm$core$Basics$logBase = F2($elm$core$Basics$logBase_raw);
   var $elm$core$Basics$toFloat = _Basics_toFloat;
   var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling(
@@ -3565,44 +3298,29 @@
     $elm$core$Elm$JsArray$empty
   );
   var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
-  var $elm$core$Array$Leaf = function(a) {
-    return { $: 1, a: a };
-  };
-  var $elm$core$Basics$apL_raw = function(f, x) {
-      return f(x);
-    },
+  var $elm$core$Array$Leaf = a => ({ $: 1, a: a });
+  var $elm$core$Basics$apL_raw = (f, x) => f(x),
     $elm$core$Basics$apL = F2($elm$core$Basics$apL_raw);
-  var $elm$core$Basics$apR_raw = function(x, f) {
-      return f(x);
-    },
+  var $elm$core$Basics$apR_raw = (x, f) => f(x),
     $elm$core$Basics$apR = F2($elm$core$Basics$apR_raw);
   var $elm$core$Basics$eq = _Utils_equal;
   var $elm$core$Basics$floor = _Basics_floor;
   var $elm$core$Elm$JsArray$length = _JsArray_length;
   var $elm$core$Basics$gt = _Utils_gt;
-  var $elm$core$Basics$max_raw = function(x, y) {
-      return _Utils_cmp(x, y) > 0 ? x : y;
-    },
+  var $elm$core$Basics$max_raw = (x, y) => (_Utils_cmp(x, y) > 0 ? x : y),
     $elm$core$Basics$max = F2($elm$core$Basics$max_raw);
   var $elm$core$Basics$mul = _Basics_mul;
-  var $elm$core$Array$SubTree = function(a) {
-    return { $: 0, a: a };
-  };
+  var $elm$core$Array$SubTree = a => ({ $: 0, a: a });
   var $elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
   var $elm$core$Array$compressNodes_raw = function(nodes, acc) {
       compressNodes: while (true) {
-        var _v0 = A2(
-          $elm$core$Elm$JsArray$initializeFromList,
+        var _v0 = _JsArray_initializeFromList_raw(
           $elm$core$Array$branchFactor,
           nodes
         );
         var node = _v0.a;
         var remainingNodes = _v0.b;
-        var newAcc = A2(
-          $elm$core$List$cons,
-          $elm$core$Array$SubTree(node),
-          acc
-        );
+        var newAcc = _List_Cons($elm$core$Array$SubTree(node), acc);
         if (!remainingNodes.b) {
           return $elm$core$List$reverse(newAcc);
         } else {
@@ -3625,8 +3343,7 @@
           nodeListSize / $elm$core$Array$branchFactor
         );
         if (newNodeSize === 1) {
-          return A2(
-            $elm$core$Elm$JsArray$initializeFromList,
+          return _JsArray_initializeFromList_raw(
             $elm$core$Array$branchFactor,
             nodeList
           ).a;
@@ -3668,7 +3385,7 @@
         );
         return $elm$core$Array$Array_elm_builtin_raw(
           $elm$core$Elm$JsArray$length(builder.c) + treeLen,
-          A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
+          $elm$core$Basics$max_raw(5, depth * $elm$core$Array$shiftStep),
           tree,
           builder.c
         );
@@ -3693,17 +3410,12 @@
           });
         } else {
           var leaf = $elm$core$Array$Leaf(
-            A3(
-              $elm$core$Elm$JsArray$initialize,
-              $elm$core$Array$branchFactor,
-              fromIndex,
-              fn
-            )
+            _JsArray_initialize_raw($elm$core$Array$branchFactor, fromIndex, fn)
           );
           var $temp$fn = fn,
             $temp$fromIndex = fromIndex - $elm$core$Array$branchFactor,
             $temp$len = len,
-            $temp$nodeList = A2($elm$core$List$cons, leaf, nodeList),
+            $temp$nodeList = _List_Cons(leaf, nodeList),
             $temp$tail = tail;
           fn = $temp$fn;
           fromIndex = $temp$fromIndex;
@@ -3721,12 +3433,7 @@
         return $elm$core$Array$empty;
       } else {
         var tailLen = len % $elm$core$Array$branchFactor;
-        var tail = A3(
-          $elm$core$Elm$JsArray$initialize,
-          tailLen,
-          len - tailLen,
-          fn
-        );
+        var tail = _JsArray_initialize_raw(tailLen, len - tailLen, fn);
         var initialFromIndex = len - tailLen - $elm$core$Array$branchFactor;
         return $elm$core$Array$initializeHelp_raw(
           fn,
@@ -3809,9 +3516,8 @@
       }
     },
     $elm$core$List$foldrHelper = F4($elm$core$List$foldrHelper_raw);
-  var $elm$core$List$foldr_raw = function(fn, acc, ls) {
-      return $elm$core$List$foldrHelper_raw(fn, acc, 0, ls);
-    },
+  var $elm$core$List$foldr_raw = (fn, acc, ls) =>
+      $elm$core$List$foldrHelper_raw(fn, acc, 0, ls),
     $elm$core$List$foldr = F3($elm$core$List$foldr_raw);
   var $elm$core$List$append_raw = function(xs, ys) {
       if (!ys.b) {
@@ -3821,15 +3527,14 @@
       }
     },
     $elm$core$List$append = F2($elm$core$List$append_raw);
-  var $elm$core$List$concat = function(lists) {
-    return $elm$core$List$foldr_raw($elm$core$List$append, _List_Nil, lists);
-  };
+  var $elm$core$List$concat = lists =>
+    $elm$core$List$foldr_raw($elm$core$List$append, _List_Nil, lists);
   var $elm$core$List$repeatHelp_raw = function(result, n, value) {
       repeatHelp: while (true) {
         if (n <= 0) {
           return result;
         } else {
-          var $temp$result = A2($elm$core$List$cons, value, result),
+          var $temp$result = _List_Cons(value, result),
             $temp$n = n - 1,
             $temp$value = value;
           result = $temp$result;
@@ -3840,9 +3545,8 @@
       }
     },
     $elm$core$List$repeatHelp = F3($elm$core$List$repeatHelp_raw);
-  var $elm$core$List$repeat_raw = function(n, value) {
-      return $elm$core$List$repeatHelp_raw(_List_Nil, n, value);
-    },
+  var $elm$core$List$repeat_raw = (n, value) =>
+      $elm$core$List$repeatHelp_raw(_List_Nil, n, value),
     $elm$core$List$repeat = F2($elm$core$List$repeat_raw);
   var $author$project$Main$One = a => ({ $: 1, a, b: null });
   var $author$project$Main$Two_raw = (a, b) => ({ $: 2, a, b }),
@@ -3863,11 +3567,9 @@
   var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
   var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
   var $author$project$Main$main = (function() {
-    var sum = $elm$core$List$foldl_raw(
-      $author$project$Main$addMyType,
-      0,
-      $author$project$Main$many
-    );
+    var f = x => $author$project$Main$addMyType(x);
+    var g = f;
+    var sum = $elm$core$List$foldl_raw(g, 0, $author$project$Main$many);
     return $elm$html$Html$text($elm$core$String$fromInt(sum));
   })();
   _Platform_export({
