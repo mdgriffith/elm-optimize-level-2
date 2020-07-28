@@ -15,6 +15,11 @@ import {
   createInlineListFromArrayTransformer,
 } from './experiments/inlineListFromArray';
 
+import {
+  replaceUtilsUpdateWithObjectSpread,
+  convertFunctionExpressionsToArrowFuncs,
+} from './experiments/modernizeJS';
+
 // Compile examples in `testcases/*` folder as js
 // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
 compile(['Main.elm'], {
@@ -54,9 +59,9 @@ const customTypeTransformer = createCustomTypesTransformer(
   Mode.Prod
 );
 
-const collectedSplits: FuncSplit[] = [];
-const splitTransformer = createSplitFunctionDeclarationsTransformer(split =>
-  collectedSplits.push(split)
+const collectedSplits = new Map<string, FuncSplit>();
+const splitTransformer = createSplitFunctionDeclarationsTransformer(
+  collectedSplits
 );
 
 const funcInlineTransformer = createFuncInlineTransformer(collectedSplits);
@@ -70,6 +75,8 @@ const [result] = ts.transform(source, [
   splitTransformer,
   funcInlineTransformer,
   inlineListFromArrayCalls,
+  replaceUtilsUpdateWithObjectSpread,
+  convertFunctionExpressionsToArrowFuncs,
 ]).transformed;
 
 const printer = ts.createPrinter();

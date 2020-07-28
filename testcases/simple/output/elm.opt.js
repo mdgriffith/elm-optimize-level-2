@@ -3741,12 +3741,11 @@
   var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
   var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
   var $author$project$Main$main = (function() {
-    var sum = A3(
-      $elm$core$List$foldl,
-      $author$project$Main$addMyType,
-      0,
-      $author$project$Main$many
-    );
+    var f = function(x) {
+      return $author$project$Main$addMyType(x);
+    };
+    var g = f;
+    var sum = A3($elm$core$List$foldl, g, 0, $author$project$Main$many);
     return $elm$html$Html$text($elm$core$String$fromInt(sum));
   })();
   _Platform_export({

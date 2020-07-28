@@ -37,7 +37,13 @@ addMyType mine sum =
 
 main =
     let
+        f x =
+            addMyType x
+
+        g =
+            f
+
         sum =
-            List.foldl addMyType 0 many
+            List.foldl g 0 many
     in
     Html.text (String.fromInt sum)

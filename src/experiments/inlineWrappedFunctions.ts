@@ -1,7 +1,6 @@
 import ts from 'typescript';
 
 export type FuncSplit = {
-  originalName: string;
   rawLambdaName: string;
   arity: number;
 };
@@ -12,12 +11,18 @@ const deriveRawLambdaName = (wrappedName: string): string =>
 const wrapperRegex = /F(?<arity>[1-9]+[0-9]*)/;
 
 export const createSplitFunctionDeclarationsTransformer = (
-  reportSplit: (split: FuncSplit) => void
+  splits: Map<string, FuncSplit>
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // detects "var a"
       if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+        if (node.initializer && ts.isIdentifier(node.initializer)) {
+          const existingSplit = splits.get(node.initializer.text);
+          if (existingSplit) {
+            splits.set(node.name.text, existingSplit);
+          }
+        }
         // detects "var a = [exp](..)"
         if (node.initializer && ts.isCallExpression(node.initializer)) {
           const callExpression = node.initializer.expression;
@@ -31,6 +36,16 @@ export const createSplitFunctionDeclarationsTransformer = (
               if (args.length === 1) {
                 const [maybeFuncExpression] = args;
 
+                const arity = Number(maybeMatch.groups.arity);
+                const originalName = node.name.text;
+
+                if (ts.isIdentifier(maybeFuncExpression)) {
+                  splits.set(originalName, {
+                    arity,
+                    rawLambdaName: maybeFuncExpression.text,
+                  });
+                }
+
                 // and it is a function
                 // detects "var a = F123( function (a) {return a})"
                 // or "var a = F123( a => a)"
@@ -39,11 +54,12 @@ export const createSplitFunctionDeclarationsTransformer = (
                   ts.isFunctionExpression(maybeFuncExpression)
                 ) {
                   // TODO typecheck?
-                  const arity = Number(maybeMatch.groups.arity);
-                  const originalName = node.name.text;
                   const rawLambdaName = deriveRawLambdaName(originalName);
 
-                  reportSplit({ arity, originalName, rawLambdaName });
+                  splits.set(originalName, {
+                    arity,
+                    rawLambdaName,
+                  });
 
                   const lambdaDeclaration = ts.createVariableDeclaration(
                     rawLambdaName,
@@ -78,7 +94,7 @@ export const createSplitFunctionDeclarationsTransformer = (
 const invocationRegex = /A(?<arity>[1-9]+[0-9]*)/;
 
 export const createFuncInlineTransformer = (
-  splits: FuncSplit[]
+  splits: Map<string, FuncSplit>
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
@@ -103,17 +119,17 @@ export const createFuncInlineTransformer = (
 
             if (args.length !== arity) {
               throw new Error(
-                `somerhing went wrong, expected number of arguments=${arity} but got ${args.length} for ${funcName.text}`
+                `something went wrong, expected number of arguments=${arity} but got ${args.length} for ${funcName.text}`
               );
             }
 
-            const split = splits.find(s => s.originalName === funcName.text);
+            const split = splits.get(funcName.text);
 
             if (split && split.arity === arity) {
               return ts.createCall(
                 ts.createIdentifier(split.rawLambdaName),
                 undefined,
-                args
+                args.map(arg => ts.visitNode(arg, visitor))
               );
             }
           }

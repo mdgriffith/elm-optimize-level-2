@@ -11,6 +11,7 @@ import {
   createInlineListFromArrayTransformer,
   InlineMode,
 } from './experiments/inlineListFromArray';
+import { convertFunctionExpressionsToArrowFuncs } from './experiments/modernizeJS';
 
 const elmOutput = `
 var $elm$core$Maybe$Nothing = {$: 'Nothing'};
@@ -27,6 +28,16 @@ var $author$project$Main$Three = F3(
 var _v1 = A3($author$project$Main$Three, a, b, c);
 
 _List_fromArray(['a', 'b', 'c']);
+
+function _List_Cons(hd, tl) {
+    return { $: 1, a: hd, b: tl };
+}
+
+var _List_cons = F2(_List_Cons);
+
+var $elm$core$List$cons = _List_cons;
+A2($elm$core$List$cons, key, keyList);
+$elm$core$String$join_raw("\n\n", A2($elm$core$List$cons, introduction, A2($elm$core$List$indexedMap, $elm$json$Json$Decode$errorOneOf, errors)));
 `;
 
 const source = ts.createSourceFile('elm.js', elmOutput, ts.ScriptTarget.ES2018);
@@ -71,9 +82,9 @@ console.log(printer.printFile(source));
 console.log(printer.printFile(newFile));
 console.log('----------AFTER SPLIT TRANSFORM ----------------');
 
-const collectedSplits: FuncSplit[] = [];
-const splitTransformer = createSplitFunctionDeclarationsTransformer(split =>
-  collectedSplits.push(split)
+const collectedSplits = new Map<string, FuncSplit>();
+const splitTransformer = createSplitFunctionDeclarationsTransformer(
+  collectedSplits
 );
 const [sourceWithSplittedFunctions] = ts.transform(newFile, [
   splitTransformer,
@@ -103,3 +114,22 @@ const [sourceWithInlinedListFromArr] = ts.transform(
 ).transformed;
 
 console.log(printer.printFile(sourceWithInlinedListFromArr));
+
+const funcSource = ts.createSourceFile(
+  'elm.js',
+  `
+        function F3(fun) {
+          return F(3, fun, function (a) {
+            return function (b) { return function (c) { return fun(a, b, c); }; };
+          });
+        }
+        `,
+  ts.ScriptTarget.ES2018
+);
+
+console.log('---------- Arrow Transformation ----------------');
+const [fRes] = ts.transform(funcSource, [
+  convertFunctionExpressionsToArrowFuncs,
+]).transformed;
+
+console.log(printer.printFile(fRes));
