@@ -1,3 +1,33 @@
+/* # Variant Shapes
+
+Currently the Elm compiler will generate objects that match the shape of a given type.
+
+So, Maybe looks like this:
+
+```
+var elm$core$Maybe$Just = function (a) {
+    return {$: 0, a: a};
+};
+
+var elm$core$Maybe$Nothing = {$: 1};
+```
+
+However, the V8 engine is likely better able to optimize these objects if they have the same shape.
+
+So, this transformation fills out the rest of the variants with `field: null` so that they have the same shape.
+
+```
+var elm$core$Maybe$Just = function (a) {
+    return {$: 0, a: a};
+};
+
+var elm$core$Maybe$Nothing = {$: 1, a: null};
+```
+
+This does require information from the Elm code itself, which we're currently getting through `elm-tree-sitter`.
+
+*/
+
 import ts from 'typescript';
 import { Mode, ElmVariant } from '../types';
 
