@@ -1,4 +1,4 @@
-import { compile } from 'node-elm-compiler';
+import { compileSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import { parseElm } from './parseElm';
@@ -20,78 +20,90 @@ import {
   convertFunctionExpressionsToArrowFuncs,
 } from './experiments/modernizeJS';
 
-// Compile examples in `testcases/*` folder as js
-// Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
-compile(['Main.elm'], {
-  output: 'output/elm.js',
-  cwd: 'testcases/simple',
-});
 
-compile(['Main.elm'], {
-  output: 'output/elm.opt.js',
-  cwd: 'testcases/simple',
-  optimize: true,
-});
 
-const pathInOutput = (p: string) => path.join('./testcases/simple/output', p);
+const compileAndTransform = (dir: string, file: string): {} => {
 
-const elmSource = fs.readFileSync('./testcases/simple/Main.elm', 'utf8');
+  // Compile examples in `testcases/*` folder as js
+  // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
+  compileSync([file], {
+    output: 'output/elm.js',
+    cwd: dir,
+  });
 
-const parsedVariants = parseElm({
-  author: 'author',
-  project: 'project',
-  source: elmSource,
-});
+  compileSync([file], {
+    output: 'output/elm.opt.js',
+    cwd: dir,
+    optimize: true,
+  });
 
-console.log('11', parsedVariants);
-console.log('33', JSON.stringify(parsedVariants, null, 2));
+  const pathInOutput = (p: string) => path.join(dir, 'output', p);
 
-const source = ts.createSourceFile(
-  'elm.js',
-  fs.readFileSync(pathInOutput('elm.opt.js'), 'utf-8'),
-  ts.ScriptTarget.ES2018
-);
+  const elmSource = fs.readFileSync(path.join(dir, file), 'utf8');
+  const parsedVariants = parseElm({
+    author: 'author',
+    project: 'project',
+    source: elmSource,
+  });
 
-const replacements = Object.values(parsedVariants).flat();
+  // console.log('11', parsedVariants);
+  // console.log('33', JSON.stringify(parsedVariants, null, 2));
 
-const customTypeTransformer = createCustomTypesTransformer(
-  replacements,
-  Mode.Prod
-);
+  const source = ts.createSourceFile(
+    'elm.js',
+    fs.readFileSync(pathInOutput('elm.opt.js'), 'utf-8'),
+    ts.ScriptTarget.ES2018
+  );
 
-const collectedSplits = new Map<string, FuncSplit>();
-const splitTransformer = createSplitFunctionDeclarationsTransformer(
-  collectedSplits
-);
+  const replacements = Object.values(parsedVariants).flat();
 
-const funcInlineTransformer = createFuncInlineTransformer(collectedSplits);
+  const customTypeTransformer = createCustomTypesTransformer(
+    replacements,
+    Mode.Prod
+  );
 
-const inlineListFromArrayCalls = createInlineListFromArrayTransformer(
-  InlineMode.UsingLiteralObjects(Mode.Prod)
-);
+  const collectedSplits = new Map<string, FuncSplit>();
+  const splitTransformer = createSplitFunctionDeclarationsTransformer(
+    collectedSplits
+  );
 
-const [result] = ts.transform(source, [
-  customTypeTransformer,
-  splitTransformer,
-  funcInlineTransformer,
-  inlineListFromArrayCalls,
-  replaceUtilsUpdateWithObjectSpread,
-  convertFunctionExpressionsToArrowFuncs,
-]).transformed;
+  const funcInlineTransformer = createFuncInlineTransformer(collectedSplits);
 
-const printer = ts.createPrinter();
+  const inlineListFromArrayCalls = createInlineListFromArrayTransformer(
+    InlineMode.UsingLiteralObjects(Mode.Prod)
+  );
 
-fs.writeFileSync(
-  pathInOutput('elm.opt.transformed.js'),
-  printer.printFile(result)
-);
+  const [result] = ts.transform(source, [
+    customTypeTransformer,
+    splitTransformer,
+    // funcInlineTransformer,
+    inlineListFromArrayCalls,
+    replaceUtilsUpdateWithObjectSpread,
 
-const initialJs = ts.createSourceFile(
-  'elm.js',
-  fs.readFileSync(pathInOutput('elm.opt.js'), 'utf-8'),
-  ts.ScriptTarget.ES2018
-);
+    // Arrow functions are disabled because somethings not quite right with them.
+    // convertFunctionExpressionsToArrowFuncs,
+  ]).transformed;
 
-fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
+  const printer = ts.createPrinter();
 
-console.log('done!');
+  fs.writeFileSync(
+    pathInOutput('elm.opt.transformed.js'),
+    printer.printFile(result)
+  );
+
+  const initialJs = ts.createSourceFile(
+    'elm.js',
+    fs.readFileSync(pathInOutput('elm.opt.js'), 'utf-8'),
+    ts.ScriptTarget.ES2018
+  );
+
+  fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
+
+  console.log('done!');
+
+  return {}
+}
+
+
+compileAndTransform('testcases/simple', 'Main.elm')
+compileAndTransform('testcases/bench', 'Main.elm')
