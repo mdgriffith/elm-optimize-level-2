@@ -5,11 +5,7 @@ import { parseElm } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './experiments/variantShapes';
 import { Mode } from './types';
-import {
-  FuncSplit,
-  createSplitFunctionDeclarationsTransformer,
-  createFuncInlineTransformer,
-} from './experiments/inlineWrappedFunctions';
+import { functionInlineTransformer } from './experiments/inlineWrappedFunctions';
 import {
   InlineMode,
   createInlineListFromArrayTransformer,
@@ -59,22 +55,13 @@ const compileAndTransform = (dir: string, file: string): {} => {
     Mode.Prod
   );
 
-  const collectedSplits = new Map<string, FuncSplit>();
-  const splitTransformer = createSplitFunctionDeclarationsTransformer(
-    collectedSplits
-  );
-
-  const funcInlineTransformer = createFuncInlineTransformer(collectedSplits);
-
   const inlineListFromArrayCalls = createInlineListFromArrayTransformer(
     InlineMode.UsingLiteralObjects(Mode.Prod)
   );
 
   const [result] = ts.transform(source, [
     normalizeVariantShapes,
-    splitTransformer,
-    // some issue with the funcInlineTransformer at the moment
-    // funcInlineTransformer,
+    functionInlineTransformer,
     inlineListFromArrayCalls,
     replaceUtilsUpdateWithObjectSpread,
 
