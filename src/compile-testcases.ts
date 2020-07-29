@@ -79,6 +79,8 @@ const compileAndTransform = (dir: string, file: string): {} => {
     // funcInlineTransformer,
     inlineListFromArrayCalls,
     replaceUtilsUpdateWithObjectSpread,
+
+    // Arrow functions are disabled because somethings not quite right with them.
     // convertFunctionExpressionsToArrowFuncs,
   ]).transformed;
 
