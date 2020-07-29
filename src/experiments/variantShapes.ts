@@ -1,9 +1,7 @@
 /* # Variant Shapes
 
-Currently the Elm compiler will generate objects that match the shape of a given type.
 
-So, Maybe looks like this:
-
+initial
 ```
 var elm$core$Maybe$Just = function (a) {
     return {$: 0, a: a};
@@ -12,10 +10,8 @@ var elm$core$Maybe$Just = function (a) {
 var elm$core$Maybe$Nothing = {$: 1};
 ```
 
-However, the V8 engine is likely better able to optimize these objects if they have the same shape.
 
-So, this transformation fills out the rest of the variants with `field: null` so that they have the same shape.
-
+after
 ```
 var elm$core$Maybe$Just = function (a) {
     return {$: 0, a: a};
@@ -23,6 +19,8 @@ var elm$core$Maybe$Just = function (a) {
 
 var elm$core$Maybe$Nothing = {$: 1, a: null};
 ```
+
+The V8 engine is likely better able to optimize these objects if they have the same shape, even if they're stubbed in with `null`.
 
 This does require information from the Elm code itself, which we're currently getting through `elm-tree-sitter`.
 
@@ -64,9 +62,11 @@ const createCtorVariant = (
 
   const numberOfArgs = slots.length;
 
-  const funcExpression = ts.createArrowFunction(
-    undefined,
-    undefined,
+  const funcExpression = ts.createFunctionExpression(
+    undefined, // modifiers
+    undefined, //asteriskToken
+    undefined, //name
+    undefined, //typeParameters
     argNames
       .slice(0, numberOfArgs)
       .map(arg =>
@@ -80,9 +80,10 @@ const createCtorVariant = (
           undefined
         )
       ),
-    undefined,
-    undefined,
-    createVariantObjectLiteral(replacement, mode)
+    undefined, //type
+    ts.createBlock([
+      ts.createReturn(createVariantObjectLiteral(replacement, mode)),
+    ])
   );
 
   if (numberOfArgs > 1) {
