@@ -1,3 +1,7 @@
+/*
+
+*/
+
 import ts from 'typescript';
 
 export type FuncSplit = {
@@ -10,6 +14,27 @@ const deriveRawLambdaName = (wrappedName: string): string =>
 
 const wrapperRegex = /F(?<arity>[1-9]+[0-9]*)/;
 
+/*
+
+Split out function definitions so that the raw version of the function can be called.
+
+This only shows benefit with the `createFuncInlineTransformer`, which will detect when an F3 is being called with 3 arguments and skip the F3 call
+
+initial
+
+  var $elm$core$String$join = F2(function (sep, chunks) {
+      return A2(_String_join, sep, _List_toArray(chunks));
+  });
+
+
+transformed
+
+  var $elm$core$String$join_raw = function (sep, chunks) {
+      return A2(_String_join, sep, _List_toArray(chunks));
+  }, $elm$core$String$join = F2($elm$core$String$join_raw);
+
+
+*/
 export const createSplitFunctionDeclarationsTransformer = (
   splits: Map<string, FuncSplit>
 ): ts.TransformerFactory<ts.SourceFile> => context => {
