@@ -20,10 +20,7 @@ import {
   convertFunctionExpressionsToArrowFuncs,
 } from './experiments/modernizeJS';
 
-
-
 const compileAndTransform = (dir: string, file: string): {} => {
-
   // Compile examples in `testcases/*` folder as js
   // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
   compileSync([file], {
@@ -57,7 +54,7 @@ const compileAndTransform = (dir: string, file: string): {} => {
 
   const replacements = Object.values(parsedVariants).flat();
 
-  const customTypeTransformer = createCustomTypesTransformer(
+  const normalizeVariantShapes = createCustomTypesTransformer(
     replacements,
     Mode.Prod
   );
@@ -74,8 +71,9 @@ const compileAndTransform = (dir: string, file: string): {} => {
   );
 
   const [result] = ts.transform(source, [
-    customTypeTransformer,
+    normalizeVariantShapes,
     splitTransformer,
+    // some issue with the funcInlineTransformer at the moment
     // funcInlineTransformer,
     inlineListFromArrayCalls,
     replaceUtilsUpdateWithObjectSpread,
@@ -99,11 +97,8 @@ const compileAndTransform = (dir: string, file: string): {} => {
 
   fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
 
-  console.log('done!');
+  return {};
+};
 
-  return {}
-}
-
-
-compileAndTransform('testcases/simple', 'Main.elm')
-compileAndTransform('testcases/bench', 'Main.elm')
+compileAndTransform('testcases/simple', 'Main.elm');
+compileAndTransform('testcases/bench', 'Main.elm');
