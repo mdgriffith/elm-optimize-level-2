@@ -7,6 +7,58 @@ import { ElmVariant } from './types';
 const elmParser = new Parser();
 elmParser.setLanguage(Elm);
 
+// List variants
+
+const nil: ElmVariant = {
+  typeName: "List",
+  name: "Nil",
+  jsName: "_List_Nil",
+  index: 0,
+  slots: [],
+  totalTypeSlotCount: 2
+}
+
+
+const cons: ElmVariant = {
+  typeName: "List",
+  name: "Cons",
+  jsName: "_List_Nil",
+  index: 1,
+  slots: [],
+  totalTypeSlotCount: 2
+}
+
+
+const listVariants =
+  [nil
+    // , cons
+  ]
+
+
+// Maybe variants
+
+const nothing: ElmVariant = {
+  typeName: "Maybe",
+  name: "Nothing",
+  jsName: "$elm$core$Maybe$Nothing",
+  index: 1,
+  slots: [],
+  totalTypeSlotCount: 1
+}
+
+
+const just: ElmVariant = {
+  typeName: "Maybe",
+  name: "Just",
+  jsName: "$elm$core$Maybe$Just",
+  index: 0,
+  slots: [],
+  totalTypeSlotCount: 1
+}
+const maybe = [nothing]
+
+
+
 export const parseElm = ({
   author,
   project,
@@ -17,7 +69,7 @@ export const parseElm = ({
   source: string;
 }): { [id: string]: ElmVariant[] } => {
   const tree = elmParser.parse(source);
-  const found: { [id: string]: ElmVariant[] } = {};
+  const found: { [id: string]: ElmVariant[] } = { "List": listVariants, "Maybe": maybe };
 
   /*
       A quick reference for using treesitter.
@@ -138,11 +190,3 @@ export const parseElm = ({
   }
   return found;
 };
-
-const result = parseElm({
-  author: 'author',
-  project: 'project',
-  source: './testcases/simple/Main.elm',
-});
-
-console.log(result);
