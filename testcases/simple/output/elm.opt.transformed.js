@@ -999,7 +999,7 @@
             return _Json_runHelp(decoder, value);
         }
         catch (e) {
-            return $elm$core$Result$Err(A2($elm$json$Json$Decode$Failure, "This is not valid JSON! " + e.message, _Json_wrap(string)));
+            return $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("This is not valid JSON! " + e.message, _Json_wrap(string)));
         }
     }, _Json_runOnString = F2(_Json_runOnString_raw);
     var _Json_run_raw = function (decoder, value) {
@@ -1029,7 +1029,7 @@
                     return _Json_expecting("an OBJECT with a field named `" + field + "`", value);
                 }
                 var result = _Json_runHelp(decoder.b, value[field]);
-                return ($elm$core$Result$isOk(result)) ? result : $elm$core$Result$Err(A2($elm$json$Json$Decode$Field, field, result.a));
+                return ($elm$core$Result$isOk(result)) ? result : $elm$core$Result$Err($elm$json$Json$Decode$Field_raw(field, result.a));
             case 7:
                 var index = decoder.e;
                 if (!_Json_isArray(value)) {
@@ -1039,7 +1039,7 @@
                     return _Json_expecting("a LONGER array. Need index " + index + " but only see " + value.length + " entries", value);
                 }
                 var result = _Json_runHelp(decoder.b, value[index]);
-                return ($elm$core$Result$isOk(result)) ? result : $elm$core$Result$Err(A2($elm$json$Json$Decode$Index, index, result.a));
+                return ($elm$core$Result$isOk(result)) ? result : $elm$core$Result$Err($elm$json$Json$Decode$Index_raw(index, result.a));
             case 8:
                 if (typeof value !== "object" || value === null || _Json_isArray(value)) {
                     return _Json_expecting("an OBJECT", value);
@@ -1050,7 +1050,7 @@
                     if (value.hasOwnProperty(key)) {
                         var result = _Json_runHelp(decoder.b, value[key]);
                         if (!$elm$core$Result$isOk(result)) {
-                            return $elm$core$Result$Err(A2($elm$json$Json$Decode$Field, key, result.a));
+                            return $elm$core$Result$Err($elm$json$Json$Decode$Field_raw(key, result.a));
                         }
                         keyValuePairs = _List_Cons(_Utils_Tuple2(key, result.a), keyValuePairs);
                     }
@@ -1084,7 +1084,7 @@
                 }
                 return $elm$core$Result$Err($elm$json$Json$Decode$OneOf($elm$core$List$reverse(errors)));
             case 1:
-                return $elm$core$Result$Err(A2($elm$json$Json$Decode$Failure, decoder.a, _Json_wrap(value)));
+                return $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw(decoder.a, _Json_wrap(value)));
             case 0:
                 return $elm$core$Result$Ok(decoder.a);
         }
@@ -1095,7 +1095,7 @@
         for (var i = 0; i < len; i++) {
             var result = _Json_runHelp(decoder, value[i]);
             if (!$elm$core$Result$isOk(result)) {
-                return $elm$core$Result$Err(A2($elm$json$Json$Decode$Index, i, result.a));
+                return $elm$core$Result$Err($elm$json$Json$Decode$Index_raw(i, result.a));
             }
             array[i] = result.a;
         }
@@ -1105,10 +1105,10 @@
         return Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
     }
     function _Json_toElmArray(array) {
-        return A2($elm$core$Array$initialize, array.length, function (i) { return array[i]; });
+        return $elm$core$Array$initialize_raw(array.length, function (i) { return array[i]; });
     }
     function _Json_expecting(type, value) {
-        return $elm$core$Result$Err(A2($elm$json$Json$Decode$Failure, "Expecting " + type, _Json_wrap(value)));
+        return $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
     }
     // EQUALITY
     function _Json_equality(x, y) {
@@ -1328,7 +1328,7 @@
     }, _Platform_worker = F4(_Platform_worker_raw);
     // INITIALIZE A PROGRAM
     function _Platform_initialize(flagDecoder, args, init, update, subscriptions, stepperBuilder) {
-        var result = A2(_Json_run, flagDecoder, _Json_wrap(args ? args["flags"] : undefined));
+        var result = _Json_run_raw(flagDecoder, _Json_wrap(args ? args["flags"] : undefined));
         $elm$core$Result$isOk(result) || _Debug_crash(2 /**_UNUSED/, _Json_errorToString(result.a) /**/);
         var managers = {};
         var initPair = init(result.a);
@@ -1386,7 +1386,7 @@
         var cmdMap = info.e;
         var subMap = info.f;
         function loop(state) {
-            return A2(_Scheduler_andThen, loop, _Scheduler_receive(function (msg) {
+            return _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
                 var value = msg.a;
                 if (msg.$ === 0) {
                     return A3(onSelfMsg, router, value, state);
@@ -1396,7 +1396,7 @@
                     : A3(onEffects, router, cmdMap ? value.i : value.j, state);
             }));
         }
-        return router.h = _Scheduler_rawSpawn(A2(_Scheduler_andThen, loop, info.b));
+        return router.h = _Scheduler_rawSpawn(_Scheduler_andThen_raw(loop, info.b));
     }
     // ROUTING
     var _Platform_sendToApp_raw = function (router, msg) {
@@ -1406,7 +1406,7 @@
         });
     }, _Platform_sendToApp = F2(_Platform_sendToApp_raw);
     var _Platform_sendToSelf_raw = function (router, msg) {
-        return A2(_Scheduler_send, router.h, {
+        return _Scheduler_send_raw(router.h, {
             $: 0,
             a: msg
         });
@@ -1604,7 +1604,7 @@
         });
         // PUBLIC API
         function send(incomingValue) {
-            var result = A2(_Json_run, converter, _Json_wrap(incomingValue));
+            var result = _Json_run_raw(converter, _Json_wrap(incomingValue));
             $elm$core$Result$isOk(result) || _Debug_crash(4, name, result.a);
             var value = result.a;
             for (var temp = subs; temp.b; temp = temp.b) // WHILE_CONS
@@ -1846,8 +1846,7 @@
     // MAP FACTS
     var _VirtualDom_mapAttribute_raw = function (func, attr) {
         return (attr.$ === "a0")
-            ? A2(_VirtualDom_on, attr.n, _VirtualDom_mapHandler(func, attr.o))
-            : attr;
+            ? _VirtualDom_on_raw(attr.n, _VirtualDom_mapHandler(func, attr.o)) : attr;
     }, _VirtualDom_mapAttribute = F2(_VirtualDom_mapAttribute_raw);
     function _VirtualDom_mapHandler(func, handler) {
         var tag = $elm$virtual_dom$VirtualDom$toHandlerInt(handler);
@@ -1858,11 +1857,9 @@
         return {
             $: handler.$,
             a: !tag
-                ? A2($elm$json$Json$Decode$map, func, handler.a)
-                :
-                    A3($elm$json$Json$Decode$map2, tag < 3
-                        ? _VirtualDom_mapEventTuple
-                        : _VirtualDom_mapEventRecord, $elm$json$Json$Decode$succeed(func), handler.a)
+                ? _Json_map1_raw(func, handler.a) : _Json_map2_raw(tag < 3
+                ? _VirtualDom_mapEventTuple
+                : _VirtualDom_mapEventRecord, $elm$json$Json$Decode$succeed(func), handler.a)
         };
     }
     var _VirtualDom_mapEventTuple_raw = function (func, tuple) {
@@ -2662,7 +2659,7 @@
             var attr = attrs[i];
             var name = attr.name;
             var value = attr.value;
-            attrList = _List_Cons(A2(_VirtualDom_attribute, name, value), attrList);
+            attrList = _List_Cons(_VirtualDom_attribute_raw(name, value), attrList);
         }
         var tag = node.tagName.toLowerCase();
         var kidList = _List_Nil;
@@ -2702,7 +2699,7 @@
                 var value = t.c;
                 var left = t.d;
                 var right = t.e;
-                var $temp$func = func, $temp$acc = A3(func, key, value, A3($elm$core$Dict$foldr, func, acc, right)), $temp$t = left;
+                var $temp$func = func, $temp$acc = A3(func, key, value, $elm$core$Dict$foldr_raw(func, acc, right)), $temp$t = left;
                 func = $temp$func;
                 acc = $temp$acc;
                 t = $temp$t;
@@ -2711,13 +2708,13 @@
         }
     }, $elm$core$Dict$foldr = F3($elm$core$Dict$foldr_raw);
     var $elm$core$Dict$toList = function (dict) {
-        return A3($elm$core$Dict$foldr, F3(function (key, value, list) {
-            return A2($elm$core$List$cons, _Utils_Tuple2(key, value), list);
+        return $elm$core$Dict$foldr_raw(F3(function (key, value, list) {
+            return _List_Cons(_Utils_Tuple2(key, value), list);
         }), _List_Nil, dict);
     };
     var $elm$core$Dict$keys = function (dict) {
-        return A3($elm$core$Dict$foldr, F3(function (key, value, keyList) {
-            return A2($elm$core$List$cons, key, keyList);
+        return $elm$core$Dict$foldr_raw(F3(function (key, value, keyList) {
+            return _List_Cons(key, keyList);
         }), _List_Nil, dict);
     };
     var $elm$core$Set$toList = function (_v0) {
@@ -2731,17 +2728,17 @@
         var helper = F2(function (node, acc) {
             if (!node.$) {
                 var subTree = node.a;
-                return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
+                return _JsArray_foldr_raw(helper, acc, subTree);
             }
             else {
                 var values = node.a;
-                return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
+                return _JsArray_foldr_raw(func, acc, values);
             }
         });
-        return A3($elm$core$Elm$JsArray$foldr, helper, A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail), tree);
+        return _JsArray_foldr_raw(helper, _JsArray_foldr_raw(func, baseCase, tail), tree);
     }, $elm$core$Array$foldr = F3($elm$core$Array$foldr_raw);
     var $elm$core$Array$toList = function (array) {
-        return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
+        return $elm$core$Array$foldr_raw($elm$core$List$cons, _List_Nil, array);
     };
     var $elm$core$Result$Err = function (a) {
         return { $: 1, a: a };
@@ -2763,9 +2760,7 @@
     };
     var $elm$core$Basics$False = 1;
     var $elm$core$Basics$add = _Basics_add;
-    var $elm$core$Maybe$Just = function (a) {
-        return { $: 0, a: a };
-    };
+    var $elm$core$Maybe$Just = function (a) { return { $: 0, a }; };
     var $elm$core$Maybe$Nothing = { $: 1, a: null };
     var $elm$core$String$all = _String_all;
     var $elm$core$Basics$and = _Basics_and;
@@ -2773,13 +2768,13 @@
     var $elm$json$Json$Encode$encode = _Json_encode;
     var $elm$core$String$fromInt = _String_fromNumber;
     var $elm$core$String$join_raw = function (sep, chunks) {
-        return A2(_String_join, sep, _List_toArray(chunks));
+        return _String_join_raw(sep, _List_toArray(chunks));
     }, $elm$core$String$join = F2($elm$core$String$join_raw);
     var $elm$core$String$split_raw = function (sep, string) {
-        return _List_fromArray(A2(_String_split, sep, string));
+        return _List_fromArray(_String_split_raw(sep, string));
     }, $elm$core$String$split = F2($elm$core$String$split_raw);
     var $elm$json$Json$Decode$indent = function (str) {
-        return A2($elm$core$String$join, "\n    ", A2($elm$core$String$split, "\n", str));
+        return $elm$core$String$join_raw("\n    ", $elm$core$String$split_raw("\n", str));
     };
     var $elm$core$List$foldl_raw = function (func, acc, list) {
         foldl: while (true) {
@@ -2798,7 +2793,7 @@
         }
     }, $elm$core$List$foldl = F3($elm$core$List$foldl_raw);
     var $elm$core$List$length = function (xs) {
-        return A3($elm$core$List$foldl, F2(function (_v0, i) {
+        return $elm$core$List$foldl_raw(F2(function (_v0, i) {
             return i + 1;
         }), 0, xs);
     };
@@ -2808,7 +2803,7 @@
     var $elm$core$List$rangeHelp_raw = function (lo, hi, list) {
         rangeHelp: while (true) {
             if (_Utils_cmp(lo, hi) < 1) {
-                var $temp$lo = lo, $temp$hi = hi - 1, $temp$list = A2($elm$core$List$cons, hi, list);
+                var $temp$lo = lo, $temp$hi = hi - 1, $temp$list = _List_Cons(hi, list);
                 lo = $temp$lo;
                 hi = $temp$hi;
                 list = $temp$list;
@@ -2820,10 +2815,10 @@
         }
     }, $elm$core$List$rangeHelp = F3($elm$core$List$rangeHelp_raw);
     var $elm$core$List$range_raw = function (lo, hi) {
-        return A3($elm$core$List$rangeHelp, lo, hi, _List_Nil);
+        return $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil);
     }, $elm$core$List$range = F2($elm$core$List$range_raw);
     var $elm$core$List$indexedMap_raw = function (f, xs) {
-        return A3($elm$core$List$map2, f, A2($elm$core$List$range, 0, $elm$core$List$length(xs) - 1), xs);
+        return _List_map2_raw(f, $elm$core$List$range_raw(0, $elm$core$List$length(xs) - 1), xs);
     }, $elm$core$List$indexedMap = F2($elm$core$List$indexedMap_raw);
     var $elm$core$Char$toCode = _Char_toCode;
     var $elm$core$Char$isLower = function (_char) {
@@ -2846,14 +2841,14 @@
         return $elm$core$Char$isLower(_char) || ($elm$core$Char$isUpper(_char) || $elm$core$Char$isDigit(_char));
     };
     var $elm$core$List$reverse = function (list) {
-        return A3($elm$core$List$foldl, $elm$core$List$cons, _List_Nil, list);
+        return $elm$core$List$foldl_raw($elm$core$List$cons, _List_Nil, list);
     };
     var $elm$core$String$uncons = _String_uncons;
     var $elm$json$Json$Decode$errorOneOf_raw = function (i, error) {
         return "\n\n(" + ($elm$core$String$fromInt(i + 1) + (") " + $elm$json$Json$Decode$indent($elm$json$Json$Decode$errorToString(error))));
     }, $elm$json$Json$Decode$errorOneOf = F2($elm$json$Json$Decode$errorOneOf_raw);
     var $elm$json$Json$Decode$errorToString = function (error) {
-        return A2($elm$json$Json$Decode$errorToStringHelp, error, _List_Nil);
+        return $elm$json$Json$Decode$errorToStringHelp_raw(error, _List_Nil);
     };
     var $elm$json$Json$Decode$errorToStringHelp_raw = function (error, context) {
         errorToStringHelp: while (true) {
@@ -2870,11 +2865,11 @@
                             var _v2 = _v1.a;
                             var _char = _v2.a;
                             var rest = _v2.b;
-                            return $elm$core$Char$isAlpha(_char) && A2($elm$core$String$all, $elm$core$Char$isAlphaNum, rest);
+                            return $elm$core$Char$isAlpha(_char) && _String_all_raw($elm$core$Char$isAlphaNum, rest);
                         }
                     }();
                     var fieldName = isSimple ? ("." + f) : ("['" + (f + "']"));
-                    var $temp$error = err, $temp$context = A2($elm$core$List$cons, fieldName, context);
+                    var $temp$error = err, $temp$context = _List_Cons(fieldName, context);
                     error = $temp$error;
                     context = $temp$context;
                     continue errorToStringHelp;
@@ -2882,7 +2877,7 @@
                     var i = error.a;
                     var err = error.b;
                     var indexName = "[" + ($elm$core$String$fromInt(i) + "]");
-                    var $temp$error = err, $temp$context = A2($elm$core$List$cons, indexName, context);
+                    var $temp$error = err, $temp$context = _List_Cons(indexName, context);
                     error = $temp$error;
                     context = $temp$context;
                     continue errorToStringHelp;
@@ -2894,7 +2889,7 @@
                                 return "!";
                             }
                             else {
-                                return " at json" + A2($elm$core$String$join, "", $elm$core$List$reverse(context));
+                                return " at json" + $elm$core$String$join_raw("", $elm$core$List$reverse(context));
                             }
                         }();
                     }
@@ -2912,11 +2907,11 @@
                                     return "Json.Decode.oneOf";
                                 }
                                 else {
-                                    return "The Json.Decode.oneOf at json" + A2($elm$core$String$join, "", $elm$core$List$reverse(context));
+                                    return "The Json.Decode.oneOf at json" + $elm$core$String$join_raw("", $elm$core$List$reverse(context));
                                 }
                             }();
                             var introduction = starter + (" failed in the following " + ($elm$core$String$fromInt($elm$core$List$length(errors)) + " ways:"));
-                            return A2($elm$core$String$join, "\n\n", A2($elm$core$List$cons, introduction, A2($elm$core$List$indexedMap, $elm$json$Json$Decode$errorOneOf, errors)));
+                            return $elm$core$String$join_raw("\n\n", _List_Cons(introduction, $elm$core$List$indexedMap_raw($elm$json$Json$Decode$errorOneOf, errors)));
                         }
                     }
                 default:
@@ -2927,10 +2922,10 @@
                             return "Problem with the given value:\n\n";
                         }
                         else {
-                            return "Problem with the value at json" + (A2($elm$core$String$join, "", $elm$core$List$reverse(context)) + ":\n\n    ");
+                            return "Problem with the value at json" + ($elm$core$String$join_raw("", $elm$core$List$reverse(context)) + ":\n\n    ");
                         }
                     }();
-                    return introduction + ($elm$json$Json$Decode$indent(A2($elm$json$Json$Encode$encode, 4, json)) + ("\n\n" + msg));
+                    return introduction + ($elm$json$Json$Decode$indent(_Json_encode_raw(4, json)) + ("\n\n" + msg));
             }
         }
     }, $elm$json$Json$Decode$errorToStringHelp = F2($elm$json$Json$Decode$errorToStringHelp_raw);
@@ -2945,8 +2940,8 @@
         return _Basics_log(number) / _Basics_log(base);
     }, $elm$core$Basics$logBase = F2($elm$core$Basics$logBase_raw);
     var $elm$core$Basics$toFloat = _Basics_toFloat;
-    var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling(A2($elm$core$Basics$logBase, 2, $elm$core$Array$branchFactor));
-    var $elm$core$Array$empty = A4($elm$core$Array$Array_elm_builtin, 0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
+    var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling($elm$core$Basics$logBase_raw(2, $elm$core$Array$branchFactor));
+    var $elm$core$Array$empty = $elm$core$Array$Array_elm_builtin_raw(0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
     var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
     var $elm$core$Array$Leaf = function (a) {
         return { $: 1, a: a };
@@ -2971,10 +2966,10 @@
     var $elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
     var $elm$core$Array$compressNodes_raw = function (nodes, acc) {
         compressNodes: while (true) {
-            var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, nodes);
+            var _v0 = _JsArray_initializeFromList_raw($elm$core$Array$branchFactor, nodes);
             var node = _v0.a;
             var remainingNodes = _v0.b;
-            var newAcc = A2($elm$core$List$cons, $elm$core$Array$SubTree(node), acc);
+            var newAcc = _List_Cons($elm$core$Array$SubTree(node), acc);
             if (!remainingNodes.b) {
                 return $elm$core$List$reverse(newAcc);
             }
@@ -2994,10 +2989,10 @@
         treeFromBuilder: while (true) {
             var newNodeSize = $elm$core$Basics$ceiling(nodeListSize / $elm$core$Array$branchFactor);
             if (newNodeSize === 1) {
-                return A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, nodeList).a;
+                return _JsArray_initializeFromList_raw($elm$core$Array$branchFactor, nodeList).a;
             }
             else {
-                var $temp$nodeList = A2($elm$core$Array$compressNodes, nodeList, _List_Nil), $temp$nodeListSize = newNodeSize;
+                var $temp$nodeList = $elm$core$Array$compressNodes_raw(nodeList, _List_Nil), $temp$nodeListSize = newNodeSize;
                 nodeList = $temp$nodeList;
                 nodeListSize = $temp$nodeListSize;
                 continue treeFromBuilder;
@@ -3006,14 +3001,14 @@
     }, $elm$core$Array$treeFromBuilder = F2($elm$core$Array$treeFromBuilder_raw);
     var $elm$core$Array$builderToArray_raw = function (reverseNodeList, builder) {
         if (!builder.a) {
-            return A4($elm$core$Array$Array_elm_builtin, $elm$core$Elm$JsArray$length(builder.c), $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, builder.c);
+            return $elm$core$Array$Array_elm_builtin_raw($elm$core$Elm$JsArray$length(builder.c), $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, builder.c);
         }
         else {
             var treeLen = builder.a * $elm$core$Array$branchFactor;
-            var depth = $elm$core$Basics$floor(A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
+            var depth = $elm$core$Basics$floor($elm$core$Basics$logBase_raw($elm$core$Array$branchFactor, treeLen - 1));
             var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.d) : builder.d;
-            var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.a);
-            return A4($elm$core$Array$Array_elm_builtin, $elm$core$Elm$JsArray$length(builder.c) + treeLen, A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep), tree, builder.c);
+            var tree = $elm$core$Array$treeFromBuilder_raw(correctNodeList, builder.a);
+            return $elm$core$Array$Array_elm_builtin_raw($elm$core$Elm$JsArray$length(builder.c) + treeLen, $elm$core$Basics$max_raw(5, depth * $elm$core$Array$shiftStep), tree, builder.c);
         }
     }, $elm$core$Array$builderToArray = F2($elm$core$Array$builderToArray_raw);
     var $elm$core$Basics$idiv = _Basics_idiv;
@@ -3021,11 +3016,11 @@
     var $elm$core$Array$initializeHelp_raw = function (fn, fromIndex, len, nodeList, tail) {
         initializeHelp: while (true) {
             if (fromIndex < 0) {
-                return A2($elm$core$Array$builderToArray, false, { d: nodeList, a: (len / $elm$core$Array$branchFactor) | 0, c: tail });
+                return $elm$core$Array$builderToArray_raw(false, { d: nodeList, a: (len / $elm$core$Array$branchFactor) | 0, c: tail });
             }
             else {
-                var leaf = $elm$core$Array$Leaf(A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
-                var $temp$fn = fn, $temp$fromIndex = fromIndex - $elm$core$Array$branchFactor, $temp$len = len, $temp$nodeList = A2($elm$core$List$cons, leaf, nodeList), $temp$tail = tail;
+                var leaf = $elm$core$Array$Leaf(_JsArray_initialize_raw($elm$core$Array$branchFactor, fromIndex, fn));
+                var $temp$fn = fn, $temp$fromIndex = fromIndex - $elm$core$Array$branchFactor, $temp$len = len, $temp$nodeList = _List_Cons(leaf, nodeList), $temp$tail = tail;
                 fn = $temp$fn;
                 fromIndex = $temp$fromIndex;
                 len = $temp$len;
@@ -3042,9 +3037,9 @@
         }
         else {
             var tailLen = len % $elm$core$Array$branchFactor;
-            var tail = A3($elm$core$Elm$JsArray$initialize, tailLen, len - tailLen, fn);
+            var tail = _JsArray_initialize_raw(tailLen, len - tailLen, fn);
             var initialFromIndex = (len - tailLen) - $elm$core$Array$branchFactor;
-            return A5($elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
+            return $elm$core$Array$initializeHelp_raw(fn, initialFromIndex, len, _List_Nil, tail);
         }
     }, $elm$core$Array$initialize = F2($elm$core$Array$initialize_raw);
     var $elm$core$Basics$True = 0;
@@ -3107,7 +3102,7 @@
                     else {
                         var d = r3.a;
                         var r4 = r3.b;
-                        var res = (ctr > 500) ? A3($elm$core$List$foldl, fn, acc, $elm$core$List$reverse(r4)) : A4($elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+                        var res = (ctr > 500) ? $elm$core$List$foldl_raw(fn, acc, $elm$core$List$reverse(r4)) : $elm$core$List$foldrHelper_raw(fn, acc, ctr + 1, r4);
                         return A2(fn, a, A2(fn, b, A2(fn, c, A2(fn, d, res))));
                     }
                 }
@@ -3115,18 +3110,18 @@
         }
     }, $elm$core$List$foldrHelper = F4($elm$core$List$foldrHelper_raw);
     var $elm$core$List$foldr_raw = function (fn, acc, ls) {
-        return A4($elm$core$List$foldrHelper, fn, acc, 0, ls);
+        return $elm$core$List$foldrHelper_raw(fn, acc, 0, ls);
     }, $elm$core$List$foldr = F3($elm$core$List$foldr_raw);
     var $elm$core$List$append_raw = function (xs, ys) {
         if (!ys.b) {
             return xs;
         }
         else {
-            return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+            return $elm$core$List$foldr_raw($elm$core$List$cons, ys, xs);
         }
     }, $elm$core$List$append = F2($elm$core$List$append_raw);
     var $elm$core$List$concat = function (lists) {
-        return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+        return $elm$core$List$foldr_raw($elm$core$List$append, _List_Nil, lists);
     };
     var $elm$core$List$repeatHelp_raw = function (result, n, value) {
         repeatHelp: while (true) {
@@ -3134,7 +3129,7 @@
                 return result;
             }
             else {
-                var $temp$result = A2($elm$core$List$cons, value, result), $temp$n = n - 1, $temp$value = value;
+                var $temp$result = _List_Cons(value, result), $temp$n = n - 1, $temp$value = value;
                 result = $temp$result;
                 n = $temp$n;
                 value = $temp$value;
@@ -3143,13 +3138,13 @@
         }
     }, $elm$core$List$repeatHelp = F3($elm$core$List$repeatHelp_raw);
     var $elm$core$List$repeat_raw = function (n, value) {
-        return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+        return $elm$core$List$repeatHelp_raw(_List_Nil, n, value);
     }, $elm$core$List$repeat = F2($elm$core$List$repeat_raw);
-    var $author$project$Main$One = a => ({ $: 1, a, b: null });
-    var $author$project$Main$Two_raw = (a, b) => ({ $: 2, a, b }), $author$project$Main$Two = F2($author$project$Main$Two_raw);
+    var $author$project$Main$One = function (a) { return { $: 1, a, b: null }; };
+    var $author$project$Main$Two_raw = function (a, b) { return { $: 2, a, b }; }, $author$project$Main$Two = F2($author$project$Main$Two_raw);
     var $author$project$Main$Zero = { $: 0, a: null, b: null };
-    var $author$project$Main$values = { $: 1, a: $author$project$Main$Zero, b: { $: 1, a: $author$project$Main$One(5), b: { $: 1, a: A2($author$project$Main$Two, "Two", "two"), b: _List_Nil } } };
-    var $author$project$Main$many = $elm$core$List$concat(A2($elm$core$List$repeat, 1000, $author$project$Main$values));
+    var $author$project$Main$values = { $: 1, a: $author$project$Main$Zero, b: { $: 1, a: $author$project$Main$One(5), b: { $: 1, a: $author$project$Main$Two_raw("Two", "two"), b: _List_Nil } } };
+    var $author$project$Main$many = $elm$core$List$concat($elm$core$List$repeat_raw(1000, $author$project$Main$values));
     var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
     var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
     var $author$project$Main$main = function () {
@@ -3157,7 +3152,7 @@
             return $author$project$Main$addMyType(x);
         };
         var g = f;
-        var sum = A3($elm$core$List$foldl, g, 0, $author$project$Main$many);
+        var sum = $elm$core$List$foldl_raw(g, 0, $author$project$Main$many);
         return $elm$html$Html$text($elm$core$String$fromInt(sum));
     }();
     _Platform_export({ "Main": { "init": _VirtualDom_init($author$project$Main$main)(0)(0) } });
