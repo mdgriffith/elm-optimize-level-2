@@ -14812,23 +14812,33 @@ var $author$project$Main$values = _List_fromArray(
 	]);
 var $author$project$Main$many = $elm$core$List$concat(
 	A2($elm$core$List$repeat, 1000, $author$project$Main$values));
+var $author$project$Main$updateRecord = F2(
+	function (attr, record) {
+		return _Utils_update(
+			record,
+			{one: 87});
+	});
 var $author$project$Main$suite = A2(
 	$elm_explorations$benchmark$Benchmark$describe,
-	'List of MyType',
+	'Benchmarks',
 	_List_fromArray(
 		[
 			A2(
-			$elm_explorations$benchmark$Benchmark$describe,
-			'slice',
-			_List_fromArray(
-				[
-					A2(
-					$elm_explorations$benchmark$Benchmark$benchmark,
-					'sum 1000 entities in a list',
-					function (_v0) {
-						return A3($elm$core$List$foldl, $author$project$Main$addMyType, 0, $author$project$Main$many);
-					})
-				]))
+			$elm_explorations$benchmark$Benchmark$benchmark,
+			'sum 1000 entities in a list',
+			function (_v0) {
+				return A3($elm$core$List$foldl, $author$project$Main$addMyType, 0, $author$project$Main$many);
+			}),
+			A2(
+			$elm_explorations$benchmark$Benchmark$benchmark,
+			'1000 record updates',
+			function (_v1) {
+				return A3(
+					$elm$core$List$foldl,
+					$author$project$Main$updateRecord,
+					{one: 1, three: 3, two: 2},
+					$author$project$Main$many);
+			})
 		]));
 var $author$project$Main$main = $elm_explorations$benchmark$Benchmark$Runner$program($author$project$Main$suite);
 _Platform_export({'Main':{'init':$author$project$Main$main(
