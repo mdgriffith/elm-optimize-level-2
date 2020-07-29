@@ -1,3 +1,25 @@
+/*
+
+Inline the creation of a list from an array:
+
+// initial 
+_List_fromArray(["a", "b", "c"]);
+
+// with InlineMode.UsingConsFunc
+_List_cons("a", _List_cons("b", _List_cons("c", _List_Nil)))
+
+// with InlineMode.UsingLiteralObjects(Mode.Prod)
+({ $: 1, a: "a", b: { $: 1, a: "b", b: { $: 1, a: "c", b: _List_Nil } } });
+
+// with InlineMode.UsingLiteralObjects(Mode.Dev) 
+({ $: "::", a: "a", b: { $: "::", a: "b", b: { $: "::", a: "c", b: _List_Nil } } });
+
+
+
+
+
+*/
+
 import ts from 'typescript';
 import { Union, of } from 'ts-union';
 import { Mode } from '../types';
