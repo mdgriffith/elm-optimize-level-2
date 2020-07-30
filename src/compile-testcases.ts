@@ -5,7 +5,10 @@ import { parseElm } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './experiments/variantShapes';
 import { Mode } from './types';
-import { functionInlineTransformer } from './experiments/inlineWrappedFunctions';
+import {
+  createFunctionInlineTransformer,
+  InlineContext,
+} from './experiments/inlineWrappedFunctions';
 import {
   InlineMode,
   createInlineListFromArrayTransformer,
@@ -61,7 +64,7 @@ const compileAndTransform = (dir: string, file: string): {} => {
 
   const [result] = ts.transform(source, [
     normalizeVariantShapes,
-    functionInlineTransformer,
+    createFunctionInlineTransformer(reportInlineTransformResult),
     inlineListFromArrayCalls,
     replaceUtilsUpdateWithObjectSpread,
 
@@ -89,3 +92,16 @@ const compileAndTransform = (dir: string, file: string): {} => {
 
 compileAndTransform('testcases/simple', 'Main.elm');
 compileAndTransform('testcases/bench', 'Main.elm');
+
+function reportInlineTransformResult(ctx: InlineContext) {
+  const {
+    splits,
+    partialApplications,
+    inlinedCount,
+    inlinedPartialApplications,
+  } = ctx;
+
+  console.log(
+    `functionInlineTransformer: splitCount=${splits.size}, partialApplicationCount=${partialApplications.size}, inlined=${inlinedCount}, inlinedPartialApplications=${inlinedPartialApplications}`
+  );
+}
