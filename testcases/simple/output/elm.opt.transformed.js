@@ -1691,7 +1691,7 @@
             };
         });
     }, _VirtualDom_nodeNS = F2(_VirtualDom_nodeNS_raw);
-    var _VirtualDom_node = _VirtualDom_nodeNS(undefined);
+    var _VirtualDom_node_a0 = undefined, _VirtualDom_node = _VirtualDom_nodeNS(_VirtualDom_node_a0);
     // KEYED NODE
     var _VirtualDom_keyedNodeNS_raw = function (namespace, tag) {
         return F2(function (factList, kidList) {
@@ -1712,7 +1712,7 @@
             };
         });
     }, _VirtualDom_keyedNodeNS = F2(_VirtualDom_keyedNodeNS_raw);
-    var _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(undefined);
+    var _VirtualDom_keyedNode_a0 = undefined, _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(_VirtualDom_keyedNode_a0);
     // CUSTOM
     function _VirtualDom_custom(factList, model, render, diff) {
         return {

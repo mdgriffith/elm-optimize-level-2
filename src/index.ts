@@ -1,10 +1,6 @@
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './experiments/variantShapes';
-import {
-  createSplitFunctionDeclarationsTransformer,
-  FuncSplit,
-  createFuncInlineTransformer,
-} from './experiments/inlineWrappedFunctions';
+import { createFunctionInlineTransformer } from './experiments/inlineWrappedFunctions';
 import { Mode, ElmVariant } from './types';
 
 import {
@@ -80,22 +76,10 @@ const printer = ts.createPrinter();
 console.log('----------AFTER CUSTOM TYPE SHAPES TRANSFORM ----------------');
 console.log(printer.printFile(source));
 console.log(printer.printFile(newFile));
-console.log('----------AFTER SPLIT TRANSFORM ----------------');
-
-const collectedSplits = new Map<string, FuncSplit>();
-const splitTransformer = createSplitFunctionDeclarationsTransformer(
-  collectedSplits
-);
-const [sourceWithSplittedFunctions] = ts.transform(newFile, [
-  splitTransformer,
-]).transformed;
-
-console.log(printer.printFile(sourceWithSplittedFunctions));
-console.log(collectedSplits);
 
 console.log('----------AFTER INLINE A(n) TRANSFORM ----------------');
-const funcInlineTransformer = createFuncInlineTransformer(collectedSplits);
-const [sourceWithInlinedFuntioncs] = ts.transform(sourceWithSplittedFunctions, [
+const funcInlineTransformer = createFunctionInlineTransformer();
+const [sourceWithInlinedFuntioncs] = ts.transform(newFile, [
   funcInlineTransformer,
 ]).transformed;
 

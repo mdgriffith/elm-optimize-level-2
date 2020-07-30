@@ -1691,7 +1691,7 @@
             };
         });
     }, _VirtualDom_nodeNS = F2(_VirtualDom_nodeNS_raw);
-    var _VirtualDom_node = _VirtualDom_nodeNS(undefined);
+    var _VirtualDom_node_a0 = undefined, _VirtualDom_node = _VirtualDom_nodeNS(_VirtualDom_node_a0);
     // KEYED NODE
     var _VirtualDom_keyedNodeNS_raw = function (namespace, tag) {
         return F2(function (factList, kidList) {
@@ -1712,7 +1712,7 @@
             };
         });
     }, _VirtualDom_keyedNodeNS = F2(_VirtualDom_keyedNodeNS_raw);
-    var _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(undefined);
+    var _VirtualDom_keyedNode_a0 = undefined, _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(_VirtualDom_keyedNode_a0);
     // CUSTOM
     function _VirtualDom_custom(factList, model, render, diff) {
         return {
@@ -2717,7 +2717,7 @@
             return _Browser_makeAnimator(initialModel, function (model) {
                 _VirtualDom_divertHrefToApp = divertHrefToApp;
                 var doc = view(model);
-                var nextNode = _VirtualDom_node("body")(_List_Nil)(doc.bD);
+                var nextNode = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "body")(_List_Nil)(doc.bD);
                 var patches = _VirtualDom_diff(currNode, nextNode);
                 bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
                 currNode = nextNode;
@@ -4461,7 +4461,7 @@
         });
         return $elm$core$Task$map_raw($elm_explorations$benchmark$Benchmark$LowLevel$standardizeSampleSize, A2(resample, 1, 0));
     }, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum = F2($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw);
-    var $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize = $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum($elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum);
+    var $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0 = $elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize = $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0);
     var $elm$core$Basics$ge = _Utils_ge;
     var $elm$core$Basics$modBy = _Basics_modBy;
     var $elm$core$Task$onError = _Scheduler_onError;
@@ -4807,7 +4807,7 @@
             case 1:
                 return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw(function (sampleSize) {
                     return $elm_explorations$benchmark$Benchmark$Status$Pending_raw(sampleSize, $elm_explorations$benchmark$Benchmark$Samples$empty);
-                }, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize(operation)));
+                }, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0, operation)));
             case 2:
                 var baseSampleSize = status.a;
                 var samples = status.b;
@@ -6562,7 +6562,7 @@
         return _Regex_fromStringWith_raw({ bF: false, bZ: false }, string);
     };
     var $elm$regex$Regex$never = _Regex_never;
-    var $elm$regex$Regex$replace = _Regex_replaceAtMost(_Regex_infinity);
+    var $elm$regex$Regex$replace_a0 = _Regex_infinity, $elm$regex$Regex$replace = _Regex_replaceAtMost($elm$regex$Regex$replace_a0);
     var $elm$core$String$toLower = _String_toLower;
     var $mdgriffith$style_elements$Style$Internal$Selector$uncapitalize = function (str) {
         var tail = $elm$core$String$dropLeft_raw(1, str);
@@ -6570,12 +6570,12 @@
         return _Utils_ap(head, tail);
     };
     var $mdgriffith$style_elements$Style$Internal$Selector$formatName = function (x) {
-        return A3($elm$regex$Regex$replace, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[\\s+]")), function (_v2) {
+        return _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[\\s+]")), function (_v2) {
             return "-";
-        }, A3($elm$regex$Regex$replace, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[A-Z0-9]+")), function (_v1) {
+        }, _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[A-Z0-9]+")), function (_v1) {
             var match = _v1.bY;
             return " " + $elm$core$String$toLower(match);
-        }, A3($elm$regex$Regex$replace, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[^a-zA-Z0-9_-]")), function (_v0) {
+        }, _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[^a-zA-Z0-9_-]")), function (_v0) {
             return "";
         }, $mdgriffith$style_elements$Style$Internal$Selector$uncapitalize(x))));
     };
@@ -7201,16 +7201,16 @@
     };
     var $mdgriffith$style_elements$Element$Attributes$percent = $mdgriffith$style_elements$Style$Internal$Model$Percent;
     var $mdgriffith$style_elements$Element$Internal$Model$NoDecoration = 0;
-    var $mdgriffith$style_elements$Element$text = $mdgriffith$style_elements$Element$Internal$Model$Text({ Q: 0, S: false });
+    var $mdgriffith$style_elements$Element$text_a0 = { Q: 0, S: false }, $mdgriffith$style_elements$Element$text = $mdgriffith$style_elements$Element$Internal$Model$Text($mdgriffith$style_elements$Element$text_a0);
     var $mdgriffith$style_elements$Element$Attributes$width = $mdgriffith$style_elements$Element$Internal$Model$Width;
     var $elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw = function (_class, caption) {
-        return A2($mdgriffith$style_elements$Element$node, "h1", $mdgriffith$style_elements$Element$el_raw(_class(0), { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom(20), b: _List_Nil } }, $mdgriffith$style_elements$Element$text(caption)));
+        return A2($mdgriffith$style_elements$Element$node, "h1", $mdgriffith$style_elements$Element$el_raw(_class(0), { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom(20), b: _List_Nil } }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, caption)));
     }, $elm_explorations$benchmark$Benchmark$Runner$Text$hero = F2($elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw);
     var $mdgriffith$style_elements$Element$Attributes$paddingTop = function (x) {
         return $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Just(x), $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing);
     };
     var $elm_explorations$benchmark$Benchmark$Runner$Text$path_raw = function (_class, parts) {
-        return $mdgriffith$style_elements$Element$el_raw(_class(1), { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom(3), b: _List_Nil }, $mdgriffith$style_elements$Element$text($elm$core$String$join_raw(" / ", parts)));
+        return $mdgriffith$style_elements$Element$el_raw(_class(1), { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom(3), b: _List_Nil }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, $elm$core$String$join_raw(" / ", parts)));
     }, $elm_explorations$benchmark$Benchmark$Runner$Text$path = F2($elm_explorations$benchmark$Benchmark$Runner$Text$path_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX = 15;
     var $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY = 7;
@@ -7231,7 +7231,7 @@
                     return "Finished";
             }
         }();
-        return $mdgriffith$style_elements$Element$row_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Unstyled, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$px(500)), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$spread, b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$verticalCenter, b: _List_Nil } } }, { $: 1, a: $mdgriffith$style_elements$Element$text(name), b: { $: 1, a: $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Status, _List_Nil, $mdgriffith$style_elements$Element$text(informativeStatus)), b: _List_Nil } });
+        return $mdgriffith$style_elements$Element$row_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Unstyled, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$px(500)), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$spread, b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$verticalCenter, b: _List_Nil } } }, { $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, name), b: { $: 1, a: $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Status, _List_Nil, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, informativeStatus)), b: _List_Nil } });
     }, $elm_explorations$benchmark$Benchmark$Runner$InProgress$caption = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$caption_raw);
     var $elm$virtual_dom$VirtualDom$attribute_raw = function (key, value) {
         return _VirtualDom_attribute_raw(_VirtualDom_noOnOrFormAction(key), _VirtualDom_noJavaScriptOrHtmlUri(value));
@@ -7417,14 +7417,14 @@
         }, ys));
         return 1 - (sumSquareResiduals / sumSquareTotal);
     };
-    var $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent = A2($elm$core$Basics$composeR, $elm$core$Basics$mul(10000), A2($elm$core$Basics$composeR, $elm$core$Basics$round, A2($elm$core$Basics$composeR, $elm$core$Basics$toFloat, A2($elm$core$Basics$composeR, function (a) {
+    var $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a0 = $elm$core$Basics$mul(10000), $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a1 = A2($elm$core$Basics$composeR, $elm$core$Basics$round, A2($elm$core$Basics$composeR, $elm$core$Basics$toFloat, A2($elm$core$Basics$composeR, function (a) {
         return a / 100;
     }, A2($elm$core$Basics$composeR, $elm$core$String$fromFloat, function (a) {
         return a + "%";
-    })))));
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit = A2($elm$core$Basics$composeR, $BrianHicks$elm_trend$Trend$Linear$goodnessOfFit, A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent, A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(0))));
+    })))), $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a0, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a1);
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a0 = $BrianHicks$elm_trend$Trend$Linear$goodnessOfFit, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a1 = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent, A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(0))), $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a1);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$header_raw = function (variation, caption) {
-        return $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Header, { $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Vary_raw(variation, true), b: _List_Nil }, $mdgriffith$style_elements$Element$text(caption));
+        return $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Header, { $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Vary_raw(variation, true), b: _List_Nil }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, caption));
     }, $elm_explorations$benchmark$Benchmark$Runner$Report$header = F2($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw);
     var $BrianHicks$elm_trend$Trend$Linear$predictX_raw = function (_v0, y) {
         var slope = _v0.aR;
@@ -7437,7 +7437,7 @@
         });
         var change = (rps(_new) - rps(old)) / rps(old);
         var sign = (change > 0) ? "+" : "";
-        return _Utils_eq(old, _new) ? $elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$text("-")) : $elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$text(_Utils_ap(sign, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent(change))));
+        return _Utils_eq(old, _new) ? $elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, "-")) : $elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, _Utils_ap(sign, $elm$core$Basics$composeR_raw($elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a0, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a1, change))));
     }, $elm_explorations$benchmark$Benchmark$Runner$Report$percentChange = F2($elm_explorations$benchmark$Benchmark$Runner$Report$percentChange_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$pointsFromStatus = function (status) {
         if (status.$ === 4) {
@@ -7525,7 +7525,7 @@
                     $mdgriffith$style_elements$Element$Attributes$paddingXY_raw($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX, $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY),
                     $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$px(500))
                 ]), _List_fromArray([
-                    $mdgriffith$style_elements$Element$text(name),
+                    $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, name),
                     $mdgriffith$style_elements$Element$table_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Table, _List_fromArray([
                         $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)),
                         $mdgriffith$style_elements$Element$Attributes$paddingTop(10)
@@ -7547,7 +7547,7 @@
     var $elm$core$String$toList = function (string) {
         return _String_foldr_raw($elm$core$List$cons, _List_Nil, string);
     };
-    var $elm_explorations$benchmark$Benchmark$Runner$Humanize$int = A2($elm$core$Basics$composeR, $elm$core$String$fromInt, A2($elm$core$Basics$composeR, $elm$core$String$toList, A2($elm$core$Basics$composeR, $elm$core$List$reverse, A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$groupsOf(3), A2($elm$core$Basics$composeR, $elm$core$List$reverse, A2($elm$core$Basics$composeR, $elm$core$List$map(A2($elm$core$Basics$composeR, $elm$core$List$reverse, $elm$core$String$fromList)), $elm$core$String$join(",")))))));
+    var $elm_explorations$benchmark$Benchmark$Runner$Humanize$int_a0 = $elm$core$String$fromInt, $elm_explorations$benchmark$Benchmark$Runner$Humanize$int_a1 = A2($elm$core$Basics$composeR, $elm$core$String$toList, A2($elm$core$Basics$composeR, $elm$core$List$reverse, A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$groupsOf(3), A2($elm$core$Basics$composeR, $elm$core$List$reverse, A2($elm$core$Basics$composeR, $elm$core$List$map(A2($elm$core$Basics$composeR, $elm$core$List$reverse, $elm$core$String$fromList)), $elm$core$String$join(",")))))), $elm_explorations$benchmark$Benchmark$Runner$Humanize$int = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$int_a0, $elm_explorations$benchmark$Benchmark$Runner$Humanize$int_a1);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond = function (variation) {
         return A2($elm$core$Basics$composeR, $BrianHicks$elm_trend$Trend$Linear$line, A2($elm$core$Basics$composeR, function (a) {
             return $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000);
@@ -7562,17 +7562,17 @@
             return $elm$core$Maybe$Nothing;
         }
     };
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses = A2($elm$core$List$foldr, F2(function (_this, acc) {
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0 = F2(function (_this, acc) {
         return $elm$core$Maybe$map2_raw($elm$core$List$cons, $elm_explorations$benchmark$Benchmark$Runner$Report$trendFromStatus(_this), acc);
-    }), $elm$core$Maybe$Just(_List_Nil));
+    }), $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1 = $elm$core$Maybe$Just(_List_Nil), $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses = A2($elm$core$List$foldr, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$multiReport_raw = function (parents, name, children) {
         var _v0 = $elm$core$List$unzip(children);
         var names = _v0.a;
         var statuses = _v0.b;
         var allPoints = $elm$core$List$foldr_raw($elm$core$Maybe$map2($elm$core$List$cons), $elm$core$Maybe$Just(_List_Nil), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$pointsFromStatus, statuses));
         var contents = $elm$core$Maybe$map_raw(function (trends) {
-            return { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(1, "name"), $elm$core$List$map_raw(A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(1)), names)), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "runs / second"), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond(0), trends)), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "% change"), _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$text("-")), _List_map2_raw($elm_explorations$benchmark$Benchmark$Runner$Report$percentChange, trends, $elm$core$List$drop_raw(1, trends)))), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "goodness of fit"), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit, trends)), b: _List_Nil } } } };
-        }, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses(statuses));
+            return { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(1, "name"), $elm$core$List$map_raw(A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(1)), names)), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "runs / second"), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond(0), trends)), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "% change"), _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, "-")), _List_map2_raw($elm_explorations$benchmark$Benchmark$Runner$Report$percentChange, trends, $elm$core$List$drop_raw(1, trends)))), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "goodness of fit"), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit, trends)), b: _List_Nil } } } };
+        }, $elm$core$List$foldr_raw($elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1, statuses));
         return $elm$core$Maybe$withDefault_raw($mdgriffith$style_elements$Element$empty, $elm$core$Maybe$map2_raw(A2($elm_explorations$benchmark$Benchmark$Runner$Report$report, parents, name), allPoints, contents));
     }, $elm_explorations$benchmark$Benchmark$Runner$Report$multiReport = F3($elm_explorations$benchmark$Benchmark$Runner$Report$multiReport_raw);
     var $elm$core$List$singleton = function (value) {
@@ -7585,7 +7585,7 @@
                     A2($elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond, 1, trend)
                 ]), b: { $: 1, a: _List_fromArray([
                         $elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "goodness of fit"),
-                        $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit(trend)
+                        $elm$core$Basics$composeR_raw($elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a1, trend)
                     ]), b: _List_Nil } };
         }, $elm_explorations$benchmark$Benchmark$Runner$Report$trendFromStatus(status));
         return $elm$core$Maybe$withDefault_raw($mdgriffith$style_elements$Element$empty, $elm$core$Maybe$map2_raw(A2($elm_explorations$benchmark$Benchmark$Runner$Report$report, parents, name), $elm$core$Maybe$map_raw($elm$core$List$singleton, $elm_explorations$benchmark$Benchmark$Runner$Report$pointsFromStatus(status)), contents));
@@ -7613,12 +7613,12 @@
     var $elm$html$Html$Attributes$stringProperty_raw = function (key, string) {
         return _VirtualDom_property_raw(key, $elm$json$Json$Encode$string(string));
     }, $elm$html$Html$Attributes$stringProperty = F2($elm$html$Html$Attributes$stringProperty_raw);
-    var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty("className");
-    var $elm$html$Html$div = _VirtualDom_node("div");
+    var $elm$html$Html$Attributes$class_a0 = "className", $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty($elm$html$Html$Attributes$class_a0);
+    var $elm$html$Html$div = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "div");
     var $mdgriffith$style_elements$Element$Internal$Render$withFocus = "\n\n.style-elements em.el {\n    padding: 0;\n    padding-left: 0.2em;\n}\n\n.style-elements button.button-focus:focus {\n   outline: none;\n   box-shadow: 0 0 3px 3px rgba(155,203,255,1.0);\n   border-color: rgba(155,203,255,1.0);\n}\n\n.style-elements textarea:focus, .style-elements input:focus {\n   outline: none;\n   box-shadow: 0 0 2px 2px rgba(155,203,255,1.0);\n   border-color: rgba(155,203,255,1.0);\n}\n.style-elements input[type='checkbox'] {\n    border-radius: 3px;\n}\n.style-elements input[type='radio'] {\n    border-radius: 7px;\n}\n.style-elements input[type='radio']:focus {\n    border-radius: 7px;\n    box-shadow: 0 0 4px 4px rgba(155,203,255,1.0);\n}\n\n.style-elements select.focus-override:focus, .style-elements input.focus-override:focus {\n    outline: none;\n    box-shadow: none;\n    border-color:transparent;\n}\n.style-elements input.focus-override:focus ~ .alt-icon {\n    box-shadow: 0 0 3px 3px rgba(155,203,255,1.0);\n    border-color: rgba(155,203,255,1.0);\n}\n.style-elements select.focus-override:focus ~ .alt-icon {\n    box-shadow: 0 0 3px 3px rgba(155,203,255,1.0);\n    border-color: rgba(155,203,255,1.0);\n}\n.style-elements .arrows {\n    display:block;\n    position: relative;\n    height: 10px;\n    width: 10px;\n}\n/*\n.style-elements .arrows::after {\n    content: \" \";\n    position:absolute;\n    top:-2px;\n    left:0;\n    width: 0;\n    height: 0;\n    border-left: 5px solid transparent;\n    border-right: 5px solid transparent;\n    border-bottom: 5px solid black;\n}\n*/\n\n.style-elements .arrows::before {\n    content: \" \";\n    position:absolute;\n    top:2px;\n    left:0;\n    width: 0;\n    height: 0;\n    border-left: 5px solid transparent;\n    border-right: 5px solid transparent;\n    border-top: 5px solid black;\n}\n\n\n";
     var $mdgriffith$style_elements$Element$Internal$Render$miniNormalize = "html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;margin:0;padding:0;border:0}body{margin:0}.style-elements{display:block;position:relative;margin:0;padding:0;border:0;font-size:100%;font:inherit;box-sizing:border-box;line-height:1.2}.el{display:block;position:relative;margin:0;padding:0;border:0;border-style:solid;font-size:100%;font:inherit;box-sizing:border-box}em.el{font-style:italic}b.el,strong.el{font-weight:bolder}strike.el{text-decoration:line-through}u.el{text-decoration:underline}a.el{text-decoration:none;color:inherit}img.el{border-style:none}sub.el,sup.el{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub.el{bottom:-0.25em}sup.el{top:-0.5em}" + $mdgriffith$style_elements$Element$Internal$Render$withFocus;
     var $elm$virtual_dom$VirtualDom$node = function (tag) {
-        return _VirtualDom_node(_VirtualDom_noScript(tag));
+        return _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, _VirtualDom_noScript(tag));
     };
     var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
     var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
@@ -7768,7 +7768,7 @@
     }, $mdgriffith$style_elements$Element$Internal$Model$adjust = F3($mdgriffith$style_elements$Element$Internal$Model$adjust_raw);
     var $mdgriffith$style_elements$Element$Internal$Adjustments$tagIntermediates = false;
     var $mdgriffith$style_elements$Element$Internal$Adjustments$tag = function (str) {
-        return $mdgriffith$style_elements$Element$Internal$Adjustments$tagIntermediates ? $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$html$Html$Attributes$class(str)) : $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$html$Html$Attributes$class(""));
+        return $mdgriffith$style_elements$Element$Internal$Adjustments$tagIntermediates ? $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, str)) : $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, ""));
     };
     var $mdgriffith$style_elements$Element$Internal$Adjustments$centerTextLayout = function (elm) {
         if (elm.$ === 4) {
@@ -8319,7 +8319,7 @@
         var len = $elm$core$List$length(list);
         return ((!i) && (len === 1)) ? $mdgriffith$style_elements$Element$Internal$Render$FirstAndLast : ((!i) ? $mdgriffith$style_elements$Element$Internal$Render$First : (_Utils_eq(i, len - 1) ? $mdgriffith$style_elements$Element$Internal$Render$Last : $mdgriffith$style_elements$Element$Internal$Render$Middle(i)));
     }, $mdgriffith$style_elements$Element$Internal$Render$detectOrder = F2($mdgriffith$style_elements$Element$Internal$Render$detectOrder_raw);
-    var $elm$html$Html$em = _VirtualDom_node("em");
+    var $elm$html$Html$em = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "em");
     var $mdgriffith$style_elements$Element$Internal$Render$emptyPositionable = {
         c: _List_Nil,
         az: false,
@@ -8553,7 +8553,7 @@
         return $elm$core$List$foldl_raw($mdgriffith$style_elements$Element$Internal$Render$makePositionable, $mdgriffith$style_elements$Element$Internal$Render$emptyPositionable, attrs);
     };
     var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
-        return _VirtualDom_keyedNode(_VirtualDom_noScript(tag));
+        return _VirtualDom_keyedNodeNS_raw(_VirtualDom_keyedNode_a0, _VirtualDom_noScript(tag));
     };
     var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
     var $mdgriffith$style_elements$Style$Internal$Model$Bottom = 1;
@@ -8772,7 +8772,7 @@
         }
     }, $mdgriffith$style_elements$Element$Internal$Render$calcPosition = F2($mdgriffith$style_elements$Element$Internal$Render$calcPosition_raw);
     var $elm$html$Html$Attributes$classList = function (classes) {
-        return $elm$html$Html$Attributes$class($elm$core$String$join_raw(" ", $elm$core$List$map_raw($elm$core$Tuple$first, $elm$core$List$filter_raw($elm$core$Tuple$second, classes))));
+        return $elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, $elm$core$String$join_raw(" ", $elm$core$List$map_raw($elm$core$Tuple$first, $elm$core$List$filter_raw($elm$core$Tuple$second, classes))));
     };
     var $mdgriffith$style_elements$Style$Internal$Render$Property$flexHeight = function (l) {
         switch (l.$) {
@@ -9389,7 +9389,7 @@
             }
             else {
                 var elemID = maybeElemID.a;
-                return ($elm$core$List$length(elem.X) > 0) ? _List_Cons($elm$html$Html$Attributes$classList(A2(stylesheet.X, elemID, elem.X)), elem.c) : _List_Cons($elm$html$Html$Attributes$class(stylesheet.e(elemID)), elem.c);
+                return ($elm$core$List$length(elem.X) > 0) ? _List_Cons($elm$html$Html$Attributes$classList(A2(stylesheet.X, elemID, elem.X)), elem.c) : _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, stylesheet.e(elemID)), elem.c);
             }
         }();
         var adjustspacing = function (_v16) {
@@ -9547,7 +9547,7 @@
             return _VirtualDom_style_raw(name, val);
         }, styles);
     };
-    var $elm$html$Html$s = _VirtualDom_node("s");
+    var $elm$html$Html$s = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "s");
     var $mdgriffith$style_elements$Element$Internal$Render$spacingToMargin = function (attrs) {
         var spaceToMarg = function (a) {
             if (a.$ === 10) {
@@ -9562,11 +9562,11 @@
         };
         return $elm$core$List$map_raw(spaceToMarg, attrs);
     };
-    var $elm$html$Html$span = _VirtualDom_node("span");
-    var $elm$html$Html$strong = _VirtualDom_node("strong");
-    var $elm$html$Html$sub = _VirtualDom_node("sub");
-    var $elm$html$Html$sup = _VirtualDom_node("sup");
-    var $elm$html$Html$u = _VirtualDom_node("u");
+    var $elm$html$Html$span = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "span");
+    var $elm$html$Html$strong = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "strong");
+    var $elm$html$Html$sub = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "sub");
+    var $elm$html$Html$sup = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "sup");
+    var $elm$html$Html$u = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "u");
     var $mdgriffith$style_elements$Element$Internal$Render$renderElement_raw = function (parent, stylesheet, order, elm) {
         switch (elm.$) {
             case 0:
@@ -9606,21 +9606,21 @@
                 var attrs = inline ? $mdgriffith$style_elements$Element$Internal$Render$renderSyleAttributes({ $: 1, a: _Utils_Tuple2("display", "inline"), b: _List_Nil }) : $mdgriffith$style_elements$Element$Internal$Render$renderSyleAttributes({ $: 1, a: _Utils_Tuple2("white-space", "pre"), b: { $: 1, a: _Utils_Tuple2("text-overflow", "ellipsis"), b: { $: 1, a: _Utils_Tuple2("overflow", "hidden"), b: { $: 1, a: _Utils_Tuple2("display", "block"), b: _List_Nil } } } });
                 switch (decoration) {
                     case 0:
-                        return A2($elm$html$Html$span, _List_Cons($elm$html$Html$Attributes$class("el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
+                        return A2($elm$html$Html$span, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
                     case 1:
                         return $elm$html$Html$text(str);
                     case 2:
-                        return A2($elm$html$Html$strong, _List_Cons($elm$html$Html$Attributes$class("el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
+                        return A2($elm$html$Html$strong, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
                     case 3:
-                        return A2($elm$html$Html$em, _List_Cons($elm$html$Html$Attributes$class("el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
+                        return A2($elm$html$Html$em, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
                     case 4:
-                        return A2($elm$html$Html$u, _List_Cons($elm$html$Html$Attributes$class("el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
+                        return A2($elm$html$Html$u, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
                     case 5:
-                        return A2($elm$html$Html$s, _List_Cons($elm$html$Html$Attributes$class("el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
+                        return A2($elm$html$Html$s, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
                     case 6:
-                        return A2($elm$html$Html$sup, _List_Cons($elm$html$Html$Attributes$class("el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
+                        return A2($elm$html$Html$sup, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
                     default:
-                        return A2($elm$html$Html$sub, _List_Cons($elm$html$Html$Attributes$class("el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
+                        return A2($elm$html$Html$sub, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), attrs), { $: 1, a: $elm$html$Html$text(str), b: _List_Nil });
                 }
             case 3:
                 var node = elm.a.d;
@@ -9666,7 +9666,7 @@
                     }
                 }();
                 var htmlAttrs = $mdgriffith$style_elements$Element$Internal$Render$renderAttributes_raw($mdgriffith$style_elements$Element$Internal$Render$Single, order, style, parent, stylesheet, $mdgriffith$style_elements$Element$Internal$Render$gather(attributes));
-                return A3($elm$html$Html$node, node, _List_Cons($elm$html$Html$Attributes$class("el"), htmlAttrs), childHtml);
+                return A3($elm$html$Html$node, node, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), htmlAttrs), childHtml);
             default:
                 var node = elm.a.d;
                 var layout = elm.a.p;
@@ -9716,7 +9716,7 @@
                 var clearfix = function (allAttrs) {
                     if (!layout.$) {
                         var fix = layout.a;
-                        return fix ? _List_Cons($elm$html$Html$Attributes$class("clearfix"), allAttrs) : allAttrs;
+                        return fix ? _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "clearfix"), allAttrs) : allAttrs;
                     }
                     else {
                         return allAttrs;
@@ -9788,7 +9788,7 @@
                             return _Utils_ap(childHtml, $elm$core$List$map_raw(A3($mdgriffith$style_elements$Element$Internal$Render$renderElement, $elm$core$Maybe$Nothing, stylesheet, $mdgriffith$style_elements$Element$Internal$Render$FirstAndLast), absol));
                         }
                     }();
-                    return adjacentFlexboxCorrection(A3($elm$html$Html$node, node, _List_Cons($elm$html$Html$Attributes$class("el"), htmlAttrs), allChildren));
+                    return adjacentFlexboxCorrection(A3($elm$html$Html$node, node, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), htmlAttrs), allChildren));
                 }
                 else {
                     var keyed = children.a;
@@ -9797,7 +9797,7 @@
                         var child = _v14.b;
                         return _Utils_Tuple2(key, $mdgriffith$style_elements$Element$Internal$Render$renderElement_raw($elm$core$Maybe$Just(inherit), stylesheet, $mdgriffith$style_elements$Element$Internal$Render$detectOrder_raw(keyed, i), child));
                     }), keyed);
-                    return adjacentFlexboxCorrection(A3($elm$html$Html$Keyed$node, node, _List_Cons($elm$html$Html$Attributes$class("el"), htmlAttrs), childHtml));
+                    return adjacentFlexboxCorrection(A3($elm$html$Html$Keyed$node, node, _List_Cons($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "el"), htmlAttrs), childHtml));
                 }
         }
     }, $mdgriffith$style_elements$Element$Internal$Render$renderElement = F4($mdgriffith$style_elements$Element$Internal$Render$renderElement_raw);
@@ -9817,7 +9817,7 @@
         return _List_Cons($mdgriffith$style_elements$Element$Internal$Render$renderElement_raw($elm$core$Maybe$Nothing, stylesheet, $mdgriffith$style_elements$Element$Internal$Render$FirstAndLast, adjusted), fixedScreenElements);
     }, $mdgriffith$style_elements$Element$Internal$Render$render = F2($mdgriffith$style_elements$Element$Internal$Render$render_raw);
     var $mdgriffith$style_elements$Element$Internal$Render$viewport_raw = function (stylesheet, elm) {
-        return A2($elm$html$Html$div, { $: 1, a: $elm$html$Html$Attributes$class("style-elements"), b: { $: 1, a: _VirtualDom_style_raw("width", "100%"), b: { $: 1, a: _VirtualDom_style_raw("height", "100%"), b: _List_Nil } } }, _Utils_ap($mdgriffith$style_elements$Element$Internal$Render$embed_raw(true, stylesheet), $mdgriffith$style_elements$Element$Internal$Render$render_raw(stylesheet, elm)));
+        return A2($elm$html$Html$div, { $: 1, a: $elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "style-elements"), b: { $: 1, a: _VirtualDom_style_raw("width", "100%"), b: { $: 1, a: _VirtualDom_style_raw("height", "100%"), b: _List_Nil } } }, _Utils_ap($mdgriffith$style_elements$Element$Internal$Render$embed_raw(true, stylesheet), $mdgriffith$style_elements$Element$Internal$Render$render_raw(stylesheet, elm)));
     }, $mdgriffith$style_elements$Element$Internal$Render$viewport = F2($mdgriffith$style_elements$Element$Internal$Render$viewport_raw);
     var $mdgriffith$style_elements$Element$viewport = $mdgriffith$style_elements$Element$Internal$Render$viewport;
     var $elm_explorations$benchmark$Benchmark$Runner$App$view = function (model) {
