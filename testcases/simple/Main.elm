@@ -19,7 +19,7 @@ values =
 
 
 many =
-    List.repeat 1000 values
+    List.repeat 100 values
         |> List.concat
 
 

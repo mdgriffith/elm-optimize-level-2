@@ -2704,7 +2704,7 @@
     var $author$project$Main$Two_raw = (a, b) => ({ $: 2, a, b }), $author$project$Main$Two = F2($author$project$Main$Two_raw);
     var $author$project$Main$Zero = { $: 0, a: null, b: null };
     var $author$project$Main$values = { $: 1, a: $author$project$Main$Zero, b: { $: 1, a: $author$project$Main$One(5), b: { $: 1, a: $author$project$Main$Two_raw("Two", "two"), b: _List_Nil } } };
-    var $author$project$Main$many = $elm$core$List$concat($elm$core$List$repeat_raw(1000, $author$project$Main$values));
+    var $author$project$Main$many = $elm$core$List$concat($elm$core$List$repeat_raw(100, $author$project$Main$values));
     var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
     var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
     var $author$project$Main$main = function () {
