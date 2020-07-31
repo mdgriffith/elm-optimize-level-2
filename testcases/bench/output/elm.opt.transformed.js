@@ -5,126 +5,22 @@
         wrapper.f = fun;
         return wrapper;
     }
-    function F2(fun) {
-        return F(2, fun, function (a) { return function (b) { return fun(a, b); }; });
-    }
-    function F3(fun) {
-        return F(3, fun, function (a) {
-            return function (b) { return function (c) { return fun(a, b, c); }; };
-        });
-    }
-    function F4(fun) {
-        return F(4, fun, function (a) {
-            return function (b) {
-                return function (c) {
-                    return function (d) { return fun(a, b, c, d); };
-                };
-            };
-        });
-    }
-    function F5(fun) {
-        return F(5, fun, function (a) {
-            return function (b) {
-                return function (c) {
-                    return function (d) { return function (e) { return fun(a, b, c, d, e); }; };
-                };
-            };
-        });
-    }
-    function F6(fun) {
-        return F(6, fun, function (a) {
-            return function (b) {
-                return function (c) {
-                    return function (d) {
-                        return function (e) {
-                            return function (f) {
-                                return fun(a, b, c, d, e, f);
-                            };
-                        };
-                    };
-                };
-            };
-        });
-    }
-    function F7(fun) {
-        return F(7, fun, function (a) {
-            return function (b) {
-                return function (c) {
-                    return function (d) {
-                        return function (e) {
-                            return function (f) {
-                                return function (g) { return fun(a, b, c, d, e, f, g); };
-                            };
-                        };
-                    };
-                };
-            };
-        });
-    }
-    function F8(fun) {
-        return F(8, fun, function (a) {
-            return function (b) {
-                return function (c) {
-                    return function (d) {
-                        return function (e) {
-                            return function (f) {
-                                return function (g) {
-                                    return function (h) {
-                                        return fun(a, b, c, d, e, f, g, h);
-                                    };
-                                };
-                            };
-                        };
-                    };
-                };
-            };
-        });
-    }
-    function F9(fun) {
-        return F(9, fun, function (a) {
-            return function (b) {
-                return function (c) {
-                    return function (d) {
-                        return function (e) {
-                            return function (f) {
-                                return function (g) {
-                                    return function (h) {
-                                        return function (i) {
-                                            return fun(a, b, c, d, e, f, g, h, i);
-                                        };
-                                    };
-                                };
-                            };
-                        };
-                    };
-                };
-            };
-        });
-    }
-    function A2(fun, a, b) {
-        return fun.a === 2 ? fun.f(a, b) : fun(a)(b);
-    }
-    function A3(fun, a, b, c) {
-        return fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
-    }
-    function A4(fun, a, b, c, d) {
-        return fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
-    }
-    function A5(fun, a, b, c, d, e) {
-        return fun.a === 5 ? fun.f(a, b, c, d, e) : fun(a)(b)(c)(d)(e);
-    }
-    function A6(fun, a, b, c, d, e, f) {
-        return fun.a === 6 ? fun.f(a, b, c, d, e, f) : fun(a)(b)(c)(d)(e)(f);
-    }
-    function A7(fun, a, b, c, d, e, f, g) {
-        return fun.a === 7 ? fun.f(a, b, c, d, e, f, g) : fun(a)(b)(c)(d)(e)(f)(g);
-    }
-    function A8(fun, a, b, c, d, e, f, g, h) {
-        return fun.a === 8 ? fun.f(a, b, c, d, e, f, g, h) : fun(a)(b)(c)(d)(e)(f)(g)(h);
-    }
-    function A9(fun, a, b, c, d, e, f, g, h, i) {
-        return fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
-    }
+    const F2 = (fun) => F(2, fun, (a) => (b) => fun(a, b));
+    const F3 = (fun) => F(3, fun, (a) => (b) => (c) => fun(a, b, c));
+    const F4 = (fun) => F(4, fun, (a) => (b) => (c) => (d) => fun(a, b, c, d));
+    const F5 = (fun) => F(5, fun, (a) => (b) => (c) => (d) => (e) => fun(a, b, c, d, e));
+    const F6 = (fun) => F(6, fun, (a) => (b) => (c) => (d) => (e) => (f) => fun(a, b, c, d, e, f));
+    const F7 = (fun) => F(7, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => fun(a, b, c, d, e, f, g));
+    const F8 = (fun) => F(8, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => (h) => fun(a, b, c, d, e, f, g, h));
+    const F9 = (fun) => F(9, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => (h) => (i) => fun(a, b, c, d, e, f, g, h, i));
+    const A2 = (fun, a, b) => fun.a === 2 ? fun.f(a, b) : fun(a)(b);
+    const A3 = (fun, a, b, c) => fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
+    const A4 = (fun, a, b, c, d) => fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
+    const A5 = (fun, a, b, c, d, e) => fun.a === 5 ? fun.f(a, b, c, d, e) : fun(a)(b)(c)(d)(e);
+    const A6 = (fun, a, b, c, d, e, f) => fun.a === 6 ? fun.f(a, b, c, d, e, f) : fun(a)(b)(c)(d)(e)(f);
+    const A7 = (fun, a, b, c, d, e, f, g) => fun.a === 7 ? fun.f(a, b, c, d, e, f, g) : fun(a)(b)(c)(d)(e)(f)(g);
+    const A8 = (fun, a, b, c, d, e, f, g, h) => fun.a === 8 ? fun.f(a, b, c, d, e, f, g, h) : fun(a)(b)(c)(d)(e)(f)(g)(h);
+    const A9 = (fun, a, b, c, d, e, f, g, h, i) => fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
     // EQUALITY
     function _Utils_eq(x, y) {
         for (var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack); isEqual && (pair = stack.pop()); isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)) { }
@@ -168,7 +64,7 @@
         return true;
     }
     var _Utils_equal = F2(_Utils_eq);
-    var _Utils_notEqual_raw = function (a, b) { return !_Utils_eq(a, b); }, _Utils_notEqual = F2(_Utils_notEqual_raw);
+    var _Utils_notEqual_raw = (a, b) => !_Utils_eq(a, b), _Utils_notEqual = F2(_Utils_notEqual_raw);
     // COMPARISONS
     // Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
     // the particular integer values assigned to LT, EQ, and GT.
@@ -201,10 +97,10 @@
         for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) { } // WHILE_CONSES
         return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
     }
-    var _Utils_lt_raw = function (a, b) { return _Utils_cmp(a, b) < 0; }, _Utils_lt = F2(_Utils_lt_raw);
-    var _Utils_le_raw = function (a, b) { return _Utils_cmp(a, b) < 1; }, _Utils_le = F2(_Utils_le_raw);
-    var _Utils_gt_raw = function (a, b) { return _Utils_cmp(a, b) > 0; }, _Utils_gt = F2(_Utils_gt_raw);
-    var _Utils_ge_raw = function (a, b) { return _Utils_cmp(a, b) >= 0; }, _Utils_ge = F2(_Utils_ge_raw);
+    var _Utils_lt_raw = (a, b) => _Utils_cmp(a, b) < 0, _Utils_lt = F2(_Utils_lt_raw);
+    var _Utils_le_raw = (a, b) => _Utils_cmp(a, b) < 1, _Utils_le = F2(_Utils_le_raw);
+    var _Utils_gt_raw = (a, b) => _Utils_cmp(a, b) > 0, _Utils_gt = F2(_Utils_gt_raw);
+    var _Utils_ge_raw = (a, b) => _Utils_cmp(a, b) >= 0, _Utils_ge = F2(_Utils_ge_raw);
     var _Utils_compare_raw = function (x, y) {
         var n = _Utils_cmp(x, y);
         return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
@@ -212,13 +108,19 @@
     // COMMON VALUES
     var _Utils_Tuple0 = 0;
     var _Utils_Tuple0_UNUSED = { $: "#0" };
-    function _Utils_Tuple2(a, b) { return { a: a, b: b }; }
-    function _Utils_Tuple2_UNUSED(a, b) { return { $: "#2", a: a, b: b }; }
-    function _Utils_Tuple3(a, b, c) { return { a: a, b: b, c: c }; }
-    function _Utils_Tuple3_UNUSED(a, b, c) { return { $: "#3", a: a, b: b, c: c }; }
-    function _Utils_chr(c) { return c; }
-    function _Utils_chr_UNUSED(c) { return new String(c); }
-    const _Utils_update = (oldRecord, updatedFields) => ({ ...oldRecord, ...updatedFields });
+    const _Utils_Tuple2 = (a, b) => ({ a: a, b: b });
+    const _Utils_Tuple2_UNUSED = (a, b) => ({ $: "#2", a: a, b: b });
+    const _Utils_Tuple3 = (a, b, c) => ({ a: a, b: b, c: c });
+    const _Utils_Tuple3_UNUSED = (a, b, c) => ({ $: "#3", a: a, b: b, c: c });
+    const _Utils_chr = (c) => c;
+    const _Utils_chr_UNUSED = (c) => new String(c);
+    const _Utils_update = (oldRecord, updatedFields) => {
+        var newRecord = { ...oldRecord };
+        for (var key in updatedFields) {
+            newRecord[key] = updatedFields[key];
+        }
+        return newRecord;
+    };
     // APPEND
     var _Utils_append = F2(_Utils_ap);
     function _Utils_ap(xs, ys) {
@@ -240,8 +142,8 @@
     }
     var _List_Nil = { $: 0, a: null, b: null };
     var _List_Nil_UNUSED = { $: "[]" };
-    function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
-    function _List_Cons_UNUSED(hd, tl) { return { $: "::", a: hd, b: tl }; }
+    const _List_Cons = (hd, tl) => ({ $: 1, a: hd, b: tl });
+    const _List_Cons_UNUSED = (hd, tl) => ({ $: "::", a: hd, b: tl });
     var _List_cons = F2(_List_Cons);
     function _List_fromArray(arr) {
         var out = _List_Nil;
@@ -285,24 +187,14 @@
         }
         return _List_fromArray(arr);
     }, _List_map5 = F6(_List_map5_raw);
-    var _List_sortBy_raw = function (f, xs) {
-        return _List_fromArray(_List_toArray(xs).sort(function (a, b) {
-            return _Utils_cmp(f(a), f(b));
-        }));
-    }, _List_sortBy = F2(_List_sortBy_raw);
-    var _List_sortWith_raw = function (f, xs) {
-        return _List_fromArray(_List_toArray(xs).sort(function (a, b) {
-            var ord = A2(f, a, b);
-            return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
-        }));
-    }, _List_sortWith = F2(_List_sortWith_raw);
+    var _List_sortBy_raw = (f, xs) => _List_fromArray(_List_toArray(xs).sort((a, b) => _Utils_cmp(f(a), f(b)))), _List_sortBy = F2(_List_sortBy_raw);
+    var _List_sortWith_raw = (f, xs) => _List_fromArray(_List_toArray(xs).sort(function (a, b) {
+        var ord = A2(f, a, b);
+        return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
+    })), _List_sortWith = F2(_List_sortWith_raw);
     var _JsArray_empty = [];
-    function _JsArray_singleton(value) {
-        return [value];
-    }
-    function _JsArray_length(array) {
-        return array.length;
-    }
+    const _JsArray_singleton = (value) => [value];
+    const _JsArray_length = (array) => array.length;
     var _JsArray_initialize_raw = function (size, offset, func) {
         var result = new Array(size);
         for (var i = 0; i < size; i++) {
@@ -319,9 +211,7 @@
         result.length = i;
         return _Utils_Tuple2(result, ls);
     }, _JsArray_initializeFromList = F2(_JsArray_initializeFromList_raw);
-    var _JsArray_unsafeGet_raw = function (index, array) {
-        return array[index];
-    }, _JsArray_unsafeGet = F2(_JsArray_unsafeGet_raw);
+    var _JsArray_unsafeGet_raw = (index, array) => array[index], _JsArray_unsafeGet = F2(_JsArray_unsafeGet_raw);
     var _JsArray_unsafeSet_raw = function (index, value, array) {
         var length = array.length;
         var result = new Array(length);
@@ -369,9 +259,7 @@
         }
         return result;
     }, _JsArray_indexedMap = F3(_JsArray_indexedMap_raw);
-    var _JsArray_slice_raw = function (from, to, array) {
-        return array.slice(from, to);
-    }, _JsArray_slice = F3(_JsArray_slice_raw);
+    var _JsArray_slice_raw = (from, to, array) => array.slice(from, to), _JsArray_slice = F3(_JsArray_slice_raw);
     var _JsArray_appendN_raw = function (n, dest, source) {
         var destLen = dest.length;
         var itemsToCopy = n - destLen;
@@ -389,31 +277,19 @@
         return result;
     }, _JsArray_appendN = F3(_JsArray_appendN_raw);
     // LOG
-    var _Debug_log_raw = function (tag, value) {
-        return value;
-    }, _Debug_log = F2(_Debug_log_raw);
+    var _Debug_log_raw = (tag, value) => value, _Debug_log = F2(_Debug_log_raw);
     var _Debug_log_UNUSED_raw = function (tag, value) {
         console.log(tag + ": " + _Debug_toString(value));
         return value;
     }, _Debug_log_UNUSED = F2(_Debug_log_UNUSED_raw);
-    // TODOS
-    function _Debug_todo(moduleName, region) {
-        return function (message) {
-            _Debug_crash(8, moduleName, region, message);
-        };
-    }
-    function _Debug_todoCase(moduleName, region, value) {
-        return function (message) {
-            _Debug_crash(9, moduleName, region, value, message);
-        };
-    }
-    // TO STRING
-    function _Debug_toString(value) {
-        return "<internals>";
-    }
-    function _Debug_toString_UNUSED(value) {
-        return _Debug_toAnsiString(false, value);
-    }
+    const _Debug_todo = (moduleName, region) => function (message) {
+        _Debug_crash(8, moduleName, region, message);
+    };
+    const _Debug_todoCase = (moduleName, region, value) => function (message) {
+        _Debug_crash(9, moduleName, region, value, message);
+    };
+    const _Debug_toString = (value) => "<internals>";
+    const _Debug_toString_UNUSED = (value) => _Debug_toAnsiString(false, value);
     function _Debug_toAnsiString(ansi, value) {
         if (typeof value === "function") {
             return _Debug_internalColor(ansi, "<function>");
@@ -513,27 +389,13 @@
             return s.replace(/\"/g, "\\\"");
         }
     }
-    function _Debug_ctorColor(ansi, string) {
-        return ansi ? "\u001B[96m" + string + "\u001B[0m" : string;
-    }
-    function _Debug_numberColor(ansi, string) {
-        return ansi ? "\u001B[95m" + string + "\u001B[0m" : string;
-    }
-    function _Debug_stringColor(ansi, string) {
-        return ansi ? "\u001B[93m" + string + "\u001B[0m" : string;
-    }
-    function _Debug_charColor(ansi, string) {
-        return ansi ? "\u001B[92m" + string + "\u001B[0m" : string;
-    }
-    function _Debug_fadeColor(ansi, string) {
-        return ansi ? "\u001B[37m" + string + "\u001B[0m" : string;
-    }
-    function _Debug_internalColor(ansi, string) {
-        return ansi ? "\u001B[36m" + string + "\u001B[0m" : string;
-    }
-    function _Debug_toHexDigit(n) {
-        return String.fromCharCode(n < 10 ? 48 + n : 55 + n);
-    }
+    const _Debug_ctorColor = (ansi, string) => ansi ? "\u001B[96m" + string + "\u001B[0m" : string;
+    const _Debug_numberColor = (ansi, string) => ansi ? "\u001B[95m" + string + "\u001B[0m" : string;
+    const _Debug_stringColor = (ansi, string) => ansi ? "\u001B[93m" + string + "\u001B[0m" : string;
+    const _Debug_charColor = (ansi, string) => ansi ? "\u001B[92m" + string + "\u001B[0m" : string;
+    const _Debug_fadeColor = (ansi, string) => ansi ? "\u001B[37m" + string + "\u001B[0m" : string;
+    const _Debug_internalColor = (ansi, string) => ansi ? "\u001B[36m" + string + "\u001B[0m" : string;
+    const _Debug_toHexDigit = (n) => String.fromCharCode(n < 10 ? 48 + n : 55 + n);
     // CRASH
     function _Debug_crash(identifier) {
         throw new Error("https://github.com/elm/core/blob/1.0.0/hints/" + identifier + ".md");
@@ -586,13 +448,13 @@
         return "on lines " + region.aT.aq + " through " + region.a_.aq;
     }
     // MATH
-    var _Basics_add_raw = function (a, b) { return a + b; }, _Basics_add = F2(_Basics_add_raw);
-    var _Basics_sub_raw = function (a, b) { return a - b; }, _Basics_sub = F2(_Basics_sub_raw);
-    var _Basics_mul_raw = function (a, b) { return a * b; }, _Basics_mul = F2(_Basics_mul_raw);
-    var _Basics_fdiv_raw = function (a, b) { return a / b; }, _Basics_fdiv = F2(_Basics_fdiv_raw);
-    var _Basics_idiv_raw = function (a, b) { return (a / b) | 0; }, _Basics_idiv = F2(_Basics_idiv_raw);
+    var _Basics_add_raw = (a, b) => a + b, _Basics_add = F2(_Basics_add_raw);
+    var _Basics_sub_raw = (a, b) => a - b, _Basics_sub = F2(_Basics_sub_raw);
+    var _Basics_mul_raw = (a, b) => a * b, _Basics_mul = F2(_Basics_mul_raw);
+    var _Basics_fdiv_raw = (a, b) => a / b, _Basics_fdiv = F2(_Basics_fdiv_raw);
+    var _Basics_idiv_raw = (a, b) => (a / b) | 0, _Basics_idiv = F2(_Basics_idiv_raw);
     var _Basics_pow = F2(Math.pow);
-    var _Basics_remainderBy_raw = function (b, a) { return a % b; }, _Basics_remainderBy = F2(_Basics_remainderBy_raw);
+    var _Basics_remainderBy_raw = (b, a) => a % b, _Basics_remainderBy = F2(_Basics_remainderBy_raw);
     // https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
     var _Basics_modBy_raw = function (modulus, x) {
         var answer = x % modulus;
@@ -613,24 +475,20 @@
     var _Basics_asin = Math.asin;
     var _Basics_atan = Math.atan;
     var _Basics_atan2 = F2(Math.atan2);
-    // MORE MATH
-    function _Basics_toFloat(x) { return x; }
-    function _Basics_truncate(n) { return n | 0; }
-    function _Basics_isInfinite(n) { return n === Infinity || n === -Infinity; }
+    const _Basics_toFloat = (x) => x;
+    const _Basics_truncate = (n) => n | 0;
+    const _Basics_isInfinite = (n) => n === Infinity || n === -Infinity;
     var _Basics_ceiling = Math.ceil;
     var _Basics_floor = Math.floor;
     var _Basics_round = Math.round;
     var _Basics_sqrt = Math.sqrt;
     var _Basics_log = Math.log;
     var _Basics_isNaN = isNaN;
-    // BOOLEANS
-    function _Basics_not(bool) { return !bool; }
-    var _Basics_and_raw = function (a, b) { return a && b; }, _Basics_and = F2(_Basics_and_raw);
-    var _Basics_or_raw = function (a, b) { return a || b; }, _Basics_or = F2(_Basics_or_raw);
-    var _Basics_xor_raw = function (a, b) { return a !== b; }, _Basics_xor = F2(_Basics_xor_raw);
-    var _String_cons_raw = function (chr, str) {
-        return chr + str;
-    }, _String_cons = F2(_String_cons_raw);
+    const _Basics_not = (bool) => !bool;
+    var _Basics_and_raw = (a, b) => a && b, _Basics_and = F2(_Basics_and_raw);
+    var _Basics_or_raw = (a, b) => a || b, _Basics_or = F2(_Basics_or_raw);
+    var _Basics_xor_raw = (a, b) => a !== b, _Basics_xor = F2(_Basics_xor_raw);
+    var _String_cons_raw = (chr, str) => chr + str, _String_cons = F2(_String_cons_raw);
     function _String_uncons(string) {
         var word = string.charCodeAt(0);
         return !isNaN(word)
@@ -639,12 +497,8 @@
                 : _Utils_Tuple2(_Utils_chr(string[0]), string.slice(1)))
             : $elm$core$Maybe$Nothing;
     }
-    var _String_append_raw = function (a, b) {
-        return a + b;
-    }, _String_append = F2(_String_append_raw);
-    function _String_length(str) {
-        return str.length;
-    }
+    var _String_append_raw = (a, b) => a + b, _String_append = F2(_String_append_raw);
+    const _String_length = (str) => str.length;
     var _String_map_raw = function (func, string) {
         var len = string.length;
         var array = new Array(len);
@@ -726,36 +580,16 @@
         }
         return state;
     }, _String_foldr = F3(_String_foldr_raw);
-    var _String_split_raw = function (sep, str) {
-        return str.split(sep);
-    }, _String_split = F2(_String_split_raw);
-    var _String_join_raw = function (sep, strs) {
-        return strs.join(sep);
-    }, _String_join = F2(_String_join_raw);
-    var _String_slice_raw = function (start, end, str) {
-        return str.slice(start, end);
-    }, _String_slice = F3(_String_slice_raw);
-    function _String_trim(str) {
-        return str.trim();
-    }
-    function _String_trimLeft(str) {
-        return str.replace(/^\s+/, "");
-    }
-    function _String_trimRight(str) {
-        return str.replace(/\s+$/, "");
-    }
-    function _String_words(str) {
-        return _List_fromArray(str.trim().split(/\s+/g));
-    }
-    function _String_lines(str) {
-        return _List_fromArray(str.split(/\r\n|\r|\n/g));
-    }
-    function _String_toUpper(str) {
-        return str.toUpperCase();
-    }
-    function _String_toLower(str) {
-        return str.toLowerCase();
-    }
+    var _String_split_raw = (sep, str) => str.split(sep), _String_split = F2(_String_split_raw);
+    var _String_join_raw = (sep, strs) => strs.join(sep), _String_join = F2(_String_join_raw);
+    var _String_slice_raw = (start, end, str) => str.slice(start, end), _String_slice = F3(_String_slice_raw);
+    const _String_trim = (str) => str.trim();
+    const _String_trimLeft = (str) => str.replace(/^\s+/, "");
+    const _String_trimRight = (str) => str.replace(/\s+$/, "");
+    const _String_words = (str) => _List_fromArray(str.trim().split(/\s+/g));
+    const _String_lines = (str) => _List_fromArray(str.split(/\r\n|\r|\n/g));
+    const _String_toUpper = (str) => str.toUpperCase();
+    const _String_toLower = (str) => str.toLowerCase();
     var _String_any_raw = function (isGood, string) {
         var i = string.length;
         while (i--) {
@@ -786,16 +620,10 @@
         }
         return true;
     }, _String_all = F2(_String_all_raw);
-    var _String_contains_raw = function (sub, str) {
-        return str.indexOf(sub) > -1;
-    }, _String_contains = F2(_String_contains_raw);
-    var _String_startsWith_raw = function (sub, str) {
-        return str.indexOf(sub) === 0;
-    }, _String_startsWith = F2(_String_startsWith_raw);
-    var _String_endsWith_raw = function (sub, str) {
-        return str.length >= sub.length &&
-            str.lastIndexOf(sub) === str.length - sub.length;
-    }, _String_endsWith = F2(_String_endsWith_raw);
+    var _String_contains_raw = (sub, str) => str.indexOf(sub) > -1, _String_contains = F2(_String_contains_raw);
+    var _String_startsWith_raw = (sub, str) => str.indexOf(sub) === 0, _String_startsWith = F2(_String_startsWith_raw);
+    var _String_endsWith_raw = (sub, str) => str.length >= sub.length &&
+        str.lastIndexOf(sub) === str.length - sub.length, _String_endsWith = F2(_String_endsWith_raw);
     var _String_indexes_raw = function (sub, str) {
         var subLen = sub.length;
         if (subLen < 1) {
@@ -809,10 +637,7 @@
         }
         return _List_fromArray(is);
     }, _String_indexes = F2(_String_indexes_raw);
-    // TO STRING
-    function _String_fromNumber(number) {
-        return number + "";
-    }
+    const _String_fromNumber = (number) => number + "";
     // INT CONVERSIONS
     function _String_toInt(str) {
         var total = 0;
@@ -839,9 +664,7 @@
         // faster isNaN check
         return n === n ? $elm$core$Maybe$Just(n) : $elm$core$Maybe$Nothing;
     }
-    function _String_fromList(chars) {
-        return _List_toArray(chars).join("");
-    }
+    const _String_fromList = (chars) => _List_toArray(chars).join("");
     function _Char_toCode(char) {
         var code = char.charCodeAt(0);
         if (55296 <= code && code <= 56319) {
@@ -849,149 +672,88 @@
         }
         return code;
     }
-    function _Char_fromCode(code) {
-        return _Utils_chr((code < 0 || 1114111 < code)
-            ? "\uFFFD"
-            :
-                (code <= 65535)
-                    ? String.fromCharCode(code)
-                    :
-                        (code -= 65536,
-                            String.fromCharCode(Math.floor(code / 1024) + 55296, code % 1024 + 56320)));
-    }
-    function _Char_toUpper(char) {
-        return _Utils_chr(char.toUpperCase());
-    }
-    function _Char_toLower(char) {
-        return _Utils_chr(char.toLowerCase());
-    }
-    function _Char_toLocaleUpper(char) {
-        return _Utils_chr(char.toLocaleUpperCase());
-    }
-    function _Char_toLocaleLower(char) {
-        return _Utils_chr(char.toLocaleLowerCase());
-    }
-    /**_UNUSED/
-    function _Json_errorToString(error)
-    {
-        return $elm$json$Json$Decode$errorToString(error);
-    }
-    //*/
-    // CORE DECODERS
-    function _Json_succeed(msg) {
-        return {
-            $: 0,
-            a: msg
-        };
-    }
-    function _Json_fail(msg) {
-        return {
-            $: 1,
-            a: msg
-        };
-    }
-    function _Json_decodePrim(decoder) {
-        return { $: 2, b: decoder };
-    }
-    var _Json_decodeInt = _Json_decodePrim(function (value) {
-        return (typeof value !== "number")
-            ? _Json_expecting("an INT", value)
-            :
-                (-2147483647 < value && value < 2147483647 && (value | 0) === value)
-                    ? $elm$core$Result$Ok(value)
-                    :
-                        (isFinite(value) && !(value % 1))
-                            ? $elm$core$Result$Ok(value)
-                            : _Json_expecting("an INT", value);
+    const _Char_fromCode = (code) => _Utils_chr((code < 0 || 1114111 < code)
+        ? "\uFFFD"
+        :
+            (code <= 65535)
+                ? String.fromCharCode(code)
+                :
+                    (code -= 65536,
+                        String.fromCharCode(Math.floor(code / 1024) + 55296, code % 1024 + 56320)));
+    const _Char_toUpper = (char) => _Utils_chr(char.toUpperCase());
+    const _Char_toLower = (char) => _Utils_chr(char.toLowerCase());
+    const _Char_toLocaleUpper = (char) => _Utils_chr(char.toLocaleUpperCase());
+    const _Char_toLocaleLower = (char) => _Utils_chr(char.toLocaleLowerCase());
+    const _Json_succeed = (msg) => ({
+        $: 0,
+        a: msg
     });
-    var _Json_decodeBool = _Json_decodePrim(function (value) {
-        return (typeof value === "boolean")
-            ? $elm$core$Result$Ok(value)
-            : _Json_expecting("a BOOL", value);
+    const _Json_fail = (msg) => ({
+        $: 1,
+        a: msg
     });
-    var _Json_decodeFloat = _Json_decodePrim(function (value) {
-        return (typeof value === "number")
-            ? $elm$core$Result$Ok(value)
-            : _Json_expecting("a FLOAT", value);
+    const _Json_decodePrim = (decoder) => ({ $: 2, b: decoder });
+    var _Json_decodeInt = _Json_decodePrim((value) => (typeof value !== "number")
+        ? _Json_expecting("an INT", value)
+        :
+            (-2147483647 < value && value < 2147483647 && (value | 0) === value)
+                ? $elm$core$Result$Ok(value)
+                :
+                    (isFinite(value) && !(value % 1))
+                        ? $elm$core$Result$Ok(value)
+                        : _Json_expecting("an INT", value));
+    var _Json_decodeBool = _Json_decodePrim((value) => (typeof value === "boolean")
+        ? $elm$core$Result$Ok(value)
+        : _Json_expecting("a BOOL", value));
+    var _Json_decodeFloat = _Json_decodePrim((value) => (typeof value === "number")
+        ? $elm$core$Result$Ok(value)
+        : _Json_expecting("a FLOAT", value));
+    var _Json_decodeValue = _Json_decodePrim((value) => $elm$core$Result$Ok(_Json_wrap(value)));
+    var _Json_decodeString = _Json_decodePrim((value) => (typeof value === "string")
+        ? $elm$core$Result$Ok(value)
+        : (value instanceof String)
+            ? $elm$core$Result$Ok(value + "")
+            : _Json_expecting("a STRING", value));
+    const _Json_decodeList = (decoder) => ({ $: 3, b: decoder });
+    const _Json_decodeArray = (decoder) => ({ $: 4, b: decoder });
+    const _Json_decodeNull = (value) => ({ $: 5, c: value });
+    var _Json_decodeField_raw = (field, decoder) => ({
+        $: 6,
+        d: field,
+        b: decoder
+    }), _Json_decodeField = F2(_Json_decodeField_raw);
+    var _Json_decodeIndex_raw = (index, decoder) => ({
+        $: 7,
+        e: index,
+        b: decoder
+    }), _Json_decodeIndex = F2(_Json_decodeIndex_raw);
+    const _Json_decodeKeyValuePairs = (decoder) => ({
+        $: 8,
+        b: decoder
     });
-    var _Json_decodeValue = _Json_decodePrim(function (value) {
-        return $elm$core$Result$Ok(_Json_wrap(value));
+    const _Json_mapMany = (f, decoders) => ({
+        $: 9,
+        f: f,
+        g: decoders
     });
-    var _Json_decodeString = _Json_decodePrim(function (value) {
-        return (typeof value === "string")
-            ? $elm$core$Result$Ok(value)
-            : (value instanceof String)
-                ? $elm$core$Result$Ok(value + "")
-                : _Json_expecting("a STRING", value);
+    var _Json_andThen_raw = (callback, decoder) => ({
+        $: 10,
+        b: decoder,
+        h: callback
+    }), _Json_andThen = F2(_Json_andThen_raw);
+    const _Json_oneOf = (decoders) => ({
+        $: 11,
+        g: decoders
     });
-    function _Json_decodeList(decoder) { return { $: 3, b: decoder }; }
-    function _Json_decodeArray(decoder) { return { $: 4, b: decoder }; }
-    function _Json_decodeNull(value) { return { $: 5, c: value }; }
-    var _Json_decodeField_raw = function (field, decoder) {
-        return {
-            $: 6,
-            d: field,
-            b: decoder
-        };
-    }, _Json_decodeField = F2(_Json_decodeField_raw);
-    var _Json_decodeIndex_raw = function (index, decoder) {
-        return {
-            $: 7,
-            e: index,
-            b: decoder
-        };
-    }, _Json_decodeIndex = F2(_Json_decodeIndex_raw);
-    function _Json_decodeKeyValuePairs(decoder) {
-        return {
-            $: 8,
-            b: decoder
-        };
-    }
-    function _Json_mapMany(f, decoders) {
-        return {
-            $: 9,
-            f: f,
-            g: decoders
-        };
-    }
-    var _Json_andThen_raw = function (callback, decoder) {
-        return {
-            $: 10,
-            b: decoder,
-            h: callback
-        };
-    }, _Json_andThen = F2(_Json_andThen_raw);
-    function _Json_oneOf(decoders) {
-        return {
-            $: 11,
-            g: decoders
-        };
-    }
     // DECODING OBJECTS
-    var _Json_map1_raw = function (f, d1) {
-        return _Json_mapMany(f, [d1]);
-    }, _Json_map1 = F2(_Json_map1_raw);
-    var _Json_map2_raw = function (f, d1, d2) {
-        return _Json_mapMany(f, [d1, d2]);
-    }, _Json_map2 = F3(_Json_map2_raw);
-    var _Json_map3_raw = function (f, d1, d2, d3) {
-        return _Json_mapMany(f, [d1, d2, d3]);
-    }, _Json_map3 = F4(_Json_map3_raw);
-    var _Json_map4_raw = function (f, d1, d2, d3, d4) {
-        return _Json_mapMany(f, [d1, d2, d3, d4]);
-    }, _Json_map4 = F5(_Json_map4_raw);
-    var _Json_map5_raw = function (f, d1, d2, d3, d4, d5) {
-        return _Json_mapMany(f, [d1, d2, d3, d4, d5]);
-    }, _Json_map5 = F6(_Json_map5_raw);
-    var _Json_map6_raw = function (f, d1, d2, d3, d4, d5, d6) {
-        return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6]);
-    }, _Json_map6 = F7(_Json_map6_raw);
-    var _Json_map7_raw = function (f, d1, d2, d3, d4, d5, d6, d7) {
-        return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7]);
-    }, _Json_map7 = F8(_Json_map7_raw);
-    var _Json_map8_raw = function (f, d1, d2, d3, d4, d5, d6, d7, d8) {
-        return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7, d8]);
-    }, _Json_map8 = F9(_Json_map8_raw);
+    var _Json_map1_raw = (f, d1) => _Json_mapMany(f, [d1]), _Json_map1 = F2(_Json_map1_raw);
+    var _Json_map2_raw = (f, d1, d2) => _Json_mapMany(f, [d1, d2]), _Json_map2 = F3(_Json_map2_raw);
+    var _Json_map3_raw = (f, d1, d2, d3) => _Json_mapMany(f, [d1, d2, d3]), _Json_map3 = F4(_Json_map3_raw);
+    var _Json_map4_raw = (f, d1, d2, d3, d4) => _Json_mapMany(f, [d1, d2, d3, d4]), _Json_map4 = F5(_Json_map4_raw);
+    var _Json_map5_raw = (f, d1, d2, d3, d4, d5) => _Json_mapMany(f, [d1, d2, d3, d4, d5]), _Json_map5 = F6(_Json_map5_raw);
+    var _Json_map6_raw = (f, d1, d2, d3, d4, d5, d6) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6]), _Json_map6 = F7(_Json_map6_raw);
+    var _Json_map7_raw = (f, d1, d2, d3, d4, d5, d6, d7) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7]), _Json_map7 = F8(_Json_map7_raw);
+    var _Json_map8_raw = (f, d1, d2, d3, d4, d5, d6, d7, d8) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7, d8]), _Json_map8 = F9(_Json_map8_raw);
     // DECODE
     var _Json_runOnString_raw = function (decoder, string) {
         try {
@@ -1002,9 +764,7 @@
             return $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("This is not valid JSON! " + e.message, _Json_wrap(string)));
         }
     }, _Json_runOnString = F2(_Json_runOnString_raw);
-    var _Json_run_raw = function (decoder, value) {
-        return _Json_runHelp(decoder, _Json_unwrap(value));
-    }, _Json_run = F2(_Json_run_raw);
+    var _Json_run_raw = (decoder, value) => _Json_runHelp(decoder, _Json_unwrap(value)), _Json_run = F2(_Json_run_raw);
     function _Json_runHelp(decoder, value) {
         switch (decoder.$) {
             case 2:
@@ -1101,15 +861,9 @@
         }
         return $elm$core$Result$Ok(toElmValue(array));
     }
-    function _Json_isArray(value) {
-        return Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
-    }
-    function _Json_toElmArray(array) {
-        return $elm$core$Array$initialize_raw(array.length, function (i) { return array[i]; });
-    }
-    function _Json_expecting(type, value) {
-        return $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
-    }
+    const _Json_isArray = (value) => Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
+    const _Json_toElmArray = (array) => $elm$core$Array$initialize_raw(array.length, (i) => array[i]);
+    const _Json_expecting = (type, value) => $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
     // EQUALITY
     function _Json_equality(x, y) {
         if (x === y) {
@@ -1155,66 +909,49 @@
         return true;
     }
     // ENCODE
-    var _Json_encode_raw = function (indentLevel, value) {
-        return JSON.stringify(_Json_unwrap(value), null, indentLevel) + "";
-    }, _Json_encode = F2(_Json_encode_raw);
-    function _Json_wrap_UNUSED(value) { return { $: 0, a: value }; }
-    function _Json_unwrap_UNUSED(value) { return value.a; }
-    function _Json_wrap(value) { return value; }
-    function _Json_unwrap(value) { return value; }
-    function _Json_emptyArray() { return []; }
-    function _Json_emptyObject() { return {}; }
+    var _Json_encode_raw = (indentLevel, value) => JSON.stringify(_Json_unwrap(value), null, indentLevel) + "", _Json_encode = F2(_Json_encode_raw);
+    const _Json_wrap_UNUSED = (value) => ({ $: 0, a: value });
+    const _Json_unwrap_UNUSED = (value) => value.a;
+    const _Json_wrap = (value) => value;
+    const _Json_unwrap = (value) => value;
+    const _Json_emptyArray = () => [];
+    const _Json_emptyObject = () => ({});
     var _Json_addField_raw = function (key, value, object) {
         object[key] = _Json_unwrap(value);
         return object;
     }, _Json_addField = F3(_Json_addField_raw);
-    function _Json_addEntry(func) {
-        return F2(function (entry, array) {
-            array.push(_Json_unwrap(func(entry)));
-            return array;
-        });
-    }
+    const _Json_addEntry = (func) => F2(function (entry, array) {
+        array.push(_Json_unwrap(func(entry)));
+        return array;
+    });
     var _Json_encodeNull = _Json_wrap(null);
-    // TASKS
-    function _Scheduler_succeed(value) {
-        return {
-            $: 0,
-            a: value
-        };
-    }
-    function _Scheduler_fail(error) {
-        return {
-            $: 1,
-            a: error
-        };
-    }
-    function _Scheduler_binding(callback) {
-        return {
-            $: 2,
-            b: callback,
-            c: null
-        };
-    }
-    var _Scheduler_andThen_raw = function (callback, task) {
-        return {
-            $: 3,
-            b: callback,
-            d: task
-        };
-    }, _Scheduler_andThen = F2(_Scheduler_andThen_raw);
-    var _Scheduler_onError_raw = function (callback, task) {
-        return {
-            $: 4,
-            b: callback,
-            d: task
-        };
-    }, _Scheduler_onError = F2(_Scheduler_onError_raw);
-    function _Scheduler_receive(callback) {
-        return {
-            $: 5,
-            b: callback
-        };
-    }
+    const _Scheduler_succeed = (value) => ({
+        $: 0,
+        a: value
+    });
+    const _Scheduler_fail = (error) => ({
+        $: 1,
+        a: error
+    });
+    const _Scheduler_binding = (callback) => ({
+        $: 2,
+        b: callback,
+        c: null
+    });
+    var _Scheduler_andThen_raw = (callback, task) => ({
+        $: 3,
+        b: callback,
+        d: task
+    }), _Scheduler_andThen = F2(_Scheduler_andThen_raw);
+    var _Scheduler_onError_raw = (callback, task) => ({
+        $: 4,
+        b: callback,
+        d: task
+    }), _Scheduler_onError = F2(_Scheduler_onError_raw);
+    const _Scheduler_receive = (callback) => ({
+        $: 5,
+        b: callback
+    });
     // PROCESSES
     var _Scheduler_guid = 0;
     function _Scheduler_rawSpawn(task) {
@@ -1228,31 +965,25 @@
         _Scheduler_enqueue(proc);
         return proc;
     }
-    function _Scheduler_spawn(task) {
-        return _Scheduler_binding(function (callback) {
-            callback(_Scheduler_succeed(_Scheduler_rawSpawn(task)));
-        });
-    }
+    const _Scheduler_spawn = (task) => _Scheduler_binding(function (callback) {
+        callback(_Scheduler_succeed(_Scheduler_rawSpawn(task)));
+    });
     function _Scheduler_rawSend(proc, msg) {
         proc.h.push(msg);
         _Scheduler_enqueue(proc);
     }
-    var _Scheduler_send_raw = function (proc, msg) {
-        return _Scheduler_binding(function (callback) {
-            _Scheduler_rawSend(proc, msg);
-            callback(_Scheduler_succeed(_Utils_Tuple0));
-        });
-    }, _Scheduler_send = F2(_Scheduler_send_raw);
-    function _Scheduler_kill(proc) {
-        return _Scheduler_binding(function (callback) {
-            var task = proc.f;
-            if (task.$ === 2 && task.c) {
-                task.c();
-            }
-            proc.f = null;
-            callback(_Scheduler_succeed(_Utils_Tuple0));
-        });
-    }
+    var _Scheduler_send_raw = (proc, msg) => _Scheduler_binding(function (callback) {
+        _Scheduler_rawSend(proc, msg);
+        callback(_Scheduler_succeed(_Utils_Tuple0));
+    }), _Scheduler_send = F2(_Scheduler_send_raw);
+    const _Scheduler_kill = (proc) => _Scheduler_binding(function (callback) {
+        var task = proc.f;
+        if (task.$ === 2 && task.c) {
+            task.c();
+        }
+        proc.f = null;
+        callback(_Scheduler_succeed(_Utils_Tuple0));
+    });
     /* STEP PROCESSES
     
     type alias Process =
@@ -1314,18 +1045,14 @@
             }
         }
     }
-    function _Process_sleep(time) {
-        return _Scheduler_binding(function (callback) {
-            var id = setTimeout(function () {
-                callback(_Scheduler_succeed(_Utils_Tuple0));
-            }, time);
-            return function () { clearTimeout(id); };
-        });
-    }
+    const _Process_sleep = (time) => _Scheduler_binding(function (callback) {
+        var id = setTimeout(function () {
+            callback(_Scheduler_succeed(_Utils_Tuple0));
+        }, time);
+        return function () { clearTimeout(id); };
+    });
     // PROGRAMS
-    var _Platform_worker_raw = function (impl, flagDecoder, debugMetadata, args) {
-        return _Platform_initialize(flagDecoder, args, impl.a4, impl.bt, impl.b6, function () { return function () { }; });
-    }, _Platform_worker = F4(_Platform_worker_raw);
+    var _Platform_worker_raw = (impl, flagDecoder, debugMetadata, args) => _Platform_initialize(flagDecoder, args, impl.a4, impl.bt, impl.b6, () => function () { }), _Platform_worker = F4(_Platform_worker_raw);
     // INITIALIZE A PROGRAM
     function _Platform_initialize(flagDecoder, args, init, update, subscriptions, stepperBuilder) {
         var result = _Json_run_raw(flagDecoder, _Json_wrap(args ? args["flags"] : undefined));
@@ -1367,15 +1094,13 @@
         }
         return ports;
     }
-    function _Platform_createManager(init, onEffects, onSelfMsg, cmdMap, subMap) {
-        return {
-            b: init,
-            c: onEffects,
-            d: onSelfMsg,
-            e: cmdMap,
-            f: subMap
-        };
-    }
+    const _Platform_createManager = (init, onEffects, onSelfMsg, cmdMap, subMap) => ({
+        b: init,
+        c: onEffects,
+        d: onSelfMsg,
+        e: cmdMap,
+        f: subMap
+    });
     function _Platform_instantiateManager(info, sendToApp) {
         var router = {
             g: sendToApp,
@@ -1385,55 +1110,40 @@
         var onSelfMsg = info.d;
         var cmdMap = info.e;
         var subMap = info.f;
-        function loop(state) {
-            return _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
-                var value = msg.a;
-                if (msg.$ === 0) {
-                    return A3(onSelfMsg, router, value, state);
-                }
-                return cmdMap && subMap
-                    ? A4(onEffects, router, value.i, value.j, state)
-                    : A3(onEffects, router, cmdMap ? value.i : value.j, state);
-            }));
-        }
+        const loop = (state) => _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
+            var value = msg.a;
+            if (msg.$ === 0) {
+                return A3(onSelfMsg, router, value, state);
+            }
+            return cmdMap && subMap
+                ? A4(onEffects, router, value.i, value.j, state)
+                : A3(onEffects, router, cmdMap ? value.i : value.j, state);
+        }));
         return router.h = _Scheduler_rawSpawn(_Scheduler_andThen_raw(loop, info.b));
     }
     // ROUTING
-    var _Platform_sendToApp_raw = function (router, msg) {
-        return _Scheduler_binding(function (callback) {
-            router.g(msg);
-            callback(_Scheduler_succeed(_Utils_Tuple0));
-        });
-    }, _Platform_sendToApp = F2(_Platform_sendToApp_raw);
-    var _Platform_sendToSelf_raw = function (router, msg) {
-        return _Scheduler_send_raw(router.h, {
-            $: 0,
-            a: msg
-        });
-    }, _Platform_sendToSelf = F2(_Platform_sendToSelf_raw);
-    // BAGS
-    function _Platform_leaf(home) {
-        return function (value) {
-            return {
-                $: 1,
-                k: home,
-                l: value
-            };
-        };
-    }
-    function _Platform_batch(list) {
-        return {
-            $: 2,
-            m: list
-        };
-    }
-    var _Platform_map_raw = function (tagger, bag) {
-        return {
-            $: 3,
-            n: tagger,
-            o: bag
-        };
-    }, _Platform_map = F2(_Platform_map_raw);
+    var _Platform_sendToApp_raw = (router, msg) => _Scheduler_binding(function (callback) {
+        router.g(msg);
+        callback(_Scheduler_succeed(_Utils_Tuple0));
+    }), _Platform_sendToApp = F2(_Platform_sendToApp_raw);
+    var _Platform_sendToSelf_raw = (router, msg) => _Scheduler_send_raw(router.h, {
+        $: 0,
+        a: msg
+    }), _Platform_sendToSelf = F2(_Platform_sendToSelf_raw);
+    const _Platform_leaf = (home) => (value) => ({
+        $: 1,
+        k: home,
+        l: value
+    });
+    const _Platform_batch = (list) => ({
+        $: 2,
+        m: list
+    });
+    var _Platform_map_raw = (tagger, bag) => ({
+        $: 3,
+        n: tagger,
+        o: bag
+    }), _Platform_map = F2(_Platform_map_raw);
     // PIPE BAGS INTO EFFECT MANAGERS
     //
     // Effects must be queued!
@@ -1540,7 +1250,7 @@
         };
         return _Platform_leaf(name);
     }
-    var _Platform_outgoingPortMap_raw = function (tagger, value) { return value; }, _Platform_outgoingPortMap = F2(_Platform_outgoingPortMap_raw);
+    var _Platform_outgoingPortMap_raw = (tagger, value) => value, _Platform_outgoingPortMap = F2(_Platform_outgoingPortMap_raw);
     function _Platform_setupOutgoingPort(name) {
         var subs = [];
         var converter = _Platform_effectManagers[name].u;
@@ -1587,11 +1297,7 @@
         };
         return _Platform_leaf(name);
     }
-    var _Platform_incomingPortMap_raw = function (tagger, finalTagger) {
-        return function (value) {
-            return tagger(finalTagger(value));
-        };
-    }, _Platform_incomingPortMap = F2(_Platform_incomingPortMap_raw);
+    var _Platform_incomingPortMap_raw = (tagger, finalTagger) => (value) => tagger(finalTagger(value)), _Platform_incomingPortMap = F2(_Platform_incomingPortMap_raw);
     function _Platform_setupIncomingPort(name, sendToApp) {
         var subs = _List_Nil;
         var converter = _Platform_effectManagers[name].u;
@@ -1664,190 +1370,116 @@
         node.parentNode.replaceChild(_VirtualDom_render(virtualNode, function () { }), node);
         return {};
     }, _VirtualDom_init = F4(_VirtualDom_init_raw);
-    // TEXT
-    function _VirtualDom_text(string) {
-        return {
-            $: 0,
-            a: string
-        };
-    }
+    const _VirtualDom_text = (string) => ({
+        $: 0,
+        a: string
+    });
     // NODE
-    var _VirtualDom_nodeNS_raw = function (namespace, tag) {
-        return F2(function (factList, kidList) {
-            for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
-             {
-                var kid = kidList.a;
-                descendantsCount += (kid.b || 0);
-                kids.push(kid);
-            }
-            descendantsCount += kids.length;
-            return {
-                $: 1,
-                c: tag,
-                d: _VirtualDom_organizeFacts(factList),
-                e: kids,
-                f: namespace,
-                b: descendantsCount
-            };
-        });
-    }, _VirtualDom_nodeNS = F2(_VirtualDom_nodeNS_raw);
+    var _VirtualDom_nodeNS_raw = (namespace, tag) => F2(function (factList, kidList) {
+        for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
+         {
+            var kid = kidList.a;
+            descendantsCount += (kid.b || 0);
+            kids.push(kid);
+        }
+        descendantsCount += kids.length;
+        return {
+            $: 1,
+            c: tag,
+            d: _VirtualDom_organizeFacts(factList),
+            e: kids,
+            f: namespace,
+            b: descendantsCount
+        };
+    }), _VirtualDom_nodeNS = F2(_VirtualDom_nodeNS_raw);
     var _VirtualDom_node_a0 = undefined, _VirtualDom_node = _VirtualDom_nodeNS(_VirtualDom_node_a0);
     // KEYED NODE
-    var _VirtualDom_keyedNodeNS_raw = function (namespace, tag) {
-        return F2(function (factList, kidList) {
-            for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
-             {
-                var kid = kidList.a;
-                descendantsCount += (kid.b.b || 0);
-                kids.push(kid);
-            }
-            descendantsCount += kids.length;
-            return {
-                $: 2,
-                c: tag,
-                d: _VirtualDom_organizeFacts(factList),
-                e: kids,
-                f: namespace,
-                b: descendantsCount
-            };
-        });
-    }, _VirtualDom_keyedNodeNS = F2(_VirtualDom_keyedNodeNS_raw);
-    var _VirtualDom_keyedNode_a0 = undefined, _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(_VirtualDom_keyedNode_a0);
-    // CUSTOM
-    function _VirtualDom_custom(factList, model, render, diff) {
+    var _VirtualDom_keyedNodeNS_raw = (namespace, tag) => F2(function (factList, kidList) {
+        for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
+         {
+            var kid = kidList.a;
+            descendantsCount += (kid.b.b || 0);
+            kids.push(kid);
+        }
+        descendantsCount += kids.length;
         return {
-            $: 3,
+            $: 2,
+            c: tag,
             d: _VirtualDom_organizeFacts(factList),
-            g: model,
-            h: render,
-            i: diff
+            e: kids,
+            f: namespace,
+            b: descendantsCount
         };
-    }
+    }), _VirtualDom_keyedNodeNS = F2(_VirtualDom_keyedNodeNS_raw);
+    var _VirtualDom_keyedNode_a0 = undefined, _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(_VirtualDom_keyedNode_a0);
+    const _VirtualDom_custom = (factList, model, render, diff) => ({
+        $: 3,
+        d: _VirtualDom_organizeFacts(factList),
+        g: model,
+        h: render,
+        i: diff
+    });
     // MAP
-    var _VirtualDom_map_raw = function (tagger, node) {
-        return {
-            $: 4,
-            j: tagger,
-            k: node,
-            b: 1 + (node.b || 0)
-        };
-    }, _VirtualDom_map = F2(_VirtualDom_map_raw);
-    // LAZY
-    function _VirtualDom_thunk(refs, thunk) {
-        return {
-            $: 5,
-            l: refs,
-            m: thunk,
-            k: undefined
-        };
-    }
-    var _VirtualDom_lazy_raw = function (func, a) {
-        return _VirtualDom_thunk([func, a], function () {
-            return func(a);
-        });
-    }, _VirtualDom_lazy = F2(_VirtualDom_lazy_raw);
-    var _VirtualDom_lazy2_raw = function (func, a, b) {
-        return _VirtualDom_thunk([func, a, b], function () {
-            return A2(func, a, b);
-        });
-    }, _VirtualDom_lazy2 = F3(_VirtualDom_lazy2_raw);
-    var _VirtualDom_lazy3_raw = function (func, a, b, c) {
-        return _VirtualDom_thunk([func, a, b, c], function () {
-            return A3(func, a, b, c);
-        });
-    }, _VirtualDom_lazy3 = F4(_VirtualDom_lazy3_raw);
-    var _VirtualDom_lazy4_raw = function (func, a, b, c, d) {
-        return _VirtualDom_thunk([func, a, b, c, d], function () {
-            return A4(func, a, b, c, d);
-        });
-    }, _VirtualDom_lazy4 = F5(_VirtualDom_lazy4_raw);
-    var _VirtualDom_lazy5_raw = function (func, a, b, c, d, e) {
-        return _VirtualDom_thunk([func, a, b, c, d, e], function () {
-            return A5(func, a, b, c, d, e);
-        });
-    }, _VirtualDom_lazy5 = F6(_VirtualDom_lazy5_raw);
-    var _VirtualDom_lazy6_raw = function (func, a, b, c, d, e, f) {
-        return _VirtualDom_thunk([func, a, b, c, d, e, f], function () {
-            return A6(func, a, b, c, d, e, f);
-        });
-    }, _VirtualDom_lazy6 = F7(_VirtualDom_lazy6_raw);
-    var _VirtualDom_lazy7_raw = function (func, a, b, c, d, e, f, g) {
-        return _VirtualDom_thunk([func, a, b, c, d, e, f, g], function () {
-            return A7(func, a, b, c, d, e, f, g);
-        });
-    }, _VirtualDom_lazy7 = F8(_VirtualDom_lazy7_raw);
-    var _VirtualDom_lazy8_raw = function (func, a, b, c, d, e, f, g, h) {
-        return _VirtualDom_thunk([func, a, b, c, d, e, f, g, h], function () {
-            return A8(func, a, b, c, d, e, f, g, h);
-        });
-    }, _VirtualDom_lazy8 = F9(_VirtualDom_lazy8_raw);
+    var _VirtualDom_map_raw = (tagger, node) => ({
+        $: 4,
+        j: tagger,
+        k: node,
+        b: 1 + (node.b || 0)
+    }), _VirtualDom_map = F2(_VirtualDom_map_raw);
+    const _VirtualDom_thunk = (refs, thunk) => ({
+        $: 5,
+        l: refs,
+        m: thunk,
+        k: undefined
+    });
+    var _VirtualDom_lazy_raw = (func, a) => _VirtualDom_thunk([func, a], () => func(a)), _VirtualDom_lazy = F2(_VirtualDom_lazy_raw);
+    var _VirtualDom_lazy2_raw = (func, a, b) => _VirtualDom_thunk([func, a, b], () => A2(func, a, b)), _VirtualDom_lazy2 = F3(_VirtualDom_lazy2_raw);
+    var _VirtualDom_lazy3_raw = (func, a, b, c) => _VirtualDom_thunk([func, a, b, c], () => A3(func, a, b, c)), _VirtualDom_lazy3 = F4(_VirtualDom_lazy3_raw);
+    var _VirtualDom_lazy4_raw = (func, a, b, c, d) => _VirtualDom_thunk([func, a, b, c, d], () => A4(func, a, b, c, d)), _VirtualDom_lazy4 = F5(_VirtualDom_lazy4_raw);
+    var _VirtualDom_lazy5_raw = (func, a, b, c, d, e) => _VirtualDom_thunk([func, a, b, c, d, e], () => A5(func, a, b, c, d, e)), _VirtualDom_lazy5 = F6(_VirtualDom_lazy5_raw);
+    var _VirtualDom_lazy6_raw = (func, a, b, c, d, e, f) => _VirtualDom_thunk([func, a, b, c, d, e, f], () => A6(func, a, b, c, d, e, f)), _VirtualDom_lazy6 = F7(_VirtualDom_lazy6_raw);
+    var _VirtualDom_lazy7_raw = (func, a, b, c, d, e, f, g) => _VirtualDom_thunk([func, a, b, c, d, e, f, g], () => A7(func, a, b, c, d, e, f, g)), _VirtualDom_lazy7 = F8(_VirtualDom_lazy7_raw);
+    var _VirtualDom_lazy8_raw = (func, a, b, c, d, e, f, g, h) => _VirtualDom_thunk([func, a, b, c, d, e, f, g, h], () => A8(func, a, b, c, d, e, f, g, h)), _VirtualDom_lazy8 = F9(_VirtualDom_lazy8_raw);
     // FACTS
-    var _VirtualDom_on_raw = function (key, handler) {
-        return {
-            $: "a0",
-            n: key,
-            o: handler
-        };
-    }, _VirtualDom_on = F2(_VirtualDom_on_raw);
-    var _VirtualDom_style_raw = function (key, value) {
-        return {
-            $: "a1",
-            n: key,
-            o: value
-        };
-    }, _VirtualDom_style = F2(_VirtualDom_style_raw);
-    var _VirtualDom_property_raw = function (key, value) {
-        return {
-            $: "a2",
-            n: key,
-            o: value
-        };
-    }, _VirtualDom_property = F2(_VirtualDom_property_raw);
-    var _VirtualDom_attribute_raw = function (key, value) {
-        return {
-            $: "a3",
-            n: key,
-            o: value
-        };
-    }, _VirtualDom_attribute = F2(_VirtualDom_attribute_raw);
-    var _VirtualDom_attributeNS_raw = function (namespace, key, value) {
-        return {
-            $: "a4",
-            n: key,
-            o: { f: namespace, o: value }
-        };
-    }, _VirtualDom_attributeNS = F3(_VirtualDom_attributeNS_raw);
-    // XSS ATTACK VECTOR CHECKS
-    function _VirtualDom_noScript(tag) {
-        return tag == "script" ? "p" : tag;
-    }
-    function _VirtualDom_noOnOrFormAction(key) {
-        return /^(on|formAction$)/i.test(key) ? "data-" + key : key;
-    }
-    function _VirtualDom_noInnerHtmlOrFormAction(key) {
-        return key == "innerHTML" || key == "formAction" ? "data-" + key : key;
-    }
-    function _VirtualDom_noJavaScriptUri(value) {
-        return /^javascript:/i.test(value.replace(/\s/g, "")) ? "" : value;
-    }
-    function _VirtualDom_noJavaScriptUri_UNUSED(value) {
-        return /^javascript:/i.test(value.replace(/\s/g, ""))
-            ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
-            : value;
-    }
-    function _VirtualDom_noJavaScriptOrHtmlUri(value) {
-        return /^\s*(javascript:|data:text\/html)/i.test(value) ? "" : value;
-    }
-    function _VirtualDom_noJavaScriptOrHtmlUri_UNUSED(value) {
-        return /^\s*(javascript:|data:text\/html)/i.test(value)
-            ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
-            : value;
-    }
+    var _VirtualDom_on_raw = (key, handler) => ({
+        $: "a0",
+        n: key,
+        o: handler
+    }), _VirtualDom_on = F2(_VirtualDom_on_raw);
+    var _VirtualDom_style_raw = (key, value) => ({
+        $: "a1",
+        n: key,
+        o: value
+    }), _VirtualDom_style = F2(_VirtualDom_style_raw);
+    var _VirtualDom_property_raw = (key, value) => ({
+        $: "a2",
+        n: key,
+        o: value
+    }), _VirtualDom_property = F2(_VirtualDom_property_raw);
+    var _VirtualDom_attribute_raw = (key, value) => ({
+        $: "a3",
+        n: key,
+        o: value
+    }), _VirtualDom_attribute = F2(_VirtualDom_attribute_raw);
+    var _VirtualDom_attributeNS_raw = (namespace, key, value) => ({
+        $: "a4",
+        n: key,
+        o: { f: namespace, o: value }
+    }), _VirtualDom_attributeNS = F3(_VirtualDom_attributeNS_raw);
+    const _VirtualDom_noScript = (tag) => tag == "script" ? "p" : tag;
+    const _VirtualDom_noOnOrFormAction = (key) => /^(on|formAction$)/i.test(key) ? "data-" + key : key;
+    const _VirtualDom_noInnerHtmlOrFormAction = (key) => key == "innerHTML" || key == "formAction" ? "data-" + key : key;
+    const _VirtualDom_noJavaScriptUri = (value) => /^javascript:/i.test(value.replace(/\s/g, "")) ? "" : value;
+    const _VirtualDom_noJavaScriptUri_UNUSED = (value) => /^javascript:/i.test(value.replace(/\s/g, ""))
+        ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
+        : value;
+    const _VirtualDom_noJavaScriptOrHtmlUri = (value) => /^\s*(javascript:|data:text\/html)/i.test(value) ? "" : value;
+    const _VirtualDom_noJavaScriptOrHtmlUri_UNUSED = (value) => /^\s*(javascript:|data:text\/html)/i.test(value)
+        ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
+        : value;
     // MAP FACTS
-    var _VirtualDom_mapAttribute_raw = function (func, attr) {
-        return (attr.$ === "a0")
-            ? _VirtualDom_on_raw(attr.n, _VirtualDom_mapHandler(func, attr.o)) : attr;
-    }, _VirtualDom_mapAttribute = F2(_VirtualDom_mapAttribute_raw);
+    var _VirtualDom_mapAttribute_raw = (func, attr) => (attr.$ === "a0")
+        ? _VirtualDom_on_raw(attr.n, _VirtualDom_mapHandler(func, attr.o)) : attr, _VirtualDom_mapAttribute = F2(_VirtualDom_mapAttribute_raw);
     function _VirtualDom_mapHandler(func, handler) {
         var tag = $elm$virtual_dom$VirtualDom$toHandlerInt(handler);
         // 0 = Normal
@@ -1862,16 +1494,12 @@
                 : _VirtualDom_mapEventRecord, $elm$json$Json$Decode$succeed(func), handler.a)
         };
     }
-    var _VirtualDom_mapEventTuple_raw = function (func, tuple) {
-        return _Utils_Tuple2(func(tuple.a), tuple.b);
-    }, _VirtualDom_mapEventTuple = F2(_VirtualDom_mapEventTuple_raw);
-    var _VirtualDom_mapEventRecord_raw = function (func, record) {
-        return {
-            L: func(record.L),
-            aU: record.aU,
-            aP: record.aP
-        };
-    }, _VirtualDom_mapEventRecord = F2(_VirtualDom_mapEventRecord_raw);
+    var _VirtualDom_mapEventTuple_raw = (func, tuple) => _Utils_Tuple2(func(tuple.a), tuple.b), _VirtualDom_mapEventTuple = F2(_VirtualDom_mapEventTuple_raw);
+    var _VirtualDom_mapEventRecord_raw = (func, record) => ({
+        L: func(record.L),
+        aU: record.aU,
+        aP: record.aP
+    }), _VirtualDom_mapEventRecord = F2(_VirtualDom_mapEventRecord_raw);
     // ORGANIZE FACTS
     function _VirtualDom_organizeFacts(factList) {
         for (var facts = {}; factList.b; factList = factList.b) // WHILE_CONS
@@ -2054,9 +1682,7 @@
         callback.q = initialHandler;
         return callback;
     }
-    function _VirtualDom_equalEvents(x, y) {
-        return x.$ == y.$ && _Json_equality(x.a, y.a);
-    }
+    const _VirtualDom_equalEvents = (x, y) => x.$ == y.$ && _Json_equality(x.a, y.a);
     // DIFF
     // TODO: Should we do patches like in iOS?
     //
@@ -2687,52 +2313,48 @@
     }
     // ELEMENT
     var _Debugger_element;
-    var _Browser_element = _Debugger_element || F4(function (impl, flagDecoder, debugMetadata, args) {
-        return _Platform_initialize(flagDecoder, args, impl.a4, impl.bt, impl.b6, function (sendToApp, initialModel) {
-            var view = impl.bu;
-            /**/
-            var domNode = args["node"];
-            //*/
-            /**_UNUSED/
-            var domNode = args && args['node'] ? args['node'] : _Debug_crash(0);
-            //*/
-            var currNode = _VirtualDom_virtualize(domNode);
-            return _Browser_makeAnimator(initialModel, function (model) {
-                var nextNode = view(model);
-                var patches = _VirtualDom_diff(currNode, nextNode);
-                domNode = _VirtualDom_applyPatches(domNode, currNode, patches, sendToApp);
-                currNode = nextNode;
-            });
+    var _Browser_element = _Debugger_element || F4((impl, flagDecoder, debugMetadata, args) => _Platform_initialize(flagDecoder, args, impl.a4, impl.bt, impl.b6, function (sendToApp, initialModel) {
+        var view = impl.bu;
+        /**/
+        var domNode = args["node"];
+        //*/
+        /**_UNUSED/
+        var domNode = args && args['node'] ? args['node'] : _Debug_crash(0);
+        //*/
+        var currNode = _VirtualDom_virtualize(domNode);
+        return _Browser_makeAnimator(initialModel, function (model) {
+            var nextNode = view(model);
+            var patches = _VirtualDom_diff(currNode, nextNode);
+            domNode = _VirtualDom_applyPatches(domNode, currNode, patches, sendToApp);
+            currNode = nextNode;
         });
-    });
+    }));
     // DOCUMENT
     var _Debugger_document;
-    var _Browser_document = _Debugger_document || F4(function (impl, flagDecoder, debugMetadata, args) {
-        return _Platform_initialize(flagDecoder, args, impl.a4, impl.bt, impl.b6, function (sendToApp, initialModel) {
-            var divertHrefToApp = impl.aQ && impl.aQ(sendToApp);
-            var view = impl.bu;
-            var title = _VirtualDom_doc.title;
-            var bodyNode = _VirtualDom_doc.body;
-            var currNode = _VirtualDom_virtualize(bodyNode);
-            return _Browser_makeAnimator(initialModel, function (model) {
-                _VirtualDom_divertHrefToApp = divertHrefToApp;
-                var doc = view(model);
-                var nextNode = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "body")(_List_Nil)(doc.bD);
-                var patches = _VirtualDom_diff(currNode, nextNode);
-                bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
-                currNode = nextNode;
-                _VirtualDom_divertHrefToApp = 0;
-                (title !== doc.b7) && (_VirtualDom_doc.title = title = doc.b7);
-            });
+    var _Browser_document = _Debugger_document || F4((impl, flagDecoder, debugMetadata, args) => _Platform_initialize(flagDecoder, args, impl.a4, impl.bt, impl.b6, function (sendToApp, initialModel) {
+        var divertHrefToApp = impl.aQ && impl.aQ(sendToApp);
+        var view = impl.bu;
+        var title = _VirtualDom_doc.title;
+        var bodyNode = _VirtualDom_doc.body;
+        var currNode = _VirtualDom_virtualize(bodyNode);
+        return _Browser_makeAnimator(initialModel, function (model) {
+            _VirtualDom_divertHrefToApp = divertHrefToApp;
+            var doc = view(model);
+            var nextNode = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "body")(_List_Nil)(doc.bD);
+            var patches = _VirtualDom_diff(currNode, nextNode);
+            bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
+            currNode = nextNode;
+            _VirtualDom_divertHrefToApp = 0;
+            (title !== doc.b7) && (_VirtualDom_doc.title = title = doc.b7);
         });
-    });
+    }));
     // ANIMATION
     var _Browser_cancelAnimationFrame = typeof cancelAnimationFrame !== "undefined"
         ? cancelAnimationFrame
         : function (id) { clearTimeout(id); };
     var _Browser_requestAnimationFrame = typeof requestAnimationFrame !== "undefined"
         ? requestAnimationFrame
-        : function (callback) { return setTimeout(callback, 1000 / 60); };
+        : (callback) => setTimeout(callback, 1000 / 60);
     function _Browser_makeAnimator(model, draw) {
         draw(model);
         var state = 0;
@@ -2775,118 +2397,88 @@
                     }
                 });
             },
-            a4: function (flags) {
-                return A3(impl.a4, flags, _Browser_getUrl(), key);
-            },
+            a4: (flags) => A3(impl.a4, flags, _Browser_getUrl(), key),
             bu: impl.bu,
             bt: impl.bt,
             b6: impl.b6
         });
     }
-    function _Browser_getUrl() {
-        return $elm$url$Url$fromString(_VirtualDom_doc.location.href).a || _Debug_crash(1);
-    }
-    var _Browser_go_raw = function (key, n) {
-        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-            n && history.go(n);
-            key();
-        }));
-    }, _Browser_go = F2(_Browser_go_raw);
-    var _Browser_pushUrl_raw = function (key, url) {
-        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-            history.pushState({}, "", url);
-            key();
-        }));
-    }, _Browser_pushUrl = F2(_Browser_pushUrl_raw);
-    var _Browser_replaceUrl_raw = function (key, url) {
-        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-            history.replaceState({}, "", url);
-            key();
-        }));
-    }, _Browser_replaceUrl = F2(_Browser_replaceUrl_raw);
+    const _Browser_getUrl = () => $elm$url$Url$fromString(_VirtualDom_doc.location.href).a || _Debug_crash(1);
+    var _Browser_go_raw = (key, n) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
+        n && history.go(n);
+        key();
+    })), _Browser_go = F2(_Browser_go_raw);
+    var _Browser_pushUrl_raw = (key, url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
+        history.pushState({}, "", url);
+        key();
+    })), _Browser_pushUrl = F2(_Browser_pushUrl_raw);
+    var _Browser_replaceUrl_raw = (key, url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
+        history.replaceState({}, "", url);
+        key();
+    })), _Browser_replaceUrl = F2(_Browser_replaceUrl_raw);
     // GLOBAL EVENTS
     var _Browser_fakeNode = { addEventListener: function () { }, removeEventListener: function () { } };
     var _Browser_doc = typeof document !== "undefined" ? document : _Browser_fakeNode;
     var _Browser_window = typeof window !== "undefined" ? window : _Browser_fakeNode;
-    var _Browser_on_raw = function (node, eventName, sendToSelf) {
-        return _Scheduler_spawn(_Scheduler_binding(function (callback) {
-            function handler(event) { _Scheduler_rawSpawn(sendToSelf(event)); }
-            node.addEventListener(eventName, handler, _VirtualDom_passiveSupported && { passive: true });
-            return function () { node.removeEventListener(eventName, handler); };
-        }));
-    }, _Browser_on = F3(_Browser_on_raw);
+    var _Browser_on_raw = (node, eventName, sendToSelf) => _Scheduler_spawn(_Scheduler_binding(function (callback) {
+        function handler(event) { _Scheduler_rawSpawn(sendToSelf(event)); }
+        node.addEventListener(eventName, handler, _VirtualDom_passiveSupported && { passive: true });
+        return function () { node.removeEventListener(eventName, handler); };
+    })), _Browser_on = F3(_Browser_on_raw);
     var _Browser_decodeEvent_raw = function (decoder, event) {
         var result = _Json_runHelp(decoder, event);
         return $elm$core$Result$isOk(result) ? $elm$core$Maybe$Just(result.a) : $elm$core$Maybe$Nothing;
     }, _Browser_decodeEvent = F2(_Browser_decodeEvent_raw);
-    // PAGE VISIBILITY
-    function _Browser_visibilityInfo() {
-        return (typeof _VirtualDom_doc.hidden !== "undefined")
-            ? { bS: "hidden", bG: "visibilitychange" }
-            :
-                (typeof _VirtualDom_doc.mozHidden !== "undefined")
-                    ? { bS: "mozHidden", bG: "mozvisibilitychange" }
-                    :
-                        (typeof _VirtualDom_doc.msHidden !== "undefined")
-                            ? { bS: "msHidden", bG: "msvisibilitychange" }
-                            :
-                                (typeof _VirtualDom_doc.webkitHidden !== "undefined")
-                                    ? { bS: "webkitHidden", bG: "webkitvisibilitychange" }
-                                    : { bS: "hidden", bG: "visibilitychange" };
-    }
-    // ANIMATION FRAMES
-    function _Browser_rAF() {
-        return _Scheduler_binding(function (callback) {
-            var id = _Browser_requestAnimationFrame(function () {
-                callback(_Scheduler_succeed(Date.now()));
-            });
-            return function () {
-                _Browser_cancelAnimationFrame(id);
-            };
-        });
-    }
-    function _Browser_now() {
-        return _Scheduler_binding(function (callback) {
+    const _Browser_visibilityInfo = () => (typeof _VirtualDom_doc.hidden !== "undefined")
+        ? { bS: "hidden", bG: "visibilitychange" }
+        :
+            (typeof _VirtualDom_doc.mozHidden !== "undefined")
+                ? { bS: "mozHidden", bG: "mozvisibilitychange" }
+                :
+                    (typeof _VirtualDom_doc.msHidden !== "undefined")
+                        ? { bS: "msHidden", bG: "msvisibilitychange" }
+                        :
+                            (typeof _VirtualDom_doc.webkitHidden !== "undefined")
+                                ? { bS: "webkitHidden", bG: "webkitvisibilitychange" }
+                                : { bS: "hidden", bG: "visibilitychange" };
+    const _Browser_rAF = () => _Scheduler_binding(function (callback) {
+        var id = _Browser_requestAnimationFrame(function () {
             callback(_Scheduler_succeed(Date.now()));
         });
-    }
-    // DOM STUFF
-    function _Browser_withNode(id, doStuff) {
-        return _Scheduler_binding(function (callback) {
-            _Browser_requestAnimationFrame(function () {
-                var node = document.getElementById(id);
-                callback(node
-                    ? _Scheduler_succeed(doStuff(node))
-                    : _Scheduler_fail($elm$browser$Browser$Dom$NotFound(id)));
-            });
-        });
-    }
-    function _Browser_withWindow(doStuff) {
-        return _Scheduler_binding(function (callback) {
-            _Browser_requestAnimationFrame(function () {
-                callback(_Scheduler_succeed(doStuff()));
-            });
-        });
-    }
-    // FOCUS and BLUR
-    var _Browser_call_raw = function (functionName, id) {
-        return _Browser_withNode(id, function (node) {
-            node[functionName]();
-            return _Utils_Tuple0;
-        });
-    }, _Browser_call = F2(_Browser_call_raw);
-    // WINDOW VIEWPORT
-    function _Browser_getViewport() {
-        return {
-            bm: _Browser_getScene(),
-            bv: {
-                by: _Browser_window.pageXOffset,
-                bz: _Browser_window.pageYOffset,
-                bw: _Browser_doc.documentElement.clientWidth,
-                a1: _Browser_doc.documentElement.clientHeight
-            }
+        return function () {
+            _Browser_cancelAnimationFrame(id);
         };
-    }
+    });
+    const _Browser_now = () => _Scheduler_binding(function (callback) {
+        callback(_Scheduler_succeed(Date.now()));
+    });
+    const _Browser_withNode = (id, doStuff) => _Scheduler_binding(function (callback) {
+        _Browser_requestAnimationFrame(function () {
+            var node = document.getElementById(id);
+            callback(node
+                ? _Scheduler_succeed(doStuff(node))
+                : _Scheduler_fail($elm$browser$Browser$Dom$NotFound(id)));
+        });
+    });
+    const _Browser_withWindow = (doStuff) => _Scheduler_binding(function (callback) {
+        _Browser_requestAnimationFrame(function () {
+            callback(_Scheduler_succeed(doStuff()));
+        });
+    });
+    // FOCUS and BLUR
+    var _Browser_call_raw = (functionName, id) => _Browser_withNode(id, function (node) {
+        node[functionName]();
+        return _Utils_Tuple0;
+    }), _Browser_call = F2(_Browser_call_raw);
+    const _Browser_getViewport = () => ({
+        bm: _Browser_getScene(),
+        bv: {
+            by: _Browser_window.pageXOffset,
+            bz: _Browser_window.pageYOffset,
+            bw: _Browser_doc.documentElement.clientWidth,
+            a1: _Browser_doc.documentElement.clientHeight
+        }
+    });
     function _Browser_getScene() {
         var body = _Browser_doc.body;
         var elem = _Browser_doc.documentElement;
@@ -2895,128 +2487,92 @@
             a1: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
         };
     }
-    var _Browser_setViewport_raw = function (x, y) {
-        return _Browser_withWindow(function () {
-            _Browser_window.scroll(x, y);
-            return _Utils_Tuple0;
-        });
-    }, _Browser_setViewport = F2(_Browser_setViewport_raw);
-    // ELEMENT VIEWPORT
-    function _Browser_getViewportOf(id) {
-        return _Browser_withNode(id, function (node) {
-            return {
-                bm: {
-                    bw: node.scrollWidth,
-                    a1: node.scrollHeight
-                },
-                bv: {
-                    by: node.scrollLeft,
-                    bz: node.scrollTop,
-                    bw: node.clientWidth,
-                    a1: node.clientHeight
-                }
-            };
-        });
-    }
-    var _Browser_setViewportOf_raw = function (id, x, y) {
-        return _Browser_withNode(id, function (node) {
-            node.scrollLeft = x;
-            node.scrollTop = y;
-            return _Utils_Tuple0;
-        });
-    }, _Browser_setViewportOf = F3(_Browser_setViewportOf_raw);
-    // ELEMENT
-    function _Browser_getElement(id) {
-        return _Browser_withNode(id, function (node) {
-            var rect = node.getBoundingClientRect();
-            var x = _Browser_window.pageXOffset;
-            var y = _Browser_window.pageYOffset;
-            return {
-                bm: _Browser_getScene(),
-                bv: {
-                    by: x,
-                    bz: y,
-                    bw: _Browser_doc.documentElement.clientWidth,
-                    a1: _Browser_doc.documentElement.clientHeight
-                },
-                bN: {
-                    by: x + rect.left,
-                    bz: y + rect.top,
-                    bw: rect.width,
-                    a1: rect.height
-                }
-            };
-        });
-    }
-    // LOAD and RELOAD
-    function _Browser_reload(skipCache) {
-        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
-            _VirtualDom_doc.location.reload(skipCache);
-        }));
-    }
-    function _Browser_load(url) {
-        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
-            try {
-                _Browser_window.location = url;
+    var _Browser_setViewport_raw = (x, y) => _Browser_withWindow(function () {
+        _Browser_window.scroll(x, y);
+        return _Utils_Tuple0;
+    }), _Browser_setViewport = F2(_Browser_setViewport_raw);
+    const _Browser_getViewportOf = (id) => _Browser_withNode(id, (node) => ({
+        bm: {
+            bw: node.scrollWidth,
+            a1: node.scrollHeight
+        },
+        bv: {
+            by: node.scrollLeft,
+            bz: node.scrollTop,
+            bw: node.clientWidth,
+            a1: node.clientHeight
+        }
+    }));
+    var _Browser_setViewportOf_raw = (id, x, y) => _Browser_withNode(id, function (node) {
+        node.scrollLeft = x;
+        node.scrollTop = y;
+        return _Utils_Tuple0;
+    }), _Browser_setViewportOf = F3(_Browser_setViewportOf_raw);
+    const _Browser_getElement = (id) => _Browser_withNode(id, function (node) {
+        var rect = node.getBoundingClientRect();
+        var x = _Browser_window.pageXOffset;
+        var y = _Browser_window.pageYOffset;
+        return {
+            bm: _Browser_getScene(),
+            bv: {
+                by: x,
+                bz: y,
+                bw: _Browser_doc.documentElement.clientWidth,
+                a1: _Browser_doc.documentElement.clientHeight
+            },
+            bN: {
+                by: x + rect.left,
+                bz: y + rect.top,
+                bw: rect.width,
+                a1: rect.height
             }
-            catch (err) {
-                // Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
-                // Other browsers reload the page, so let's be consistent about that.
-                _VirtualDom_doc.location.reload(false);
-            }
-        }));
-    }
+        };
+    });
+    const _Browser_reload = (skipCache) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
+        _VirtualDom_doc.location.reload(skipCache);
+    }));
+    const _Browser_load = (url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
+        try {
+            _Browser_window.location = url;
+        }
+        catch (err) {
+            // Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
+            // Other browsers reload the page, so let's be consistent about that.
+            _VirtualDom_doc.location.reload(false);
+        }
+    }));
     var _Benchmark_getTimestamp = typeof performance !== "undefined"
         ? performance.now.bind(performance)
         : Date.now;
     // sample : Int -> Operation -> Task Error Float
-    var _Benchmark_sample_raw = function (n, fn) {
-        return _Scheduler_binding(function (callback) {
-            var start = _Benchmark_getTimestamp();
-            try {
-                for (var i = 0; i < n; i++) {
-                    fn();
-                }
+    var _Benchmark_sample_raw = (n, fn) => _Scheduler_binding(function (callback) {
+        var start = _Benchmark_getTimestamp();
+        try {
+            for (var i = 0; i < n; i++) {
+                fn();
             }
-            catch (error) {
-                if (error instanceof RangeError) {
-                    callback(_Scheduler_fail($elm_explorations$benchmark$Benchmark$LowLevel$StackOverflow));
-                }
-                else {
-                    callback(_Scheduler_fail($elm_explorations$benchmark$Benchmark$LowLevel$UnknownError(error.message)));
-                }
-                return;
+        }
+        catch (error) {
+            if (error instanceof RangeError) {
+                callback(_Scheduler_fail($elm_explorations$benchmark$Benchmark$LowLevel$StackOverflow));
             }
-            var end = _Benchmark_getTimestamp();
-            callback(_Scheduler_succeed(end - start));
-        });
-    }, _Benchmark_sample = F2(_Benchmark_sample_raw);
-    // operation : (() -> a) -> Operation
-    function _Benchmark_operation(thunk) {
-        return thunk;
-    }
-    var _Bitwise_and_raw = function (a, b) {
-        return a & b;
-    }, _Bitwise_and = F2(_Bitwise_and_raw);
-    var _Bitwise_or_raw = function (a, b) {
-        return a | b;
-    }, _Bitwise_or = F2(_Bitwise_or_raw);
-    var _Bitwise_xor_raw = function (a, b) {
-        return a ^ b;
-    }, _Bitwise_xor = F2(_Bitwise_xor_raw);
-    function _Bitwise_complement(a) {
-        return ~a;
-    }
+            else {
+                callback(_Scheduler_fail($elm_explorations$benchmark$Benchmark$LowLevel$UnknownError(error.message)));
+            }
+            return;
+        }
+        var end = _Benchmark_getTimestamp();
+        callback(_Scheduler_succeed(end - start));
+    }), _Benchmark_sample = F2(_Benchmark_sample_raw);
+    const _Benchmark_operation = (thunk) => thunk;
+    var _Bitwise_and_raw = (a, b) => a & b, _Bitwise_and = F2(_Bitwise_and_raw);
+    var _Bitwise_or_raw = (a, b) => a | b, _Bitwise_or = F2(_Bitwise_or_raw);
+    var _Bitwise_xor_raw = (a, b) => a ^ b, _Bitwise_xor = F2(_Bitwise_xor_raw);
+    const _Bitwise_complement = (a) => ~a;
     ;
-    var _Bitwise_shiftLeftBy_raw = function (offset, a) {
-        return a << offset;
-    }, _Bitwise_shiftLeftBy = F2(_Bitwise_shiftLeftBy_raw);
-    var _Bitwise_shiftRightBy_raw = function (offset, a) {
-        return a >> offset;
-    }, _Bitwise_shiftRightBy = F2(_Bitwise_shiftRightBy_raw);
-    var _Bitwise_shiftRightZfBy_raw = function (offset, a) {
-        return a >>> offset;
-    }, _Bitwise_shiftRightZfBy = F2(_Bitwise_shiftRightZfBy_raw);
+    var _Bitwise_shiftLeftBy_raw = (offset, a) => a << offset, _Bitwise_shiftLeftBy = F2(_Bitwise_shiftLeftBy_raw);
+    var _Bitwise_shiftRightBy_raw = (offset, a) => a >> offset, _Bitwise_shiftRightBy = F2(_Bitwise_shiftRightBy_raw);
+    var _Bitwise_shiftRightZfBy_raw = (offset, a) => a >>> offset, _Bitwise_shiftRightZfBy = F2(_Bitwise_shiftRightZfBy_raw);
     // CREATE
     var _Regex_never = /.^/;
     var _Regex_fromStringWith_raw = function (options, string) {
@@ -3035,9 +2591,7 @@
         }
     }, _Regex_fromStringWith = F2(_Regex_fromStringWith_raw);
     // USE
-    var _Regex_contains_raw = function (re, string) {
-        return string.match(re) !== null;
-    }, _Regex_contains = F2(_Regex_contains_raw);
+    var _Regex_contains_raw = (re, string) => string.match(re) !== null, _Regex_contains = F2(_Regex_contains_raw);
     var _Regex_findAtMost_raw = function (n, re, str) {
         var out = [];
         var number = 0;
@@ -3097,9 +2651,7 @@
         return _List_fromArray(out);
     }, _Regex_splitAtMost = F3(_Regex_splitAtMost_raw);
     var _Regex_infinity = Infinity;
-    var $elm$core$Basics$always_raw = function (a, _v0) {
-        return a;
-    }, $elm$core$Basics$always = F2($elm$core$Basics$always_raw);
+    var $elm$core$Basics$always_raw = (a, _v0) => a, $elm$core$Basics$always = F2($elm$core$Basics$always_raw);
     var $elm$core$Basics$EQ = 1;
     var $elm$core$Basics$GT = 2;
     var $elm$core$Basics$LT = 0;
@@ -3122,16 +2674,8 @@
             }
         }
     }, $elm$core$Dict$foldr = F3($elm$core$Dict$foldr_raw);
-    var $elm$core$Dict$toList = function (dict) {
-        return $elm$core$Dict$foldr_raw(F3(function (key, value, list) {
-            return _List_Cons(_Utils_Tuple2(key, value), list);
-        }), _List_Nil, dict);
-    };
-    var $elm$core$Dict$keys = function (dict) {
-        return $elm$core$Dict$foldr_raw(F3(function (key, value, keyList) {
-            return _List_Cons(key, keyList);
-        }), _List_Nil, dict);
-    };
+    var $elm$core$Dict$toList = (dict) => $elm$core$Dict$foldr_raw(F3((key, value, list) => _List_Cons(_Utils_Tuple2(key, value), list)), _List_Nil, dict);
+    var $elm$core$Dict$keys = (dict) => $elm$core$Dict$foldr_raw(F3((key, value, keyList) => _List_Cons(key, keyList)), _List_Nil, dict);
     var $elm$core$Set$toList = function (_v0) {
         var dict = _v0;
         return $elm$core$Dict$keys(dict);
@@ -3152,45 +2696,25 @@
         });
         return _JsArray_foldr_raw(helper, _JsArray_foldr_raw(func, baseCase, tail), tree);
     }, $elm$core$Array$foldr = F3($elm$core$Array$foldr_raw);
-    var $elm$core$Array$toList = function (array) {
-        return $elm$core$Array$foldr_raw($elm$core$List$cons, _List_Nil, array);
-    };
-    var $elm$core$Result$Err = function (a) {
-        return { $: 1, a: a };
-    };
-    var $elm$json$Json$Decode$Failure_raw = function (a, b) {
-        return { $: 3, a: a, b: b };
-    }, $elm$json$Json$Decode$Failure = F2($elm$json$Json$Decode$Failure_raw);
-    var $elm$json$Json$Decode$Field_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $elm$json$Json$Decode$Field = F2($elm$json$Json$Decode$Field_raw);
-    var $elm$json$Json$Decode$Index_raw = function (a, b) {
-        return { $: 1, a: a, b: b };
-    }, $elm$json$Json$Decode$Index = F2($elm$json$Json$Decode$Index_raw);
-    var $elm$core$Result$Ok = function (a) {
-        return { $: 0, a: a };
-    };
-    var $elm$json$Json$Decode$OneOf = function (a) {
-        return { $: 2, a: a };
-    };
+    var $elm$core$Array$toList = (array) => $elm$core$Array$foldr_raw($elm$core$List$cons, _List_Nil, array);
+    var $elm$core$Result$Err = (a) => ({ $: 1, a: a });
+    var $elm$json$Json$Decode$Failure_raw = (a, b) => ({ $: 3, a: a, b: b }), $elm$json$Json$Decode$Failure = F2($elm$json$Json$Decode$Failure_raw);
+    var $elm$json$Json$Decode$Field_raw = (a, b) => ({ $: 0, a: a, b: b }), $elm$json$Json$Decode$Field = F2($elm$json$Json$Decode$Field_raw);
+    var $elm$json$Json$Decode$Index_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm$json$Json$Decode$Index = F2($elm$json$Json$Decode$Index_raw);
+    var $elm$core$Result$Ok = (a) => ({ $: 0, a: a });
+    var $elm$json$Json$Decode$OneOf = (a) => ({ $: 2, a: a });
     var $elm$core$Basics$False = 1;
     var $elm$core$Basics$add = _Basics_add;
-    var $elm$core$Maybe$Just = function (a) { return { $: 0, a }; };
+    var $elm$core$Maybe$Just = a => ({ $: 0, a });
     var $elm$core$Maybe$Nothing = { $: 1, a: null };
     var $elm$core$String$all = _String_all;
     var $elm$core$Basics$and = _Basics_and;
     var $elm$core$Basics$append = _Utils_append;
     var $elm$json$Json$Encode$encode = _Json_encode;
     var $elm$core$String$fromInt = _String_fromNumber;
-    var $elm$core$String$join_raw = function (sep, chunks) {
-        return _String_join_raw(sep, _List_toArray(chunks));
-    }, $elm$core$String$join = F2($elm$core$String$join_raw);
-    var $elm$core$String$split_raw = function (sep, string) {
-        return _List_fromArray(_String_split_raw(sep, string));
-    }, $elm$core$String$split = F2($elm$core$String$split_raw);
-    var $elm$json$Json$Decode$indent = function (str) {
-        return $elm$core$String$join_raw("\n    ", $elm$core$String$split_raw("\n", str));
-    };
+    var $elm$core$String$join_raw = (sep, chunks) => _String_join_raw(sep, _List_toArray(chunks)), $elm$core$String$join = F2($elm$core$String$join_raw);
+    var $elm$core$String$split_raw = (sep, string) => _List_fromArray(_String_split_raw(sep, string)), $elm$core$String$split = F2($elm$core$String$split_raw);
+    var $elm$json$Json$Decode$indent = (str) => $elm$core$String$join_raw("\n    ", $elm$core$String$split_raw("\n", str));
     var $elm$core$List$foldl_raw = function (func, acc, list) {
         foldl: while (true) {
             if (!list.b) {
@@ -3207,11 +2731,7 @@
             }
         }
     }, $elm$core$List$foldl = F3($elm$core$List$foldl_raw);
-    var $elm$core$List$length = function (xs) {
-        return $elm$core$List$foldl_raw(F2(function (_v0, i) {
-            return i + 1;
-        }), 0, xs);
-    };
+    var $elm$core$List$length = (xs) => $elm$core$List$foldl_raw(F2((_v0, i) => i + 1), 0, xs);
     var $elm$core$List$map2 = _List_map2;
     var $elm$core$Basics$le = _Utils_le;
     var $elm$core$Basics$sub = _Basics_sub;
@@ -3229,12 +2749,8 @@
             }
         }
     }, $elm$core$List$rangeHelp = F3($elm$core$List$rangeHelp_raw);
-    var $elm$core$List$range_raw = function (lo, hi) {
-        return $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil);
-    }, $elm$core$List$range = F2($elm$core$List$range_raw);
-    var $elm$core$List$indexedMap_raw = function (f, xs) {
-        return _List_map2_raw(f, $elm$core$List$range_raw(0, $elm$core$List$length(xs) - 1), xs);
-    }, $elm$core$List$indexedMap = F2($elm$core$List$indexedMap_raw);
+    var $elm$core$List$range_raw = (lo, hi) => $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil), $elm$core$List$range = F2($elm$core$List$range_raw);
+    var $elm$core$List$indexedMap_raw = (f, xs) => _List_map2_raw(f, $elm$core$List$range_raw(0, $elm$core$List$length(xs) - 1), xs), $elm$core$List$indexedMap = F2($elm$core$List$indexedMap_raw);
     var $elm$core$Char$toCode = _Char_toCode;
     var $elm$core$Char$isLower = function (_char) {
         var code = $elm$core$Char$toCode(_char);
@@ -3245,26 +2761,16 @@
         return (code <= 90) && (65 <= code);
     };
     var $elm$core$Basics$or = _Basics_or;
-    var $elm$core$Char$isAlpha = function (_char) {
-        return $elm$core$Char$isLower(_char) || $elm$core$Char$isUpper(_char);
-    };
+    var $elm$core$Char$isAlpha = (_char) => $elm$core$Char$isLower(_char) || $elm$core$Char$isUpper(_char);
     var $elm$core$Char$isDigit = function (_char) {
         var code = $elm$core$Char$toCode(_char);
         return (code <= 57) && (48 <= code);
     };
-    var $elm$core$Char$isAlphaNum = function (_char) {
-        return $elm$core$Char$isLower(_char) || ($elm$core$Char$isUpper(_char) || $elm$core$Char$isDigit(_char));
-    };
-    var $elm$core$List$reverse = function (list) {
-        return $elm$core$List$foldl_raw($elm$core$List$cons, _List_Nil, list);
-    };
+    var $elm$core$Char$isAlphaNum = (_char) => $elm$core$Char$isLower(_char) || ($elm$core$Char$isUpper(_char) || $elm$core$Char$isDigit(_char));
+    var $elm$core$List$reverse = (list) => $elm$core$List$foldl_raw($elm$core$List$cons, _List_Nil, list);
     var $elm$core$String$uncons = _String_uncons;
-    var $elm$json$Json$Decode$errorOneOf_raw = function (i, error) {
-        return "\n\n(" + ($elm$core$String$fromInt(i + 1) + (") " + $elm$json$Json$Decode$indent($elm$json$Json$Decode$errorToString(error))));
-    }, $elm$json$Json$Decode$errorOneOf = F2($elm$json$Json$Decode$errorOneOf_raw);
-    var $elm$json$Json$Decode$errorToString = function (error) {
-        return $elm$json$Json$Decode$errorToStringHelp_raw(error, _List_Nil);
-    };
+    var $elm$json$Json$Decode$errorOneOf_raw = (i, error) => "\n\n(" + ($elm$core$String$fromInt(i + 1) + (") " + $elm$json$Json$Decode$indent($elm$json$Json$Decode$errorToString(error)))), $elm$json$Json$Decode$errorOneOf = F2($elm$json$Json$Decode$errorOneOf_raw);
+    var $elm$json$Json$Decode$errorToString = (error) => $elm$json$Json$Decode$errorToStringHelp_raw(error, _List_Nil);
     var $elm$json$Json$Decode$errorToStringHelp_raw = function (error, context) {
         errorToStringHelp: while (true) {
             switch (error.$) {
@@ -3345,39 +2851,25 @@
         }
     }, $elm$json$Json$Decode$errorToStringHelp = F2($elm$json$Json$Decode$errorToStringHelp_raw);
     var $elm$core$Array$branchFactor = 32;
-    var $elm$core$Array$Array_elm_builtin_raw = function (a, b, c, d) {
-        return { $: 0, a: a, b: b, c: c, d: d };
-    }, $elm$core$Array$Array_elm_builtin = F4($elm$core$Array$Array_elm_builtin_raw);
+    var $elm$core$Array$Array_elm_builtin_raw = (a, b, c, d) => ({ $: 0, a: a, b: b, c: c, d: d }), $elm$core$Array$Array_elm_builtin = F4($elm$core$Array$Array_elm_builtin_raw);
     var $elm$core$Elm$JsArray$empty = _JsArray_empty;
     var $elm$core$Basics$ceiling = _Basics_ceiling;
     var $elm$core$Basics$fdiv = _Basics_fdiv;
-    var $elm$core$Basics$logBase_raw = function (base, number) {
-        return _Basics_log(number) / _Basics_log(base);
-    }, $elm$core$Basics$logBase = F2($elm$core$Basics$logBase_raw);
+    var $elm$core$Basics$logBase_raw = (base, number) => _Basics_log(number) / _Basics_log(base), $elm$core$Basics$logBase = F2($elm$core$Basics$logBase_raw);
     var $elm$core$Basics$toFloat = _Basics_toFloat;
     var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling($elm$core$Basics$logBase_raw(2, $elm$core$Array$branchFactor));
     var $elm$core$Array$empty = $elm$core$Array$Array_elm_builtin_raw(0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
     var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
-    var $elm$core$Array$Leaf = function (a) {
-        return { $: 1, a: a };
-    };
-    var $elm$core$Basics$apL_raw = function (f, x) {
-        return f(x);
-    }, $elm$core$Basics$apL = F2($elm$core$Basics$apL_raw);
-    var $elm$core$Basics$apR_raw = function (x, f) {
-        return f(x);
-    }, $elm$core$Basics$apR = F2($elm$core$Basics$apR_raw);
+    var $elm$core$Array$Leaf = (a) => ({ $: 1, a: a });
+    var $elm$core$Basics$apL_raw = (f, x) => f(x), $elm$core$Basics$apL = F2($elm$core$Basics$apL_raw);
+    var $elm$core$Basics$apR_raw = (x, f) => f(x), $elm$core$Basics$apR = F2($elm$core$Basics$apR_raw);
     var $elm$core$Basics$eq = _Utils_equal;
     var $elm$core$Basics$floor = _Basics_floor;
     var $elm$core$Elm$JsArray$length = _JsArray_length;
     var $elm$core$Basics$gt = _Utils_gt;
-    var $elm$core$Basics$max_raw = function (x, y) {
-        return (_Utils_cmp(x, y) > 0) ? x : y;
-    }, $elm$core$Basics$max = F2($elm$core$Basics$max_raw);
+    var $elm$core$Basics$max_raw = (x, y) => (_Utils_cmp(x, y) > 0) ? x : y, $elm$core$Basics$max = F2($elm$core$Basics$max_raw);
     var $elm$core$Basics$mul = _Basics_mul;
-    var $elm$core$Array$SubTree = function (a) {
-        return { $: 0, a: a };
-    };
+    var $elm$core$Array$SubTree = (a) => ({ $: 0, a: a });
     var $elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
     var $elm$core$Array$compressNodes_raw = function (nodes, acc) {
         compressNodes: while (true) {
@@ -3481,34 +2973,20 @@
                 return 3;
         }
     };
-    var $elm$browser$Browser$External = function (a) {
-        return { $: 1, a: a };
-    };
-    var $elm$browser$Browser$Internal = function (a) {
-        return { $: 0, a: a };
-    };
-    var $elm$core$Basics$identity = function (x) {
-        return x;
-    };
+    var $elm$browser$Browser$External = (a) => ({ $: 1, a: a });
+    var $elm$browser$Browser$Internal = (a) => ({ $: 0, a: a });
+    var $elm$core$Basics$identity = (x) => x;
     var $elm$browser$Browser$Dom$NotFound = $elm$core$Basics$identity;
     var $elm$url$Url$Http = 0;
     var $elm$url$Url$Https = 1;
-    var $elm$url$Url$Url_raw = function (protocol, host, port_, path, query, fragment) {
-        return { a0: fragment, a2: host, a9: path, bc: port_, bh: protocol, bi: query };
-    }, $elm$url$Url$Url = F6($elm$url$Url$Url_raw);
+    var $elm$url$Url$Url_raw = (protocol, host, port_, path, query, fragment) => ({ a0: fragment, a2: host, a9: path, bc: port_, bh: protocol, bi: query }), $elm$url$Url$Url = F6($elm$url$Url$Url_raw);
     var $elm$core$String$contains = _String_contains;
     var $elm$core$String$length = _String_length;
     var $elm$core$String$slice = _String_slice;
-    var $elm$core$String$dropLeft_raw = function (n, string) {
-        return (n < 1) ? string : _String_slice_raw(n, $elm$core$String$length(string), string);
-    }, $elm$core$String$dropLeft = F2($elm$core$String$dropLeft_raw);
+    var $elm$core$String$dropLeft_raw = (n, string) => (n < 1) ? string : _String_slice_raw(n, $elm$core$String$length(string), string), $elm$core$String$dropLeft = F2($elm$core$String$dropLeft_raw);
     var $elm$core$String$indexes = _String_indexes;
-    var $elm$core$String$isEmpty = function (string) {
-        return string === "";
-    };
-    var $elm$core$String$left_raw = function (n, string) {
-        return (n < 1) ? "" : _String_slice_raw(0, n, string);
-    }, $elm$core$String$left = F2($elm$core$String$left_raw);
+    var $elm$core$String$isEmpty = (string) => string === "";
+    var $elm$core$String$left_raw = (n, string) => (n < 1) ? "" : _String_slice_raw(0, n, string), $elm$core$String$left = F2($elm$core$String$left_raw);
     var $elm$core$String$toInt = _String_toInt;
     var $elm$url$Url$chompBeforePath_raw = function (protocol, path, params, frag, str) {
         if ($elm$core$String$isEmpty(str) || _String_contains_raw("@", str)) {
@@ -3583,9 +3061,7 @@
         }
     }, $elm$url$Url$chompAfterProtocol = F2($elm$url$Url$chompAfterProtocol_raw);
     var $elm$core$String$startsWith = _String_startsWith;
-    var $elm$url$Url$fromString = function (str) {
-        return _String_startsWith_raw("http://", str) ? $elm$url$Url$chompAfterProtocol_raw(0, $elm$core$String$dropLeft_raw(7, str)) : (_String_startsWith_raw("https://", str) ? $elm$url$Url$chompAfterProtocol_raw(1, $elm$core$String$dropLeft_raw(8, str)) : $elm$core$Maybe$Nothing);
-    };
+    var $elm$url$Url$fromString = (str) => _String_startsWith_raw("http://", str) ? $elm$url$Url$chompAfterProtocol_raw(0, $elm$core$String$dropLeft_raw(7, str)) : (_String_startsWith_raw("https://", str) ? $elm$url$Url$chompAfterProtocol_raw(1, $elm$core$String$dropLeft_raw(8, str)) : $elm$core$Maybe$Nothing);
     var $elm$core$Basics$never = function (_v0) {
         never: while (true) {
             var nvr = _v0;
@@ -3629,60 +3105,30 @@
             }
         }
     }, $elm$core$List$foldrHelper = F4($elm$core$List$foldrHelper_raw);
-    var $elm$core$List$foldr_raw = function (fn, acc, ls) {
-        return $elm$core$List$foldrHelper_raw(fn, acc, 0, ls);
-    }, $elm$core$List$foldr = F3($elm$core$List$foldr_raw);
-    var $elm$core$List$map_raw = function (f, xs) {
-        return $elm$core$List$foldr_raw(F2(function (x, acc) {
-            return _List_Cons(f(x), acc);
-        }), _List_Nil, xs);
-    }, $elm$core$List$map = F2($elm$core$List$map_raw);
+    var $elm$core$List$foldr_raw = (fn, acc, ls) => $elm$core$List$foldrHelper_raw(fn, acc, 0, ls), $elm$core$List$foldr = F3($elm$core$List$foldr_raw);
+    var $elm$core$List$map_raw = (f, xs) => $elm$core$List$foldr_raw(F2((x, acc) => _List_Cons(f(x), acc)), _List_Nil, xs), $elm$core$List$map = F2($elm$core$List$map_raw);
     var $elm$core$Task$andThen = _Scheduler_andThen;
-    var $elm$core$Task$map_raw = function (func, taskA) {
-        return _Scheduler_andThen_raw(function (a) {
-            return $elm$core$Task$succeed(func(a));
-        }, taskA);
-    }, $elm$core$Task$map = F2($elm$core$Task$map_raw);
-    var $elm$core$Task$map2_raw = function (func, taskA, taskB) {
-        return _Scheduler_andThen_raw(function (a) {
-            return _Scheduler_andThen_raw(function (b) {
-                return $elm$core$Task$succeed(A2(func, a, b));
-            }, taskB);
-        }, taskA);
-    }, $elm$core$Task$map2 = F3($elm$core$Task$map2_raw);
-    var $elm$core$Task$sequence = function (tasks) {
-        return $elm$core$List$foldr_raw($elm$core$Task$map2($elm$core$List$cons), $elm$core$Task$succeed(_List_Nil), tasks);
-    };
+    var $elm$core$Task$map_raw = (func, taskA) => _Scheduler_andThen_raw((a) => $elm$core$Task$succeed(func(a)), taskA), $elm$core$Task$map = F2($elm$core$Task$map_raw);
+    var $elm$core$Task$map2_raw = (func, taskA, taskB) => _Scheduler_andThen_raw((a) => _Scheduler_andThen_raw((b) => $elm$core$Task$succeed(A2(func, a, b)), taskB), taskA), $elm$core$Task$map2 = F3($elm$core$Task$map2_raw);
+    var $elm$core$Task$sequence = (tasks) => $elm$core$List$foldr_raw($elm$core$Task$map2($elm$core$List$cons), $elm$core$Task$succeed(_List_Nil), tasks);
     var $elm$core$Platform$sendToApp = _Platform_sendToApp;
     var $elm$core$Task$spawnCmd_raw = function (router, _v0) {
         var task = _v0;
         return _Scheduler_spawn(_Scheduler_andThen_raw($elm$core$Platform$sendToApp(router), task));
     }, $elm$core$Task$spawnCmd = F2($elm$core$Task$spawnCmd_raw);
-    var $elm$core$Task$onEffects_raw = function (router, commands, state) {
-        return $elm$core$Task$map_raw(function (_v0) {
-            return 0;
-        }, $elm$core$Task$sequence($elm$core$List$map_raw($elm$core$Task$spawnCmd(router), commands)));
-    }, $elm$core$Task$onEffects = F3($elm$core$Task$onEffects_raw);
-    var $elm$core$Task$onSelfMsg_raw = function (_v0, _v1, _v2) {
-        return $elm$core$Task$succeed(0);
-    }, $elm$core$Task$onSelfMsg = F3($elm$core$Task$onSelfMsg_raw);
+    var $elm$core$Task$onEffects_raw = (router, commands, state) => $elm$core$Task$map_raw((_v0) => 0, $elm$core$Task$sequence($elm$core$List$map_raw($elm$core$Task$spawnCmd(router), commands))), $elm$core$Task$onEffects = F3($elm$core$Task$onEffects_raw);
+    var $elm$core$Task$onSelfMsg_raw = (_v0, _v1, _v2) => $elm$core$Task$succeed(0), $elm$core$Task$onSelfMsg = F3($elm$core$Task$onSelfMsg_raw);
     var $elm$core$Task$cmdMap_raw = function (tagger, _v0) {
         var task = _v0;
         return $elm$core$Task$map_raw(tagger, task);
     }, $elm$core$Task$cmdMap = F2($elm$core$Task$cmdMap_raw);
     _Platform_effectManagers["Task"] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
     var $elm$core$Task$command = _Platform_leaf("Task");
-    var $elm$core$Task$perform_raw = function (toMessage, task) {
-        return $elm$core$Task$command($elm$core$Task$map_raw(toMessage, task));
-    }, $elm$core$Task$perform = F2($elm$core$Task$perform_raw);
+    var $elm$core$Task$perform_raw = (toMessage, task) => $elm$core$Task$command($elm$core$Task$map_raw(toMessage, task)), $elm$core$Task$perform = F2($elm$core$Task$perform_raw);
     var $elm$browser$Browser$element = _Browser_element;
     var $elm_explorations$benchmark$Benchmark$Runner$App$Update = $elm$core$Basics$identity;
     var $elm$core$Process$sleep = _Process_sleep;
-    var $elm_explorations$benchmark$Benchmark$Runner$App$breakForRender = function (task) {
-        return _Scheduler_andThen_raw(function (_v0) {
-            return task;
-        }, $elm$core$Process$sleep(0));
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$App$breakForRender = (task) => _Scheduler_andThen_raw((_v0) => task, $elm$core$Process$sleep(0));
     var $elm$core$List$any_raw = function (isOkay, list) {
         any: while (true) {
             if (!list.b) {
@@ -3703,16 +3149,10 @@
             }
         }
     }, $elm$core$List$any = F2($elm$core$List$any_raw);
-    var $elm$core$Basics$composeL_raw = function (g, f, x) {
-        return g(f(x));
-    }, $elm$core$Basics$composeL = F3($elm$core$Basics$composeL_raw);
+    var $elm$core$Basics$composeL_raw = (g, f, x) => g(f(x)), $elm$core$Basics$composeL = F3($elm$core$Basics$composeL_raw);
     var $elm$core$Basics$not = _Basics_not;
-    var $elm$core$List$all_raw = function (isOkay, list) {
-        return !$elm$core$List$any_raw(A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay), list);
-    }, $elm$core$List$all = F2($elm$core$List$all_raw);
-    var $elm$core$Basics$clamp_raw = function (low, high, number) {
-        return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
-    }, $elm$core$Basics$clamp = F3($elm$core$Basics$clamp_raw);
+    var $elm$core$List$all_raw = (isOkay, list) => !$elm$core$List$any_raw(A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay), list), $elm$core$List$all = F2($elm$core$List$all_raw);
+    var $elm$core$Basics$clamp_raw = (low, high, number) => (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number), $elm$core$Basics$clamp = F3($elm$core$Basics$clamp_raw);
     var $elm$core$Dict$foldl_raw = function (func, acc, dict) {
         foldl: while (true) {
             if (dict.$ === -2) {
@@ -3733,9 +3173,7 @@
     }, $elm$core$Dict$foldl = F3($elm$core$Dict$foldl_raw);
     var $elm_explorations$benchmark$Benchmark$Samples$count = function (_v0) {
         var samples = _v0;
-        return $elm$core$Dict$foldl_raw(F3(function (_v1, times, acc) {
-            return $elm$core$List$length(times) + acc;
-        }), 0, samples);
+        return $elm$core$Dict$foldl_raw(F3((_v1, times, acc) => $elm$core$List$length(times) + acc), 0, samples);
     };
     var $elm_explorations$benchmark$Benchmark$Status$numBuckets = 25;
     var $elm_explorations$benchmark$Benchmark$Status$samplesPerBucket = 5;
@@ -3772,40 +3210,22 @@
     };
     var $elm$core$Platform$Cmd$batch = _Platform_batch;
     var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-    var $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw = function (a, b) {
-        return { $: 2, a: a, b: b };
-    }, $elm_explorations$benchmark$Benchmark$Benchmark$Group = F2($elm_explorations$benchmark$Benchmark$Benchmark$Group_raw);
-    var $elm_explorations$benchmark$Benchmark$Benchmark$Series_raw = function (a, b) {
-        return { $: 1, a: a, b: b };
-    }, $elm_explorations$benchmark$Benchmark$Benchmark$Series = F2($elm_explorations$benchmark$Benchmark$Benchmark$Series_raw);
-    var $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw = function (a, b, c) {
-        return { $: 0, a: a, b: b, c: c };
-    }, $elm_explorations$benchmark$Benchmark$Benchmark$Single = F3($elm_explorations$benchmark$Benchmark$Benchmark$Single_raw);
-    var $elm_explorations$benchmark$Benchmark$Status$Failure = function (a) {
-        return { $: 3, a: a };
-    };
-    var $elm_explorations$benchmark$Benchmark$Status$MeasurementError = function (a) {
-        return { $: 0, a: a };
-    };
-    var $elm_explorations$benchmark$Benchmark$Status$Pending_raw = function (a, b) {
-        return { $: 2, a: a, b: b };
-    }, $elm_explorations$benchmark$Benchmark$Status$Pending = F2($elm_explorations$benchmark$Benchmark$Status$Pending_raw);
+    var $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Benchmark$Group = F2($elm_explorations$benchmark$Benchmark$Benchmark$Group_raw);
+    var $elm_explorations$benchmark$Benchmark$Benchmark$Series_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Benchmark$Series = F2($elm_explorations$benchmark$Benchmark$Benchmark$Series_raw);
+    var $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw = (a, b, c) => ({ $: 0, a: a, b: b, c: c }), $elm_explorations$benchmark$Benchmark$Benchmark$Single = F3($elm_explorations$benchmark$Benchmark$Benchmark$Single_raw);
+    var $elm_explorations$benchmark$Benchmark$Status$Failure = (a) => ({ $: 3, a: a });
+    var $elm_explorations$benchmark$Benchmark$Status$MeasurementError = (a) => ({ $: 0, a: a });
+    var $elm_explorations$benchmark$Benchmark$Status$Pending_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Status$Pending = F2($elm_explorations$benchmark$Benchmark$Status$Pending_raw);
     var $elm_explorations$benchmark$Benchmark$Status$Unsized = { $: 1 };
     var $elm_explorations$benchmark$Benchmark$Status$bucketSpacingRatio = 2;
     var $elm_explorations$benchmark$Benchmark$Samples$Samples = $elm$core$Basics$identity;
     var $elm$core$Dict$RBEmpty_elm_builtin = { $: -2 };
     var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
     var $elm_explorations$benchmark$Benchmark$Samples$empty = $elm$core$Dict$empty;
-    var $elm_explorations$benchmark$Benchmark$Status$AnalysisError = function (a) {
-        return { $: 1, a: a };
-    };
-    var $elm_explorations$benchmark$Benchmark$Status$Success_raw = function (a, b) {
-        return { $: 4, a: a, b: b };
-    }, $elm_explorations$benchmark$Benchmark$Status$Success = F2($elm_explorations$benchmark$Benchmark$Status$Success_raw);
+    var $elm_explorations$benchmark$Benchmark$Status$AnalysisError = (a) => ({ $: 1, a: a });
+    var $elm_explorations$benchmark$Benchmark$Status$Success_raw = (a, b) => ({ $: 4, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Status$Success = F2($elm_explorations$benchmark$Benchmark$Status$Success_raw);
     var $elm$core$Dict$Black = 1;
-    var $elm$core$Dict$RBNode_elm_builtin_raw = function (a, b, c, d, e) {
-        return { $: -1, a: a, b: b, c: c, d: d, e: e };
-    }, $elm$core$Dict$RBNode_elm_builtin = F5($elm$core$Dict$RBNode_elm_builtin_raw);
+    var $elm$core$Dict$RBNode_elm_builtin_raw = (a, b, c, d, e) => ({ $: -1, a: a, b: b, c: c, d: d, e: e }), $elm$core$Dict$RBNode_elm_builtin = F5($elm$core$Dict$RBNode_elm_builtin_raw);
     var $elm$core$Dict$Red = 0;
     var $elm$core$Dict$balance_raw = function (color, key, value, left, right) {
         if ((right.$ === -1) && (!right.a)) {
@@ -3917,33 +3337,17 @@
         });
         return $elm$core$List$foldr_raw(step, _Utils_Tuple2(_List_Nil, _List_Nil), list);
     }, $elm$core$List$partition = F2($elm$core$List$partition_raw);
-    var $elm_explorations$benchmark$Benchmark$Samples$pointify = function (samples) {
-        return $elm$core$Dict$foldr_raw(F3(function (sampleSize, values, acc) {
-            return _Utils_ap($elm$core$List$map_raw(function (b) {
-                return _Utils_Tuple2(sampleSize, b);
-            }, values), acc);
-        }), _List_Nil, samples);
-    };
+    var $elm_explorations$benchmark$Benchmark$Samples$pointify = (samples) => $elm$core$Dict$foldr_raw(F3((sampleSize, values, acc) => _Utils_ap($elm$core$List$map_raw((b) => _Utils_Tuple2(sampleSize, b), values), acc)), _List_Nil, samples);
     var $BrianHicks$elm_trend$Trend$Linear$predictY_raw = function (_v0, x) {
         var slope = _v0.aR;
         var intercept = _v0.aL;
         return (slope * x) + intercept;
     }, $BrianHicks$elm_trend$Trend$Linear$predictY = F2($BrianHicks$elm_trend$Trend$Linear$predictY_raw);
     var $BrianHicks$elm_trend$Trend$Math$AllZeros = { $: 1 };
-    var $BrianHicks$elm_trend$Trend$Math$NeedMoreValues = function (a) {
-        return { $: 0, a: a };
-    };
-    var $BrianHicks$elm_trend$Trend$Linear$Robust_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $BrianHicks$elm_trend$Trend$Linear$Robust = F2($BrianHicks$elm_trend$Trend$Linear$Robust_raw);
-    var $BrianHicks$elm_trend$Trend$Linear$Trend_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $BrianHicks$elm_trend$Trend$Linear$Trend = F2($BrianHicks$elm_trend$Trend$Linear$Trend_raw);
-    var $elm$core$List$filter_raw = function (isGood, list) {
-        return $elm$core$List$foldr_raw(F2(function (x, xs) {
-            return isGood(x) ? _List_Cons(x, xs) : xs;
-        }), _List_Nil, list);
-    }, $elm$core$List$filter = F2($elm$core$List$filter_raw);
+    var $BrianHicks$elm_trend$Trend$Math$NeedMoreValues = (a) => ({ $: 0, a: a });
+    var $BrianHicks$elm_trend$Trend$Linear$Robust_raw = (a, b) => ({ $: 0, a: a, b: b }), $BrianHicks$elm_trend$Trend$Linear$Robust = F2($BrianHicks$elm_trend$Trend$Linear$Robust_raw);
+    var $BrianHicks$elm_trend$Trend$Linear$Trend_raw = (a, b) => ({ $: 0, a: a, b: b }), $BrianHicks$elm_trend$Trend$Linear$Trend = F2($BrianHicks$elm_trend$Trend$Linear$Trend_raw);
+    var $elm$core$List$filter_raw = (isGood, list) => $elm$core$List$foldr_raw(F2((x, xs) => isGood(x) ? _List_Cons(x, xs) : xs), _List_Nil, list), $elm$core$List$filter = F2($elm$core$List$filter_raw);
     var $elm$core$Result$fromMaybe_raw = function (err, maybe) {
         if (!maybe.$) {
             var v = maybe.a;
@@ -3977,12 +3381,8 @@
         }
     }, $elm$core$Maybe$map3 = F4($elm$core$Maybe$map3_raw);
     var $elm$core$List$sortBy = _List_sortBy;
-    var $elm$core$List$sort = function (xs) {
-        return _List_sortBy_raw($elm$core$Basics$identity, xs);
-    };
-    var $BrianHicks$elm_trend$Trend$Linear$Line_raw = function (slope, intercept) {
-        return { aL: intercept, aR: slope };
-    }, $BrianHicks$elm_trend$Trend$Linear$Line = F2($BrianHicks$elm_trend$Trend$Linear$Line_raw);
+    var $elm$core$List$sort = (xs) => _List_sortBy_raw($elm$core$Basics$identity, xs);
+    var $BrianHicks$elm_trend$Trend$Linear$Line_raw = (slope, intercept) => ({ aL: intercept, aR: slope }), $BrianHicks$elm_trend$Trend$Linear$Line = F2($BrianHicks$elm_trend$Trend$Linear$Line_raw);
     var $elm$core$Maybe$andThen_raw = function (callback, maybeValue) {
         if (!maybeValue.$) {
             var value = maybeValue.a;
@@ -4046,9 +3446,7 @@
             return $elm$core$Maybe$Nothing;
         }
     };
-    var $elm$core$List$sum = function (numbers) {
-        return $elm$core$List$foldl_raw($elm$core$Basics$add, 0, numbers);
-    };
+    var $elm$core$List$sum = (numbers) => $elm$core$List$foldl_raw($elm$core$Basics$add, 0, numbers);
     var $BrianHicks$elm_trend$Trend$Math$mean = function (numbers) {
         if (!numbers.b) {
             return $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$NeedMoreValues(1));
@@ -4078,9 +3476,7 @@
             }
         }
     }, $elm$core$List$takeReverse = F3($elm$core$List$takeReverse_raw);
-    var $elm$core$List$takeTailRec_raw = function (n, list) {
-        return $elm$core$List$reverse($elm$core$List$takeReverse_raw(n, list, _List_Nil));
-    }, $elm$core$List$takeTailRec = F2($elm$core$List$takeTailRec_raw);
+    var $elm$core$List$takeTailRec_raw = (n, list) => $elm$core$List$reverse($elm$core$List$takeReverse_raw(n, list, _List_Nil)), $elm$core$List$takeTailRec = F2($elm$core$List$takeTailRec_raw);
     var $elm$core$List$takeFast_raw = function (ctr, n, list) {
         if (n <= 0) {
             return _List_Nil;
@@ -4151,9 +3547,7 @@
             return { $: 1, a: x, b: _List_Nil };
         }
     }, $elm$core$List$takeFast = F3($elm$core$List$takeFast_raw);
-    var $elm$core$List$take_raw = function (n, list) {
-        return $elm$core$List$takeFast_raw(0, n, list);
-    }, $elm$core$List$take = F2($elm$core$List$take_raw);
+    var $elm$core$List$take_raw = (n, list) => $elm$core$List$takeFast_raw(0, n, list), $elm$core$List$take = F2($elm$core$List$take_raw);
     var $elm$core$Result$toMaybe = function (result) {
         if (!result.$) {
             var v = result.a;
@@ -4169,13 +3563,11 @@
     }, $BrianHicks$elm_trend$Trend$Linear$percentile = F2($BrianHicks$elm_trend$Trend$Linear$percentile_raw);
     var $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw = function (pct, slopes, points) {
         var slope = $BrianHicks$elm_trend$Trend$Linear$percentile_raw(pct, slopes);
-        var intercept = $elm$core$Maybe$andThen_raw($BrianHicks$elm_trend$Trend$Linear$percentile(pct), $elm$core$Maybe$map_raw($elm$core$List$sort, $elm$core$Maybe$map_raw(function (m) {
-            return $elm$core$List$map_raw(function (_v0) {
-                var x = _v0.a;
-                var y = _v0.b;
-                return y - (m * x);
-            }, points);
-        }, slope)));
+        var intercept = $elm$core$Maybe$andThen_raw($BrianHicks$elm_trend$Trend$Linear$percentile(pct), $elm$core$Maybe$map_raw($elm$core$List$sort, $elm$core$Maybe$map_raw((m) => $elm$core$List$map_raw(function (_v0) {
+            var x = _v0.a;
+            var y = _v0.b;
+            return y - (m * x);
+        }, points), slope)));
         return $elm$core$Maybe$map2_raw($BrianHicks$elm_trend$Trend$Linear$Line, slope, intercept);
     }, $BrianHicks$elm_trend$Trend$Linear$theilSenLine = F3($BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw);
     var $BrianHicks$elm_trend$Trend$Linear$robust = function (values) {
@@ -4198,9 +3590,7 @@
                     }), acc1, values);
                 }), _List_Nil, values));
                 var finiteSlopes = $elm$core$List$filter_raw(A2($elm$core$Basics$composeL, $elm$core$Basics$not, $elm$core$Basics$isInfinite), slopes);
-                return $elm$core$Result$fromMaybe_raw($BrianHicks$elm_trend$Trend$Math$AllZeros, $elm$core$Maybe$map3_raw(F3(function (trendLine, lower, upper) {
-                    return $BrianHicks$elm_trend$Trend$Linear$Trend_raw(trendLine, $BrianHicks$elm_trend$Trend$Linear$Robust_raw(lower, upper));
-                }), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.5, finiteSlopes, values), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.975, slopes, values), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.025, slopes, values)));
+                return $elm$core$Result$fromMaybe_raw($BrianHicks$elm_trend$Trend$Math$AllZeros, $elm$core$Maybe$map3_raw(F3((trendLine, lower, upper) => $BrianHicks$elm_trend$Trend$Linear$Trend_raw(trendLine, $BrianHicks$elm_trend$Trend$Linear$Robust_raw(lower, upper))), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.5, finiteSlopes, values), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.975, slopes, values), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.025, slopes, values)));
             }
         }
     };
@@ -4221,16 +3611,12 @@
             var accGood = _v2.a;
             var accOutliers = _v2.b;
             return _Utils_Tuple2($elm$core$Dict$insert_raw(key, good, accGood), $elm$core$Dict$insert_raw(key, outliers, accOutliers));
-        }), _Utils_Tuple2($elm$core$Dict$empty, $elm$core$Dict$empty)), $elm$core$Result$map_raw(function (line) {
-            return $elm$core$Dict$map_raw(F2(function (sampleSize, values) {
-                var predicted = $BrianHicks$elm_trend$Trend$Linear$predictY_raw(line, sampleSize);
-                var upperBound = predicted * 1.1;
-                var lowerBound = predicted / 1.1;
-                return $elm$core$List$partition_raw(function (v) {
-                    return (_Utils_cmp(lowerBound, v) < 0) && (_Utils_cmp(v, upperBound) < 0);
-                }, values);
-            }), samples);
-        }, $elm$core$Result$map_raw($BrianHicks$elm_trend$Trend$Linear$line, $BrianHicks$elm_trend$Trend$Linear$robust($elm_explorations$benchmark$Benchmark$Samples$pointify(samples))))));
+        }), _Utils_Tuple2($elm$core$Dict$empty, $elm$core$Dict$empty)), $elm$core$Result$map_raw((line) => $elm$core$Dict$map_raw(F2(function (sampleSize, values) {
+            var predicted = $BrianHicks$elm_trend$Trend$Linear$predictY_raw(line, sampleSize);
+            var upperBound = predicted * 1.1;
+            var lowerBound = predicted / 1.1;
+            return $elm$core$List$partition_raw((v) => (_Utils_cmp(lowerBound, v) < 0) && (_Utils_cmp(v, upperBound) < 0), values);
+        }), samples), $elm$core$Result$map_raw($BrianHicks$elm_trend$Trend$Linear$line, $BrianHicks$elm_trend$Trend$Linear$robust($elm_explorations$benchmark$Benchmark$Samples$pointify(samples))))));
     };
     var $elm$core$Tuple$mapFirst_raw = function (func, _v0) {
         var x = _v0.a;
@@ -4242,9 +3628,7 @@
         var y = _v0.b;
         return _Utils_Tuple2(x, func(y));
     }, $elm$core$Tuple$mapSecond = F2($elm$core$Tuple$mapSecond_raw);
-    var $elm_explorations$benchmark$Benchmark$Samples$points = function (samples) {
-        return $elm$core$Tuple$mapSecond_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm$core$Tuple$mapFirst_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm_explorations$benchmark$Benchmark$Samples$groups(samples)));
-    };
+    var $elm_explorations$benchmark$Benchmark$Samples$points = (samples) => $elm$core$Tuple$mapSecond_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm$core$Tuple$mapFirst_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm_explorations$benchmark$Benchmark$Samples$groups(samples)));
     var $BrianHicks$elm_trend$Trend$Linear$Quick = $elm$core$Basics$identity;
     var $elm$core$Result$andThen_raw = function (callback, result) {
         if (!result.$) {
@@ -4276,11 +3660,7 @@
     var $elm$core$Basics$pow = _Basics_pow;
     var $elm$core$Basics$sqrt = _Basics_sqrt;
     var $BrianHicks$elm_trend$Trend$Math$stddev = function (numbers) {
-        var helper = function (seriesMean) {
-            return $elm$core$Result$map_raw($elm$core$Basics$sqrt, $BrianHicks$elm_trend$Trend$Math$mean($elm$core$List$map_raw(function (n) {
-                return A2($elm$core$Basics$pow, n - seriesMean, 2);
-            }, numbers)));
-        };
+        var helper = (seriesMean) => $elm$core$Result$map_raw($elm$core$Basics$sqrt, $BrianHicks$elm_trend$Trend$Math$mean($elm$core$List$map_raw((n) => A2($elm$core$Basics$pow, n - seriesMean, 2), numbers)));
         return $elm$core$Result$andThen_raw(helper, $BrianHicks$elm_trend$Trend$Math$mean(numbers));
     };
     var $elm$core$List$unzip = function (pairs) {
@@ -4302,24 +3682,12 @@
                 return $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$NeedMoreValues(2));
             }
             else {
-                var standardize_raw = function (meanResult, stddevResult, series) {
-                    return $elm$core$Result$map2_raw(F2(function (meanValue, stddevValue) {
-                        return $elm$core$List$map_raw(function (point) {
-                            return (point - meanValue) / stddevValue;
-                        }, series);
-                    }), meanResult, stddevResult);
-                }, standardize = F3(standardize_raw);
+                var standardize_raw = (meanResult, stddevResult, series) => $elm$core$Result$map2_raw(F2((meanValue, stddevValue) => $elm$core$List$map_raw((point) => (point - meanValue) / stddevValue, series)), meanResult, stddevResult), standardize = F3(standardize_raw);
                 var _v1 = $elm$core$List$unzip(values);
                 var xs = _v1.a;
                 var ys = _v1.b;
-                var summedProduct = $elm$core$Result$map_raw($elm$core$List$sum, $elm$core$Result$map2_raw(F2(function (stdX, stdY) {
-                    return _List_map2_raw($elm$core$Basics$mul, stdX, stdY);
-                }), standardize_raw($BrianHicks$elm_trend$Trend$Math$mean(xs), $BrianHicks$elm_trend$Trend$Math$stddev(xs), xs), standardize_raw($BrianHicks$elm_trend$Trend$Math$mean(ys), $BrianHicks$elm_trend$Trend$Math$stddev(ys), ys)));
-                return $elm$core$Result$andThen_raw(function (val) {
-                    return $elm$core$Basics$isNaN(val) ? $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$AllZeros) : $elm$core$Result$Ok(val);
-                }, $elm$core$Result$map_raw(function (sum) {
-                    return sum / $elm$core$List$length(values);
-                }, summedProduct));
+                var summedProduct = $elm$core$Result$map_raw($elm$core$List$sum, $elm$core$Result$map2_raw(F2((stdX, stdY) => _List_map2_raw($elm$core$Basics$mul, stdX, stdY)), standardize_raw($BrianHicks$elm_trend$Trend$Math$mean(xs), $BrianHicks$elm_trend$Trend$Math$stddev(xs), xs), standardize_raw($BrianHicks$elm_trend$Trend$Math$mean(ys), $BrianHicks$elm_trend$Trend$Math$stddev(ys), ys)));
+                return $elm$core$Result$andThen_raw((val) => $elm$core$Basics$isNaN(val) ? $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$AllZeros) : $elm$core$Result$Ok(val), $elm$core$Result$map_raw((sum) => sum / $elm$core$List$length(values), summedProduct));
             }
         }
     };
@@ -4359,21 +3727,13 @@
                 var _v1 = $elm$core$List$unzip(values);
                 var xs = _v1.a;
                 var ys = _v1.b;
-                var slopeResult = $elm$core$Result$map3_raw(F3(function (correl, stddevY, stddevX) {
-                    return (correl * stddevY) / stddevX;
-                }), $BrianHicks$elm_trend$Trend$Math$correlation(values), $BrianHicks$elm_trend$Trend$Math$stddev(ys), $BrianHicks$elm_trend$Trend$Math$stddev(xs));
-                var intercept = $elm$core$Result$map3_raw(F3(function (meanY, slope, meanX) {
-                    return meanY - (slope * meanX);
-                }), $BrianHicks$elm_trend$Trend$Math$mean(ys), slopeResult, $BrianHicks$elm_trend$Trend$Math$mean(xs));
-                return $elm$core$Result$map_raw(function (trendLine) {
-                    return $BrianHicks$elm_trend$Trend$Linear$Trend_raw(trendLine, values);
-                }, $elm$core$Result$map2_raw($BrianHicks$elm_trend$Trend$Linear$Line, slopeResult, intercept));
+                var slopeResult = $elm$core$Result$map3_raw(F3((correl, stddevY, stddevX) => (correl * stddevY) / stddevX), $BrianHicks$elm_trend$Trend$Math$correlation(values), $BrianHicks$elm_trend$Trend$Math$stddev(ys), $BrianHicks$elm_trend$Trend$Math$stddev(xs));
+                var intercept = $elm$core$Result$map3_raw(F3((meanY, slope, meanX) => meanY - (slope * meanX)), $BrianHicks$elm_trend$Trend$Math$mean(ys), slopeResult, $BrianHicks$elm_trend$Trend$Math$mean(xs));
+                return $elm$core$Result$map_raw((trendLine) => $BrianHicks$elm_trend$Trend$Linear$Trend_raw(trendLine, values), $elm$core$Result$map2_raw($BrianHicks$elm_trend$Trend$Linear$Line, slopeResult, intercept));
             }
         }
     };
-    var $elm_explorations$benchmark$Benchmark$Samples$trend = function (samples) {
-        return $BrianHicks$elm_trend$Trend$Linear$quick($elm_explorations$benchmark$Benchmark$Samples$points(samples).a);
-    };
+    var $elm_explorations$benchmark$Benchmark$Samples$trend = (samples) => $BrianHicks$elm_trend$Trend$Linear$quick($elm_explorations$benchmark$Benchmark$Samples$points(samples).a);
     var $elm_explorations$benchmark$Benchmark$finalize = function (samples) {
         var _v0 = $elm_explorations$benchmark$Benchmark$Samples$trend(samples);
         if (!_v0.$) {
@@ -4386,12 +3746,8 @@
         }
     };
     var $elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum = 1;
-    var $elm$core$Basics$composeR_raw = function (f, g, x) {
-        return g(f(x));
-    }, $elm$core$Basics$composeR = F3($elm$core$Basics$composeR_raw);
-    var $elm$core$Basics$min_raw = function (x, y) {
-        return (_Utils_cmp(x, y) < 0) ? x : y;
-    }, $elm$core$Basics$min = F2($elm$core$Basics$min_raw);
+    var $elm$core$Basics$composeR_raw = (f, g, x) => g(f(x)), $elm$core$Basics$composeR = F3($elm$core$Basics$composeR_raw);
+    var $elm$core$Basics$min_raw = (x, y) => (_Utils_cmp(x, y) < 0) ? x : y, $elm$core$Basics$min = F2($elm$core$Basics$min_raw);
     var $elm$core$List$minimum = function (list) {
         if (list.b) {
             var x = list.a;
@@ -4416,16 +3772,10 @@
             }
         }
     }, $elm$core$List$repeatHelp = F3($elm$core$List$repeatHelp_raw);
-    var $elm$core$List$repeat_raw = function (n, value) {
-        return $elm$core$List$repeatHelp_raw(_List_Nil, n, value);
-    }, $elm$core$List$repeat = F2($elm$core$List$repeat_raw);
+    var $elm$core$List$repeat_raw = (n, value) => $elm$core$List$repeatHelp_raw(_List_Nil, n, value), $elm$core$List$repeat = F2($elm$core$List$repeat_raw);
     var $elm_explorations$benchmark$Benchmark$LowLevel$StackOverflow = { $: 0 };
-    var $elm_explorations$benchmark$Benchmark$LowLevel$UnknownError = function (a) {
-        return { $: 1, a: a };
-    };
-    var $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw = function (n, operation_) {
-        return _Benchmark_sample_raw(n, operation_);
-    }, $elm_explorations$benchmark$Benchmark$LowLevel$sample = F2($elm_explorations$benchmark$Benchmark$LowLevel$sample_raw);
+    var $elm_explorations$benchmark$Benchmark$LowLevel$UnknownError = (a) => ({ $: 1, a: a });
+    var $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw = (n, operation_) => _Benchmark_sample_raw(n, operation_), $elm_explorations$benchmark$Benchmark$LowLevel$sample = F2($elm_explorations$benchmark$Benchmark$LowLevel$sample_raw);
     var $elm$core$Basics$round = _Basics_round;
     var $elm_explorations$benchmark$Benchmark$LowLevel$standardizeSampleSize = function (sampleSize) {
         var helper_raw = function (rough, magnitude) {
@@ -4453,12 +3803,8 @@
         }
     }, $elm$core$Maybe$withDefault = F2($elm$core$Maybe$withDefault_raw);
     var $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw = function (minimumRuntime, operation_) {
-        var sampleSize = function (i) {
-            return i * 10;
-        };
-        var resample = F2(function (iteration, total) {
-            return (_Utils_cmp(total, minimumRuntime) < 0) ? _Scheduler_andThen_raw(resample(iteration + 1), $elm$core$Task$map_raw(A2($elm$core$Basics$composeR, $elm$core$List$minimum, $elm$core$Maybe$withDefault(0)), $elm$core$Task$sequence($elm$core$List$repeat_raw(3, $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize(iteration), operation_))))) : $elm$core$Task$succeed(sampleSize(iteration));
-        });
+        var sampleSize = (i) => i * 10;
+        var resample = F2((iteration, total) => (_Utils_cmp(total, minimumRuntime) < 0) ? _Scheduler_andThen_raw(resample(iteration + 1), $elm$core$Task$map_raw(A2($elm$core$Basics$composeR, $elm$core$List$minimum, $elm$core$Maybe$withDefault(0)), $elm$core$Task$sequence($elm$core$List$repeat_raw(3, $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize(iteration), operation_))))) : $elm$core$Task$succeed(sampleSize(iteration)));
         return $elm$core$Task$map_raw($elm_explorations$benchmark$Benchmark$LowLevel$standardizeSampleSize, A2(resample, 1, 0));
     }, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum = F2($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw);
     var $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0 = $elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize = $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0);
@@ -4793,21 +4139,15 @@
     var $elm_explorations$benchmark$Benchmark$LowLevel$warmup = function (operation_) {
         var toCollect = 1000;
         var sampleSize = 10000;
-        var helper = function (soFar) {
-            return (_Utils_cmp(soFar, toCollect) > -1) ? $elm$core$Task$succeed(0) : _Scheduler_andThen_raw(helper, $elm$core$Task$map_raw($elm$core$Basics$add(soFar), $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize, operation_)));
-        };
+        var helper = (soFar) => (_Utils_cmp(soFar, toCollect) > -1) ? $elm$core$Task$succeed(0) : _Scheduler_andThen_raw(helper, $elm$core$Task$map_raw($elm$core$Basics$add(soFar), $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize, operation_)));
         return helper(0);
     };
     var $elm_explorations$benchmark$Benchmark$stepLowLevel_raw = function (operation, status) {
         switch (status.$) {
             case 0:
-                return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw(function (_v1) {
-                    return $elm_explorations$benchmark$Benchmark$Status$Unsized;
-                }, $elm_explorations$benchmark$Benchmark$LowLevel$warmup(operation)));
+                return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw((_v1) => $elm_explorations$benchmark$Benchmark$Status$Unsized, $elm_explorations$benchmark$Benchmark$LowLevel$warmup(operation)));
             case 1:
-                return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw(function (sampleSize) {
-                    return $elm_explorations$benchmark$Benchmark$Status$Pending_raw(sampleSize, $elm_explorations$benchmark$Benchmark$Samples$empty);
-                }, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0, operation)));
+                return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw((sampleSize) => $elm_explorations$benchmark$Benchmark$Status$Pending_raw(sampleSize, $elm_explorations$benchmark$Benchmark$Samples$empty), $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0, operation)));
             case 2:
                 var baseSampleSize = status.a;
                 var samples = status.b;
@@ -4834,9 +4174,7 @@
                     var name_ = _v1.a;
                     var inner = _v1.b;
                     var status = _v1.c;
-                    return $elm$core$Task$map_raw(function (status_) {
-                        return _Utils_Tuple3(name_, inner, status_);
-                    }, $elm_explorations$benchmark$Benchmark$stepLowLevel_raw(inner, status));
+                    return $elm$core$Task$map_raw((status_) => _Utils_Tuple3(name_, inner, status_), $elm_explorations$benchmark$Benchmark$stepLowLevel_raw(inner, status));
                 }, benchmarks)));
             default:
                 var name = benchmark_.a;
@@ -4844,57 +4182,35 @@
                 return $elm$core$Task$map_raw($elm_explorations$benchmark$Benchmark$Benchmark$Group(name), $elm$core$Task$sequence($elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$step, benchmarks)));
         }
     };
-    var $elm_explorations$benchmark$Benchmark$Runner$App$next = function (benchmark) {
-        return $elm_explorations$benchmark$Benchmark$done(benchmark) ? $elm$core$Platform$Cmd$none : $elm$core$Task$perform_raw($elm$core$Basics$identity, $elm_explorations$benchmark$Benchmark$Runner$App$breakForRender($elm_explorations$benchmark$Benchmark$step(benchmark)));
-    };
-    var $elm_explorations$benchmark$Benchmark$Runner$App$init_raw = function (benchmark, _v0) {
-        return _Utils_Tuple2(benchmark, $elm_explorations$benchmark$Benchmark$Runner$App$next(benchmark));
-    }, $elm_explorations$benchmark$Benchmark$Runner$App$init = F2($elm_explorations$benchmark$Benchmark$Runner$App$init_raw);
+    var $elm_explorations$benchmark$Benchmark$Runner$App$next = (benchmark) => $elm_explorations$benchmark$Benchmark$done(benchmark) ? $elm$core$Platform$Cmd$none : $elm$core$Task$perform_raw($elm$core$Basics$identity, $elm_explorations$benchmark$Benchmark$Runner$App$breakForRender($elm_explorations$benchmark$Benchmark$step(benchmark)));
+    var $elm_explorations$benchmark$Benchmark$Runner$App$init_raw = (benchmark, _v0) => _Utils_Tuple2(benchmark, $elm_explorations$benchmark$Benchmark$Runner$App$next(benchmark)), $elm_explorations$benchmark$Benchmark$Runner$App$init = F2($elm_explorations$benchmark$Benchmark$Runner$App$init_raw);
     var $elm$core$Platform$Sub$batch = _Platform_batch;
     var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
     var $elm_explorations$benchmark$Benchmark$Runner$App$update_raw = function (msg, model) {
         var benchmark = msg;
         return _Utils_Tuple2(benchmark, $elm_explorations$benchmark$Benchmark$Runner$App$next(benchmark));
     }, $elm_explorations$benchmark$Benchmark$Runner$App$update = F2($elm_explorations$benchmark$Benchmark$Runner$App$update_raw);
-    var $elm_explorations$benchmark$Benchmark$Runner$App$InProgressClass = function (a) {
-        return { $: 2, a: a };
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$App$InProgressClass = (a) => ({ $: 2, a: a });
     var $elm_explorations$benchmark$Benchmark$Runner$App$Page = { $: 0 };
-    var $elm_explorations$benchmark$Benchmark$Runner$App$ReportClass = function (a) {
-        return { $: 3, a: a };
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$App$ReportClass = (a) => ({ $: 3, a: a });
     var $elm_explorations$benchmark$Benchmark$Runner$App$ReportVariation = $elm$core$Basics$identity;
     var $elm_explorations$benchmark$Benchmark$Runner$App$Wrapper = { $: 1 };
     var $mdgriffith$style_elements$Element$Internal$Model$Center = 2;
-    var $mdgriffith$style_elements$Element$Internal$Model$HAlign = function (a) {
-        return { $: 4, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Internal$Model$HAlign = (a) => ({ $: 4, a: a });
     var $mdgriffith$style_elements$Element$Attributes$center = $mdgriffith$style_elements$Element$Internal$Model$HAlign(2);
-    var $mdgriffith$style_elements$Element$Internal$Model$Element = function (a) {
-        return { $: 3, a: a };
-    };
-    var $mdgriffith$style_elements$Element$el_raw = function (style, attrs, child) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Element({
-            b: $elm$core$Maybe$Nothing,
-            c: attrs,
-            g: child,
-            d: "div",
-            e: $elm$core$Maybe$Just(style)
-        });
-    }, $mdgriffith$style_elements$Element$el = F3($mdgriffith$style_elements$Element$el_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Fill = function (a) {
-        return { $: 3, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Internal$Model$Element = (a) => ({ $: 3, a: a });
+    var $mdgriffith$style_elements$Element$el_raw = (style, attrs, child) => $mdgriffith$style_elements$Element$Internal$Model$Element({
+        b: $elm$core$Maybe$Nothing,
+        c: attrs,
+        g: child,
+        d: "div",
+        e: $elm$core$Maybe$Just(style)
+    }), $mdgriffith$style_elements$Element$el = F3($mdgriffith$style_elements$Element$el_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Fill = (a) => ({ $: 3, a: a });
     var $mdgriffith$style_elements$Element$Attributes$fill = $mdgriffith$style_elements$Style$Internal$Model$Fill(1);
-    var $elm_explorations$benchmark$Benchmark$Reporting$Group_raw = function (a, b) {
-        return { $: 2, a: a, b: b };
-    }, $elm_explorations$benchmark$Benchmark$Reporting$Group = F2($elm_explorations$benchmark$Benchmark$Reporting$Group_raw);
-    var $elm_explorations$benchmark$Benchmark$Reporting$Series_raw = function (a, b) {
-        return { $: 1, a: a, b: b };
-    }, $elm_explorations$benchmark$Benchmark$Reporting$Series = F2($elm_explorations$benchmark$Benchmark$Reporting$Series_raw);
-    var $elm_explorations$benchmark$Benchmark$Reporting$Single_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $elm_explorations$benchmark$Benchmark$Reporting$Single = F2($elm_explorations$benchmark$Benchmark$Reporting$Single_raw);
+    var $elm_explorations$benchmark$Benchmark$Reporting$Group_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Group = F2($elm_explorations$benchmark$Benchmark$Reporting$Group_raw);
+    var $elm_explorations$benchmark$Benchmark$Reporting$Series_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Series = F2($elm_explorations$benchmark$Benchmark$Reporting$Series_raw);
+    var $elm_explorations$benchmark$Benchmark$Reporting$Single_raw = (a, b) => ({ $: 0, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Single = F2($elm_explorations$benchmark$Benchmark$Reporting$Single_raw);
     var $elm_explorations$benchmark$Benchmark$Reporting$fromBenchmark = function (internal) {
         switch (internal.$) {
             case 0:
@@ -4916,80 +4232,34 @@
         }
     };
     var $mdgriffith$style_elements$Element$Internal$Model$Empty = { $: 0 };
-    var $mdgriffith$style_elements$Element$Internal$Model$Layout = function (a) {
-        return { $: 4, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Raw = function (a) {
-        return { $: 5, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Spacer = function (a) {
-        return { $: 1, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Text_raw = function (a, b) {
-        return { $: 2, a: a, b: b };
-    }, $mdgriffith$style_elements$Element$Internal$Model$Text = F2($mdgriffith$style_elements$Element$Internal$Model$Text_raw);
+    var $mdgriffith$style_elements$Element$Internal$Model$Layout = (a) => ({ $: 4, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Raw = (a) => ({ $: 5, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Spacer = (a) => ({ $: 1, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Text_raw = (a, b) => ({ $: 2, a: a, b: b }), $mdgriffith$style_elements$Element$Internal$Model$Text = F2($mdgriffith$style_elements$Element$Internal$Model$Text_raw);
     var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
     var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
-    var $mdgriffith$style_elements$Element$Internal$Model$Attr = function (a) {
-        return { $: 17, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Event = function (a) {
-        return { $: 15, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Internal$Model$Attr = (a) => ({ $: 17, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Event = (a) => ({ $: 15, a: a });
     var $mdgriffith$style_elements$Element$Internal$Model$Expand = { $: 12 };
-    var $mdgriffith$style_elements$Element$Internal$Model$GridArea = function (a) {
-        return { $: 18, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$GridCoords = function (a) {
-        return { $: 19, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Height = function (a) {
-        return { $: 1, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Internal$Model$GridArea = (a) => ({ $: 18, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$GridCoords = (a) => ({ $: 19, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Height = (a) => ({ $: 1, a: a });
     var $mdgriffith$style_elements$Element$Internal$Model$Hidden = { $: 8 };
     var $mdgriffith$style_elements$Element$Internal$Model$Inline = { $: 3 };
-    var $mdgriffith$style_elements$Element$Internal$Model$InputEvent = function (a) {
-        return { $: 16, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Margin_raw = function (a, b, c, d) {
-        return { $: 11, a: a, b: b, c: c, d: d };
-    }, $mdgriffith$style_elements$Element$Internal$Model$Margin = F4($mdgriffith$style_elements$Element$Internal$Model$Margin_raw);
-    var $mdgriffith$style_elements$Element$Internal$Model$Opacity = function (a) {
-        return { $: 9, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Overflow = function (a) {
-        return { $: 22, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Padding_raw = function (a, b, c, d) {
-        return { $: 13, a: a, b: b, c: c, d: d };
-    }, $mdgriffith$style_elements$Element$Internal$Model$Padding = F4($mdgriffith$style_elements$Element$Internal$Model$Padding_raw);
-    var $mdgriffith$style_elements$Element$Internal$Model$PhantomPadding_raw = function (a, b, c, d) {
-        return { $: 14, a: a, b: b, c: c, d: d };
-    }, $mdgriffith$style_elements$Element$Internal$Model$PhantomPadding = F4($mdgriffith$style_elements$Element$Internal$Model$PhantomPadding_raw);
-    var $mdgriffith$style_elements$Element$Internal$Model$PointerEvents = function (a) {
-        return { $: 20, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Position_raw = function (a, b, c) {
-        return { $: 6, a: a, b: b, c: c };
-    }, $mdgriffith$style_elements$Element$Internal$Model$Position = F3($mdgriffith$style_elements$Element$Internal$Model$Position_raw);
-    var $mdgriffith$style_elements$Element$Internal$Model$PositionFrame = function (a) {
-        return { $: 7, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Shrink = function (a) {
-        return { $: 21, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Spacing_raw = function (a, b) {
-        return { $: 10, a: a, b: b };
-    }, $mdgriffith$style_elements$Element$Internal$Model$Spacing = F2($mdgriffith$style_elements$Element$Internal$Model$Spacing_raw);
-    var $mdgriffith$style_elements$Element$Internal$Model$VAlign = function (a) {
-        return { $: 5, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Vary_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $mdgriffith$style_elements$Element$Internal$Model$Vary = F2($mdgriffith$style_elements$Element$Internal$Model$Vary_raw);
-    var $mdgriffith$style_elements$Element$Internal$Model$Width = function (a) {
-        return { $: 2, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Internal$Model$InputEvent = (a) => ({ $: 16, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Margin_raw = (a, b, c, d) => ({ $: 11, a: a, b: b, c: c, d: d }), $mdgriffith$style_elements$Element$Internal$Model$Margin = F4($mdgriffith$style_elements$Element$Internal$Model$Margin_raw);
+    var $mdgriffith$style_elements$Element$Internal$Model$Opacity = (a) => ({ $: 9, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Overflow = (a) => ({ $: 22, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Padding_raw = (a, b, c, d) => ({ $: 13, a: a, b: b, c: c, d: d }), $mdgriffith$style_elements$Element$Internal$Model$Padding = F4($mdgriffith$style_elements$Element$Internal$Model$Padding_raw);
+    var $mdgriffith$style_elements$Element$Internal$Model$PhantomPadding_raw = (a, b, c, d) => ({ $: 14, a: a, b: b, c: c, d: d }), $mdgriffith$style_elements$Element$Internal$Model$PhantomPadding = F4($mdgriffith$style_elements$Element$Internal$Model$PhantomPadding_raw);
+    var $mdgriffith$style_elements$Element$Internal$Model$PointerEvents = (a) => ({ $: 20, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Position_raw = (a, b, c) => ({ $: 6, a: a, b: b, c: c }), $mdgriffith$style_elements$Element$Internal$Model$Position = F3($mdgriffith$style_elements$Element$Internal$Model$Position_raw);
+    var $mdgriffith$style_elements$Element$Internal$Model$PositionFrame = (a) => ({ $: 7, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Shrink = (a) => ({ $: 21, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Spacing_raw = (a, b) => ({ $: 10, a: a, b: b }), $mdgriffith$style_elements$Element$Internal$Model$Spacing = F2($mdgriffith$style_elements$Element$Internal$Model$Spacing_raw);
+    var $mdgriffith$style_elements$Element$Internal$Model$VAlign = (a) => ({ $: 5, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Vary_raw = (a, b) => ({ $: 0, a: a, b: b }), $mdgriffith$style_elements$Element$Internal$Model$Vary = F2($mdgriffith$style_elements$Element$Internal$Model$Vary_raw);
+    var $mdgriffith$style_elements$Element$Internal$Model$Width = (a) => ({ $: 2, a: a });
     var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
     var $elm$html$Html$Attributes$map = $elm$virtual_dom$VirtualDom$mapAttribute;
     var $mdgriffith$style_elements$Element$Internal$Model$mapAllAttr_raw = function (fnMsg, fnVar, attr) {
@@ -5075,12 +4345,8 @@
                 return $mdgriffith$style_elements$Element$Internal$Model$Overflow(x);
         }
     }, $mdgriffith$style_elements$Element$Internal$Model$mapAllAttr = F3($mdgriffith$style_elements$Element$Internal$Model$mapAllAttr_raw);
-    var $mdgriffith$style_elements$Element$Internal$Model$Keyed = function (a) {
-        return { $: 1, a: a };
-    };
-    var $mdgriffith$style_elements$Element$Internal$Model$Normal = function (a) {
-        return { $: 0, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Internal$Model$Keyed = (a) => ({ $: 1, a: a });
+    var $mdgriffith$style_elements$Element$Internal$Model$Normal = (a) => ({ $: 0, a: a });
     var $mdgriffith$style_elements$Element$Internal$Model$mapChildren_raw = function (fn, children) {
         if (!children.$) {
             var c = children.a;
@@ -5109,9 +4375,7 @@
                 var absolutelyPositioned = elm.b;
                 var style = elm.e;
                 return $mdgriffith$style_elements$Element$Internal$Model$Element({
-                    b: $elm$core$Maybe$map_raw($elm$core$List$map(function (childEl) {
-                        return $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw(onMsg, onStyle, onVariation, childEl);
-                    }), absolutelyPositioned),
+                    b: $elm$core$Maybe$map_raw($elm$core$List$map((childEl) => $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw(onMsg, onStyle, onVariation, childEl)), absolutelyPositioned),
                     c: $elm$core$List$map_raw(A2($mdgriffith$style_elements$Element$Internal$Model$mapAllAttr, onMsg, onVariation), attrs),
                     g: $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw(onMsg, onStyle, onVariation, child),
                     d: elm.d,
@@ -5124,13 +4388,9 @@
                 var absolutelyPositioned = elm.b;
                 var style = elm.e;
                 return $mdgriffith$style_elements$Element$Internal$Model$Layout({
-                    b: $elm$core$Maybe$map_raw($elm$core$List$map(function (child) {
-                        return $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw(onMsg, onStyle, onVariation, child);
-                    }), absolutelyPositioned),
+                    b: $elm$core$Maybe$map_raw($elm$core$List$map((child) => $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw(onMsg, onStyle, onVariation, child)), absolutelyPositioned),
                     c: $elm$core$List$map_raw(A2($mdgriffith$style_elements$Element$Internal$Model$mapAllAttr, onMsg, onVariation), attrs),
-                    t: $mdgriffith$style_elements$Element$Internal$Model$mapChildren_raw(function (child) {
-                        return $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw(onMsg, onStyle, onVariation, child);
-                    }, children),
+                    t: $mdgriffith$style_elements$Element$Internal$Model$mapChildren_raw((child) => $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw(onMsg, onStyle, onVariation, child), children),
                     p: elm.p,
                     d: elm.d,
                     e: $elm$core$Maybe$map_raw(onStyle, style)
@@ -5163,33 +4423,21 @@
     };
     var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
     var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-    var $mdgriffith$style_elements$Element$Attributes$maxWidth = function (len) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Attr(_VirtualDom_style_raw("max-width", $mdgriffith$style_elements$Style$Internal$Render$Value$length(len)));
-    };
-    var $mdgriffith$style_elements$Element$Attributes$minHeight = function (len) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Attr(_VirtualDom_style_raw("min-height", $mdgriffith$style_elements$Style$Internal$Render$Value$length(len)));
-    };
-    var $mdgriffith$style_elements$Element$Attributes$padding = function (x) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Just(x), $elm$core$Maybe$Just(x), $elm$core$Maybe$Just(x), $elm$core$Maybe$Just(x));
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Px = function (a) {
-        return { $: 0, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Attributes$maxWidth = (len) => $mdgriffith$style_elements$Element$Internal$Model$Attr(_VirtualDom_style_raw("max-width", $mdgriffith$style_elements$Style$Internal$Render$Value$length(len)));
+    var $mdgriffith$style_elements$Element$Attributes$minHeight = (len) => $mdgriffith$style_elements$Element$Internal$Model$Attr(_VirtualDom_style_raw("min-height", $mdgriffith$style_elements$Style$Internal$Render$Value$length(len)));
+    var $mdgriffith$style_elements$Element$Attributes$padding = (x) => $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Just(x), $elm$core$Maybe$Just(x), $elm$core$Maybe$Just(x), $elm$core$Maybe$Just(x));
+    var $mdgriffith$style_elements$Style$Internal$Model$Px = (a) => ({ $: 0, a: a });
     var $mdgriffith$style_elements$Element$Attributes$px = $mdgriffith$style_elements$Style$Internal$Model$Px;
-    var $mdgriffith$style_elements$Style$Internal$Model$FlexLayout_raw = function (a, b) {
-        return { $: 1, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$FlexLayout = F2($mdgriffith$style_elements$Style$Internal$Model$FlexLayout_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$FlexLayout_raw = (a, b) => ({ $: 1, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$FlexLayout = F2($mdgriffith$style_elements$Style$Internal$Model$FlexLayout_raw);
     var $mdgriffith$style_elements$Style$Internal$Model$GoRight = 1;
-    var $mdgriffith$style_elements$Element$row_raw = function (style, attrs, children) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Layout({
-            b: $elm$core$Maybe$Nothing,
-            c: attrs,
-            t: $mdgriffith$style_elements$Element$Internal$Model$Normal(children),
-            p: $mdgriffith$style_elements$Style$Internal$Model$FlexLayout_raw(1, _List_Nil),
-            d: "div",
-            e: $elm$core$Maybe$Just(style)
-        });
-    }, $mdgriffith$style_elements$Element$row = F3($mdgriffith$style_elements$Element$row_raw);
+    var $mdgriffith$style_elements$Element$row_raw = (style, attrs, children) => $mdgriffith$style_elements$Element$Internal$Model$Layout({
+        b: $elm$core$Maybe$Nothing,
+        c: attrs,
+        t: $mdgriffith$style_elements$Element$Internal$Model$Normal(children),
+        p: $mdgriffith$style_elements$Style$Internal$Model$FlexLayout_raw(1, _List_Nil),
+        d: "div",
+        e: $elm$core$Maybe$Just(style)
+    }), $mdgriffith$style_elements$Element$row = F3($mdgriffith$style_elements$Element$row_raw);
     var $mdgriffith$style_elements$Style$Unguarded = 0;
     var $elm$core$Tuple$second = function (_v0) {
         var y = _v0.b;
@@ -5205,9 +4453,7 @@
             return xs;
         }
     }, $elm$core$List$maybeCons = F3($elm$core$List$maybeCons_raw);
-    var $elm$core$List$filterMap_raw = function (f, xs) {
-        return $elm$core$List$foldr_raw($elm$core$List$maybeCons(f), _List_Nil, xs);
-    }, $elm$core$List$filterMap = F2($elm$core$List$filterMap_raw);
+    var $elm$core$List$filterMap_raw = (f, xs) => $elm$core$List$foldr_raw($elm$core$List$maybeCons(f), _List_Nil, xs), $elm$core$List$filterMap = F2($elm$core$List$filterMap_raw);
     var $mdgriffith$style_elements$Style$Internal$Find$style_raw = function (_class, elements) {
         var find = function (el) {
             if (!el.$) {
@@ -5253,22 +4499,14 @@
         var css = _v0.bI;
         var findable = _v0.bR;
         var variations_raw = function (_class, vs) {
-            var varys = $elm$core$List$map_raw(function (cls) {
-                return _Utils_Tuple2(cls, true);
-            }, $elm$core$List$map_raw(A2($elm$core$Basics$composeL, function (vary) {
-                return $mdgriffith$style_elements$Style$Internal$Find$variation_raw(_class, vary, findable);
-            }, $elm$core$Tuple$first), $elm$core$List$filter_raw($elm$core$Tuple$second, vs)));
+            var varys = $elm$core$List$map_raw((cls) => _Utils_Tuple2(cls, true), $elm$core$List$map_raw(A2($elm$core$Basics$composeL, (vary) => $mdgriffith$style_elements$Style$Internal$Find$variation_raw(_class, vary, findable), $elm$core$Tuple$first), $elm$core$List$filter_raw($elm$core$Tuple$second, vs)));
             var parent = $mdgriffith$style_elements$Style$Internal$Find$style_raw(_class, findable);
             return _List_Cons(_Utils_Tuple2(parent, true), varys);
         }, variations = F2(variations_raw);
         return {
             bI: css,
-            e: function (_class) {
-                return $mdgriffith$style_elements$Style$Internal$Find$style_raw(_class, findable);
-            },
-            X: F2(function (_class, varys) {
-                return variations_raw(_class, varys);
-            })
+            e: (_class) => $mdgriffith$style_elements$Style$Internal$Find$style_raw(_class, findable),
+            X: F2((_class, varys) => variations_raw(_class, varys))
         };
     };
     var $mdgriffith$style_elements$Style$Internal$Intermediate$Rendered = $elm$core$Basics$identity;
@@ -5280,12 +4518,8 @@
             return $elm$core$List$foldr_raw($elm$core$List$cons, ys, xs);
         }
     }, $elm$core$List$append = F2($elm$core$List$append_raw);
-    var $elm$core$List$concat = function (lists) {
-        return $elm$core$List$foldr_raw($elm$core$List$append, _List_Nil, lists);
-    };
-    var $elm$core$List$concatMap_raw = function (f, list) {
-        return $elm$core$List$concat($elm$core$List$map_raw(f, list));
-    }, $elm$core$List$concatMap = F2($elm$core$List$concatMap_raw);
+    var $elm$core$List$concat = (lists) => $elm$core$List$foldr_raw($elm$core$List$append, _List_Nil, lists);
+    var $elm$core$List$concatMap_raw = (f, list) => $elm$core$List$concat($elm$core$List$map_raw(f, list)), $elm$core$List$concatMap = F2($elm$core$List$concatMap_raw);
     var $mdgriffith$style_elements$Style$Internal$Selector$getFindable = function (find) {
         getFindable: while (true) {
             switch (find.$) {
@@ -5299,9 +4533,7 @@
                     continue getFindable;
                 case 4:
                     var selectors = find.a;
-                    return $elm$core$Maybe$withDefault_raw(_List_Nil, $elm$core$Maybe$map_raw(function (x) {
-                        return { $: 1, a: x, b: _List_Nil };
-                    }, $elm$core$List$head($elm$core$List$reverse($elm$core$List$concatMap_raw($mdgriffith$style_elements$Style$Internal$Selector$getFindable, selectors)))));
+                    return $elm$core$Maybe$withDefault_raw(_List_Nil, $elm$core$Maybe$map_raw((x) => ({ $: 1, a: x, b: _List_Nil }), $elm$core$List$head($elm$core$List$reverse($elm$core$List$concatMap_raw($mdgriffith$style_elements$Style$Internal$Selector$getFindable, selectors)))));
                 default:
                     return _List_Nil;
             }
@@ -5328,18 +4560,10 @@
             return _List_Nil;
         }
     };
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableClass_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableClass = F2($mdgriffith$style_elements$Style$Internal$Intermediate$RenderableClass_raw);
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableFree = function (a) {
-        return { $: 2, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableMedia_raw = function (a, b, c) {
-        return { $: 1, a: a, b: b, c: c };
-    }, $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableMedia = F3($mdgriffith$style_elements$Style$Internal$Intermediate$RenderableMedia_raw);
-    var $elm$core$String$concat = function (strings) {
-        return $elm$core$String$join_raw("", strings);
-    };
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableClass_raw = (a, b) => ({ $: 0, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableClass = F2($mdgriffith$style_elements$Style$Internal$Intermediate$RenderableClass_raw);
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableFree = (a) => ({ $: 2, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableMedia_raw = (a, b, c) => ({ $: 1, a: a, b: b, c: c }), $mdgriffith$style_elements$Style$Internal$Intermediate$RenderableMedia = F3($mdgriffith$style_elements$Style$Internal$Intermediate$RenderableMedia_raw);
+    var $elm$core$String$concat = (strings) => $elm$core$String$join_raw("", strings);
     var $mdgriffith$style_elements$Style$Internal$Selector$render_raw = function (maybeGuard, selector) {
         var spacer = function (sel) {
             if (sel.$ === 1) {
@@ -5349,9 +4573,7 @@
                 return " ";
             }
         };
-        var renderAndSpace = F2(function (i, sel) {
-            return (!i) ? $mdgriffith$style_elements$Style$Internal$Selector$render_raw(maybeGuard, sel) : _Utils_ap(spacer(sel), $mdgriffith$style_elements$Style$Internal$Selector$render_raw(maybeGuard, sel));
-        });
+        var renderAndSpace = F2((i, sel) => (!i) ? $mdgriffith$style_elements$Style$Internal$Selector$render_raw(maybeGuard, sel) : _Utils_ap(spacer(sel), $mdgriffith$style_elements$Style$Internal$Selector$render_raw(maybeGuard, sel)));
         var applyGuard = function (str) {
             if (maybeGuard.$ === 1) {
                 return str;
@@ -5418,15 +4640,9 @@
     };
     var $elm$core$Bitwise$and = _Bitwise_and;
     var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
-    var $elm$core$String$repeatHelp_raw = function (n, chunk, result) {
-        return (n <= 0) ? result : $elm$core$String$repeatHelp_raw(n >> 1, _Utils_ap(chunk, chunk), (!(n & 1)) ? result : _Utils_ap(result, chunk));
-    }, $elm$core$String$repeatHelp = F3($elm$core$String$repeatHelp_raw);
-    var $elm$core$String$repeat_raw = function (n, chunk) {
-        return $elm$core$String$repeatHelp_raw(n, chunk, "");
-    }, $elm$core$String$repeat = F2($elm$core$String$repeat_raw);
-    var $mdgriffith$style_elements$Style$Internal$Render$Css$brace_raw = function (i, str) {
-        return " {\n" + (str + ("\n" + ($elm$core$String$repeat_raw(i, " ") + "}")));
-    }, $mdgriffith$style_elements$Style$Internal$Render$Css$brace = F2($mdgriffith$style_elements$Style$Internal$Render$Css$brace_raw);
+    var $elm$core$String$repeatHelp_raw = (n, chunk, result) => (n <= 0) ? result : $elm$core$String$repeatHelp_raw(n >> 1, _Utils_ap(chunk, chunk), (!(n & 1)) ? result : _Utils_ap(result, chunk)), $elm$core$String$repeatHelp = F3($elm$core$String$repeatHelp_raw);
+    var $elm$core$String$repeat_raw = (n, chunk) => $elm$core$String$repeatHelp_raw(n, chunk, ""), $elm$core$String$repeat = F2($elm$core$String$repeat_raw);
+    var $mdgriffith$style_elements$Style$Internal$Render$Css$brace_raw = (i, str) => " {\n" + (str + ("\n" + ($elm$core$String$repeat_raw(i, " ") + "}"))), $mdgriffith$style_elements$Style$Internal$Render$Css$brace = F2($mdgriffith$style_elements$Style$Internal$Render$Css$brace_raw);
     var $mdgriffith$style_elements$Style$Internal$Render$Css$prop_raw = function (i, _v0) {
         var name = _v0.a;
         var value = _v0.b;
@@ -5449,38 +4665,20 @@
         }
     };
     var $mdgriffith$style_elements$Style$Internal$Intermediate$finalize = function (intermediates) {
-        var finalizeCss = function (cls) {
-            return $elm$core$String$join_raw("\n", $elm$core$List$map_raw($mdgriffith$style_elements$Style$Internal$Intermediate$render, $mdgriffith$style_elements$Style$Internal$Intermediate$makeRenderable(cls)));
-        };
+        var finalizeCss = (cls) => $elm$core$String$join_raw("\n", $elm$core$List$map_raw($mdgriffith$style_elements$Style$Internal$Intermediate$render, $mdgriffith$style_elements$Style$Internal$Intermediate$makeRenderable(cls)));
         return {
             bI: $elm$core$String$join_raw("\n", $elm$core$List$map_raw(finalizeCss, intermediates)),
             bR: $elm$core$List$concatMap_raw($mdgriffith$style_elements$Style$Internal$Intermediate$asFindable, intermediates)
         };
     };
-    var $mdgriffith$style_elements$Style$Internal$Model$Filters = function (a) {
-        return { $: 12, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Rotate = function (a) {
-        return { $: 1, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$RotateAround_raw = function (a, b, c, d) {
-        return { $: 2, a: a, b: b, c: c, d: d };
-    }, $mdgriffith$style_elements$Style$Internal$Model$RotateAround = F4($mdgriffith$style_elements$Style$Internal$Model$RotateAround_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Scale_raw = function (a, b, c) {
-        return { $: 3, a: a, b: b, c: c };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Scale = F3($mdgriffith$style_elements$Style$Internal$Model$Scale_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Shadows = function (a) {
-        return { $: 10, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Style_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Style = F2($mdgriffith$style_elements$Style$Internal$Model$Style_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Transform = function (a) {
-        return { $: 11, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Translate_raw = function (a, b, c) {
-        return { $: 0, a: a, b: b, c: c };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Translate = F3($mdgriffith$style_elements$Style$Internal$Model$Translate_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Filters = (a) => ({ $: 12, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$Rotate = (a) => ({ $: 1, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$RotateAround_raw = (a, b, c, d) => ({ $: 2, a: a, b: b, c: c, d: d }), $mdgriffith$style_elements$Style$Internal$Model$RotateAround = F4($mdgriffith$style_elements$Style$Internal$Model$RotateAround_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Scale_raw = (a, b, c) => ({ $: 3, a: a, b: b, c: c }), $mdgriffith$style_elements$Style$Internal$Model$Scale = F3($mdgriffith$style_elements$Style$Internal$Model$Scale_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Shadows = (a) => ({ $: 10, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$Style_raw = (a, b) => ({ $: 0, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$Style = F2($mdgriffith$style_elements$Style$Internal$Model$Style_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Transform = (a) => ({ $: 11, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$Translate_raw = (a, b, c) => ({ $: 0, a: a, b: b, c: c }), $mdgriffith$style_elements$Style$Internal$Model$Translate = F3($mdgriffith$style_elements$Style$Internal$Model$Translate_raw);
     var $elm$core$List$isEmpty = function (xs) {
         if (!xs.b) {
             return true;
@@ -5604,9 +4802,7 @@
                             });
                     }
                 }, gather = F2(gather_raw);
-                var combine = function (combineable) {
-                    return _List_Cons($mdgriffith$style_elements$Style$Internal$Model$Filters(combineable.aA), _List_Cons($mdgriffith$style_elements$Style$Internal$Model$Shadows(combineable.aG), combineable.aD));
-                };
+                var combine = (combineable) => _List_Cons($mdgriffith$style_elements$Style$Internal$Model$Filters(combineable.aA), _List_Cons($mdgriffith$style_elements$Style$Internal$Model$Shadows(combineable.aG), combineable.aD));
                 return combine($elm$core$List$foldr_raw(gather, { aA: _List_Nil, aD: _List_Nil, aG: _List_Nil }, shadowsAndFilters));
             };
             var processed = mergeTransforms(mergeShadowsAndFilters(overridePrevious_raw(shadows, prioritize_raw(shadows, overridePrevious_raw(visible, prioritize_raw(visible, styleProps))))));
@@ -5620,41 +4816,21 @@
             return style;
         }
     };
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$Class = function (a) {
-        return { $: 0, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$Free = function (a) {
-        return { $: 2, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$Class = (a) => ({ $: 0, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$Free = (a) => ({ $: 2, a: a });
     var $mdgriffith$style_elements$Style$Internal$Render$class_raw = function (name, props) {
         var renderedProps = $elm$core$String$join_raw("\n", $elm$core$List$map_raw($mdgriffith$style_elements$Style$Internal$Render$Css$prop(2), props));
         return "." + (name + $mdgriffith$style_elements$Style$Internal$Render$Css$brace_raw(0, renderedProps));
     }, $mdgriffith$style_elements$Style$Internal$Render$class = F2($mdgriffith$style_elements$Style$Internal$Render$class_raw);
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$Media = function (a) {
-        return { $: 1, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$SubClass = function (a) {
-        return { $: 1, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Selector$Select_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Selector$Select = F2($mdgriffith$style_elements$Style$Internal$Selector$Select_raw);
-    var $mdgriffith$style_elements$Style$Internal$Selector$SelectChild = function (a) {
-        return { $: 2, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Selector$Stack = function (a) {
-        return { $: 4, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Find$Style_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Find$Style = F2($mdgriffith$style_elements$Style$Internal$Find$Style_raw);
-    var $mdgriffith$style_elements$Style$Internal$Find$Variation_raw = function (a, b, c) {
-        return { $: 1, a: a, b: b, c: c };
-    }, $mdgriffith$style_elements$Style$Internal$Find$Variation = F3($mdgriffith$style_elements$Style$Internal$Find$Variation_raw);
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$Media = (a) => ({ $: 1, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$SubClass = (a) => ({ $: 1, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Selector$Select_raw = (a, b) => ({ $: 0, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Selector$Select = F2($mdgriffith$style_elements$Style$Internal$Selector$Select_raw);
+    var $mdgriffith$style_elements$Style$Internal$Selector$SelectChild = (a) => ({ $: 2, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Selector$Stack = (a) => ({ $: 4, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Find$Style_raw = (a, b) => ({ $: 0, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Find$Style = F2($mdgriffith$style_elements$Style$Internal$Find$Style_raw);
+    var $mdgriffith$style_elements$Style$Internal$Find$Variation_raw = (a, b, c) => ({ $: 1, a: a, b: b, c: c }), $mdgriffith$style_elements$Style$Internal$Find$Variation = F3($mdgriffith$style_elements$Style$Internal$Find$Variation_raw);
     var $mdgriffith$style_elements$Style$Internal$Selector$guard_raw = function (guardingString, selector) {
-        var addGuard = function (str) {
-            return str + ("g" + guardingString);
-        };
+        var addGuard = (str) => str + ("g" + guardingString);
         var onFindable = function (findable) {
             if (!findable.$) {
                 var _class = findable.a;
@@ -5750,21 +4926,15 @@
                 return "";
         }
     };
-    var $Skinney$murmur3$Murmur3$HashData_raw = function (shift, seed, hash, charsProcessed) {
-        return { Z: charsProcessed, ab: hash, W: seed, aj: shift };
-    }, $Skinney$murmur3$Murmur3$HashData = F4($Skinney$murmur3$Murmur3$HashData_raw);
+    var $Skinney$murmur3$Murmur3$HashData_raw = (shift, seed, hash, charsProcessed) => ({ Z: charsProcessed, ab: hash, W: seed, aj: shift }), $Skinney$murmur3$Murmur3$HashData = F4($Skinney$murmur3$Murmur3$HashData_raw);
     var $Skinney$murmur3$Murmur3$c1 = 3432918353;
     var $Skinney$murmur3$Murmur3$c2 = 461845907;
     var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
     var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
-    var $Skinney$murmur3$Murmur3$multiplyBy_raw = function (b, a) {
-        return ((a & 65535) * b) + ((((a >>> 16) * b) & 65535) << 16);
-    }, $Skinney$murmur3$Murmur3$multiplyBy = F2($Skinney$murmur3$Murmur3$multiplyBy_raw);
+    var $Skinney$murmur3$Murmur3$multiplyBy_raw = (b, a) => ((a & 65535) * b) + ((((a >>> 16) * b) & 65535) << 16), $Skinney$murmur3$Murmur3$multiplyBy = F2($Skinney$murmur3$Murmur3$multiplyBy_raw);
     var $elm$core$Basics$neq = _Utils_notEqual;
     var $elm$core$Bitwise$or = _Bitwise_or;
-    var $Skinney$murmur3$Murmur3$rotlBy_raw = function (b, a) {
-        return (a << b) | (a >>> (32 - b));
-    }, $Skinney$murmur3$Murmur3$rotlBy = F2($Skinney$murmur3$Murmur3$rotlBy_raw);
+    var $Skinney$murmur3$Murmur3$rotlBy_raw = (b, a) => (a << b) | (a >>> (32 - b)), $Skinney$murmur3$Murmur3$rotlBy = F2($Skinney$murmur3$Murmur3$rotlBy_raw);
     var $elm$core$Bitwise$xor = _Bitwise_xor;
     var $Skinney$murmur3$Murmur3$finalize = function (data) {
         var acc = (!(!data.ab)) ? (data.W ^ $Skinney$murmur3$Murmur3$multiplyBy_raw($Skinney$murmur3$Murmur3$c2, $Skinney$murmur3$Murmur3$rotlBy_raw(15, $Skinney$murmur3$Murmur3$multiplyBy_raw($Skinney$murmur3$Murmur3$c1, data.ab)))) : data.W;
@@ -5774,9 +4944,7 @@
         return (h2 ^ (h2 >>> 16)) >>> 0;
     };
     var $elm$core$String$foldl = _String_foldl;
-    var $Skinney$murmur3$Murmur3$mix_raw = function (h1, k1) {
-        return $Skinney$murmur3$Murmur3$multiplyBy_raw(5, $Skinney$murmur3$Murmur3$rotlBy_raw(13, h1 ^ $Skinney$murmur3$Murmur3$multiplyBy_raw($Skinney$murmur3$Murmur3$c2, $Skinney$murmur3$Murmur3$rotlBy_raw(15, $Skinney$murmur3$Murmur3$multiplyBy_raw($Skinney$murmur3$Murmur3$c1, k1))))) + 3864292196;
-    }, $Skinney$murmur3$Murmur3$mix = F2($Skinney$murmur3$Murmur3$mix_raw);
+    var $Skinney$murmur3$Murmur3$mix_raw = (h1, k1) => $Skinney$murmur3$Murmur3$multiplyBy_raw(5, $Skinney$murmur3$Murmur3$rotlBy_raw(13, h1 ^ $Skinney$murmur3$Murmur3$multiplyBy_raw($Skinney$murmur3$Murmur3$c2, $Skinney$murmur3$Murmur3$rotlBy_raw(15, $Skinney$murmur3$Murmur3$multiplyBy_raw($Skinney$murmur3$Murmur3$c1, k1))))) + 3864292196, $Skinney$murmur3$Murmur3$mix = F2($Skinney$murmur3$Murmur3$mix_raw);
     var $Skinney$murmur3$Murmur3$hashFold_raw = function (c, data) {
         var res = data.ab | ((255 & $elm$core$Char$toCode(c)) << data.aj);
         var _v0 = data.aj;
@@ -5792,18 +4960,10 @@
             return { Z: data.Z + 1, ab: res, W: data.W, aj: data.aj + 8 };
         }
     }, $Skinney$murmur3$Murmur3$hashFold = F2($Skinney$murmur3$Murmur3$hashFold_raw);
-    var $Skinney$murmur3$Murmur3$hashString_raw = function (seed, str) {
-        return $Skinney$murmur3$Murmur3$finalize(_String_foldl_raw($Skinney$murmur3$Murmur3$hashFold, $Skinney$murmur3$Murmur3$HashData_raw(0, seed, 0, 0), str));
-    }, $Skinney$murmur3$Murmur3$hashString = F2($Skinney$murmur3$Murmur3$hashString_raw);
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$hash = function (value) {
-        return $elm$core$String$fromInt($Skinney$murmur3$Murmur3$hashString_raw(8675309, value));
-    };
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$guard = function (_class) {
-        return $mdgriffith$style_elements$Style$Internal$Intermediate$applyGuard_raw($mdgriffith$style_elements$Style$Internal$Intermediate$hash($mdgriffith$style_elements$Style$Internal$Intermediate$calculateGuard(_class)), _class);
-    };
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$PropsAndSub_raw = function (a, b) {
-        return { $: 2, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Intermediate$PropsAndSub = F2($mdgriffith$style_elements$Style$Internal$Intermediate$PropsAndSub_raw);
+    var $Skinney$murmur3$Murmur3$hashString_raw = (seed, str) => $Skinney$murmur3$Murmur3$finalize(_String_foldl_raw($Skinney$murmur3$Murmur3$hashFold, $Skinney$murmur3$Murmur3$HashData_raw(0, seed, 0, 0), str)), $Skinney$murmur3$Murmur3$hashString = F2($Skinney$murmur3$Murmur3$hashString_raw);
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$hash = (value) => $elm$core$String$fromInt($Skinney$murmur3$Murmur3$hashString_raw(8675309, value));
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$guard = (_class) => $mdgriffith$style_elements$Style$Internal$Intermediate$applyGuard_raw($mdgriffith$style_elements$Style$Internal$Intermediate$hash($mdgriffith$style_elements$Style$Internal$Intermediate$calculateGuard(_class)), _class);
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$PropsAndSub_raw = (a, b) => ({ $: 2, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Intermediate$PropsAndSub = F2($mdgriffith$style_elements$Style$Internal$Intermediate$PropsAndSub_raw);
     var $mdgriffith$style_elements$Style$Internal$Intermediate$asMediaQuery_raw = function (query, prop) {
         var classAsMediaQuery = function (cls) {
             if (!cls.$) {
@@ -5922,9 +5082,7 @@
                 return { $: 1, a: _Utils_Tuple2("background-image", "linear-gradient(" + ($elm$core$String$join_raw(", ", _List_Cons(directionName(dir), $elm$core$List$map_raw(renderStep, steps))) + ")")), b: _List_Nil };
         }
     };
-    var $mdgriffith$style_elements$Style$Internal$Selector$child_raw = function (parent, selector) {
-        return $mdgriffith$style_elements$Style$Internal$Selector$Stack({ $: 1, a: parent, b: { $: 1, a: $mdgriffith$style_elements$Style$Internal$Selector$SelectChild(selector), b: _List_Nil } });
-    }, $mdgriffith$style_elements$Style$Internal$Selector$child = F2($mdgriffith$style_elements$Style$Internal$Selector$child_raw);
+    var $mdgriffith$style_elements$Style$Internal$Selector$child_raw = (parent, selector) => $mdgriffith$style_elements$Style$Internal$Selector$Stack({ $: 1, a: parent, b: { $: 1, a: $mdgriffith$style_elements$Style$Internal$Selector$SelectChild(selector), b: _List_Nil } }), $mdgriffith$style_elements$Style$Internal$Selector$child = F2($mdgriffith$style_elements$Style$Internal$Selector$child_raw);
     var $mdgriffith$style_elements$Style$Internal$Model$ShadowModel = $elm$core$Basics$identity;
     var $mdgriffith$style_elements$Style$Internal$Render$Value$shadow = function (_v0) {
         var shadowModel = _v0;
@@ -6271,9 +5429,7 @@
                         }
                     };
                     var areasInRow = function (areas) {
-                        var quote = function (str) {
-                            return "\"" + (str + "\"");
-                        };
+                        var quote = (str) => "\"" + (str + "\"");
                         var areaStrs = $elm$core$List$concatMap_raw(areaSpan, areas);
                         return (_Utils_cmp($elm$core$List$length(areaStrs), $elm$core$List$length(columns)) > 0) ? quote($elm$core$String$join_raw(" ", areaStrs)) : ((_Utils_cmp($elm$core$List$length(areaStrs), $elm$core$List$length(columns)) < 0) ? quote($elm$core$String$join_raw(" ", areaStrs)) : quote($elm$core$String$join_raw(" ", areaStrs)));
                     };
@@ -6360,16 +5516,10 @@
         };
         return $elm$core$List$map_raw(renderPos, posEls);
     };
-    var $mdgriffith$style_elements$Style$Internal$Intermediate$Props = function (a) {
-        return { $: 0, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Intermediate$Props = (a) => ({ $: 0, a: a });
     var $mdgriffith$style_elements$Style$Internal$Intermediate$props = $mdgriffith$style_elements$Style$Internal$Intermediate$Props;
-    var $mdgriffith$style_elements$Style$Internal$Selector$Free = function (a) {
-        return { $: 3, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Selector$Pseudo = function (a) {
-        return { $: 1, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Selector$Free = (a) => ({ $: 3, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Selector$Pseudo = (a) => ({ $: 1, a: a });
     var $mdgriffith$style_elements$Style$Internal$Selector$pseudo_raw = function (psu, sel) {
         switch (sel.$) {
             case 1:
@@ -6442,9 +5592,7 @@
         var duration = _v0.bL;
         var easing = _v0.bM;
         var props = _v0.v;
-        var formatTrans = function (prop) {
-            return $elm$core$String$join_raw(" ", { $: 1, a: prop, b: { $: 1, a: $elm$core$String$fromFloat(duration) + "ms", b: { $: 1, a: easing, b: { $: 1, a: $elm$core$String$fromFloat(delay) + "ms", b: _List_Nil } } } });
-        };
+        var formatTrans = (prop) => $elm$core$String$join_raw(" ", { $: 1, a: prop, b: { $: 1, a: $elm$core$String$fromFloat(duration) + "ms", b: { $: 1, a: easing, b: { $: 1, a: $elm$core$String$fromFloat(delay) + "ms", b: _List_Nil } } } });
         return $elm$core$String$join_raw(", ", $elm$core$List$map_raw(formatTrans, props));
     };
     var $mdgriffith$style_elements$Style$Internal$Render$Value$typeface = function (families) {
@@ -6551,16 +5699,10 @@
                 return $elm$core$Maybe$Just($mdgriffith$style_elements$Style$Internal$Intermediate$props({ $: 1, a: _Utils_Tuple2("transition", $elm$core$String$join_raw(", ", $elm$core$List$map_raw($mdgriffith$style_elements$Style$Internal$Render$Property$transition, trans))), b: _List_Nil }));
         }
     }, $mdgriffith$style_elements$Style$Internal$Render$renderVariationProp = F2($mdgriffith$style_elements$Style$Internal$Render$renderVariationProp_raw);
-    var $mdgriffith$style_elements$Style$Internal$Selector$select = function (_class) {
-        return $mdgriffith$style_elements$Style$Internal$Selector$Select_raw("", $mdgriffith$style_elements$Style$Internal$Find$Style_raw(_class, ""));
-    };
-    var $elm$regex$Regex$Match_raw = function (match, index, number, submatches) {
-        return { bU: index, bY: match, b$: number, b5: submatches };
-    }, $elm$regex$Regex$Match = F4($elm$regex$Regex$Match_raw);
+    var $mdgriffith$style_elements$Style$Internal$Selector$select = (_class) => $mdgriffith$style_elements$Style$Internal$Selector$Select_raw("", $mdgriffith$style_elements$Style$Internal$Find$Style_raw(_class, ""));
+    var $elm$regex$Regex$Match_raw = (match, index, number, submatches) => ({ bU: index, bY: match, b$: number, b5: submatches }), $elm$regex$Regex$Match = F4($elm$regex$Regex$Match_raw);
     var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
-    var $elm$regex$Regex$fromString = function (string) {
-        return _Regex_fromStringWith_raw({ bF: false, bZ: false }, string);
-    };
+    var $elm$regex$Regex$fromString = (string) => _Regex_fromStringWith_raw({ bF: false, bZ: false }, string);
     var $elm$regex$Regex$never = _Regex_never;
     var $elm$regex$Regex$replace_a0 = _Regex_infinity, $elm$regex$Regex$replace = _Regex_replaceAtMost($elm$regex$Regex$replace_a0);
     var $elm$core$String$toLower = _String_toLower;
@@ -6569,16 +5711,10 @@
         var head = $elm$core$String$toLower($elm$core$String$left_raw(1, str));
         return _Utils_ap(head, tail);
     };
-    var $mdgriffith$style_elements$Style$Internal$Selector$formatName = function (x) {
-        return _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[\\s+]")), function (_v2) {
-            return "-";
-        }, _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[A-Z0-9]+")), function (_v1) {
-            var match = _v1.bY;
-            return " " + $elm$core$String$toLower(match);
-        }, _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[^a-zA-Z0-9_-]")), function (_v0) {
-            return "";
-        }, $mdgriffith$style_elements$Style$Internal$Selector$uncapitalize(x))));
-    };
+    var $mdgriffith$style_elements$Style$Internal$Selector$formatName = (x) => _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[\\s+]")), (_v2) => "-", _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[A-Z0-9]+")), function (_v1) {
+        var match = _v1.bY;
+        return " " + $elm$core$String$toLower(match);
+    }, _Regex_replaceAtMost_raw($elm$regex$Regex$replace_a0, $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("[^a-zA-Z0-9_-]")), (_v0) => "", $mdgriffith$style_elements$Style$Internal$Selector$uncapitalize(x))));
     var $mdgriffith$style_elements$Style$Internal$Find$toVariation_raw = function (_var, newName, element) {
         if (!element.$) {
             var _class = element.a;
@@ -6733,27 +5869,19 @@
                     v: $elm$core$List$map_raw($mdgriffith$style_elements$Style$Internal$Render$renderProp(selector), styleProps),
                     B: selector
                 });
-                var guard = function (i) {
-                    return guarded ? $mdgriffith$style_elements$Style$Internal$Intermediate$guard(i) : i;
-                };
+                var guard = (i) => guarded ? $mdgriffith$style_elements$Style$Internal$Intermediate$guard(i) : i;
                 return guard(inter);
         }
     }, $mdgriffith$style_elements$Style$Internal$Render$renderStyle = F2($mdgriffith$style_elements$Style$Internal$Render$renderStyle_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Import = function (a) {
-        return { $: 2, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Reset = function (a) {
-        return { $: 3, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$Import = (a) => ({ $: 2, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$Reset = (a) => ({ $: 3, a: a });
     var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
     var $elm$core$Set$empty = $elm$core$Dict$empty;
     var $elm$core$Set$insert_raw = function (key, _v0) {
         var dict = _v0;
         return $elm$core$Dict$insert_raw(key, 0, dict);
     }, $elm$core$Set$insert = F2($elm$core$Set$insert_raw);
-    var $elm$core$Set$fromList = function (list) {
-        return $elm$core$List$foldl_raw($elm$core$Set$insert, $elm$core$Set$empty, list);
-    };
+    var $elm$core$Set$fromList = (list) => $elm$core$List$foldl_raw($elm$core$Set$insert, $elm$core$Set$empty, list);
     var $mdgriffith$style_elements$Style$Internal$Render$reorderImportAddReset_raw = function (reset, styles) {
         var reorder = F2(function (style, _v5) {
             var importStatements = _v5.a;
@@ -6793,9 +5921,7 @@
                 return _List_Nil;
             }
         };
-        var importedFonts = $elm$core$List$map_raw(function (uri) {
-            return $mdgriffith$style_elements$Style$Internal$Model$Import("url('" + (uri + "')"));
-        }, $elm$core$Basics$composeL_raw($elm$core$Set$toList, $elm$core$Set$fromList, $elm$core$List$concatMap_raw(getFontStyle, styles)));
+        var importedFonts = $elm$core$List$map_raw((uri) => $mdgriffith$style_elements$Style$Internal$Model$Import("url('" + (uri + "')")), $elm$core$Basics$composeL_raw($elm$core$Set$toList, $elm$core$Set$fromList, $elm$core$List$concatMap_raw(getFontStyle, styles)));
         var _v0 = $elm$core$List$foldr_raw(reorder, _Utils_Tuple2(_List_Nil, _List_Nil), styles);
         var imports = _v0.a;
         var allStyles = _v0.b;
@@ -6817,44 +5943,24 @@
         };
         return $elm$core$List$concatMap_raw(flatten, batchables);
     };
-    var $mdgriffith$style_elements$Style$Internal$Render$stylesheet_raw = function (reset, guard, batched) {
-        return $mdgriffith$style_elements$Style$Internal$Intermediate$finalize($elm$core$List$map_raw(A2($elm$core$Basics$composeL, $mdgriffith$style_elements$Style$Internal$Render$renderStyle(guard), $mdgriffith$style_elements$Style$Internal$Render$preprocess), $mdgriffith$style_elements$Style$Internal$Render$reorderImportAddReset_raw(reset, $mdgriffith$style_elements$Style$Internal$Batchable$toList(batched))));
-    }, $mdgriffith$style_elements$Style$Internal$Render$stylesheet = F3($mdgriffith$style_elements$Style$Internal$Render$stylesheet_raw);
+    var $mdgriffith$style_elements$Style$Internal$Render$stylesheet_raw = (reset, guard, batched) => $mdgriffith$style_elements$Style$Internal$Intermediate$finalize($elm$core$List$map_raw(A2($elm$core$Basics$composeL, $mdgriffith$style_elements$Style$Internal$Render$renderStyle(guard), $mdgriffith$style_elements$Style$Internal$Render$preprocess), $mdgriffith$style_elements$Style$Internal$Render$reorderImportAddReset_raw(reset, $mdgriffith$style_elements$Style$Internal$Batchable$toList(batched)))), $mdgriffith$style_elements$Style$Internal$Render$stylesheet = F3($mdgriffith$style_elements$Style$Internal$Render$stylesheet_raw);
     var $mdgriffith$style_elements$Style$styleSheetWith_raw = function (options, styles) {
         var unguard = $elm$core$List$any_raw($elm$core$Basics$eq(0), options);
         return $mdgriffith$style_elements$Style$prepareSheet($mdgriffith$style_elements$Style$Internal$Render$stylesheet_raw("", !unguard, styles));
     }, $mdgriffith$style_elements$Style$styleSheetWith = F2($mdgriffith$style_elements$Style$styleSheetWith_raw);
-    var $mdgriffith$style_elements$Style$styleSheet = function (styles) {
-        return $mdgriffith$style_elements$Style$styleSheetWith_raw(_List_Nil, styles);
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Exact_raw = function (a, b) {
-        return { $: 0, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Exact = F2($mdgriffith$style_elements$Style$Internal$Model$Exact_raw);
-    var $mdgriffith$style_elements$Style$Color$background = function (clr) {
-        return $mdgriffith$style_elements$Style$Internal$Model$Exact_raw("background-color", $mdgriffith$style_elements$Style$Internal$Render$Value$color(clr));
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$FontName = function (a) {
-        return { $: 5, a: a };
-    };
+    var $mdgriffith$style_elements$Style$styleSheet = (styles) => $mdgriffith$style_elements$Style$styleSheetWith_raw(_List_Nil, styles);
+    var $mdgriffith$style_elements$Style$Internal$Model$Exact_raw = (a, b) => ({ $: 0, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$Exact = F2($mdgriffith$style_elements$Style$Internal$Model$Exact_raw);
+    var $mdgriffith$style_elements$Style$Color$background = (clr) => $mdgriffith$style_elements$Style$Internal$Model$Exact_raw("background-color", $mdgriffith$style_elements$Style$Internal$Render$Value$color(clr));
+    var $mdgriffith$style_elements$Style$Internal$Model$FontName = (a) => ({ $: 5, a: a });
     var $mdgriffith$style_elements$Style$Font$font = $mdgriffith$style_elements$Style$Internal$Model$FontName;
-    var $mdgriffith$style_elements$Style$Internal$Model$RGBA_raw = function (a, b, c, d) {
-        return { $: 0, a: a, b: b, c: c, d: d };
-    }, $mdgriffith$style_elements$Style$Internal$Model$RGBA = F4($mdgriffith$style_elements$Style$Internal$Model$RGBA_raw);
-    var $mdgriffith$style_elements$Style$rgb_raw = function (r, g, b) {
-        return $mdgriffith$style_elements$Style$Internal$Model$RGBA_raw(r, g, b, 1);
-    }, $mdgriffith$style_elements$Style$rgb = F3($mdgriffith$style_elements$Style$rgb_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$RGBA_raw = (a, b, c, d) => ({ $: 0, a: a, b: b, c: c, d: d }), $mdgriffith$style_elements$Style$Internal$Model$RGBA = F4($mdgriffith$style_elements$Style$Internal$Model$RGBA_raw);
+    var $mdgriffith$style_elements$Style$rgb_raw = (r, g, b) => $mdgriffith$style_elements$Style$Internal$Model$RGBA_raw(r, g, b, 1), $mdgriffith$style_elements$Style$rgb = F3($mdgriffith$style_elements$Style$rgb_raw);
     var $mdgriffith$style_elements$Style$Internal$Model$SansSerif = { $: 1 };
     var $mdgriffith$style_elements$Style$Font$sansSerif = $mdgriffith$style_elements$Style$Internal$Model$SansSerif;
-    var $mdgriffith$style_elements$Style$Internal$Model$TextColor = function (a) {
-        return { $: 15, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$TextColor = (a) => ({ $: 15, a: a });
     var $mdgriffith$style_elements$Style$Color$text = $mdgriffith$style_elements$Style$Internal$Model$TextColor;
-    var $mdgriffith$style_elements$Style$Internal$Model$FontFamily = function (a) {
-        return { $: 7, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Font$typeface = function (families) {
-        return $mdgriffith$style_elements$Style$Internal$Model$FontFamily(families);
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$FontFamily = (a) => ({ $: 7, a: a });
+    var $mdgriffith$style_elements$Style$Font$typeface = (families) => $mdgriffith$style_elements$Style$Internal$Model$FontFamily(families);
     var $elm_explorations$benchmark$Benchmark$Runner$Text$body = { $: 1, a: $mdgriffith$style_elements$Style$Font$typeface(_List_fromArray([
             $mdgriffith$style_elements$Style$Font$font("Helvetica Neue"),
             $mdgriffith$style_elements$Style$Font$font("Helvetica"),
@@ -6862,15 +5968,9 @@
             $mdgriffith$style_elements$Style$Font$sansSerif
         ])), b: { $: 1, a: $mdgriffith$style_elements$Style$Color$text($mdgriffith$style_elements$Style$rgb_raw(15 / 255, 30 / 255, 45 / 255)), b: _List_Nil } };
     var $mdgriffith$style_elements$Style$Sheet$ChildSheet = $elm$core$Basics$identity;
-    var $mdgriffith$style_elements$Style$Internal$Batchable$Batch = function (a) {
-        return { $: 2, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Batchable$Many = function (a) {
-        return { $: 1, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Batchable$One = function (a) {
-        return { $: 0, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Batchable$Batch = (a) => ({ $: 2, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Batchable$Many = (a) => ({ $: 1, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Batchable$One = (a) => ({ $: 0, a: a });
     var $mdgriffith$style_elements$Style$Internal$Batchable$map_raw = function (fn, batchable) {
         switch (batchable.$) {
             case 0:
@@ -6884,42 +5984,18 @@
                 return $mdgriffith$style_elements$Style$Internal$Batchable$Batch($elm$core$List$map_raw($mdgriffith$style_elements$Style$Internal$Batchable$map(fn), embedded));
         }
     }, $mdgriffith$style_elements$Style$Internal$Batchable$map = F2($mdgriffith$style_elements$Style$Internal$Batchable$map_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$RawStyle_raw = function (a, b) {
-        return { $: 1, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$RawStyle = F2($mdgriffith$style_elements$Style$Internal$Model$RawStyle_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Background = function (a) {
-        return { $: 9, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Child_raw = function (a, b) {
-        return { $: 2, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Child = F2($mdgriffith$style_elements$Style$Internal$Model$Child_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Font_raw = function (a, b) {
-        return { $: 6, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Font = F2($mdgriffith$style_elements$Style$Internal$Model$Font_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Layout = function (a) {
-        return { $: 8, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$MediaQuery_raw = function (a, b) {
-        return { $: 3, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$MediaQuery = F2($mdgriffith$style_elements$Style$Internal$Model$MediaQuery_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Position = function (a) {
-        return { $: 5, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$PseudoElement_raw = function (a, b) {
-        return { $: 4, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$PseudoElement = F2($mdgriffith$style_elements$Style$Internal$Model$PseudoElement_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$SelectionColor = function (a) {
-        return { $: 14, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Transitions = function (a) {
-        return { $: 16, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Variation_raw = function (a, b) {
-        return { $: 1, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Variation = F2($mdgriffith$style_elements$Style$Internal$Model$Variation_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Visibility = function (a) {
-        return { $: 13, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$RawStyle_raw = (a, b) => ({ $: 1, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$RawStyle = F2($mdgriffith$style_elements$Style$Internal$Model$RawStyle_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Background = (a) => ({ $: 9, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$Child_raw = (a, b) => ({ $: 2, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$Child = F2($mdgriffith$style_elements$Style$Internal$Model$Child_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Font_raw = (a, b) => ({ $: 6, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$Font = F2($mdgriffith$style_elements$Style$Internal$Model$Font_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Layout = (a) => ({ $: 8, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$MediaQuery_raw = (a, b) => ({ $: 3, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$MediaQuery = F2($mdgriffith$style_elements$Style$Internal$Model$MediaQuery_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Position = (a) => ({ $: 5, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$PseudoElement_raw = (a, b) => ({ $: 4, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$PseudoElement = F2($mdgriffith$style_elements$Style$Internal$Model$PseudoElement_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$SelectionColor = (a) => ({ $: 14, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$Transitions = (a) => ({ $: 16, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$Variation_raw = (a, b) => ({ $: 1, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$Variation = F2($mdgriffith$style_elements$Style$Internal$Model$Variation_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$Visibility = (a) => ({ $: 13, a: a });
     var $mdgriffith$style_elements$Style$Internal$Model$mapPropClass_raw = function (fn, prop) {
         switch (prop.$) {
             case 2:
@@ -7060,31 +6136,21 @@
                 return $mdgriffith$style_elements$Style$Internal$Model$Reset(r);
         }
     }, $mdgriffith$style_elements$Style$Internal$Model$mapClassAndVar = F3($mdgriffith$style_elements$Style$Internal$Model$mapClassAndVar_raw);
-    var $mdgriffith$style_elements$Style$Sheet$map_raw = function (toParent, toParentVariation, styles) {
-        return $elm$core$List$map_raw($mdgriffith$style_elements$Style$Internal$Batchable$map(A2($mdgriffith$style_elements$Style$Internal$Model$mapClassAndVar, toParent, toParentVariation)), styles);
-    }, $mdgriffith$style_elements$Style$Sheet$map = F3($mdgriffith$style_elements$Style$Sheet$map_raw);
+    var $mdgriffith$style_elements$Style$Sheet$map_raw = (toParent, toParentVariation, styles) => $elm$core$List$map_raw($mdgriffith$style_elements$Style$Internal$Batchable$map(A2($mdgriffith$style_elements$Style$Internal$Model$mapClassAndVar, toParent, toParentVariation)), styles), $mdgriffith$style_elements$Style$Sheet$map = F3($mdgriffith$style_elements$Style$Sheet$map_raw);
     var $mdgriffith$style_elements$Style$Internal$Batchable$many = $mdgriffith$style_elements$Style$Internal$Batchable$Many;
     var $mdgriffith$style_elements$Style$Sheet$merge = function (_v0) {
         var styles = _v0;
         return $mdgriffith$style_elements$Style$Internal$Batchable$many($mdgriffith$style_elements$Style$Internal$Batchable$toList(styles));
     };
     var $mdgriffith$style_elements$Style$Internal$Batchable$one = $mdgriffith$style_elements$Style$Internal$Batchable$One;
-    var $mdgriffith$style_elements$Style$prop_raw = function (name, val) {
-        return $mdgriffith$style_elements$Style$Internal$Model$Exact_raw(name, val);
-    }, $mdgriffith$style_elements$Style$prop = F2($mdgriffith$style_elements$Style$prop_raw);
-    var $mdgriffith$style_elements$Style$style_raw = function (cls, props) {
-        return $mdgriffith$style_elements$Style$Internal$Batchable$one($mdgriffith$style_elements$Style$Internal$Model$Style_raw(cls, _List_Cons($mdgriffith$style_elements$Style$prop_raw("border-style", "solid"), props)));
-    }, $mdgriffith$style_elements$Style$style = F2($mdgriffith$style_elements$Style$style_raw);
+    var $mdgriffith$style_elements$Style$prop_raw = (name, val) => $mdgriffith$style_elements$Style$Internal$Model$Exact_raw(name, val), $mdgriffith$style_elements$Style$prop = F2($mdgriffith$style_elements$Style$prop_raw);
+    var $mdgriffith$style_elements$Style$style_raw = (cls, props) => $mdgriffith$style_elements$Style$Internal$Batchable$one($mdgriffith$style_elements$Style$Internal$Model$Style_raw(cls, _List_Cons($mdgriffith$style_elements$Style$prop_raw("border-style", "solid"), props))), $mdgriffith$style_elements$Style$style = F2($mdgriffith$style_elements$Style$style_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$InProgress$Box = { $: 2 };
     var $elm_explorations$benchmark$Benchmark$Runner$InProgress$Progress = { $: 3 };
     var $elm_explorations$benchmark$Benchmark$Runner$InProgress$Status = { $: 4 };
-    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$TextClass = function (a) {
-        return { $: 5, a: a };
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$TextClass = (a) => ({ $: 5, a: a });
     var $elm_explorations$benchmark$Benchmark$Runner$InProgress$Unstyled = { $: 0 };
-    var $mdgriffith$style_elements$Style$Font$size = function (i) {
-        return $mdgriffith$style_elements$Style$Internal$Model$Font_raw("font-size", $elm$core$String$fromFloat(i) + "px");
-    };
+    var $mdgriffith$style_elements$Style$Font$size = (i) => $mdgriffith$style_elements$Style$Internal$Model$Font_raw("font-size", $elm$core$String$fromFloat(i) + "px");
     var $mdgriffith$style_elements$Style$Shadow$boxHelper = function (_v0) {
         var offset = _v0.a7;
         var size = _v0.b4;
@@ -7092,9 +6158,7 @@
         var color = _v0.bH;
         return { bC: blur, bH: color, bX: "box", a7: offset, b4: size };
     };
-    var $mdgriffith$style_elements$Style$Shadow$box = function (shadow) {
-        return $mdgriffith$style_elements$Style$Internal$Model$Shadows({ $: 1, a: $mdgriffith$style_elements$Style$Shadow$boxHelper(shadow), b: _List_Nil });
-    };
+    var $mdgriffith$style_elements$Style$Shadow$box = (shadow) => $mdgriffith$style_elements$Style$Internal$Model$Shadows({ $: 1, a: $mdgriffith$style_elements$Style$Shadow$boxHelper(shadow), b: _List_Nil });
     var $mdgriffith$style_elements$Style$rgba = $mdgriffith$style_elements$Style$Internal$Model$RGBA;
     var $elm_explorations$benchmark$Benchmark$Runner$Box$style = { $: 1, a: $mdgriffith$style_elements$Style$Color$background($mdgriffith$style_elements$Style$rgb_raw(248 / 255, 248 / 255, 248 / 255)), b: { $: 1, a: $mdgriffith$style_elements$Style$Shadow$box({
                 bC: 2,
@@ -7125,15 +6189,11 @@
     var $elm_explorations$benchmark$Benchmark$Runner$Report$Numeric = 0;
     var $elm_explorations$benchmark$Benchmark$Runner$Report$Table = { $: 2 };
     var $elm_explorations$benchmark$Benchmark$Runner$Report$Text = 1;
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$TextClass = function (a) {
-        return { $: 5, a: a };
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$TextClass = (a) => ({ $: 5, a: a });
     var $elm_explorations$benchmark$Benchmark$Runner$Report$Unstyled = { $: 0 };
     var $mdgriffith$style_elements$Style$Font$alignRight = $mdgriffith$style_elements$Style$Internal$Model$Font_raw("text-align", "right");
     var $mdgriffith$style_elements$Style$Font$bold = $mdgriffith$style_elements$Style$Internal$Model$Font_raw("font-weight", "700");
-    var $mdgriffith$style_elements$Style$variation_raw = function (v, variationProps) {
-        return $mdgriffith$style_elements$Style$Internal$Model$Variation_raw(v, variationProps);
-    }, $mdgriffith$style_elements$Style$variation = F2($mdgriffith$style_elements$Style$variation_raw);
+    var $mdgriffith$style_elements$Style$variation_raw = (v, variationProps) => $mdgriffith$style_elements$Style$Internal$Model$Variation_raw(v, variationProps), $mdgriffith$style_elements$Style$variation = F2($mdgriffith$style_elements$Style$variation_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$styles = { $: 1, a: $mdgriffith$style_elements$Style$style_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Unstyled, _List_Nil), b: { $: 1, a: $mdgriffith$style_elements$Style$style_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Box, $elm_explorations$benchmark$Benchmark$Runner$Box$style), b: { $: 1, a: $mdgriffith$style_elements$Style$style_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Table, _List_fromArray([
                     $mdgriffith$style_elements$Style$prop_raw("font-feature-settings", "'tnum'")
                 ])), b: { $: 1, a: $mdgriffith$style_elements$Style$style_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Header, _List_fromArray([
@@ -7152,16 +6212,14 @@
     var $mdgriffith$style_elements$Element$Internal$Model$VerticalCenter = 2;
     var $mdgriffith$style_elements$Element$Attributes$verticalCenter = $mdgriffith$style_elements$Element$Internal$Model$VAlign(2);
     var $mdgriffith$style_elements$Style$Internal$Model$Down = 2;
-    var $mdgriffith$style_elements$Element$column_raw = function (style, attrs, children) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Layout({
-            b: $elm$core$Maybe$Nothing,
-            c: attrs,
-            t: $mdgriffith$style_elements$Element$Internal$Model$Normal(children),
-            p: $mdgriffith$style_elements$Style$Internal$Model$FlexLayout_raw(2, _List_Nil),
-            d: "div",
-            e: $elm$core$Maybe$Just(style)
-        });
-    }, $mdgriffith$style_elements$Element$column = F3($mdgriffith$style_elements$Element$column_raw);
+    var $mdgriffith$style_elements$Element$column_raw = (style, attrs, children) => $mdgriffith$style_elements$Element$Internal$Model$Layout({
+        b: $elm$core$Maybe$Nothing,
+        c: attrs,
+        t: $mdgriffith$style_elements$Element$Internal$Model$Normal(children),
+        p: $mdgriffith$style_elements$Style$Internal$Model$FlexLayout_raw(2, _List_Nil),
+        d: "div",
+        e: $elm$core$Maybe$Just(style)
+    }), $mdgriffith$style_elements$Element$column = F3($mdgriffith$style_elements$Element$column_raw);
     var $mdgriffith$style_elements$Element$Internal$Modify$setNode_raw = function (node, el) {
         switch (el.$) {
             case 0:
@@ -7190,28 +6248,16 @@
                 });
         }
     }, $mdgriffith$style_elements$Element$Internal$Modify$setNode = F2($mdgriffith$style_elements$Element$Internal$Modify$setNode_raw);
-    var $mdgriffith$style_elements$Element$node = function (str) {
-        return $mdgriffith$style_elements$Element$Internal$Modify$setNode(str);
-    };
-    var $mdgriffith$style_elements$Element$Attributes$paddingBottom = function (x) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Just(x), $elm$core$Maybe$Nothing);
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Percent = function (a) {
-        return { $: 1, a: a };
-    };
+    var $mdgriffith$style_elements$Element$node = (str) => $mdgriffith$style_elements$Element$Internal$Modify$setNode(str);
+    var $mdgriffith$style_elements$Element$Attributes$paddingBottom = (x) => $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Just(x), $elm$core$Maybe$Nothing);
+    var $mdgriffith$style_elements$Style$Internal$Model$Percent = (a) => ({ $: 1, a: a });
     var $mdgriffith$style_elements$Element$Attributes$percent = $mdgriffith$style_elements$Style$Internal$Model$Percent;
     var $mdgriffith$style_elements$Element$Internal$Model$NoDecoration = 0;
     var $mdgriffith$style_elements$Element$text_a0 = { Q: 0, S: false }, $mdgriffith$style_elements$Element$text = $mdgriffith$style_elements$Element$Internal$Model$Text($mdgriffith$style_elements$Element$text_a0);
     var $mdgriffith$style_elements$Element$Attributes$width = $mdgriffith$style_elements$Element$Internal$Model$Width;
-    var $elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw = function (_class, caption) {
-        return A2($mdgriffith$style_elements$Element$node, "h1", $mdgriffith$style_elements$Element$el_raw(_class(0), { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom(20), b: _List_Nil } }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, caption)));
-    }, $elm_explorations$benchmark$Benchmark$Runner$Text$hero = F2($elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw);
-    var $mdgriffith$style_elements$Element$Attributes$paddingTop = function (x) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Just(x), $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing);
-    };
-    var $elm_explorations$benchmark$Benchmark$Runner$Text$path_raw = function (_class, parts) {
-        return $mdgriffith$style_elements$Element$el_raw(_class(1), { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom(3), b: _List_Nil }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, $elm$core$String$join_raw(" / ", parts)));
-    }, $elm_explorations$benchmark$Benchmark$Runner$Text$path = F2($elm_explorations$benchmark$Benchmark$Runner$Text$path_raw);
+    var $elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw = (_class, caption) => A2($mdgriffith$style_elements$Element$node, "h1", $mdgriffith$style_elements$Element$el_raw(_class(0), { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom(20), b: _List_Nil } }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, caption))), $elm_explorations$benchmark$Benchmark$Runner$Text$hero = F2($elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw);
+    var $mdgriffith$style_elements$Element$Attributes$paddingTop = (x) => $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Just(x), $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing);
+    var $elm_explorations$benchmark$Benchmark$Runner$Text$path_raw = (_class, parts) => $mdgriffith$style_elements$Element$el_raw(_class(1), { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom(3), b: _List_Nil }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, $elm$core$String$join_raw(" / ", parts))), $elm_explorations$benchmark$Benchmark$Runner$Text$path = F2($elm_explorations$benchmark$Benchmark$Runner$Text$path_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX = 15;
     var $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY = 7;
     var $mdgriffith$style_elements$Element$Internal$Model$Justify = 3;
@@ -7233,27 +6279,15 @@
         }();
         return $mdgriffith$style_elements$Element$row_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Unstyled, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$px(500)), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$spread, b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$verticalCenter, b: _List_Nil } } }, { $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, name), b: { $: 1, a: $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Status, _List_Nil, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, informativeStatus)), b: _List_Nil } });
     }, $elm_explorations$benchmark$Benchmark$Runner$InProgress$caption = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$caption_raw);
-    var $elm$virtual_dom$VirtualDom$attribute_raw = function (key, value) {
-        return _VirtualDom_attribute_raw(_VirtualDom_noOnOrFormAction(key), _VirtualDom_noJavaScriptOrHtmlUri(value));
-    }, $elm$virtual_dom$VirtualDom$attribute = F2($elm$virtual_dom$VirtualDom$attribute_raw);
+    var $elm$virtual_dom$VirtualDom$attribute_raw = (key, value) => _VirtualDom_attribute_raw(_VirtualDom_noOnOrFormAction(key), _VirtualDom_noJavaScriptOrHtmlUri(value)), $elm$virtual_dom$VirtualDom$attribute = F2($elm$virtual_dom$VirtualDom$attribute_raw);
     var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
-    var $mdgriffith$style_elements$Element$Attributes$attribute_raw = function (name, val) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$virtual_dom$VirtualDom$attribute_raw(name, val));
-    }, $mdgriffith$style_elements$Element$Attributes$attribute = F2($mdgriffith$style_elements$Element$Attributes$attribute_raw);
+    var $mdgriffith$style_elements$Element$Attributes$attribute_raw = (name, val) => $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$virtual_dom$VirtualDom$attribute_raw(name, val)), $mdgriffith$style_elements$Element$Attributes$attribute = F2($mdgriffith$style_elements$Element$Attributes$attribute_raw);
     var $mdgriffith$style_elements$Element$Attributes$clip = $mdgriffith$style_elements$Element$Internal$Model$Attr(_VirtualDom_style_raw("overflow", "hidden"));
     var $mdgriffith$style_elements$Element$empty = $mdgriffith$style_elements$Element$Internal$Model$Empty;
-    var $mdgriffith$style_elements$Element$Attributes$paddingLeft = function (x) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Just(x));
-    };
-    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$filledPortion_raw = function (name, status) {
-        return ($elm_explorations$benchmark$Benchmark$Status$progress(status) > 0) ? $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Progress, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingTop($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingLeft($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$clip, b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100 * $elm_explorations$benchmark$Benchmark$Status$progress(status))), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$attribute_raw("role", "progressbar"), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$attribute_raw("aria-valuenow", $elm$core$String$fromInt($elm$core$Basics$floor(100 * $elm_explorations$benchmark$Benchmark$Status$progress(status)))), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$attribute_raw("aria-valuemin", "0"), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$attribute_raw("aria-valuemax", "100"), b: _List_Nil } } } } } } } } }, $elm_explorations$benchmark$Benchmark$Runner$InProgress$caption_raw(name, status)) : $mdgriffith$style_elements$Element$empty;
-    }, $elm_explorations$benchmark$Benchmark$Runner$InProgress$filledPortion = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$filledPortion_raw);
-    var $mdgriffith$style_elements$Element$Attributes$paddingXY_raw = function (x, y) {
-        return $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Just(y), $elm$core$Maybe$Just(x), $elm$core$Maybe$Just(y), $elm$core$Maybe$Just(x));
-    }, $mdgriffith$style_elements$Element$Attributes$paddingXY = F2($mdgriffith$style_elements$Element$Attributes$paddingXY_raw);
-    var $mdgriffith$style_elements$Element$Internal$Model$Nearby = function (a) {
-        return { $: 3, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Attributes$paddingLeft = (x) => $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Just(x));
+    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$filledPortion_raw = (name, status) => ($elm_explorations$benchmark$Benchmark$Status$progress(status) > 0) ? $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Progress, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingTop($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingBottom($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingLeft($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$clip, b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100 * $elm_explorations$benchmark$Benchmark$Status$progress(status))), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$attribute_raw("role", "progressbar"), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$attribute_raw("aria-valuenow", $elm$core$String$fromInt($elm$core$Basics$floor(100 * $elm_explorations$benchmark$Benchmark$Status$progress(status)))), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$attribute_raw("aria-valuemin", "0"), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$attribute_raw("aria-valuemax", "100"), b: _List_Nil } } } } } } } } }, $elm_explorations$benchmark$Benchmark$Runner$InProgress$caption_raw(name, status)) : $mdgriffith$style_elements$Element$empty, $elm_explorations$benchmark$Benchmark$Runner$InProgress$filledPortion = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$filledPortion_raw);
+    var $mdgriffith$style_elements$Element$Attributes$paddingXY_raw = (x, y) => $mdgriffith$style_elements$Element$Internal$Model$Padding_raw($elm$core$Maybe$Just(y), $elm$core$Maybe$Just(x), $elm$core$Maybe$Just(y), $elm$core$Maybe$Just(x)), $mdgriffith$style_elements$Element$Attributes$paddingXY = F2($mdgriffith$style_elements$Element$Attributes$paddingXY_raw);
+    var $mdgriffith$style_elements$Element$Internal$Model$Nearby = (a) => ({ $: 3, a: a });
     var $mdgriffith$style_elements$Element$Internal$Model$Within = 4;
     var $mdgriffith$style_elements$Element$Internal$Modify$addAttr_raw = function (prop, el) {
         switch (el.$) {
@@ -7360,22 +6394,16 @@
         }
     };
     var $mdgriffith$style_elements$Element$within_raw = function (nearbys, parent) {
-        var position = F2(function (elem, p) {
-            return $mdgriffith$style_elements$Element$Internal$Modify$addChild_raw(p, $mdgriffith$style_elements$Element$Internal$Modify$addAttr_raw($mdgriffith$style_elements$Element$Internal$Model$PositionFrame($mdgriffith$style_elements$Element$Internal$Model$Nearby(4)), $mdgriffith$style_elements$Element$Internal$Modify$wrapHtml(elem)));
-        });
+        var position = F2((elem, p) => $mdgriffith$style_elements$Element$Internal$Modify$addChild_raw(p, $mdgriffith$style_elements$Element$Internal$Modify$addAttr_raw($mdgriffith$style_elements$Element$Internal$Model$PositionFrame($mdgriffith$style_elements$Element$Internal$Model$Nearby(4)), $mdgriffith$style_elements$Element$Internal$Modify$wrapHtml(elem))));
         return $elm$core$List$foldr_raw(position, parent, nearbys);
     }, $mdgriffith$style_elements$Element$within = F2($mdgriffith$style_elements$Element$within_raw);
-    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBar_raw = function (name, status) {
-        return $mdgriffith$style_elements$Element$within_raw({ $: 1, a: $elm_explorations$benchmark$Benchmark$Runner$InProgress$filledPortion_raw(name, status), b: _List_Nil }, $mdgriffith$style_elements$Element$row_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Box, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingXY_raw($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX, $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)), b: _List_Nil } }, { $: 1, a: $elm_explorations$benchmark$Benchmark$Runner$InProgress$caption_raw(name, status), b: _List_Nil }));
-    }, $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBar = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBar_raw);
+    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBar_raw = (name, status) => $mdgriffith$style_elements$Element$within_raw({ $: 1, a: $elm_explorations$benchmark$Benchmark$Runner$InProgress$filledPortion_raw(name, status), b: _List_Nil }, $mdgriffith$style_elements$Element$row_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Box, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingXY_raw($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX, $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)), b: _List_Nil } }, { $: 1, a: $elm_explorations$benchmark$Benchmark$Runner$InProgress$caption_raw(name, status), b: _List_Nil })), $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBar = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBar_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$Box$spaceBetweenSections = 25;
-    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$barsWithPath_raw = function (parents, children) {
-        return $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Unstyled, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingTop($elm_explorations$benchmark$Benchmark$Runner$Box$spaceBetweenSections), b: _List_Nil }, _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Text$path_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$TextClass, parents), $elm$core$List$map_raw(function (_v0) {
-            var a = _v0.a;
-            var b = _v0.b;
-            return $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBar_raw(a, b);
-        }, children)));
-    }, $elm_explorations$benchmark$Benchmark$Runner$InProgress$barsWithPath = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$barsWithPath_raw);
+    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$barsWithPath_raw = (parents, children) => $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Unstyled, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingTop($elm_explorations$benchmark$Benchmark$Runner$Box$spaceBetweenSections), b: _List_Nil }, _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Text$path_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$TextClass, parents), $elm$core$List$map_raw(function (_v0) {
+        var a = _v0.a;
+        var b = _v0.b;
+        return $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBar_raw(a, b);
+    }, children))), $elm_explorations$benchmark$Benchmark$Runner$InProgress$barsWithPath = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$barsWithPath_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBars_raw = function (reversedParents, report) {
         switch (report.$) {
             case 0:
@@ -7394,13 +6422,9 @@
                 return $elm$core$List$concat($elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBars(_List_Cons(name, reversedParents)), reports));
         }
     }, $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBars = F2($elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBars_raw);
-    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$view = function (report) {
-        return $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Unstyled, _List_Nil, _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$TextClass, "Benchmarks Running"), $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBars_raw(_List_Nil, report)));
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$InProgress$view = (report) => $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$Unstyled, _List_Nil, _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw($elm_explorations$benchmark$Benchmark$Runner$InProgress$TextClass, "Benchmarks Running"), $elm_explorations$benchmark$Benchmark$Runner$InProgress$progressBars_raw(_List_Nil, report)));
     var $mdgriffith$style_elements$Element$Attributes$vary = $mdgriffith$style_elements$Element$Internal$Model$Vary;
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw = function (variation, contents) {
-        return $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Cell, { $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Vary_raw(variation, true), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingTop(5), b: _List_Nil } }, contents);
-    }, $elm_explorations$benchmark$Benchmark$Runner$Report$cell = F2($elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw);
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw = (variation, contents) => $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Cell, { $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Vary_raw(variation, true), b: { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingTop(5), b: _List_Nil } }, contents), $elm_explorations$benchmark$Benchmark$Runner$Report$cell = F2($elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw);
     var $BrianHicks$elm_trend$Trend$Linear$goodnessOfFit = function (_v0) {
         var fit = _v0.a;
         var values = _v0.b;
@@ -7409,32 +6433,20 @@
         var ys = _v1.b;
         var predictions = $elm$core$List$map_raw($BrianHicks$elm_trend$Trend$Linear$predictY(fit), xs);
         var meanY = $elm$core$Result$withDefault_raw(0, $BrianHicks$elm_trend$Trend$Math$mean(ys));
-        var sumSquareResiduals = $elm$core$List$sum(_List_map2_raw(F2(function (actual, prediction) {
-            return A2($elm$core$Basics$pow, actual - prediction, 2);
-        }), ys, predictions));
-        var sumSquareTotal = $elm$core$List$sum($elm$core$List$map_raw(function (y) {
-            return A2($elm$core$Basics$pow, y - meanY, 2);
-        }, ys));
+        var sumSquareResiduals = $elm$core$List$sum(_List_map2_raw(F2((actual, prediction) => A2($elm$core$Basics$pow, actual - prediction, 2)), ys, predictions));
+        var sumSquareTotal = $elm$core$List$sum($elm$core$List$map_raw((y) => A2($elm$core$Basics$pow, y - meanY, 2), ys));
         return 1 - (sumSquareResiduals / sumSquareTotal);
     };
-    var $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a0 = $elm$core$Basics$mul(10000), $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a1 = A2($elm$core$Basics$composeR, $elm$core$Basics$round, A2($elm$core$Basics$composeR, $elm$core$Basics$toFloat, A2($elm$core$Basics$composeR, function (a) {
-        return a / 100;
-    }, A2($elm$core$Basics$composeR, $elm$core$String$fromFloat, function (a) {
-        return a + "%";
-    })))), $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a0, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a1);
+    var $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a0 = $elm$core$Basics$mul(10000), $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a1 = A2($elm$core$Basics$composeR, $elm$core$Basics$round, A2($elm$core$Basics$composeR, $elm$core$Basics$toFloat, A2($elm$core$Basics$composeR, (a) => a / 100, A2($elm$core$Basics$composeR, $elm$core$String$fromFloat, (a) => a + "%")))), $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a0, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a1);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a0 = $BrianHicks$elm_trend$Trend$Linear$goodnessOfFit, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a1 = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent, A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(0))), $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a1);
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$header_raw = function (variation, caption) {
-        return $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Header, { $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Vary_raw(variation, true), b: _List_Nil }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, caption));
-    }, $elm_explorations$benchmark$Benchmark$Runner$Report$header = F2($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw);
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$header_raw = (variation, caption) => $mdgriffith$style_elements$Element$el_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Header, { $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Vary_raw(variation, true), b: _List_Nil }, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, caption)), $elm_explorations$benchmark$Benchmark$Runner$Report$header = F2($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw);
     var $BrianHicks$elm_trend$Trend$Linear$predictX_raw = function (_v0, y) {
         var slope = _v0.aR;
         var intercept = _v0.aL;
         return (y - intercept) / slope;
     }, $BrianHicks$elm_trend$Trend$Linear$predictX = F2($BrianHicks$elm_trend$Trend$Linear$predictX_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$percentChange_raw = function (old, _new) {
-        var rps = A2($elm$core$Basics$composeR, $BrianHicks$elm_trend$Trend$Linear$line, function (a) {
-            return $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000);
-        });
+        var rps = A2($elm$core$Basics$composeR, $BrianHicks$elm_trend$Trend$Linear$line, (a) => $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000));
         var change = (rps(_new) - rps(old)) / rps(old);
         var sign = (change > 0) ? "+" : "";
         return _Utils_eq(old, _new) ? $elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, "-")) : $elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, _Utils_ap(sign, $elm$core$Basics$composeR_raw($elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a0, $elm_explorations$benchmark$Benchmark$Runner$Humanize$percent_a1, change))));
@@ -7454,22 +6466,14 @@
         var coords = { a1: box.a1, aT: box.aT, bw: box.bw };
         return $mdgriffith$style_elements$Element$Internal$Modify$addAttr_raw($mdgriffith$style_elements$Element$Internal$Model$GridCoords(coords), box.aJ);
     };
-    var $mdgriffith$style_elements$Style$Internal$Model$Grid_raw = function (a, b) {
-        return { $: 2, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Grid = F2($mdgriffith$style_elements$Style$Internal$Model$Grid_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$GridGap_raw = function (a, b) {
-        return { $: 2, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$GridGap = F2($mdgriffith$style_elements$Style$Internal$Model$GridGap_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$GridTemplate = function (a) {
-        return { $: 0, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$Grid_raw = (a, b) => ({ $: 2, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$Grid = F2($mdgriffith$style_elements$Style$Internal$Model$Grid_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$GridGap_raw = (a, b) => ({ $: 2, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$GridGap = F2($mdgriffith$style_elements$Style$Internal$Model$GridGap_raw);
+    var $mdgriffith$style_elements$Style$Internal$Model$GridTemplate = (a) => ({ $: 0, a: a });
     var $mdgriffith$style_elements$Element$grid_raw = function (style, attrs, config) {
-        var prepare = function (elem) {
-            return $mdgriffith$style_elements$Element$Internal$Model$Normal($elm$core$List$map_raw(function (_v4) {
-                var x = _v4;
-                return x;
-            }, elem));
-        };
+        var prepare = (elem) => $mdgriffith$style_elements$Element$Internal$Model$Normal($elm$core$List$map_raw(function (_v4) {
+            var x = _v4;
+            return x;
+        }, elem));
         var forSpacing = function (attr) {
             if (attr.$ === 10) {
                 return true;
@@ -7508,30 +6512,24 @@
         });
     }, $mdgriffith$style_elements$Element$grid = F3($mdgriffith$style_elements$Element$grid_raw);
     var $mdgriffith$style_elements$Element$table_raw = function (style, attrs, rows) {
-        var children = $elm$core$List$concat($elm$core$List$indexedMap_raw(F2(function (rowIndex, columns) {
-            return $elm$core$List$indexedMap_raw(F2(function (col, content) {
-                return $mdgriffith$style_elements$Element$cell({
-                    aJ: content,
-                    a1: 1,
-                    aT: _Utils_Tuple2(rowIndex, col),
-                    bw: 1
-                });
-            }), columns);
-        }), rows));
+        var children = $elm$core$List$concat($elm$core$List$indexedMap_raw(F2((rowIndex, columns) => $elm$core$List$indexedMap_raw(F2((col, content) => $mdgriffith$style_elements$Element$cell({
+            aJ: content,
+            a1: 1,
+            aT: _Utils_Tuple2(rowIndex, col),
+            bw: 1
+        })), columns)), rows));
         return $mdgriffith$style_elements$Element$grid_raw(style, attrs, { an: children, P: _List_Nil, V: _List_Nil });
     }, $mdgriffith$style_elements$Element$table = F3($mdgriffith$style_elements$Element$table_raw);
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$report_raw = function (parents, name, points, tableContents) {
-        return $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Unstyled, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingTop($elm_explorations$benchmark$Benchmark$Runner$Box$spaceBetweenSections), b: _List_Nil }, { $: 1, a: $elm_explorations$benchmark$Benchmark$Runner$Text$path_raw($elm_explorations$benchmark$Benchmark$Runner$Report$TextClass, parents), b: { $: 1, a: $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Box, _List_fromArray([
-                    $mdgriffith$style_elements$Element$Attributes$paddingXY_raw($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX, $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY),
-                    $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$px(500))
-                ]), _List_fromArray([
-                    $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, name),
-                    $mdgriffith$style_elements$Element$table_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Table, _List_fromArray([
-                        $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)),
-                        $mdgriffith$style_elements$Element$Attributes$paddingTop(10)
-                    ]), tableContents)
-                ])), b: _List_Nil } });
-    }, $elm_explorations$benchmark$Benchmark$Runner$Report$report = F4($elm_explorations$benchmark$Benchmark$Runner$Report$report_raw);
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$report_raw = (parents, name, points, tableContents) => $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Unstyled, { $: 1, a: $mdgriffith$style_elements$Element$Attributes$paddingTop($elm_explorations$benchmark$Benchmark$Runner$Box$spaceBetweenSections), b: _List_Nil }, { $: 1, a: $elm_explorations$benchmark$Benchmark$Runner$Text$path_raw($elm_explorations$benchmark$Benchmark$Runner$Report$TextClass, parents), b: { $: 1, a: $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Box, _List_fromArray([
+                $mdgriffith$style_elements$Element$Attributes$paddingXY_raw($elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingX, $elm_explorations$benchmark$Benchmark$Runner$Box$barPaddingY),
+                $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$px(500))
+            ]), _List_fromArray([
+                $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, name),
+                $mdgriffith$style_elements$Element$table_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Table, _List_fromArray([
+                    $mdgriffith$style_elements$Element$Attributes$width($mdgriffith$style_elements$Element$Attributes$percent(100)),
+                    $mdgriffith$style_elements$Element$Attributes$paddingTop(10)
+                ]), tableContents)
+            ])), b: _List_Nil } }), $elm_explorations$benchmark$Benchmark$Runner$Report$report = F4($elm_explorations$benchmark$Benchmark$Runner$Report$report_raw);
     var $elm$core$String$fromList = _String_fromList;
     var $elm_explorations$benchmark$Benchmark$Runner$Humanize$groupsOf_raw = function (howMany, items) {
         var _v0 = $elm$core$List$take_raw(howMany, items);
@@ -7544,15 +6542,9 @@
         }
     }, $elm_explorations$benchmark$Benchmark$Runner$Humanize$groupsOf = F2($elm_explorations$benchmark$Benchmark$Runner$Humanize$groupsOf_raw);
     var $elm$core$String$foldr = _String_foldr;
-    var $elm$core$String$toList = function (string) {
-        return _String_foldr_raw($elm$core$List$cons, _List_Nil, string);
-    };
+    var $elm$core$String$toList = (string) => _String_foldr_raw($elm$core$List$cons, _List_Nil, string);
     var $elm_explorations$benchmark$Benchmark$Runner$Humanize$int_a0 = $elm$core$String$fromInt, $elm_explorations$benchmark$Benchmark$Runner$Humanize$int_a1 = A2($elm$core$Basics$composeR, $elm$core$String$toList, A2($elm$core$Basics$composeR, $elm$core$List$reverse, A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$groupsOf(3), A2($elm$core$Basics$composeR, $elm$core$List$reverse, A2($elm$core$Basics$composeR, $elm$core$List$map(A2($elm$core$Basics$composeR, $elm$core$List$reverse, $elm$core$String$fromList)), $elm$core$String$join(",")))))), $elm_explorations$benchmark$Benchmark$Runner$Humanize$int = A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$int_a0, $elm_explorations$benchmark$Benchmark$Runner$Humanize$int_a1);
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond = function (variation) {
-        return A2($elm$core$Basics$composeR, $BrianHicks$elm_trend$Trend$Linear$line, A2($elm$core$Basics$composeR, function (a) {
-            return $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000);
-        }, A2($elm$core$Basics$composeR, $elm$core$Basics$floor, A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$int, A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(variation))))));
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond = (variation) => A2($elm$core$Basics$composeR, $BrianHicks$elm_trend$Trend$Linear$line, A2($elm$core$Basics$composeR, (a) => $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000), A2($elm$core$Basics$composeR, $elm$core$Basics$floor, A2($elm$core$Basics$composeR, $elm_explorations$benchmark$Benchmark$Runner$Humanize$int, A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(variation))))));
     var $elm_explorations$benchmark$Benchmark$Runner$Report$trendFromStatus = function (status) {
         if (status.$ === 4) {
             var trend = status.b;
@@ -7562,32 +6554,24 @@
             return $elm$core$Maybe$Nothing;
         }
     };
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0 = F2(function (_this, acc) {
-        return $elm$core$Maybe$map2_raw($elm$core$List$cons, $elm_explorations$benchmark$Benchmark$Runner$Report$trendFromStatus(_this), acc);
-    }), $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1 = $elm$core$Maybe$Just(_List_Nil), $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses = A2($elm$core$List$foldr, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1);
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0 = F2((_this, acc) => $elm$core$Maybe$map2_raw($elm$core$List$cons, $elm_explorations$benchmark$Benchmark$Runner$Report$trendFromStatus(_this), acc)), $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1 = $elm$core$Maybe$Just(_List_Nil), $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses = A2($elm$core$List$foldr, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$multiReport_raw = function (parents, name, children) {
         var _v0 = $elm$core$List$unzip(children);
         var names = _v0.a;
         var statuses = _v0.b;
         var allPoints = $elm$core$List$foldr_raw($elm$core$Maybe$map2($elm$core$List$cons), $elm$core$Maybe$Just(_List_Nil), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$pointsFromStatus, statuses));
-        var contents = $elm$core$Maybe$map_raw(function (trends) {
-            return { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(1, "name"), $elm$core$List$map_raw(A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(1)), names)), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "runs / second"), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond(0), trends)), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "% change"), _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, "-")), _List_map2_raw($elm_explorations$benchmark$Benchmark$Runner$Report$percentChange, trends, $elm$core$List$drop_raw(1, trends)))), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "goodness of fit"), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit, trends)), b: _List_Nil } } } };
-        }, $elm$core$List$foldr_raw($elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1, statuses));
+        var contents = $elm$core$Maybe$map_raw((trends) => ({ $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(1, "name"), $elm$core$List$map_raw(A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$text, $elm_explorations$benchmark$Benchmark$Runner$Report$cell(1)), names)), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "runs / second"), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond(0), trends)), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "% change"), _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$cell_raw(0, $mdgriffith$style_elements$Element$Internal$Model$Text_raw($mdgriffith$style_elements$Element$text_a0, "-")), _List_map2_raw($elm_explorations$benchmark$Benchmark$Runner$Report$percentChange, trends, $elm$core$List$drop_raw(1, trends)))), b: { $: 1, a: _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "goodness of fit"), $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit, trends)), b: _List_Nil } } } }), $elm$core$List$foldr_raw($elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$trendsFromStatuses_a1, statuses));
         return $elm$core$Maybe$withDefault_raw($mdgriffith$style_elements$Element$empty, $elm$core$Maybe$map2_raw(A2($elm_explorations$benchmark$Benchmark$Runner$Report$report, parents, name), allPoints, contents));
     }, $elm_explorations$benchmark$Benchmark$Runner$Report$multiReport = F3($elm_explorations$benchmark$Benchmark$Runner$Report$multiReport_raw);
-    var $elm$core$List$singleton = function (value) {
-        return { $: 1, a: value, b: _List_Nil };
-    };
+    var $elm$core$List$singleton = (value) => ({ $: 1, a: value, b: _List_Nil });
     var $elm_explorations$benchmark$Benchmark$Runner$Report$singleReport_raw = function (parents, name, status) {
-        var contents = $elm$core$Maybe$map_raw(function (trend) {
-            return { $: 1, a: _List_fromArray([
-                    $elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(1, "runs / second"),
-                    A2($elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond, 1, trend)
-                ]), b: { $: 1, a: _List_fromArray([
-                        $elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "goodness of fit"),
-                        $elm$core$Basics$composeR_raw($elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a1, trend)
-                    ]), b: _List_Nil } };
-        }, $elm_explorations$benchmark$Benchmark$Runner$Report$trendFromStatus(status));
+        var contents = $elm$core$Maybe$map_raw((trend) => ({ $: 1, a: _List_fromArray([
+                $elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(1, "runs / second"),
+                A2($elm_explorations$benchmark$Benchmark$Runner$Report$runsPerSecond, 1, trend)
+            ]), b: { $: 1, a: _List_fromArray([
+                    $elm_explorations$benchmark$Benchmark$Runner$Report$header_raw(0, "goodness of fit"),
+                    $elm$core$Basics$composeR_raw($elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a0, $elm_explorations$benchmark$Benchmark$Runner$Report$goodnessOfFit_a1, trend)
+                ]), b: _List_Nil } }), $elm_explorations$benchmark$Benchmark$Runner$Report$trendFromStatus(status));
         return $elm$core$Maybe$withDefault_raw($mdgriffith$style_elements$Element$empty, $elm$core$Maybe$map2_raw(A2($elm_explorations$benchmark$Benchmark$Runner$Report$report, parents, name), $elm$core$Maybe$map_raw($elm$core$List$singleton, $elm_explorations$benchmark$Benchmark$Runner$Report$pointsFromStatus(status)), contents));
     }, $elm_explorations$benchmark$Benchmark$Runner$Report$singleReport = F3($elm_explorations$benchmark$Benchmark$Runner$Report$singleReport_raw);
     var $elm_explorations$benchmark$Benchmark$Runner$Report$reports_raw = function (reversedParents, report_) {
@@ -7606,30 +6590,22 @@
                 return $elm$core$List$concat($elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Runner$Report$reports(_List_Cons(name, reversedParents)), children));
         }
     }, $elm_explorations$benchmark$Benchmark$Runner$Report$reports = F2($elm_explorations$benchmark$Benchmark$Runner$Report$reports_raw);
-    var $elm_explorations$benchmark$Benchmark$Runner$Report$view = function (report_) {
-        return $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Unstyled, _List_Nil, _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw($elm_explorations$benchmark$Benchmark$Runner$Report$TextClass, "Benchmark Report"), $elm_explorations$benchmark$Benchmark$Runner$Report$reports_raw(_List_Nil, report_)));
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$Report$view = (report_) => $mdgriffith$style_elements$Element$column_raw($elm_explorations$benchmark$Benchmark$Runner$Report$Unstyled, _List_Nil, _List_Cons($elm_explorations$benchmark$Benchmark$Runner$Text$hero_raw($elm_explorations$benchmark$Benchmark$Runner$Report$TextClass, "Benchmark Report"), $elm_explorations$benchmark$Benchmark$Runner$Report$reports_raw(_List_Nil, report_)));
     var $elm$json$Json$Encode$string = _Json_wrap;
-    var $elm$html$Html$Attributes$stringProperty_raw = function (key, string) {
-        return _VirtualDom_property_raw(key, $elm$json$Json$Encode$string(string));
-    }, $elm$html$Html$Attributes$stringProperty = F2($elm$html$Html$Attributes$stringProperty_raw);
+    var $elm$html$Html$Attributes$stringProperty_raw = (key, string) => _VirtualDom_property_raw(key, $elm$json$Json$Encode$string(string)), $elm$html$Html$Attributes$stringProperty = F2($elm$html$Html$Attributes$stringProperty_raw);
     var $elm$html$Html$Attributes$class_a0 = "className", $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty($elm$html$Html$Attributes$class_a0);
     var $elm$html$Html$div = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "div");
     var $mdgriffith$style_elements$Element$Internal$Render$withFocus = "\n\n.style-elements em.el {\n    padding: 0;\n    padding-left: 0.2em;\n}\n\n.style-elements button.button-focus:focus {\n   outline: none;\n   box-shadow: 0 0 3px 3px rgba(155,203,255,1.0);\n   border-color: rgba(155,203,255,1.0);\n}\n\n.style-elements textarea:focus, .style-elements input:focus {\n   outline: none;\n   box-shadow: 0 0 2px 2px rgba(155,203,255,1.0);\n   border-color: rgba(155,203,255,1.0);\n}\n.style-elements input[type='checkbox'] {\n    border-radius: 3px;\n}\n.style-elements input[type='radio'] {\n    border-radius: 7px;\n}\n.style-elements input[type='radio']:focus {\n    border-radius: 7px;\n    box-shadow: 0 0 4px 4px rgba(155,203,255,1.0);\n}\n\n.style-elements select.focus-override:focus, .style-elements input.focus-override:focus {\n    outline: none;\n    box-shadow: none;\n    border-color:transparent;\n}\n.style-elements input.focus-override:focus ~ .alt-icon {\n    box-shadow: 0 0 3px 3px rgba(155,203,255,1.0);\n    border-color: rgba(155,203,255,1.0);\n}\n.style-elements select.focus-override:focus ~ .alt-icon {\n    box-shadow: 0 0 3px 3px rgba(155,203,255,1.0);\n    border-color: rgba(155,203,255,1.0);\n}\n.style-elements .arrows {\n    display:block;\n    position: relative;\n    height: 10px;\n    width: 10px;\n}\n/*\n.style-elements .arrows::after {\n    content: \" \";\n    position:absolute;\n    top:-2px;\n    left:0;\n    width: 0;\n    height: 0;\n    border-left: 5px solid transparent;\n    border-right: 5px solid transparent;\n    border-bottom: 5px solid black;\n}\n*/\n\n.style-elements .arrows::before {\n    content: \" \";\n    position:absolute;\n    top:2px;\n    left:0;\n    width: 0;\n    height: 0;\n    border-left: 5px solid transparent;\n    border-right: 5px solid transparent;\n    border-top: 5px solid black;\n}\n\n\n";
     var $mdgriffith$style_elements$Element$Internal$Render$miniNormalize = "html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;margin:0;padding:0;border:0}body{margin:0}.style-elements{display:block;position:relative;margin:0;padding:0;border:0;font-size:100%;font:inherit;box-sizing:border-box;line-height:1.2}.el{display:block;position:relative;margin:0;padding:0;border:0;border-style:solid;font-size:100%;font:inherit;box-sizing:border-box}em.el{font-style:italic}b.el,strong.el{font-weight:bolder}strike.el{text-decoration:line-through}u.el{text-decoration:underline}a.el{text-decoration:none;color:inherit}img.el{border-style:none}sub.el,sup.el{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub.el{bottom:-0.25em}sup.el{top:-0.5em}" + $mdgriffith$style_elements$Element$Internal$Render$withFocus;
-    var $elm$virtual_dom$VirtualDom$node = function (tag) {
-        return _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, _VirtualDom_noScript(tag));
-    };
+    var $elm$virtual_dom$VirtualDom$node = (tag) => _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, _VirtualDom_noScript(tag));
     var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
     var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
     var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-    var $mdgriffith$style_elements$Element$Internal$Render$embed_raw = function (full, stylesheet) {
-        return { $: 1, a: A3($elm$html$Html$node, "style", _List_Nil, _List_fromArray([
-                $elm$html$Html$text(full ? ("html,body{width:100%;height:100%;}" + $mdgriffith$style_elements$Element$Internal$Render$miniNormalize) : $mdgriffith$style_elements$Element$Internal$Render$miniNormalize)
-            ])), b: { $: 1, a: A3($elm$html$Html$node, "style", _List_Nil, _List_fromArray([
-                    $elm$html$Html$text(stylesheet.bI)
-                ])), b: _List_Nil } };
-    }, $mdgriffith$style_elements$Element$Internal$Render$embed = F2($mdgriffith$style_elements$Element$Internal$Render$embed_raw);
+    var $mdgriffith$style_elements$Element$Internal$Render$embed_raw = (full, stylesheet) => ({ $: 1, a: A3($elm$html$Html$node, "style", _List_Nil, _List_fromArray([
+            $elm$html$Html$text(full ? ("html,body{width:100%;height:100%;}" + $mdgriffith$style_elements$Element$Internal$Render$miniNormalize) : $mdgriffith$style_elements$Element$Internal$Render$miniNormalize)
+        ])), b: { $: 1, a: A3($elm$html$Html$node, "style", _List_Nil, _List_fromArray([
+                $elm$html$Html$text(stylesheet.bI)
+            ])), b: _List_Nil } }), $mdgriffith$style_elements$Element$Internal$Render$embed = F2($mdgriffith$style_elements$Element$Internal$Render$embed_raw);
     var $mdgriffith$style_elements$Element$Internal$Render$FirstAndLast = { $: 3 };
     var $mdgriffith$style_elements$Element$Internal$Model$adjust_raw = function (fn, parent, elemen) {
         var merge = F2(function (el, current) {
@@ -7647,9 +6623,7 @@
                 }
             }
         });
-        var maybeOnEmptyList = function (list) {
-            return $elm$core$List$isEmpty(list) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(list);
-        };
+        var maybeOnEmptyList = (list) => $elm$core$List$isEmpty(list) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(list);
         switch (elemen.$) {
             case 3:
                 var elm = elemen.a;
@@ -7767,17 +6741,13 @@
         }
     }, $mdgriffith$style_elements$Element$Internal$Model$adjust = F3($mdgriffith$style_elements$Element$Internal$Model$adjust_raw);
     var $mdgriffith$style_elements$Element$Internal$Adjustments$tagIntermediates = false;
-    var $mdgriffith$style_elements$Element$Internal$Adjustments$tag = function (str) {
-        return $mdgriffith$style_elements$Element$Internal$Adjustments$tagIntermediates ? $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, str)) : $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, ""));
-    };
+    var $mdgriffith$style_elements$Element$Internal$Adjustments$tag = (str) => $mdgriffith$style_elements$Element$Internal$Adjustments$tagIntermediates ? $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, str)) : $mdgriffith$style_elements$Element$Internal$Model$Attr($elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, ""));
     var $mdgriffith$style_elements$Element$Internal$Adjustments$centerTextLayout = function (elm) {
         if (elm.$ === 4) {
             var layoutEl = elm.a;
             var attrs = layoutEl.c;
             var layout = layoutEl.p;
-            var _v1 = $elm$core$List$partition_raw(function (attr) {
-                return _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$HAlign(2)) || _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$VAlign(2));
-            }, attrs);
+            var _v1 = $elm$core$List$partition_raw((attr) => _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$HAlign(2)) || _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$VAlign(2)), attrs);
             var centeredProps = _v1.a;
             var others = _v1.b;
             if (!layout.$) {
@@ -7802,11 +6772,7 @@
     };
     var $mdgriffith$style_elements$Element$Internal$Model$Screen = { $: 0 };
     var $mdgriffith$style_elements$Element$Internal$Adjustments$hoistFixedScreenElements = function (el) {
-        var elementIsOnScreen = function (attrs) {
-            return $elm$core$List$any_raw(function (attr) {
-                return _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$PositionFrame($mdgriffith$style_elements$Element$Internal$Model$Screen));
-            }, attrs);
-        };
+        var elementIsOnScreen = (attrs) => $elm$core$List$any_raw((attr) => _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$PositionFrame($mdgriffith$style_elements$Element$Internal$Model$Screen)), attrs);
         switch (el.$) {
             case 3:
                 var attrs = el.a.c;
@@ -7819,9 +6785,7 @@
         }
     };
     var $mdgriffith$style_elements$Element$Internal$Model$Above = 1;
-    var $mdgriffith$style_elements$Element$Internal$Model$Absolute = function (a) {
-        return { $: 2, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Internal$Model$Absolute = (a) => ({ $: 2, a: a });
     var $mdgriffith$style_elements$Element$Internal$Model$Below = 0;
     var $mdgriffith$style_elements$Element$Internal$Model$Bottom = 1;
     var $mdgriffith$style_elements$Element$Internal$Model$BottomLeft = 1;
@@ -7894,12 +6858,8 @@
                 });
         }
     }, $mdgriffith$style_elements$Element$Internal$Modify$addAttrPriority = F2($mdgriffith$style_elements$Element$Internal$Modify$addAttrPriority_raw);
-    var $mdgriffith$style_elements$Style$Internal$Model$Calc_raw = function (a, b) {
-        return { $: 4, a: a, b: b };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Calc = F2($mdgriffith$style_elements$Style$Internal$Model$Calc_raw);
-    var $elm$core$Basics$negate = function (n) {
-        return -n;
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$Calc_raw = (a, b) => ({ $: 4, a: a, b: b }), $mdgriffith$style_elements$Style$Internal$Model$Calc = F2($mdgriffith$style_elements$Style$Internal$Model$Calc_raw);
+    var $elm$core$Basics$negate = (n) => -n;
     var $mdgriffith$style_elements$Element$Internal$Adjustments$counterSpacing = function (elm) {
         if (elm.$ === 4) {
             var layoutEl = elm.a;
@@ -7941,9 +6901,7 @@
                 }
             };
             var phantomPadding = $elm$core$Maybe$withDefault_raw($mdgriffith$style_elements$Element$Internal$Model$PhantomPadding_raw(0, 0, 0, 0), $elm$core$List$head($elm$core$List$reverse($elm$core$List$filterMap_raw(forPhantomPadding, attrs))));
-            var _v1 = $elm$core$List$partition_raw(function (attr) {
-                return _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$HAlign(2)) || _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$VAlign(2));
-            }, attrs);
+            var _v1 = $elm$core$List$partition_raw((attr) => _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$HAlign(2)) || _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$VAlign(2)), attrs);
             var centeredProps = _v1.a;
             var others = _v1.b;
             if (layout.$ === 1) {
@@ -8166,9 +7124,7 @@
                 t: $mdgriffith$style_elements$Element$Internal$Model$Normal({ $: 1, a: $mdgriffith$style_elements$Element$Internal$Model$Element({
                         b: $elm$core$Maybe$Nothing,
                         c: function () {
-                            var addWidth = function (attrs) {
-                                return isLayout ? _List_Cons($mdgriffith$style_elements$Element$Internal$Model$Width($mdgriffith$style_elements$Style$Internal$Model$Percent(100)), attrs) : attrs;
-                            };
+                            var addWidth = (attrs) => isLayout ? _List_Cons($mdgriffith$style_elements$Element$Internal$Model$Width($mdgriffith$style_elements$Style$Internal$Model$Percent(100)), attrs) : attrs;
                             return addWidth(_List_fromArray([
                                 $mdgriffith$style_elements$Element$Internal$Adjustments$tag("above-below-intermediate"),
                                 $mdgriffith$style_elements$Element$Internal$Model$PointerEvents(false),
@@ -8236,9 +7192,7 @@
                     return false;
             }
         };
-        var separateAlignment = function (attrs) {
-            return $elm$core$List$partition_raw(forAlignment, attrs);
-        };
+        var separateAlignment = (attrs) => $elm$core$List$partition_raw(forAlignment, attrs);
         switch (elm.$) {
             case 3:
                 var attrs = elm.a.c;
@@ -8287,17 +7241,11 @@
         }
     }, $mdgriffith$style_elements$Element$Internal$Adjustments$positionNearby = F2($mdgriffith$style_elements$Element$Internal$Adjustments$positionNearby_raw);
     var $mdgriffith$style_elements$Element$Internal$Adjustments$apply = function (root) {
-        var stack_raw = function (parent, el) {
-            return $elm$core$Basics$composeR_raw($mdgriffith$style_elements$Element$Internal$Adjustments$centerTextLayout, A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$Internal$Adjustments$positionNearby(parent), $mdgriffith$style_elements$Element$Internal$Adjustments$hoistFixedScreenElements), el);
-        }, stack = F2(stack_raw);
+        var stack_raw = (parent, el) => $elm$core$Basics$composeR_raw($mdgriffith$style_elements$Element$Internal$Adjustments$centerTextLayout, A2($elm$core$Basics$composeR, $mdgriffith$style_elements$Element$Internal$Adjustments$positionNearby(parent), $mdgriffith$style_elements$Element$Internal$Adjustments$hoistFixedScreenElements), el), stack = F2(stack_raw);
         return $mdgriffith$style_elements$Element$Internal$Model$adjust_raw(stack, $elm$core$Maybe$Nothing, root);
     };
-    var $mdgriffith$style_elements$Style$Internal$Model$Box_raw = function (a, b, c, d) {
-        return { $: 0, a: a, b: b, c: c, d: d };
-    }, $mdgriffith$style_elements$Style$Internal$Model$Box = F4($mdgriffith$style_elements$Style$Internal$Model$Box_raw);
-    var $mdgriffith$style_elements$Element$Internal$Render$LayoutElement = function (a) {
-        return { $: 1, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$Box_raw = (a, b, c, d) => ({ $: 0, a: a, b: b, c: c, d: d }), $mdgriffith$style_elements$Style$Internal$Model$Box = F4($mdgriffith$style_elements$Style$Internal$Model$Box_raw);
+    var $mdgriffith$style_elements$Element$Internal$Render$LayoutElement = (a) => ({ $: 1, a: a });
     var $mdgriffith$style_elements$Element$Internal$Render$Single = { $: 0 };
     var $mdgriffith$style_elements$Element$Internal$Render$defaultPadding_raw = function (_v0, _v1) {
         var mW = _v0.a;
@@ -8312,9 +7260,7 @@
     }, $mdgriffith$style_elements$Element$Internal$Render$defaultPadding = F2($mdgriffith$style_elements$Element$Internal$Render$defaultPadding_raw);
     var $mdgriffith$style_elements$Element$Internal$Render$First = { $: 0 };
     var $mdgriffith$style_elements$Element$Internal$Render$Last = { $: 2 };
-    var $mdgriffith$style_elements$Element$Internal$Render$Middle = function (a) {
-        return { $: 1, a: a };
-    };
+    var $mdgriffith$style_elements$Element$Internal$Render$Middle = (a) => ({ $: 1, a: a });
     var $mdgriffith$style_elements$Element$Internal$Render$detectOrder_raw = function (list, i) {
         var len = $elm$core$List$length(list);
         return ((!i) && (len === 1)) ? $mdgriffith$style_elements$Element$Internal$Render$FirstAndLast : ((!i) ? $mdgriffith$style_elements$Element$Internal$Render$First : (_Utils_eq(i, len - 1) ? $mdgriffith$style_elements$Element$Internal$Render$Last : $mdgriffith$style_elements$Element$Internal$Render$Middle(i)));
@@ -8549,37 +7495,21 @@
                 }
         }
     }, $mdgriffith$style_elements$Element$Internal$Render$makePositionable = F2($mdgriffith$style_elements$Element$Internal$Render$makePositionable_raw);
-    var $mdgriffith$style_elements$Element$Internal$Render$gather = function (attrs) {
-        return $elm$core$List$foldl_raw($mdgriffith$style_elements$Element$Internal$Render$makePositionable, $mdgriffith$style_elements$Element$Internal$Render$emptyPositionable, attrs);
-    };
-    var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
-        return _VirtualDom_keyedNodeNS_raw(_VirtualDom_keyedNode_a0, _VirtualDom_noScript(tag));
-    };
+    var $mdgriffith$style_elements$Element$Internal$Render$gather = (attrs) => $elm$core$List$foldl_raw($mdgriffith$style_elements$Element$Internal$Render$makePositionable, $mdgriffith$style_elements$Element$Internal$Render$emptyPositionable, attrs);
+    var $elm$virtual_dom$VirtualDom$keyedNode = (tag) => _VirtualDom_keyedNodeNS_raw(_VirtualDom_keyedNode_a0, _VirtualDom_noScript(tag));
     var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
     var $mdgriffith$style_elements$Style$Internal$Model$Bottom = 1;
     var $mdgriffith$style_elements$Style$Internal$Model$Center = { $: 0 };
-    var $mdgriffith$style_elements$Style$Internal$Model$GridH = function (a) {
-        return { $: 0, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$GridV = function (a) {
-        return { $: 1, a: a };
-    };
-    var $mdgriffith$style_elements$Style$Internal$Model$Horz = function (a) {
-        return { $: 1, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$GridH = (a) => ({ $: 0, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$GridV = (a) => ({ $: 1, a: a });
+    var $mdgriffith$style_elements$Style$Internal$Model$Horz = (a) => ({ $: 1, a: a });
     var $mdgriffith$style_elements$Style$Internal$Model$Justify = { $: 1 };
     var $mdgriffith$style_elements$Style$Internal$Model$Left = 0;
-    var $mdgriffith$style_elements$Style$Internal$Model$Other = function (a) {
-        return { $: 3, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$Other = (a) => ({ $: 3, a: a });
     var $mdgriffith$style_elements$Style$Internal$Model$Right = 1;
-    var $mdgriffith$style_elements$Style$Internal$Model$TextLayout = function (a) {
-        return { $: 0, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$TextLayout = (a) => ({ $: 0, a: a });
     var $mdgriffith$style_elements$Style$Internal$Model$Top = 0;
-    var $mdgriffith$style_elements$Style$Internal$Model$Vert = function (a) {
-        return { $: 2, a: a };
-    };
+    var $mdgriffith$style_elements$Style$Internal$Model$Vert = (a) => ({ $: 2, a: a });
     var $mdgriffith$style_elements$Element$Internal$Render$alignLayout_raw = function (maybeHorizontal, maybeVertical, layout) {
         var alignGridVertical = function (align) {
             switch (align) {
@@ -8771,9 +7701,7 @@
                 }
         }
     }, $mdgriffith$style_elements$Element$Internal$Render$calcPosition = F2($mdgriffith$style_elements$Element$Internal$Render$calcPosition_raw);
-    var $elm$html$Html$Attributes$classList = function (classes) {
-        return $elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, $elm$core$String$join_raw(" ", $elm$core$List$map_raw($elm$core$Tuple$first, $elm$core$List$filter_raw($elm$core$Tuple$second, classes))));
-    };
+    var $elm$html$Html$Attributes$classList = (classes) => $elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, $elm$core$String$join_raw(" ", $elm$core$List$map_raw($elm$core$Tuple$first, $elm$core$List$filter_raw($elm$core$Tuple$second, classes))));
     var $mdgriffith$style_elements$Style$Internal$Render$Property$flexHeight = function (l) {
         switch (l.$) {
             case 0:
@@ -8932,9 +7860,7 @@
         var right = _v0.b;
         var bottom = _v0.c;
         var left = _v0.d;
-        var format_raw = function (name, x) {
-            return _Utils_Tuple2(name, $elm$core$String$fromFloat(x) + "px");
-        }, format = F2(format_raw);
+        var format_raw = (name, x) => _Utils_Tuple2(name, $elm$core$String$fromFloat(x) + "px"), format = F2(format_raw);
         return $elm$core$List$filterMap_raw($elm$core$Basics$identity, { $: 1, a: $elm$core$Maybe$map_raw(format("padding-top"), top), b: { $: 1, a: $elm$core$Maybe$map_raw(format("padding-bottom"), bottom), b: { $: 1, a: $elm$core$Maybe$map_raw(format("padding-left"), left), b: { $: 1, a: $elm$core$Maybe$map_raw(format("padding-right"), right), b: _List_Nil } } } });
     };
     var $mdgriffith$style_elements$Element$Internal$Render$renderAttributes_raw = function (elType, order, maybeElemID, parent, stylesheet, elem) {
@@ -9183,9 +8109,7 @@
                 }
             }
         };
-        var position = function (attrs) {
-            return _Utils_ap($mdgriffith$style_elements$Element$Internal$Render$calcPosition_raw($elm$core$Maybe$withDefault_raw($mdgriffith$style_elements$Element$Internal$Model$Relative, elem.I), elem.as), attrs);
-        };
+        var position = (attrs) => _Utils_ap($mdgriffith$style_elements$Element$Internal$Render$calcPosition_raw($elm$core$Maybe$withDefault_raw($mdgriffith$style_elements$Element$Internal$Model$Relative, elem.I), elem.as), attrs);
         var passthrough = function (attrs) {
             var _v40 = elem.aE;
             if (_v40.$ === 1) {
@@ -9540,13 +8464,11 @@
             }
         }
     }, $mdgriffith$style_elements$Element$Internal$Render$renderAttributes = F6($mdgriffith$style_elements$Element$Internal$Render$renderAttributes_raw);
-    var $mdgriffith$style_elements$Element$Internal$Render$renderSyleAttributes = function (styles) {
-        return $elm$core$List$map_raw(function (_v0) {
-            var name = _v0.a;
-            var val = _v0.b;
-            return _VirtualDom_style_raw(name, val);
-        }, styles);
-    };
+    var $mdgriffith$style_elements$Element$Internal$Render$renderSyleAttributes = (styles) => $elm$core$List$map_raw(function (_v0) {
+        var name = _v0.a;
+        var val = _v0.b;
+        return _VirtualDom_style_raw(name, val);
+    }, styles);
     var $elm$html$Html$s = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "s");
     var $mdgriffith$style_elements$Element$Internal$Render$spacingToMargin = function (attrs) {
         var spaceToMarg = function (a) {
@@ -9710,9 +8632,7 @@
                         return $elm$core$Maybe$Nothing;
                     }
                 };
-                var forSpacing = A2($elm$core$Basics$composeL, function (x) {
-                    return !_Utils_eq(x, $elm$core$Maybe$Nothing);
-                }, findSpacing);
+                var forSpacing = A2($elm$core$Basics$composeL, (x) => !_Utils_eq(x, $elm$core$Maybe$Nothing), findSpacing);
                 var clearfix = function (allAttrs) {
                     if (!layout.$) {
                         var fix = layout.a;
@@ -9769,16 +8689,12 @@
                 };
                 var _v10 = $elm$core$List$partition_raw(forSpacing, attrs);
                 var spacingAttr = _v10.a;
-                var _v11 = $elm$core$List$partition_raw(function (attr) {
-                    return _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$HAlign(2)) || _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$VAlign(2));
-                }, attrs);
+                var _v11 = $elm$core$List$partition_raw((attr) => _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$HAlign(2)) || _Utils_eq(attr, $mdgriffith$style_elements$Element$Internal$Model$VAlign(2)), attrs);
                 var centeredProps = _v11.a;
                 var others = _v11.b;
                 if (!children.$) {
                     var childList = children.a;
-                    var childHtml = $elm$core$List$indexedMap_raw(F2(function (i, child) {
-                        return $mdgriffith$style_elements$Element$Internal$Render$renderElement_raw($elm$core$Maybe$Just(inherit), stylesheet, $mdgriffith$style_elements$Element$Internal$Render$detectOrder_raw(childList, i), child);
-                    }), childList);
+                    var childHtml = $elm$core$List$indexedMap_raw(F2((i, child) => $mdgriffith$style_elements$Element$Internal$Render$renderElement_raw($elm$core$Maybe$Just(inherit), stylesheet, $mdgriffith$style_elements$Element$Internal$Render$detectOrder_raw(childList, i), child)), childList);
                     var allChildren = function () {
                         if (absolutelyPositioned.$ === 1) {
                             return childHtml;
@@ -9816,9 +8732,7 @@
         }();
         return _List_Cons($mdgriffith$style_elements$Element$Internal$Render$renderElement_raw($elm$core$Maybe$Nothing, stylesheet, $mdgriffith$style_elements$Element$Internal$Render$FirstAndLast, adjusted), fixedScreenElements);
     }, $mdgriffith$style_elements$Element$Internal$Render$render = F2($mdgriffith$style_elements$Element$Internal$Render$render_raw);
-    var $mdgriffith$style_elements$Element$Internal$Render$viewport_raw = function (stylesheet, elm) {
-        return A2($elm$html$Html$div, { $: 1, a: $elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "style-elements"), b: { $: 1, a: _VirtualDom_style_raw("width", "100%"), b: { $: 1, a: _VirtualDom_style_raw("height", "100%"), b: _List_Nil } } }, _Utils_ap($mdgriffith$style_elements$Element$Internal$Render$embed_raw(true, stylesheet), $mdgriffith$style_elements$Element$Internal$Render$render_raw(stylesheet, elm)));
-    }, $mdgriffith$style_elements$Element$Internal$Render$viewport = F2($mdgriffith$style_elements$Element$Internal$Render$viewport_raw);
+    var $mdgriffith$style_elements$Element$Internal$Render$viewport_raw = (stylesheet, elm) => A2($elm$html$Html$div, { $: 1, a: $elm$html$Html$Attributes$stringProperty_raw($elm$html$Html$Attributes$class_a0, "style-elements"), b: { $: 1, a: _VirtualDom_style_raw("width", "100%"), b: { $: 1, a: _VirtualDom_style_raw("height", "100%"), b: _List_Nil } } }, _Utils_ap($mdgriffith$style_elements$Element$Internal$Render$embed_raw(true, stylesheet), $mdgriffith$style_elements$Element$Internal$Render$render_raw(stylesheet, elm))), $mdgriffith$style_elements$Element$Internal$Render$viewport = F2($mdgriffith$style_elements$Element$Internal$Render$viewport_raw);
     var $mdgriffith$style_elements$Element$viewport = $mdgriffith$style_elements$Element$Internal$Render$viewport;
     var $elm_explorations$benchmark$Benchmark$Runner$App$view = function (model) {
         var body = $elm_explorations$benchmark$Benchmark$done(model) ? $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw($elm$core$Basics$identity, $elm_explorations$benchmark$Benchmark$Runner$App$ReportClass, $elm$core$Basics$identity, $elm_explorations$benchmark$Benchmark$Runner$Report$view($elm_explorations$benchmark$Benchmark$Reporting$fromBenchmark(model))) : $mdgriffith$style_elements$Element$Internal$Model$mapAll_raw($elm$core$Basics$identity, $elm_explorations$benchmark$Benchmark$Runner$App$InProgressClass, $elm$core$Basics$identity, $elm_explorations$benchmark$Benchmark$Runner$InProgress$view($elm_explorations$benchmark$Benchmark$Reporting$fromBenchmark(model)));
@@ -9827,14 +8741,12 @@
                 $mdgriffith$style_elements$Element$Attributes$padding(60)
             ]), body), b: _List_Nil }));
     };
-    var $elm_explorations$benchmark$Benchmark$Runner$program = function (benchmark) {
-        return $elm$browser$Browser$element({
-            a4: $elm_explorations$benchmark$Benchmark$Runner$App$init(benchmark),
-            b6: $elm$core$Basics$always($elm$core$Platform$Sub$none),
-            bt: $elm_explorations$benchmark$Benchmark$Runner$App$update,
-            bu: $elm_explorations$benchmark$Benchmark$Runner$App$view
-        });
-    };
+    var $elm_explorations$benchmark$Benchmark$Runner$program = (benchmark) => $elm$browser$Browser$element({
+        a4: $elm_explorations$benchmark$Benchmark$Runner$App$init(benchmark),
+        b6: $elm$core$Basics$always($elm$core$Platform$Sub$none),
+        bt: $elm_explorations$benchmark$Benchmark$Runner$App$update,
+        bu: $elm_explorations$benchmark$Benchmark$Runner$App$view
+    });
     var $author$project$Main$addMyType_raw = function (mine, sum) {
         switch (mine.$) {
             case 0:
@@ -9847,26 +8759,16 @@
         }
     }, $author$project$Main$addMyType = F2($author$project$Main$addMyType_raw);
     var $elm_explorations$benchmark$Benchmark$Status$Cold = { $: 0 };
-    var $elm_explorations$benchmark$Benchmark$LowLevel$operation = function (fn) {
-        return _Benchmark_operation(fn);
-    };
-    var $elm_explorations$benchmark$Benchmark$benchmark_raw = function (name, fn) {
-        return $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw(name, $elm_explorations$benchmark$Benchmark$LowLevel$operation(fn), $elm_explorations$benchmark$Benchmark$Status$Cold);
-    }, $elm_explorations$benchmark$Benchmark$benchmark = F2($elm_explorations$benchmark$Benchmark$benchmark_raw);
+    var $elm_explorations$benchmark$Benchmark$LowLevel$operation = (fn) => _Benchmark_operation(fn);
+    var $elm_explorations$benchmark$Benchmark$benchmark_raw = (name, fn) => $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw(name, $elm_explorations$benchmark$Benchmark$LowLevel$operation(fn), $elm_explorations$benchmark$Benchmark$Status$Cold), $elm_explorations$benchmark$Benchmark$benchmark = F2($elm_explorations$benchmark$Benchmark$benchmark_raw);
     var $elm_explorations$benchmark$Benchmark$describe = $elm_explorations$benchmark$Benchmark$Benchmark$Group;
-    var $author$project$Main$One = function (a) { return { $: 1, a, b: null }; };
-    var $author$project$Main$Two_raw = function (a, b) { return { $: 2, a, b }; }, $author$project$Main$Two = F2($author$project$Main$Two_raw);
+    var $author$project$Main$One = a => ({ $: 1, a, b: null });
+    var $author$project$Main$Two_raw = (a, b) => ({ $: 2, a, b }), $author$project$Main$Two = F2($author$project$Main$Two_raw);
     var $author$project$Main$Zero = { $: 0, a: null, b: null };
     var $author$project$Main$values = { $: 1, a: $author$project$Main$Zero, b: { $: 1, a: $author$project$Main$One(5), b: { $: 1, a: $author$project$Main$Two_raw("Two", "two"), b: _List_Nil } } };
     var $author$project$Main$many = $elm$core$List$concat($elm$core$List$repeat_raw(1000, $author$project$Main$values));
-    var $author$project$Main$updateRecord_raw = function (attr, record) {
-        return _Utils_update(record, { aO: 87 });
-    }, $author$project$Main$updateRecord = F2($author$project$Main$updateRecord_raw);
-    var $author$project$Main$suite = $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw("Benchmarks", { $: 1, a: $elm_explorations$benchmark$Benchmark$benchmark_raw("sum 1000 entities in a list", function (_v0) {
-            return $elm$core$List$foldl_raw($author$project$Main$addMyType, 0, $author$project$Main$many);
-        }), b: { $: 1, a: $elm_explorations$benchmark$Benchmark$benchmark_raw("1000 record updates", function (_v1) {
-                return $elm$core$List$foldl_raw($author$project$Main$updateRecord, { aO: 1, br: 3, bs: 2 }, $author$project$Main$many);
-            }), b: _List_Nil } });
+    var $author$project$Main$updateRecord_raw = (attr, record) => _Utils_update(record, { aO: 87 }), $author$project$Main$updateRecord = F2($author$project$Main$updateRecord_raw);
+    var $author$project$Main$suite = $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw("Benchmarks", { $: 1, a: $elm_explorations$benchmark$Benchmark$benchmark_raw("sum 1000 entities in a list", (_v0) => $elm$core$List$foldl_raw($author$project$Main$addMyType, 0, $author$project$Main$many)), b: { $: 1, a: $elm_explorations$benchmark$Benchmark$benchmark_raw("1000 record updates", (_v1) => $elm$core$List$foldl_raw($author$project$Main$updateRecord, { aO: 1, br: 3, bs: 2 }, $author$project$Main$many)), b: _List_Nil } });
     var $author$project$Main$main = $elm_explorations$benchmark$Benchmark$Runner$program($author$project$Main$suite);
     _Platform_export({ "Main": { "init": $author$project$Main$main($elm$json$Json$Decode$succeed(0))(0) } });
 }(this));

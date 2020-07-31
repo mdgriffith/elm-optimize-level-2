@@ -15,8 +15,9 @@ import {
 } from './experiments/inlineListFromArray';
 
 import {
-  replaceUtilsUpdateWithObjectSpread,
+  createReplaceUtilsUpdateWithObjectSpread,
   convertFunctionExpressionsToArrowFuncs,
+  NativeSpread,
 } from './experiments/modernizeJS';
 
 const compileAndTransform = (dir: string, file: string): {} => {
@@ -66,10 +67,12 @@ const compileAndTransform = (dir: string, file: string): {} => {
     normalizeVariantShapes,
     createFunctionInlineTransformer(reportInlineTransformResult),
     inlineListFromArrayCalls,
-    replaceUtilsUpdateWithObjectSpread,
+    createReplaceUtilsUpdateWithObjectSpread(
+      NativeSpread.UseSpreadOnlyToMakeACopy
+    ),
 
     // Arrow functions are disabled because somethings not quite right with them.
-    // convertFunctionExpressionsToArrowFuncs,
+    convertFunctionExpressionsToArrowFuncs,
   ]).transformed;
 
   const printer = ts.createPrinter();

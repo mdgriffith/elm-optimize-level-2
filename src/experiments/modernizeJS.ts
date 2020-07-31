@@ -1,6 +1,34 @@
 import ts from 'typescript';
 
-export const replaceUtilsUpdateWithObjectSpread: ts.TransformerFactory<ts.SourceFile> = context => {
+const copyWithSpread = `
+const _Utils_update = (oldRecord, updatedFields) => {
+    var newRecord = {...oldRecord};
+    
+    for (var key in updatedFields) {
+        newRecord[key] = updatedFields[key];
+    }
+    return newRecord;
+}
+`;
+
+const spreadForBoth = `
+const _Utils_update = (oldRecord, updatedFields) => ({...oldRecord, ...updatedFields});
+}
+`;
+
+const extractBody = (sourceText: string): ts.Node => {
+  const source = ts.createSourceFile('bla', sourceText, ts.ScriptTarget.ES2018);
+  return source.statements[0];
+};
+
+export enum NativeSpread {
+  UseSpreadForUpdateAndOriginalRecord = 'for_both',
+  UseSpreadOnlyToMakeACopy = 'for_copy',
+}
+
+export const createReplaceUtilsUpdateWithObjectSpread = (
+  kind: NativeSpread
+): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // detects function f(..){..}
@@ -8,56 +36,12 @@ export const replaceUtilsUpdateWithObjectSpread: ts.TransformerFactory<ts.Source
         ts.isFunctionDeclaration(node) &&
         node.name?.text === '_Utils_update'
       ) {
-        return ts.createVariableStatement(
-          undefined,
-          ts.createVariableDeclarationList(
-            [
-              ts.createVariableDeclaration(
-                ts.createIdentifier('_Utils_update'),
-                undefined,
-                ts.createArrowFunction(
-                  undefined,
-                  undefined,
-                  [
-                    ts.createParameter(
-                      undefined,
-                      undefined,
-                      undefined,
-                      ts.createIdentifier('oldRecord'),
-                      undefined,
-                      undefined,
-                      undefined
-                    ),
-                    ts.createParameter(
-                      undefined,
-                      undefined,
-                      undefined,
-                      ts.createIdentifier('updatedFields'),
-                      undefined,
-                      undefined,
-                      undefined
-                    ),
-                  ],
-                  undefined,
-                  undefined,
-
-                  ts.createObjectLiteral(
-                    [
-                      ts.createSpreadAssignment(
-                        ts.createIdentifier('oldRecord')
-                      ),
-                      ts.createSpreadAssignment(
-                        ts.createIdentifier('updatedFields')
-                      ),
-                    ],
-                    false
-                  )
-                )
-              ),
-            ],
-            ts.NodeFlags.Const
-          )
-        );
+        switch (kind) {
+          case NativeSpread.UseSpreadForUpdateAndOriginalRecord:
+            return extractBody(spreadForBoth);
+          case NativeSpread.UseSpreadOnlyToMakeACopy:
+            return extractBody(copyWithSpread);
+        }
       }
 
       return ts.visitEachChild(node, visitor, context);
@@ -94,6 +78,41 @@ export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.So
             undefined,
             ts.visitNode(returnStatement.expression, visitor)
             // returnStatement.expression
+          );
+        }
+      }
+
+      if (
+        ts.isFunctionDeclaration(node) &&
+        node.name !== undefined &&
+        node.body !== undefined &&
+        node.body.statements.length === 1
+      ) {
+        // console.log('$$body', node.body.getText());
+        const [returnStatement] = node.body.statements;
+        if (
+          ts.isReturnStatement(returnStatement) &&
+          returnStatement.expression !== undefined
+        ) {
+          return ts.createVariableStatement(
+            undefined,
+            ts.createVariableDeclarationList(
+              [
+                ts.createVariableDeclaration(
+                  node.name,
+                  undefined,
+                  ts.createArrowFunction(
+                    undefined,
+                    undefined,
+                    node.parameters,
+                    undefined,
+                    undefined,
+                    ts.visitNode(returnStatement.expression, visitor)
+                  )
+                ),
+              ],
+              ts.NodeFlags.Const
+            )
           );
         }
       }
