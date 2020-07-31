@@ -1,18 +1,19 @@
 <html>
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Main</title>
     <script src="output/elm.opt.transformed.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="myapp"></div>
     <script>
-        var app = Elm.Main.init({
-            node: document.getElementById('myapp')
-        });
+      var app = Elm.Main.init({
+        node: document.getElementById('myapp'),
+      });
+      app.ports.reportResults.subscribe(function(message) {
+        console.log(message);
+      });
     </script>
-</body>
-
+  </body>
 </html>
