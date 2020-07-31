@@ -26,7 +26,7 @@ type TransformOptions = {
   prepack: boolean;
 };
 
-const compileAndTransform = (
+export const compileAndTransform = (
   dir: string,
   file: string,
   options?: TransformOptions

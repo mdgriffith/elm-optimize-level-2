@@ -31,8 +31,12 @@ const visitBenchmark = async (tag: string | null, file: string) => {
 };
 
 const run = async function() {
-  compile.compileAndTransform('testcases/simple', 'Main.elm');
-  compile.compileAndTransform('testcases/bench', 'Main.elm');
+  compile.compileAndTransform('testcases/simple', 'Main.elm', {
+    prepack: true,
+  });
+  compile.compileAndTransform('testcases/bench', 'Main.elm', {
+    prepack: true,
+  });
 
   let results = [];
   results.push(await visitBenchmark(null, 'testcases/bench/standard.html'));
@@ -78,6 +82,7 @@ const markdownNewResults = (results: any): string => {
   let buffer: string[] = [];
 
   buffer.push('# Benchmark results');
+  buffer.push('');
   for (let key in results) {
     buffer.push('## ' + key);
     buffer.push('');
