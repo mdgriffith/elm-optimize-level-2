@@ -4259,7 +4259,7 @@
     var $author$project$Main$Two_raw = (a, b) => ({ $: 2, a, b }), $author$project$Main$Two = F2($author$project$Main$Two_raw);
     var $author$project$Main$Zero = { $: 0, a: null, b: null };
     var $author$project$Main$values = { $: 1, a: $author$project$Main$Zero, b: { $: 1, a: $author$project$Main$One(5), b: { $: 1, a: $author$project$Main$Two_raw("Two", "two"), b: _List_Nil } } };
-    var $author$project$Main$many = $elm$core$List$concat($elm$core$List$repeat_raw(1000, $author$project$Main$values));
+    var $author$project$Main$many = $elm$core$List$concat($elm$core$List$repeat_raw(100, $author$project$Main$values));
     var $author$project$Main$updateRecord_raw = (attr, record) => _Utils_update(record, { aO: 87 }), $author$project$Main$updateRecord = F2($author$project$Main$updateRecord_raw);
     var $author$project$Main$suite = $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw("Benchmarks", { $: 1, a: $elm_explorations$benchmark$Benchmark$benchmark_raw("sum 1000 entities in a list", (_v0) => $elm$core$List$foldl_raw($author$project$Main$addMyType, 0, $author$project$Main$many)), b: { $: 1, a: $elm_explorations$benchmark$Benchmark$benchmark_raw("1000 record updates", (_v1) => $elm$core$List$foldl_raw($author$project$Main$updateRecord, { aO: 1, bq: 3, br: 2 }, $author$project$Main$many)), b: _List_Nil } });
     var $author$project$Main$main = $author$project$Benchmark$Runner$Json$program_raw($author$project$Main$reportResults, $author$project$Main$suite);

@@ -7195,7 +7195,7 @@ var $author$project$Main$values = _List_fromArray(
 		A2($author$project$Main$Two, 'Two', 'two')
 	]);
 var $author$project$Main$many = $elm$core$List$concat(
-	A2($elm$core$List$repeat, 1000, $author$project$Main$values));
+	A2($elm$core$List$repeat, 100, $author$project$Main$values));
 var $author$project$Main$updateRecord = F2(
 	function (attr, record) {
 		return _Utils_update(

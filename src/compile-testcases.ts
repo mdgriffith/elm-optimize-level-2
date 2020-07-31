@@ -14,13 +14,23 @@ import {
   createInlineListFromArrayTransformer,
 } from './experiments/inlineListFromArray';
 
+import { prepackFileSync } from 'prepack';
+
 import {
   createReplaceUtilsUpdateWithObjectSpread,
   convertFunctionExpressionsToArrowFuncs,
   NativeSpread,
 } from './experiments/modernizeJS';
 
-export const compileAndTransform = (dir: string, file: string): {} => {
+type TransformOptions = {
+  prepack: boolean;
+};
+
+const compileAndTransform = (
+  dir: string,
+  file: string,
+  options?: TransformOptions
+): {} => {
   // Compile examples in `testcases/*` folder as js
   // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
   compileSync([file], {
@@ -89,6 +99,18 @@ export const compileAndTransform = (dir: string, file: string): {} => {
   );
 
   fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
+
+  if (options?.prepack) {
+    console.log('here');
+    const { code } = prepackFileSync([pathInOutput('elm.opt.transformed.js')], {
+      debugNames: true,
+      inlineExpressions: true,
+      maxStackDepth: 1200, // that didn't help
+    });
+    console.log('there', code.length);
+
+    fs.writeFileSync(pathInOutput('elm.opt.prepack.js'), code);
+  }
 
   return {};
 };

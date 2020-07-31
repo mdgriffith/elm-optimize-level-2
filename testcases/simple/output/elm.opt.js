@@ -3167,7 +3167,7 @@
         $author$project$Main$One(5),
         A2($author$project$Main$Two, "Two", "two")
     ]);
-    var $author$project$Main$many = $elm$core$List$concat(A2($elm$core$List$repeat, 1000, $author$project$Main$values));
+    var $author$project$Main$many = $elm$core$List$concat(A2($elm$core$List$repeat, 100, $author$project$Main$values));
     var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
     var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
     var $author$project$Main$main = function () {
