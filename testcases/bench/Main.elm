@@ -21,7 +21,7 @@ values =
 
 
 many =
-    List.repeat 1000 values
+    List.repeat 100 values
         |> List.concat
 
 
@@ -37,12 +37,12 @@ addMyType mine sum =
             sum
 
 
-type alias MyRecord = 
+type alias MyRecord =
     { one : Int
     , two : Int
     , three : Int
-
     }
+
 
 main : BenchmarkProgram
 main =
@@ -52,20 +52,18 @@ main =
 updateRecord attr record =
     { record | one = 87 }
 
+
 suite : Benchmark
 suite =
     describe "Benchmarks"
-        [ 
-           benchmark "sum 1000 entities in a list" <|
-                \_ -> List.foldl addMyType 0 many
-            
+        [ benchmark "sum 1000 entities in a list" <|
+            \_ -> List.foldl addMyType 0 many
         , benchmark "1000 record updates" <|
-                \_ -> List.foldl updateRecord 
-                        { one = 1
-                        , two = 2
-                        , three = 3
-
-                        }
-                
-                            many
+            \_ ->
+                List.foldl updateRecord
+                    { one = 1
+                    , two = 2
+                    , three = 3
+                    }
+                    many
         ]
