@@ -11,8 +11,10 @@
       var app = Elm.Main.init({
         node: document.getElementById('myapp'),
       });
+      window.results = [];
       app.ports.reportResults.subscribe(function(message) {
-        console.log(message);
+        window.results = message;
+        document.title = 'done';
       });
     </script>
   </body>
