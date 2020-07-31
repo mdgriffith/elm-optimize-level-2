@@ -20,7 +20,7 @@ import {
   NativeSpread,
 } from './experiments/modernizeJS';
 
-const compileAndTransform = (dir: string, file: string): {} => {
+export const compileAndTransform = (dir: string, file: string): {} => {
   // Compile examples in `testcases/*` folder as js
   // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
   compileSync([file], {
@@ -92,9 +92,6 @@ const compileAndTransform = (dir: string, file: string): {} => {
 
   return {};
 };
-
-compileAndTransform('testcases/simple', 'Main.elm');
-compileAndTransform('testcases/bench', 'Main.elm');
 
 function reportInlineTransformResult(ctx: InlineContext) {
   const {
