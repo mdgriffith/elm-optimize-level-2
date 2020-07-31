@@ -17,7 +17,8 @@
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "run": "ts-node src/index.ts",
-    "testcases": "ts-node -T src/compile-testcases.ts"
+    "testcases": "ts-node -T src/compile-testcases.ts",
+    "report": "ts-node -T src/generate-report.ts"
   },
   "peerDependencies": {},
   "husky": {
@@ -33,8 +34,10 @@
   "author": "",
   "module": "dist/lib.esm.js",
   "devDependencies": {
+    "chromedriver": "^84.0.1",
     "husky": "^4.2.5",
     "node-elm-compiler": "^5.0.4",
+    "selenium-webdriver": "^4.0.0-alpha.7",
     "ts-node": "^8.10.2",
     "tsdx": "^0.13.2",
     "tslib": "^2.0.0",
