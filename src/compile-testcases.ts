@@ -1,7 +1,7 @@
 import { compileSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 import * as path from 'path';
-import { parseElm } from './parseElm';
+import { parseElm, parseDir } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './experiments/variantShapes';
 import { Mode, Transforms, ObjectUpdate } from './types';
@@ -44,14 +44,14 @@ export const compileAndTransform = async (
   const pathInOutput = (p: string) => path.join(dir, 'output', p);
 
   const elmSource = fs.readFileSync(path.join(dir, file), 'utf8');
-  const parsedVariants = parseElm({
+  let parsedVariants = parseElm({
     author: 'author',
     project: 'project',
     source: elmSource,
   });
 
-  // console.log('11', parsedVariants);
-  // console.log('33', JSON.stringify(parsedVariants, null, 2));
+  // This will parse everything in `elm-packages`, but it causes everything to fail for some reason :/
+  // Object.assign(parsedVariants, parseDir('elm-packages'));
 
   const source = ts.createSourceFile(
     'elm.js',

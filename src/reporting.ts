@@ -63,27 +63,31 @@ export const markdown = (report: Results): string => {
     buffer.push('');
     let base: number | null = null;
     report.benchmarks[key].forEach((item: any) => {
-      let tag = '';
-      let delta: string = '';
-      if (item.tag != null) {
-        tag = ', ' + item.tag;
-      }
-      if (base == null) {
-        base = item.status.runsPerSecond;
+      if (item.status == 'success') {
+        let tag = '';
+        let delta: string = '';
+        if (item.tag != null) {
+          tag = ', ' + item.tag;
+        }
+        if (base == null) {
+          base = item.status.runsPerSecond;
+        } else {
+          let percentChange = (item.status.runsPerSecond / base) * 100;
+          delta = ' (' + Math.round(percentChange) + '%)';
+        }
+
+        const goodness =
+          '(' + Math.round(item.status.goodnessOfFit * 100) + '%*)';
+
+        const label = '   ' + item.browser + tag + goodness;
+        const datapoint =
+          humanizeNumber(item.status.runsPerSecond).padStart(10, ' ') +
+          ' runs/sec ' +
+          delta;
+        buffer.push(label.padEnd(40, ' ') + datapoint);
       } else {
-        let percentChange = (item.status.runsPerSecond / base) * 100;
-        delta = ' (' + Math.round(percentChange) + '%)';
+        console.log('FAILURE', item);
       }
-
-      const goodness =
-        '(' + Math.round(item.status.goodnessOfFit * 100) + '%*)';
-
-      const label = '   ' + item.browser + tag + goodness;
-      const datapoint =
-        humanizeNumber(item.status.runsPerSecond).padStart(10, ' ') +
-        ' runs/sec ' +
-        delta;
-      buffer.push(label.padEnd(40, ' ') + datapoint);
     });
     buffer.push('');
     buffer.push('');

@@ -1,7 +1,8 @@
 import Parser from 'tree-sitter';
 import Elm from 'tree-sitter-elm';
 import { ElmVariant } from './types';
-// import * as fs from 'fs';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Parse the elm file using tree sitter
 const elmParser = new Parser();
@@ -183,4 +184,66 @@ export const parseElm = ({
     }
   }
   return found;
+};
+
+export const parseDir = (dir: string): { [id: string]: ElmVariant[] } => {
+  let variants: { [id: string]: ElmVariant[] } = {};
+  const files = fs.readdirSync(dir);
+
+  files.forEach(function(author) {
+    if (fs.statSync(dir + '/' + author).isDirectory()) {
+      const projs = fs.readdirSync(path.join(dir, author));
+      projs.forEach(function(project) {
+        if (fs.statSync(path.join(dir, author, project)).isDirectory()) {
+          const vars = parseElmFilesInDirectory(
+            path.join(dir, author, project),
+            author,
+            project
+          );
+
+          variants = Object.assign(variants, vars);
+        }
+      });
+    }
+  });
+
+  return variants;
+};
+
+const parseElmFilesInDirectory = (
+  dir: string,
+  author: string,
+  project: string
+): { [id: string]: ElmVariant[] } => {
+  let variants: { [id: string]: ElmVariant[] } = {};
+
+  let files = walkSync(dir, []);
+
+  for (let i in files) {
+    if (files[i].endsWith('.elm')) {
+      const source = fs.readFileSync(files[i], 'utf8');
+      let results = parseElm({
+        author: author,
+        project: project,
+        source: source,
+      });
+
+      variants = Object.assign(variants, results);
+    }
+  }
+
+  return variants;
+};
+
+var walkSync = function(dir: string, filelist: string[]) {
+  var files = fs.readdirSync(dir);
+  filelist = filelist || [];
+  files.forEach(function(file: string) {
+    if (fs.statSync(path.join(dir, file)).isDirectory()) {
+      filelist = walkSync(path.join(dir, file), filelist);
+    } else {
+      filelist.push(path.join(dir, file));
+    }
+  });
+  return filelist;
 };
