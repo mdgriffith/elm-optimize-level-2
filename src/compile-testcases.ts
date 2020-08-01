@@ -13,8 +13,9 @@ import {
   InlineMode,
   createInlineListFromArrayTransformer,
 } from './experiments/inlineListFromArray';
-
 import { prepackFileSync } from 'prepack';
+import * as Terser from 'terser';
+import { execSync } from 'child_process';
 
 import {
   createReplaceUtilsUpdateWithObjectSpread,
@@ -101,19 +102,82 @@ export const compileAndTransform = (
   fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
 
   if (options?.prepack) {
-    console.log('here');
+    // console.log('here');
     const { code } = prepackFileSync([pathInOutput('elm.opt.transformed.js')], {
       debugNames: true,
       inlineExpressions: true,
       maxStackDepth: 1200, // that didn't help
     });
-    console.log('there', code.length);
+    // console.log('there', code.length);
 
     fs.writeFileSync(pathInOutput('elm.opt.prepack.js'), code);
   }
 
+  minify(pathInOutput('elm.opt.js'), pathInOutput('elm.opt.min.js'));
+  gzip(pathInOutput('elm.opt.min.js'));
+  minify(
+    pathInOutput('elm.opt.transformed.js'),
+    pathInOutput('elm.opt.transformed.min.js')
+  );
+  gzip(pathInOutput('elm.opt.transformed.min.js'));
+
   return {};
 };
+
+async function minify(inputFilename: string, outputFilename: string) {
+  const compress = {
+    toplevel: true,
+    mangle: false,
+    compress: {
+      pure_getters: true,
+      keep_fargs: false,
+      unsafe_comps: true,
+      unsafe: true,
+      pure_funcs: [
+        'F2',
+        'F3',
+        'F4',
+        'F5',
+        'F6',
+        'F7',
+        'F8',
+        'F9',
+        'A2',
+        'A3',
+        'A4',
+        'A5',
+        'A6',
+        'A7',
+        'A8',
+        'A9',
+      ],
+    },
+  };
+  const mangle = {
+    mangle: true,
+    compress: false,
+  };
+  const input = fs.readFileSync(inputFilename, 'utf8');
+  const compressed = await Terser.minify(input, compress);
+
+  let mangled = null;
+  if (compressed && compressed.code) {
+    mangled = await Terser.minify(compressed.code, mangle);
+  } else {
+    console.log('Error compressing with Terser');
+  }
+  // console.log('mangled', mangled.error);
+  if (mangled && mangled.code) {
+    fs.writeFileSync(outputFilename, mangled.code);
+  } else {
+    console.log('Error mangling with Terser');
+  }
+}
+async function gzip(file: string) {
+  // --keep = keep the original file
+  // --force = overwrite the exisign gzip file if it's there
+  execSync('gzip --keep --force ' + file);
+}
 
 function reportInlineTransformResult(ctx: InlineContext) {
   const {
