@@ -63,7 +63,7 @@ export const markdown = (report: Results): string => {
     buffer.push('');
     let base: number | null = null;
     report.benchmarks[key].forEach((item: any) => {
-      if (item.status == 'success') {
+      if (item.status.status == 'success') {
         let tag = '';
         let delta: string = '';
         if (item.tag != null) {
