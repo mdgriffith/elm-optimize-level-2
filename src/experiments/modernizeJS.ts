@@ -17,6 +17,11 @@ const _Utils_update = (oldRecord, updatedFields) => ({...oldRecord, ...updatedFi
 }
 `;
 
+const assign = `
+const _Utils_update = (oldRecord, updatedFields) => (Object.assign({}, oldRecord, updatedFields));
+}
+`;
+
 const extractBody = (sourceText: string): ts.Node => {
   const source = ts.createSourceFile('bla', sourceText, ts.ScriptTarget.ES2018);
   return source.statements[0];
@@ -37,6 +42,8 @@ export const createReplaceUtilsUpdateWithObjectSpread = (
             return extractBody(spreadForBoth);
           case ObjectUpdate.UseSpreadOnlyToMakeACopy:
             return extractBody(copyWithSpread);
+          case ObjectUpdate.UseAssign:
+            return extractBody(assign);
         }
       }
 

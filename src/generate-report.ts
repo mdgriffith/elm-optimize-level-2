@@ -14,7 +14,7 @@ const defaultOptions = {
   inlineFunctions: true,
   listLiterals: true,
   arrowFns: true,
-  objectUpdate: ObjectUpdate.UseSpreadOnlyToMakeACopy,
+  objectUpdate: ObjectUpdate.UseAssign,
   unusedValues: false,
 };
 
