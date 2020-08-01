@@ -5,22 +5,12 @@
         wrapper.f = fun;
         return wrapper;
     }
-    const F2 = (fun) => F(2, fun, (a) => (b) => fun(a, b));
-    const F3 = (fun) => F(3, fun, (a) => (b) => (c) => fun(a, b, c));
-    const F4 = (fun) => F(4, fun, (a) => (b) => (c) => (d) => fun(a, b, c, d));
-    const F5 = (fun) => F(5, fun, (a) => (b) => (c) => (d) => (e) => fun(a, b, c, d, e));
-    const F6 = (fun) => F(6, fun, (a) => (b) => (c) => (d) => (e) => (f) => fun(a, b, c, d, e, f));
-    const F7 = (fun) => F(7, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => fun(a, b, c, d, e, f, g));
-    const F8 = (fun) => F(8, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => (h) => fun(a, b, c, d, e, f, g, h));
-    const F9 = (fun) => F(9, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => (h) => (i) => fun(a, b, c, d, e, f, g, h, i));
-    const A2 = (fun, a, b) => fun.a === 2 ? fun.f(a, b) : fun(a)(b);
-    const A3 = (fun, a, b, c) => fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
-    const A4 = (fun, a, b, c, d) => fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
-    const A5 = (fun, a, b, c, d, e) => fun.a === 5 ? fun.f(a, b, c, d, e) : fun(a)(b)(c)(d)(e);
-    const A6 = (fun, a, b, c, d, e, f) => fun.a === 6 ? fun.f(a, b, c, d, e, f) : fun(a)(b)(c)(d)(e)(f);
-    const A7 = (fun, a, b, c, d, e, f, g) => fun.a === 7 ? fun.f(a, b, c, d, e, f, g) : fun(a)(b)(c)(d)(e)(f)(g);
-    const A8 = (fun, a, b, c, d, e, f, g, h) => fun.a === 8 ? fun.f(a, b, c, d, e, f, g, h) : fun(a)(b)(c)(d)(e)(f)(g)(h);
-    const A9 = (fun, a, b, c, d, e, f, g, h, i) => fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
+    var F2 = (fun) => F(2, fun, (a) => (b) => fun(a, b));
+    var F3 = (fun) => F(3, fun, (a) => (b) => (c) => fun(a, b, c));
+    var F4 = (fun) => F(4, fun, (a) => (b) => (c) => (d) => fun(a, b, c, d));
+    var A2 = (fun, a, b) => fun.a === 2 ? fun.f(a, b) : fun(a)(b);
+    var A3 = (fun, a, b, c) => fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
+    var A4 = (fun, a, b, c, d) => fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
     // EQUALITY
     function _Utils_eq(x, y) {
         for (var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack); isEqual && (pair = stack.pop()); isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)) { }
@@ -64,7 +54,6 @@
         return true;
     }
     var _Utils_equal = F2(_Utils_eq);
-    var _Utils_notEqual_raw = (a, b) => !_Utils_eq(a, b), _Utils_notEqual = F2(_Utils_notEqual_raw);
     // COMPARISONS
     // Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
     // the particular integer values assigned to LT, EQ, and GT.
@@ -97,32 +86,16 @@
         for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) { } // WHILE_CONSES
         return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
     }
-    var _Utils_lt_raw = (a, b) => _Utils_cmp(a, b) < 0, _Utils_lt = F2(_Utils_lt_raw);
-    var _Utils_le_raw = (a, b) => _Utils_cmp(a, b) < 1, _Utils_le = F2(_Utils_le_raw);
-    var _Utils_gt_raw = (a, b) => _Utils_cmp(a, b) > 0, _Utils_gt = F2(_Utils_gt_raw);
-    var _Utils_ge_raw = (a, b) => _Utils_cmp(a, b) >= 0, _Utils_ge = F2(_Utils_ge_raw);
     var _Utils_compare_raw = function (x, y) {
         var n = _Utils_cmp(x, y);
         return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
-    }, _Utils_compare = F2(_Utils_compare_raw);
+    };
     // COMMON VALUES
     var _Utils_Tuple0 = 0;
-    var _Utils_Tuple0_UNUSED = { $: "#0" };
-    const _Utils_Tuple2 = (a, b) => ({ a: a, b: b });
-    const _Utils_Tuple2_UNUSED = (a, b) => ({ $: "#2", a: a, b: b });
-    const _Utils_Tuple3 = (a, b, c) => ({ a: a, b: b, c: c });
-    const _Utils_Tuple3_UNUSED = (a, b, c) => ({ $: "#3", a: a, b: b, c: c });
-    const _Utils_chr = (c) => c;
-    const _Utils_chr_UNUSED = (c) => new String(c);
-    const _Utils_update = (oldRecord, updatedFields) => {
-        var newRecord = { ...oldRecord };
-        for (var key in updatedFields) {
-            newRecord[key] = updatedFields[key];
-        }
-        return newRecord;
-    };
-    // APPEND
-    var _Utils_append = F2(_Utils_ap);
+    var _Utils_Tuple2 = (a, b) => ({ a: a, b: b });
+    var _Utils_Tuple3 = (a, b, c) => ({ a: a, b: b, c: c });
+    var _Utils_chr = (c) => c;
+    const _Utils_update = (oldRecord, updatedFields) => ({ ...oldRecord, ...updatedFields });
     function _Utils_ap(xs, ys) {
         // append Strings
         if (typeof xs === "string") {
@@ -141,9 +114,7 @@
         return root;
     }
     var _List_Nil = { $: 0, a: null, b: null };
-    var _List_Nil_UNUSED = { $: "[]" };
-    const _List_Cons = (hd, tl) => ({ $: 1, a: hd, b: tl });
-    const _List_Cons_UNUSED = (hd, tl) => ({ $: "::", a: hd, b: tl });
+    var _List_Cons = (hd, tl) => ({ $: 1, a: hd, b: tl });
     var _List_cons = F2(_List_Cons);
     function _List_fromArray(arr) {
         var out = _List_Nil;
@@ -165,43 +136,17 @@
             arr.push(A2(f, xs.a, ys.a));
         }
         return _List_fromArray(arr);
-    }, _List_map2 = F3(_List_map2_raw);
-    var _List_map3_raw = function (f, xs, ys, zs) {
-        for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-         {
-            arr.push(A3(f, xs.a, ys.a, zs.a));
-        }
-        return _List_fromArray(arr);
-    }, _List_map3 = F4(_List_map3_raw);
-    var _List_map4_raw = function (f, ws, xs, ys, zs) {
-        for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-         {
-            arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
-        }
-        return _List_fromArray(arr);
-    }, _List_map4 = F5(_List_map4_raw);
-    var _List_map5_raw = function (f, vs, ws, xs, ys, zs) {
-        for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-         {
-            arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
-        }
-        return _List_fromArray(arr);
-    }, _List_map5 = F6(_List_map5_raw);
-    var _List_sortBy_raw = (f, xs) => _List_fromArray(_List_toArray(xs).sort((a, b) => _Utils_cmp(f(a), f(b)))), _List_sortBy = F2(_List_sortBy_raw);
-    var _List_sortWith_raw = (f, xs) => _List_fromArray(_List_toArray(xs).sort(function (a, b) {
-        var ord = A2(f, a, b);
-        return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
-    })), _List_sortWith = F2(_List_sortWith_raw);
+    };
+    var _List_sortBy_raw = (f, xs) => _List_fromArray(_List_toArray(xs).sort((a, b) => _Utils_cmp(f(a), f(b))));
     var _JsArray_empty = [];
-    const _JsArray_singleton = (value) => [value];
-    const _JsArray_length = (array) => array.length;
+    var _JsArray_length = (array) => array.length;
     var _JsArray_initialize_raw = function (size, offset, func) {
         var result = new Array(size);
         for (var i = 0; i < size; i++) {
             result[i] = func(offset + i);
         }
         return result;
-    }, _JsArray_initialize = F3(_JsArray_initialize_raw);
+    };
     var _JsArray_initializeFromList_raw = function (max, ls) {
         var result = new Array(max);
         for (var i = 0; i < max && ls.b; i++) {
@@ -210,251 +155,15 @@
         }
         result.length = i;
         return _Utils_Tuple2(result, ls);
-    }, _JsArray_initializeFromList = F2(_JsArray_initializeFromList_raw);
-    var _JsArray_unsafeGet_raw = (index, array) => array[index], _JsArray_unsafeGet = F2(_JsArray_unsafeGet_raw);
-    var _JsArray_unsafeSet_raw = function (index, value, array) {
-        var length = array.length;
-        var result = new Array(length);
-        for (var i = 0; i < length; i++) {
-            result[i] = array[i];
-        }
-        result[index] = value;
-        return result;
-    }, _JsArray_unsafeSet = F3(_JsArray_unsafeSet_raw);
-    var _JsArray_push_raw = function (value, array) {
-        var length = array.length;
-        var result = new Array(length + 1);
-        for (var i = 0; i < length; i++) {
-            result[i] = array[i];
-        }
-        result[length] = value;
-        return result;
-    }, _JsArray_push = F2(_JsArray_push_raw);
-    var _JsArray_foldl_raw = function (func, acc, array) {
-        var length = array.length;
-        for (var i = 0; i < length; i++) {
-            acc = A2(func, array[i], acc);
-        }
-        return acc;
-    }, _JsArray_foldl = F3(_JsArray_foldl_raw);
-    var _JsArray_foldr_raw = function (func, acc, array) {
-        for (var i = array.length - 1; i >= 0; i--) {
-            acc = A2(func, array[i], acc);
-        }
-        return acc;
-    }, _JsArray_foldr = F3(_JsArray_foldr_raw);
-    var _JsArray_map_raw = function (func, array) {
-        var length = array.length;
-        var result = new Array(length);
-        for (var i = 0; i < length; i++) {
-            result[i] = func(array[i]);
-        }
-        return result;
-    }, _JsArray_map = F2(_JsArray_map_raw);
-    var _JsArray_indexedMap_raw = function (func, offset, array) {
-        var length = array.length;
-        var result = new Array(length);
-        for (var i = 0; i < length; i++) {
-            result[i] = A2(func, offset + i, array[i]);
-        }
-        return result;
-    }, _JsArray_indexedMap = F3(_JsArray_indexedMap_raw);
-    var _JsArray_slice_raw = (from, to, array) => array.slice(from, to), _JsArray_slice = F3(_JsArray_slice_raw);
-    var _JsArray_appendN_raw = function (n, dest, source) {
-        var destLen = dest.length;
-        var itemsToCopy = n - destLen;
-        if (itemsToCopy > source.length) {
-            itemsToCopy = source.length;
-        }
-        var size = destLen + itemsToCopy;
-        var result = new Array(size);
-        for (var i = 0; i < destLen; i++) {
-            result[i] = dest[i];
-        }
-        for (var i = 0; i < itemsToCopy; i++) {
-            result[i + destLen] = source[i];
-        }
-        return result;
-    }, _JsArray_appendN = F3(_JsArray_appendN_raw);
-    // LOG
-    var _Debug_log_raw = (tag, value) => value, _Debug_log = F2(_Debug_log_raw);
-    var _Debug_log_UNUSED_raw = function (tag, value) {
-        console.log(tag + ": " + _Debug_toString(value));
-        return value;
-    }, _Debug_log_UNUSED = F2(_Debug_log_UNUSED_raw);
-    const _Debug_todo = (moduleName, region) => function (message) {
-        _Debug_crash(8, moduleName, region, message);
     };
-    const _Debug_todoCase = (moduleName, region, value) => function (message) {
-        _Debug_crash(9, moduleName, region, value, message);
-    };
-    const _Debug_toString = (value) => "<internals>";
-    const _Debug_toString_UNUSED = (value) => _Debug_toAnsiString(false, value);
-    function _Debug_toAnsiString(ansi, value) {
-        if (typeof value === "function") {
-            return _Debug_internalColor(ansi, "<function>");
-        }
-        if (typeof value === "boolean") {
-            return _Debug_ctorColor(ansi, value ? "True" : "False");
-        }
-        if (typeof value === "number") {
-            return _Debug_numberColor(ansi, value + "");
-        }
-        if (value instanceof String) {
-            return _Debug_charColor(ansi, "'" + _Debug_addSlashes(value, true) + "'");
-        }
-        if (typeof value === "string") {
-            return _Debug_stringColor(ansi, "\"" + _Debug_addSlashes(value, false) + "\"");
-        }
-        if (typeof value === "object" && "$" in value) {
-            var tag = value.$;
-            if (typeof tag === "number") {
-                return _Debug_internalColor(ansi, "<internals>");
-            }
-            if (tag[0] === "#") {
-                var output = [];
-                for (var k in value) {
-                    if (k === "$")
-                        continue;
-                    output.push(_Debug_toAnsiString(ansi, value[k]));
-                }
-                return "(" + output.join(",") + ")";
-            }
-            if (tag === "Set_elm_builtin") {
-                return _Debug_ctorColor(ansi, "Set")
-                    + _Debug_fadeColor(ansi, ".fromList") + " "
-                    + _Debug_toAnsiString(ansi, $elm$core$Set$toList(value));
-            }
-            if (tag === "RBNode_elm_builtin" || tag === "RBEmpty_elm_builtin") {
-                return _Debug_ctorColor(ansi, "Dict")
-                    + _Debug_fadeColor(ansi, ".fromList") + " "
-                    + _Debug_toAnsiString(ansi, $elm$core$Dict$toList(value));
-            }
-            if (tag === "Array_elm_builtin") {
-                return _Debug_ctorColor(ansi, "Array")
-                    + _Debug_fadeColor(ansi, ".fromList") + " "
-                    + _Debug_toAnsiString(ansi, $elm$core$Array$toList(value));
-            }
-            if (tag === "::" || tag === "[]") {
-                var output = "[";
-                value.b && (output += _Debug_toAnsiString(ansi, value.a), value = value.b);
-                for (; value.b; value = value.b) // WHILE_CONS
-                 {
-                    output += "," + _Debug_toAnsiString(ansi, value.a);
-                }
-                return output + "]";
-            }
-            var output = "";
-            for (var i in value) {
-                if (i === "$")
-                    continue;
-                var str = _Debug_toAnsiString(ansi, value[i]);
-                var c0 = str[0];
-                var parenless = c0 === "{" || c0 === "(" || c0 === "[" || c0 === "<" || c0 === "\"" || str.indexOf(" ") < 0;
-                output += " " + (parenless ? str : "(" + str + ")");
-            }
-            return _Debug_ctorColor(ansi, tag) + output;
-        }
-        if (typeof DataView === "function" && value instanceof DataView) {
-            return _Debug_stringColor(ansi, "<" + value.byteLength + " bytes>");
-        }
-        if (typeof File !== "undefined" && value instanceof File) {
-            return _Debug_internalColor(ansi, "<" + value.name + ">");
-        }
-        if (typeof value === "object") {
-            var output = [];
-            for (var key in value) {
-                var field = key[0] === "_" ? key.slice(1) : key;
-                output.push(_Debug_fadeColor(ansi, field) + " = " + _Debug_toAnsiString(ansi, value[key]));
-            }
-            if (output.length === 0) {
-                return "{}";
-            }
-            return "{ " + output.join(", ") + " }";
-        }
-        return _Debug_internalColor(ansi, "<internals>");
-    }
-    function _Debug_addSlashes(str, isChar) {
-        var s = str
-            .replace(/\\/g, "\\\\")
-            .replace(/\n/g, "\\n")
-            .replace(/\t/g, "\\t")
-            .replace(/\r/g, "\\r")
-            .replace(/\v/g, "\\v")
-            .replace(/\0/g, "\\0");
-        if (isChar) {
-            return s.replace(/\'/g, "\\'");
-        }
-        else {
-            return s.replace(/\"/g, "\\\"");
-        }
-    }
-    const _Debug_ctorColor = (ansi, string) => ansi ? "\u001B[96m" + string + "\u001B[0m" : string;
-    const _Debug_numberColor = (ansi, string) => ansi ? "\u001B[95m" + string + "\u001B[0m" : string;
-    const _Debug_stringColor = (ansi, string) => ansi ? "\u001B[93m" + string + "\u001B[0m" : string;
-    const _Debug_charColor = (ansi, string) => ansi ? "\u001B[92m" + string + "\u001B[0m" : string;
-    const _Debug_fadeColor = (ansi, string) => ansi ? "\u001B[37m" + string + "\u001B[0m" : string;
-    const _Debug_internalColor = (ansi, string) => ansi ? "\u001B[36m" + string + "\u001B[0m" : string;
-    const _Debug_toHexDigit = (n) => String.fromCharCode(n < 10 ? 48 + n : 55 + n);
     // CRASH
     function _Debug_crash(identifier) {
         throw new Error("https://github.com/elm/core/blob/1.0.0/hints/" + identifier + ".md");
     }
-    function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4) {
-        switch (identifier) {
-            case 0:
-                throw new Error("What node should I take over? In JavaScript I need something like:\n\n    Elm.Main.init({\n        node: document.getElementById(\"elm-node\")\n    })\n\nYou need to do this with any Browser.sandbox or Browser.element program.");
-            case 1:
-                throw new Error("Browser.application programs cannot handle URLs like this:\n\n    " + document.location.href + "\n\nWhat is the root? The root of your file system? Try looking at this program with `elm reactor` or some other server.");
-            case 2:
-                var jsonErrorString = fact1;
-                throw new Error("Problem with the flags given to your Elm program on initialization.\n\n" + jsonErrorString);
-            case 3:
-                var portName = fact1;
-                throw new Error("There can only be one port named `" + portName + "`, but your program has multiple.");
-            case 4:
-                var portName = fact1;
-                var problem = fact2;
-                throw new Error("Trying to send an unexpected type of value through port `" + portName + "`:\n" + problem);
-            case 5:
-                throw new Error("Trying to use `(==)` on functions.\nThere is no way to know if functions are \"the same\" in the Elm sense.\nRead more about this at https://package.elm-lang.org/packages/elm/core/latest/Basics#== which describes why it is this way and what the better version will look like.");
-            case 6:
-                var moduleName = fact1;
-                throw new Error("Your page is loading multiple Elm scripts with a module named " + moduleName + ". Maybe a duplicate script is getting loaded accidentally? If not, rename one of them so I know which is which!");
-            case 8:
-                var moduleName = fact1;
-                var region = fact2;
-                var message = fact3;
-                throw new Error("TODO in module `" + moduleName + "` " + _Debug_regionToString(region) + "\n\n" + message);
-            case 9:
-                var moduleName = fact1;
-                var region = fact2;
-                var value = fact3;
-                var message = fact4;
-                throw new Error("TODO in module `" + moduleName + "` from the `case` expression "
-                    + _Debug_regionToString(region) + "\n\nIt received the following value:\n\n    "
-                    + _Debug_toString(value).replace("\n", "\n    ")
-                    + "\n\nBut the branch that handles it says:\n\n    " + message.replace("\n", "\n    "));
-            case 10:
-                throw new Error("Bug in https://github.com/elm/virtual-dom/issues");
-            case 11:
-                throw new Error("Cannot perform mod 0. Division by zero error.");
-        }
-    }
-    function _Debug_regionToString(region) {
-        if (region.s.aF === region.o.aF) {
-            return "on line " + region.s.aF;
-        }
-        return "on lines " + region.s.aF + " through " + region.o.aF;
-    }
     // MATH
     var _Basics_add_raw = (a, b) => a + b, _Basics_add = F2(_Basics_add_raw);
-    var _Basics_sub_raw = (a, b) => a - b, _Basics_sub = F2(_Basics_sub_raw);
     var _Basics_mul_raw = (a, b) => a * b, _Basics_mul = F2(_Basics_mul_raw);
-    var _Basics_fdiv_raw = (a, b) => a / b, _Basics_fdiv = F2(_Basics_fdiv_raw);
-    var _Basics_idiv_raw = (a, b) => (a / b) | 0, _Basics_idiv = F2(_Basics_idiv_raw);
     var _Basics_pow = F2(Math.pow);
-    var _Basics_remainderBy_raw = (b, a) => a % b, _Basics_remainderBy = F2(_Basics_remainderBy_raw);
     // https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
     var _Basics_modBy_raw = function (modulus, x) {
         var answer = x % modulus;
@@ -464,31 +173,16 @@
                 ((answer > 0 && modulus < 0) || (answer < 0 && modulus > 0))
                     ? answer + modulus
                     : answer;
-    }, _Basics_modBy = F2(_Basics_modBy_raw);
-    // TRIGONOMETRY
-    var _Basics_pi = Math.PI;
-    var _Basics_e = Math.E;
-    var _Basics_cos = Math.cos;
-    var _Basics_sin = Math.sin;
-    var _Basics_tan = Math.tan;
-    var _Basics_acos = Math.acos;
-    var _Basics_asin = Math.asin;
-    var _Basics_atan = Math.atan;
-    var _Basics_atan2 = F2(Math.atan2);
-    const _Basics_toFloat = (x) => x;
-    const _Basics_truncate = (n) => n | 0;
-    const _Basics_isInfinite = (n) => n === Infinity || n === -Infinity;
+    };
+    var _Basics_isInfinite = (n) => n === Infinity || n === -Infinity;
     var _Basics_ceiling = Math.ceil;
     var _Basics_floor = Math.floor;
     var _Basics_round = Math.round;
     var _Basics_sqrt = Math.sqrt;
     var _Basics_log = Math.log;
     var _Basics_isNaN = isNaN;
-    const _Basics_not = (bool) => !bool;
-    var _Basics_and_raw = (a, b) => a && b, _Basics_and = F2(_Basics_and_raw);
-    var _Basics_or_raw = (a, b) => a || b, _Basics_or = F2(_Basics_or_raw);
-    var _Basics_xor_raw = (a, b) => a !== b, _Basics_xor = F2(_Basics_xor_raw);
-    var _String_cons_raw = (chr, str) => chr + str, _String_cons = F2(_String_cons_raw);
+    var _Basics_not = (bool) => !bool;
+    var _String_cons_raw = (chr, str) => chr + str;
     function _String_uncons(string) {
         var word = string.charCodeAt(0);
         return !isNaN(word)
@@ -497,61 +191,7 @@
                 : _Utils_Tuple2(_Utils_chr(string[0]), string.slice(1)))
             : $elm$core$Maybe$Nothing;
     }
-    var _String_append_raw = (a, b) => a + b, _String_append = F2(_String_append_raw);
-    const _String_length = (str) => str.length;
-    var _String_map_raw = function (func, string) {
-        var len = string.length;
-        var array = new Array(len);
-        var i = 0;
-        while (i < len) {
-            var word = string.charCodeAt(i);
-            if (55296 <= word && word <= 56319) {
-                array[i] = func(_Utils_chr(string[i] + string[i + 1]));
-                i += 2;
-                continue;
-            }
-            array[i] = func(_Utils_chr(string[i]));
-            i++;
-        }
-        return array.join("");
-    }, _String_map = F2(_String_map_raw);
-    var _String_filter_raw = function (isGood, str) {
-        var arr = [];
-        var len = str.length;
-        var i = 0;
-        while (i < len) {
-            var char = str[i];
-            var word = str.charCodeAt(i);
-            i++;
-            if (55296 <= word && word <= 56319) {
-                char += str[i];
-                i++;
-            }
-            if (isGood(_Utils_chr(char))) {
-                arr.push(char);
-            }
-        }
-        return arr.join("");
-    }, _String_filter = F2(_String_filter_raw);
-    function _String_reverse(str) {
-        var len = str.length;
-        var arr = new Array(len);
-        var i = 0;
-        while (i < len) {
-            var word = str.charCodeAt(i);
-            if (55296 <= word && word <= 56319) {
-                arr[len - i] = str[i + 1];
-                i++;
-                arr[len - i] = str[i - 1];
-                i++;
-            }
-            else {
-                arr[len - i] = str[i];
-                i++;
-            }
-        }
-        return arr.join("");
-    }
+    var _String_length = (str) => str.length;
     var _String_foldl_raw = function (func, state, string) {
         var len = string.length;
         var i = 0;
@@ -566,7 +206,7 @@
             state = A2(func, _Utils_chr(char), state);
         }
         return state;
-    }, _String_foldl = F3(_String_foldl_raw);
+    };
     var _String_foldr_raw = function (func, state, string) {
         var i = string.length;
         while (i--) {
@@ -579,32 +219,14 @@
             state = A2(func, _Utils_chr(char), state);
         }
         return state;
-    }, _String_foldr = F3(_String_foldr_raw);
-    var _String_split_raw = (sep, str) => str.split(sep), _String_split = F2(_String_split_raw);
-    var _String_join_raw = (sep, strs) => strs.join(sep), _String_join = F2(_String_join_raw);
-    var _String_slice_raw = (start, end, str) => str.slice(start, end), _String_slice = F3(_String_slice_raw);
-    const _String_trim = (str) => str.trim();
-    const _String_trimLeft = (str) => str.replace(/^\s+/, "");
-    const _String_trimRight = (str) => str.replace(/\s+$/, "");
-    const _String_words = (str) => _List_fromArray(str.trim().split(/\s+/g));
-    const _String_lines = (str) => _List_fromArray(str.split(/\r\n|\r|\n/g));
-    const _String_toUpper = (str) => str.toUpperCase();
-    const _String_toLower = (str) => str.toLowerCase();
-    var _String_any_raw = function (isGood, string) {
-        var i = string.length;
-        while (i--) {
-            var char = string[i];
-            var word = string.charCodeAt(i);
-            if (56320 <= word && word <= 57343) {
-                i--;
-                char = string[i] + char;
-            }
-            if (isGood(_Utils_chr(char))) {
-                return true;
-            }
-        }
-        return false;
-    }, _String_any = F2(_String_any_raw);
+    };
+    var _String_split_raw = (sep, str) => str.split(sep);
+    var _String_join_raw = (sep, strs) => strs.join(sep);
+    var _String_slice_raw = (start, end, str) => str.slice(start, end);
+    var _String_trim = (str) => str.trim();
+    var _String_trimLeft = (str) => str.replace(/^\s+/, "");
+    var _String_trimRight = (str) => str.replace(/\s+$/, "");
+    var _String_toLower = (str) => str.toLowerCase();
     var _String_all_raw = function (isGood, string) {
         var i = string.length;
         while (i--) {
@@ -619,25 +241,12 @@
             }
         }
         return true;
-    }, _String_all = F2(_String_all_raw);
-    var _String_contains_raw = (sub, str) => str.indexOf(sub) > -1, _String_contains = F2(_String_contains_raw);
-    var _String_startsWith_raw = (sub, str) => str.indexOf(sub) === 0, _String_startsWith = F2(_String_startsWith_raw);
+    };
+    var _String_contains_raw = (sub, str) => str.indexOf(sub) > -1;
+    var _String_startsWith_raw = (sub, str) => str.indexOf(sub) === 0;
     var _String_endsWith_raw = (sub, str) => str.length >= sub.length &&
-        str.lastIndexOf(sub) === str.length - sub.length, _String_endsWith = F2(_String_endsWith_raw);
-    var _String_indexes_raw = function (sub, str) {
-        var subLen = sub.length;
-        if (subLen < 1) {
-            return _List_Nil;
-        }
-        var i = 0;
-        var is = [];
-        while ((i = str.indexOf(sub, i)) > -1) {
-            is.push(i);
-            i = i + subLen;
-        }
-        return _List_fromArray(is);
-    }, _String_indexes = F2(_String_indexes_raw);
-    const _String_fromNumber = (number) => number + "";
+        str.lastIndexOf(sub) === str.length - sub.length;
+    var _String_fromNumber = (number) => number + "";
     // INT CONVERSIONS
     function _String_toInt(str) {
         var total = 0;
@@ -654,17 +263,6 @@
             ? $elm$core$Maybe$Nothing
             : $elm$core$Maybe$Just(code0 == 45 ? -total : total);
     }
-    // FLOAT CONVERSIONS
-    function _String_toFloat(s) {
-        // check if it is a hex, octal, or binary number
-        if (s.length === 0 || /[\sxbo]/.test(s)) {
-            return $elm$core$Maybe$Nothing;
-        }
-        var n = +s;
-        // faster isNaN check
-        return n === n ? $elm$core$Maybe$Just(n) : $elm$core$Maybe$Nothing;
-    }
-    const _String_fromList = (chars) => _List_toArray(chars).join("");
     function _Char_toCode(char) {
         var code = char.charCodeAt(0);
         if (55296 <= code && code <= 56319) {
@@ -672,7 +270,7 @@
         }
         return code;
     }
-    const _Char_fromCode = (code) => _Utils_chr((code < 0 || 1114111 < code)
+    var _Char_fromCode = (code) => _Utils_chr((code < 0 || 1114111 < code)
         ? "\uFFFD"
         :
             (code <= 65535)
@@ -680,91 +278,11 @@
                 :
                     (code -= 65536,
                         String.fromCharCode(Math.floor(code / 1024) + 55296, code % 1024 + 56320)));
-    const _Char_toUpper = (char) => _Utils_chr(char.toUpperCase());
-    const _Char_toLower = (char) => _Utils_chr(char.toLowerCase());
-    const _Char_toLocaleUpper = (char) => _Utils_chr(char.toLocaleUpperCase());
-    const _Char_toLocaleLower = (char) => _Utils_chr(char.toLocaleLowerCase());
-    const _Json_succeed = (msg) => ({
+    var _Json_succeed = (msg) => ({
         $: 0,
         a: msg
     });
-    const _Json_fail = (msg) => ({
-        $: 1,
-        a: msg
-    });
-    const _Json_decodePrim = (decoder) => ({ $: 2, b: decoder });
-    var _Json_decodeInt = _Json_decodePrim((value) => (typeof value !== "number")
-        ? _Json_expecting("an INT", value)
-        :
-            (-2147483647 < value && value < 2147483647 && (value | 0) === value)
-                ? $elm$core$Result$Ok(value)
-                :
-                    (isFinite(value) && !(value % 1))
-                        ? $elm$core$Result$Ok(value)
-                        : _Json_expecting("an INT", value));
-    var _Json_decodeBool = _Json_decodePrim((value) => (typeof value === "boolean")
-        ? $elm$core$Result$Ok(value)
-        : _Json_expecting("a BOOL", value));
-    var _Json_decodeFloat = _Json_decodePrim((value) => (typeof value === "number")
-        ? $elm$core$Result$Ok(value)
-        : _Json_expecting("a FLOAT", value));
-    var _Json_decodeValue = _Json_decodePrim((value) => $elm$core$Result$Ok(_Json_wrap(value)));
-    var _Json_decodeString = _Json_decodePrim((value) => (typeof value === "string")
-        ? $elm$core$Result$Ok(value)
-        : (value instanceof String)
-            ? $elm$core$Result$Ok(value + "")
-            : _Json_expecting("a STRING", value));
-    const _Json_decodeList = (decoder) => ({ $: 3, b: decoder });
-    const _Json_decodeArray = (decoder) => ({ $: 4, b: decoder });
-    const _Json_decodeNull = (value) => ({ $: 5, c: value });
-    var _Json_decodeField_raw = (field, decoder) => ({
-        $: 6,
-        d: field,
-        b: decoder
-    }), _Json_decodeField = F2(_Json_decodeField_raw);
-    var _Json_decodeIndex_raw = (index, decoder) => ({
-        $: 7,
-        e: index,
-        b: decoder
-    }), _Json_decodeIndex = F2(_Json_decodeIndex_raw);
-    const _Json_decodeKeyValuePairs = (decoder) => ({
-        $: 8,
-        b: decoder
-    });
-    const _Json_mapMany = (f, decoders) => ({
-        $: 9,
-        f: f,
-        g: decoders
-    });
-    var _Json_andThen_raw = (callback, decoder) => ({
-        $: 10,
-        b: decoder,
-        h: callback
-    }), _Json_andThen = F2(_Json_andThen_raw);
-    const _Json_oneOf = (decoders) => ({
-        $: 11,
-        g: decoders
-    });
-    // DECODING OBJECTS
-    var _Json_map1_raw = (f, d1) => _Json_mapMany(f, [d1]), _Json_map1 = F2(_Json_map1_raw);
-    var _Json_map2_raw = (f, d1, d2) => _Json_mapMany(f, [d1, d2]), _Json_map2 = F3(_Json_map2_raw);
-    var _Json_map3_raw = (f, d1, d2, d3) => _Json_mapMany(f, [d1, d2, d3]), _Json_map3 = F4(_Json_map3_raw);
-    var _Json_map4_raw = (f, d1, d2, d3, d4) => _Json_mapMany(f, [d1, d2, d3, d4]), _Json_map4 = F5(_Json_map4_raw);
-    var _Json_map5_raw = (f, d1, d2, d3, d4, d5) => _Json_mapMany(f, [d1, d2, d3, d4, d5]), _Json_map5 = F6(_Json_map5_raw);
-    var _Json_map6_raw = (f, d1, d2, d3, d4, d5, d6) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6]), _Json_map6 = F7(_Json_map6_raw);
-    var _Json_map7_raw = (f, d1, d2, d3, d4, d5, d6, d7) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7]), _Json_map7 = F8(_Json_map7_raw);
-    var _Json_map8_raw = (f, d1, d2, d3, d4, d5, d6, d7, d8) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7, d8]), _Json_map8 = F9(_Json_map8_raw);
-    // DECODE
-    var _Json_runOnString_raw = function (decoder, string) {
-        try {
-            var value = JSON.parse(string);
-            return _Json_runHelp(decoder, value);
-        }
-        catch (e) {
-            return $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("This is not valid JSON! " + e.message, _Json_wrap(string)));
-        }
-    }, _Json_runOnString = F2(_Json_runOnString_raw);
-    var _Json_run_raw = (decoder, value) => _Json_runHelp(decoder, _Json_unwrap(value)), _Json_run = F2(_Json_run_raw);
+    var _Json_run_raw = (decoder, value) => _Json_runHelp(decoder, _Json_unwrap(value));
     function _Json_runHelp(decoder, value) {
         switch (decoder.$) {
             case 2:
@@ -861,9 +379,9 @@
         }
         return $elm$core$Result$Ok(toElmValue(array));
     }
-    const _Json_isArray = (value) => Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
-    const _Json_toElmArray = (array) => $elm$core$Array$initialize_raw(array.length, (i) => array[i]);
-    const _Json_expecting = (type, value) => $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
+    var _Json_isArray = (value) => Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
+    var _Json_toElmArray = (array) => $elm$core$Array$initialize_raw(array.length, (i) => array[i]);
+    var _Json_expecting = (type, value) => $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
     // EQUALITY
     function _Json_equality(x, y) {
         if (x === y) {
@@ -909,31 +427,28 @@
         return true;
     }
     // ENCODE
-    var _Json_encode_raw = (indentLevel, value) => JSON.stringify(_Json_unwrap(value), null, indentLevel) + "", _Json_encode = F2(_Json_encode_raw);
-    const _Json_wrap_UNUSED = (value) => ({ $: 0, a: value });
-    const _Json_unwrap_UNUSED = (value) => value.a;
-    const _Json_wrap = (value) => value;
-    const _Json_unwrap = (value) => value;
-    const _Json_emptyArray = () => [];
-    const _Json_emptyObject = () => ({});
+    var _Json_encode_raw = (indentLevel, value) => JSON.stringify(_Json_unwrap(value), null, indentLevel) + "";
+    var _Json_wrap = (value) => value;
+    var _Json_unwrap = (value) => value;
+    var _Json_emptyArray = () => [];
+    var _Json_emptyObject = () => ({});
     var _Json_addField_raw = function (key, value, object) {
         object[key] = _Json_unwrap(value);
         return object;
-    }, _Json_addField = F3(_Json_addField_raw);
-    const _Json_addEntry = (func) => F2(function (entry, array) {
+    };
+    var _Json_addEntry = (func) => F2(function (entry, array) {
         array.push(_Json_unwrap(func(entry)));
         return array;
     });
-    var _Json_encodeNull = _Json_wrap(null);
-    const _Scheduler_succeed = (value) => ({
+    var _Scheduler_succeed = (value) => ({
         $: 0,
         a: value
     });
-    const _Scheduler_fail = (error) => ({
+    var _Scheduler_fail = (error) => ({
         $: 1,
         a: error
     });
-    const _Scheduler_binding = (callback) => ({
+    var _Scheduler_binding = (callback) => ({
         $: 2,
         b: callback,
         c: null
@@ -942,13 +457,13 @@
         $: 3,
         b: callback,
         d: task
-    }), _Scheduler_andThen = F2(_Scheduler_andThen_raw);
+    });
     var _Scheduler_onError_raw = (callback, task) => ({
         $: 4,
         b: callback,
         d: task
-    }), _Scheduler_onError = F2(_Scheduler_onError_raw);
-    const _Scheduler_receive = (callback) => ({
+    });
+    var _Scheduler_receive = (callback) => ({
         $: 5,
         b: callback
     });
@@ -965,25 +480,13 @@
         _Scheduler_enqueue(proc);
         return proc;
     }
-    const _Scheduler_spawn = (task) => _Scheduler_binding(function (callback) {
+    var _Scheduler_spawn = (task) => _Scheduler_binding(function (callback) {
         callback(_Scheduler_succeed(_Scheduler_rawSpawn(task)));
     });
     function _Scheduler_rawSend(proc, msg) {
         proc.h.push(msg);
         _Scheduler_enqueue(proc);
     }
-    var _Scheduler_send_raw = (proc, msg) => _Scheduler_binding(function (callback) {
-        _Scheduler_rawSend(proc, msg);
-        callback(_Scheduler_succeed(_Utils_Tuple0));
-    }), _Scheduler_send = F2(_Scheduler_send_raw);
-    const _Scheduler_kill = (proc) => _Scheduler_binding(function (callback) {
-        var task = proc.f;
-        if (task.$ === 2 && task.c) {
-            task.c();
-        }
-        proc.f = null;
-        callback(_Scheduler_succeed(_Utils_Tuple0));
-    });
     /* STEP PROCESSES
     
     type alias Process =
@@ -1045,14 +548,12 @@
             }
         }
     }
-    const _Process_sleep = (time) => _Scheduler_binding(function (callback) {
+    var _Process_sleep = (time) => _Scheduler_binding(function (callback) {
         var id = setTimeout(function () {
             callback(_Scheduler_succeed(_Utils_Tuple0));
         }, time);
         return function () { clearTimeout(id); };
     });
-    // PROGRAMS
-    var _Platform_worker_raw = (impl, flagDecoder, debugMetadata, args) => _Platform_initialize(flagDecoder, args, impl.cs, impl.cL, impl.cI, () => function () { }), _Platform_worker = F4(_Platform_worker_raw);
     // INITIALIZE A PROGRAM
     function _Platform_initialize(flagDecoder, args, init, update, subscriptions, stepperBuilder) {
         var result = _Json_run_raw(flagDecoder, _Json_wrap(args ? args["flags"] : undefined));
@@ -1070,15 +571,6 @@
         _Platform_enqueueEffects(managers, initPair.b, subscriptions(model));
         return ports ? { ports: ports } : {};
     }
-    // TRACK PRELOADS
-    //
-    // This is used by code in elm/browser and elm/http
-    // to register any HTTP requests that are triggered by init.
-    //
-    var _Platform_preload;
-    function _Platform_registerPreload(url) {
-        _Platform_preload.add(url);
-    }
     // EFFECT MANAGERS
     var _Platform_effectManagers = {};
     function _Platform_setupEffects(managers, sendToApp) {
@@ -1094,7 +586,7 @@
         }
         return ports;
     }
-    const _Platform_createManager = (init, onEffects, onSelfMsg, cmdMap, subMap) => ({
+    var _Platform_createManager = (init, onEffects, onSelfMsg, cmdMap, subMap) => ({
         b: init,
         c: onEffects,
         d: onSelfMsg,
@@ -1110,7 +602,7 @@
         var onSelfMsg = info.d;
         var cmdMap = info.e;
         var subMap = info.f;
-        const loop = (state) => _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
+        var loop = (state) => _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
             var value = msg.a;
             if (msg.$ === 0) {
                 return A3(onSelfMsg, router, value, state);
@@ -1126,24 +618,15 @@
         router.g(msg);
         callback(_Scheduler_succeed(_Utils_Tuple0));
     }), _Platform_sendToApp = F2(_Platform_sendToApp_raw);
-    var _Platform_sendToSelf_raw = (router, msg) => _Scheduler_send_raw(router.h, {
-        $: 0,
-        a: msg
-    }), _Platform_sendToSelf = F2(_Platform_sendToSelf_raw);
-    const _Platform_leaf = (home) => (value) => ({
+    var _Platform_leaf = (home) => (value) => ({
         $: 1,
         k: home,
         l: value
     });
-    const _Platform_batch = (list) => ({
+    var _Platform_batch = (list) => ({
         $: 2,
         m: list
     });
-    var _Platform_map_raw = (tagger, bag) => ({
-        $: 3,
-        n: tagger,
-        o: bag
-    }), _Platform_map = F2(_Platform_map_raw);
     // PIPE BAGS INTO EFFECT MANAGERS
     //
     // Effects must be queued!
@@ -1287,39 +770,6 @@
             unsubscribe: unsubscribe
         };
     }
-    // INCOMING PORTS
-    function _Platform_incomingPort(name, converter) {
-        _Platform_checkPortName(name);
-        _Platform_effectManagers[name] = {
-            f: _Platform_incomingPortMap,
-            u: converter,
-            a: _Platform_setupIncomingPort
-        };
-        return _Platform_leaf(name);
-    }
-    var _Platform_incomingPortMap_raw = (tagger, finalTagger) => (value) => tagger(finalTagger(value)), _Platform_incomingPortMap = F2(_Platform_incomingPortMap_raw);
-    function _Platform_setupIncomingPort(name, sendToApp) {
-        var subs = _List_Nil;
-        var converter = _Platform_effectManagers[name].u;
-        // CREATE MANAGER
-        var init = _Scheduler_succeed(null);
-        _Platform_effectManagers[name].b = init;
-        _Platform_effectManagers[name].c = F3(function (router, subList, state) {
-            subs = subList;
-            return init;
-        });
-        // PUBLIC API
-        function send(incomingValue) {
-            var result = _Json_run_raw(converter, _Json_wrap(incomingValue));
-            $elm$core$Result$isOk(result) || _Debug_crash(4, name, result.a);
-            var value = result.a;
-            for (var temp = subs; temp.b; temp = temp.b) // WHILE_CONS
-             {
-                sendToApp(temp.a(value));
-            }
-        }
-        return { send: send };
-    }
     // EXPORT ELM MODULES
     //
     // Have DEBUG and PROD versions so that we can (1) give nicer errors in
@@ -1339,38 +789,13 @@
                 : (obj[name] = exports[name]);
         }
     }
-    function _Platform_export_UNUSED(exports) {
-        scope["Elm"]
-            ? _Platform_mergeExportsDebug("Elm", scope["Elm"], exports)
-            : scope["Elm"] = exports;
-    }
-    function _Platform_mergeExportsDebug(moduleName, obj, exports) {
-        for (var name in exports) {
-            (name in obj)
-                ? (name == "init")
-                    ? _Debug_crash(6, moduleName)
-                    : _Platform_mergeExportsDebug(moduleName + "." + name, obj[name], exports[name])
-                : (obj[name] = exports[name]);
-        }
-    }
     // HELPERS
     var _VirtualDom_divertHrefToApp;
     var _VirtualDom_doc = typeof document !== "undefined" ? document : {};
     function _VirtualDom_appendChild(parent, child) {
         parent.appendChild(child);
     }
-    var _VirtualDom_init_raw = function (virtualNode, flagDecoder, debugMetadata, args) {
-        // NOTE: this function needs _Platform_export available to work
-        /**/
-        var node = args["node"];
-        //*/
-        /**_UNUSED/
-        var node = args && args['node'] ? args['node'] : _Debug_crash(0);
-        //*/
-        node.parentNode.replaceChild(_VirtualDom_render(virtualNode, function () { }), node);
-        return {};
-    }, _VirtualDom_init = F4(_VirtualDom_init_raw);
-    const _VirtualDom_text = (string) => ({
+    var _VirtualDom_text = (string) => ({
         $: 0,
         a: string
     });
@@ -1393,113 +818,11 @@
         };
     }), _VirtualDom_nodeNS = F2(_VirtualDom_nodeNS_raw);
     var _VirtualDom_node_a0 = undefined, _VirtualDom_node = _VirtualDom_nodeNS(_VirtualDom_node_a0);
-    // KEYED NODE
-    var _VirtualDom_keyedNodeNS_raw = (namespace, tag) => F2(function (factList, kidList) {
-        for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
-         {
-            var kid = kidList.a;
-            descendantsCount += (kid.b.b || 0);
-            kids.push(kid);
-        }
-        descendantsCount += kids.length;
-        return {
-            $: 2,
-            c: tag,
-            d: _VirtualDom_organizeFacts(factList),
-            e: kids,
-            f: namespace,
-            b: descendantsCount
-        };
-    }), _VirtualDom_keyedNodeNS = F2(_VirtualDom_keyedNodeNS_raw);
-    var _VirtualDom_keyedNode_a0 = undefined, _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(_VirtualDom_keyedNode_a0);
-    const _VirtualDom_custom = (factList, model, render, diff) => ({
-        $: 3,
-        d: _VirtualDom_organizeFacts(factList),
-        g: model,
-        h: render,
-        i: diff
-    });
-    // MAP
-    var _VirtualDom_map_raw = (tagger, node) => ({
-        $: 4,
-        j: tagger,
-        k: node,
-        b: 1 + (node.b || 0)
-    }), _VirtualDom_map = F2(_VirtualDom_map_raw);
-    const _VirtualDom_thunk = (refs, thunk) => ({
-        $: 5,
-        l: refs,
-        m: thunk,
-        k: undefined
-    });
-    var _VirtualDom_lazy_raw = (func, a) => _VirtualDom_thunk([func, a], () => func(a)), _VirtualDom_lazy = F2(_VirtualDom_lazy_raw);
-    var _VirtualDom_lazy2_raw = (func, a, b) => _VirtualDom_thunk([func, a, b], () => A2(func, a, b)), _VirtualDom_lazy2 = F3(_VirtualDom_lazy2_raw);
-    var _VirtualDom_lazy3_raw = (func, a, b, c) => _VirtualDom_thunk([func, a, b, c], () => A3(func, a, b, c)), _VirtualDom_lazy3 = F4(_VirtualDom_lazy3_raw);
-    var _VirtualDom_lazy4_raw = (func, a, b, c, d) => _VirtualDom_thunk([func, a, b, c, d], () => A4(func, a, b, c, d)), _VirtualDom_lazy4 = F5(_VirtualDom_lazy4_raw);
-    var _VirtualDom_lazy5_raw = (func, a, b, c, d, e) => _VirtualDom_thunk([func, a, b, c, d, e], () => A5(func, a, b, c, d, e)), _VirtualDom_lazy5 = F6(_VirtualDom_lazy5_raw);
-    var _VirtualDom_lazy6_raw = (func, a, b, c, d, e, f) => _VirtualDom_thunk([func, a, b, c, d, e, f], () => A6(func, a, b, c, d, e, f)), _VirtualDom_lazy6 = F7(_VirtualDom_lazy6_raw);
-    var _VirtualDom_lazy7_raw = (func, a, b, c, d, e, f, g) => _VirtualDom_thunk([func, a, b, c, d, e, f, g], () => A7(func, a, b, c, d, e, f, g)), _VirtualDom_lazy7 = F8(_VirtualDom_lazy7_raw);
-    var _VirtualDom_lazy8_raw = (func, a, b, c, d, e, f, g, h) => _VirtualDom_thunk([func, a, b, c, d, e, f, g, h], () => A8(func, a, b, c, d, e, f, g, h)), _VirtualDom_lazy8 = F9(_VirtualDom_lazy8_raw);
-    // FACTS
-    var _VirtualDom_on_raw = (key, handler) => ({
-        $: "a0",
-        n: key,
-        o: handler
-    }), _VirtualDom_on = F2(_VirtualDom_on_raw);
-    var _VirtualDom_style_raw = (key, value) => ({
-        $: "a1",
-        n: key,
-        o: value
-    }), _VirtualDom_style = F2(_VirtualDom_style_raw);
-    var _VirtualDom_property_raw = (key, value) => ({
-        $: "a2",
-        n: key,
-        o: value
-    }), _VirtualDom_property = F2(_VirtualDom_property_raw);
     var _VirtualDom_attribute_raw = (key, value) => ({
         $: "a3",
         n: key,
         o: value
-    }), _VirtualDom_attribute = F2(_VirtualDom_attribute_raw);
-    var _VirtualDom_attributeNS_raw = (namespace, key, value) => ({
-        $: "a4",
-        n: key,
-        o: { f: namespace, o: value }
-    }), _VirtualDom_attributeNS = F3(_VirtualDom_attributeNS_raw);
-    const _VirtualDom_noScript = (tag) => tag == "script" ? "p" : tag;
-    const _VirtualDom_noOnOrFormAction = (key) => /^(on|formAction$)/i.test(key) ? "data-" + key : key;
-    const _VirtualDom_noInnerHtmlOrFormAction = (key) => key == "innerHTML" || key == "formAction" ? "data-" + key : key;
-    const _VirtualDom_noJavaScriptUri = (value) => /^javascript:/i.test(value.replace(/\s/g, "")) ? "" : value;
-    const _VirtualDom_noJavaScriptUri_UNUSED = (value) => /^javascript:/i.test(value.replace(/\s/g, ""))
-        ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
-        : value;
-    const _VirtualDom_noJavaScriptOrHtmlUri = (value) => /^\s*(javascript:|data:text\/html)/i.test(value) ? "" : value;
-    const _VirtualDom_noJavaScriptOrHtmlUri_UNUSED = (value) => /^\s*(javascript:|data:text\/html)/i.test(value)
-        ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
-        : value;
-    // MAP FACTS
-    var _VirtualDom_mapAttribute_raw = (func, attr) => (attr.$ === "a0")
-        ? _VirtualDom_on_raw(attr.n, _VirtualDom_mapHandler(func, attr.o)) : attr, _VirtualDom_mapAttribute = F2(_VirtualDom_mapAttribute_raw);
-    function _VirtualDom_mapHandler(func, handler) {
-        var tag = $elm$virtual_dom$VirtualDom$toHandlerInt(handler);
-        // 0 = Normal
-        // 1 = MayStopPropagation
-        // 2 = MayPreventDefault
-        // 3 = Custom
-        return {
-            $: handler.$,
-            a: !tag
-                ? _Json_map1_raw(func, handler.a) : _Json_map2_raw(tag < 3
-                ? _VirtualDom_mapEventTuple
-                : _VirtualDom_mapEventRecord, $elm$json$Json$Decode$succeed(func), handler.a)
-        };
-    }
-    var _VirtualDom_mapEventTuple_raw = (func, tuple) => _Utils_Tuple2(func(tuple.a), tuple.b), _VirtualDom_mapEventTuple = F2(_VirtualDom_mapEventTuple_raw);
-    var _VirtualDom_mapEventRecord_raw = (func, record) => ({
-        Y: func(record.Y),
-        bd: record.bd,
-        ba: record.ba
-    }), _VirtualDom_mapEventRecord = F2(_VirtualDom_mapEventRecord_raw);
+    });
     // ORGANIZE FACTS
     function _VirtualDom_organizeFacts(factList) {
         for (var facts = {}; factList.b; factList = factList.b) // WHILE_CONS
@@ -1682,7 +1005,7 @@
         callback.q = initialHandler;
         return callback;
     }
-    const _VirtualDom_equalEvents = (x, y) => x.$ == y.$ && _Json_equality(x.a, y.a);
+    var _VirtualDom_equalEvents = (x, y) => x.$ == y.$ && _Json_equality(x.a, y.a);
     // DIFF
     // TODO: Should we do patches like in iOS?
     //
@@ -2329,29 +1652,6 @@
             currNode = nextNode;
         });
     }));
-    // DOCUMENT
-    var _Debugger_document;
-    var _Browser_document = _Debugger_document || F4((impl, flagDecoder, debugMetadata, args) => _Platform_initialize(flagDecoder, args, impl.cs, impl.cL, impl.cI, function (sendToApp, initialModel) {
-        var divertHrefToApp = impl.bb && impl.bb(sendToApp);
-        var view = impl.cN;
-        var title = _VirtualDom_doc.title;
-        var bodyNode = _VirtualDom_doc.body;
-        var currNode = _VirtualDom_virtualize(bodyNode);
-        return _Browser_makeAnimator(initialModel, function (model) {
-            _VirtualDom_divertHrefToApp = divertHrefToApp;
-            var doc = view(model);
-            var nextNode = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "body")(_List_Nil)(doc.b6);
-            var patches = _VirtualDom_diff(currNode, nextNode);
-            bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
-            currNode = nextNode;
-            _VirtualDom_divertHrefToApp = 0;
-            (title !== doc.cK) && (_VirtualDom_doc.title = title = doc.cK);
-        });
-    }));
-    // ANIMATION
-    var _Browser_cancelAnimationFrame = typeof cancelAnimationFrame !== "undefined"
-        ? cancelAnimationFrame
-        : function (id) { clearTimeout(id); };
     var _Browser_requestAnimationFrame = typeof requestAnimationFrame !== "undefined"
         ? requestAnimationFrame
         : (callback) => setTimeout(callback, 1000 / 60);
@@ -2372,175 +1672,6 @@
                     state = 2);
         };
     }
-    // APPLICATION
-    function _Browser_application(impl) {
-        var onUrlChange = impl.cz;
-        var onUrlRequest = impl.cA;
-        var key = function () { key.a(onUrlChange(_Browser_getUrl())); };
-        return _Browser_document({
-            bb: function (sendToApp) {
-                key.a = sendToApp;
-                _Browser_window.addEventListener("popstate", key);
-                _Browser_window.navigator.userAgent.indexOf("Trident") < 0 || _Browser_window.addEventListener("hashchange", key);
-                return F2(function (domNode, event) {
-                    if (!event.ctrlKey && !event.metaKey && !event.shiftKey && event.button < 1 && !domNode.target && !domNode.hasAttribute("download")) {
-                        event.preventDefault();
-                        var href = domNode.href;
-                        var curr = _Browser_getUrl();
-                        var next = $elm$url$Url$fromString(href).a;
-                        sendToApp(onUrlRequest((next
-                            && curr.bN === next.bN
-                            && curr.bu === next.bu
-                            && curr.bI.a === next.bI.a)
-                            ? $elm$browser$Browser$Internal(next)
-                            : $elm$browser$Browser$External(href)));
-                    }
-                });
-            },
-            cs: (flags) => A3(impl.cs, flags, _Browser_getUrl(), key),
-            cN: impl.cN,
-            cL: impl.cL,
-            cI: impl.cI
-        });
-    }
-    const _Browser_getUrl = () => $elm$url$Url$fromString(_VirtualDom_doc.location.href).a || _Debug_crash(1);
-    var _Browser_go_raw = (key, n) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-        n && history.go(n);
-        key();
-    })), _Browser_go = F2(_Browser_go_raw);
-    var _Browser_pushUrl_raw = (key, url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-        history.pushState({}, "", url);
-        key();
-    })), _Browser_pushUrl = F2(_Browser_pushUrl_raw);
-    var _Browser_replaceUrl_raw = (key, url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-        history.replaceState({}, "", url);
-        key();
-    })), _Browser_replaceUrl = F2(_Browser_replaceUrl_raw);
-    // GLOBAL EVENTS
-    var _Browser_fakeNode = { addEventListener: function () { }, removeEventListener: function () { } };
-    var _Browser_doc = typeof document !== "undefined" ? document : _Browser_fakeNode;
-    var _Browser_window = typeof window !== "undefined" ? window : _Browser_fakeNode;
-    var _Browser_on_raw = (node, eventName, sendToSelf) => _Scheduler_spawn(_Scheduler_binding(function (callback) {
-        function handler(event) { _Scheduler_rawSpawn(sendToSelf(event)); }
-        node.addEventListener(eventName, handler, _VirtualDom_passiveSupported && { passive: true });
-        return function () { node.removeEventListener(eventName, handler); };
-    })), _Browser_on = F3(_Browser_on_raw);
-    var _Browser_decodeEvent_raw = function (decoder, event) {
-        var result = _Json_runHelp(decoder, event);
-        return $elm$core$Result$isOk(result) ? $elm$core$Maybe$Just(result.a) : $elm$core$Maybe$Nothing;
-    }, _Browser_decodeEvent = F2(_Browser_decodeEvent_raw);
-    const _Browser_visibilityInfo = () => (typeof _VirtualDom_doc.hidden !== "undefined")
-        ? { cq: "hidden", ca: "visibilitychange" }
-        :
-            (typeof _VirtualDom_doc.mozHidden !== "undefined")
-                ? { cq: "mozHidden", ca: "mozvisibilitychange" }
-                :
-                    (typeof _VirtualDom_doc.msHidden !== "undefined")
-                        ? { cq: "msHidden", ca: "msvisibilitychange" }
-                        :
-                            (typeof _VirtualDom_doc.webkitHidden !== "undefined")
-                                ? { cq: "webkitHidden", ca: "webkitvisibilitychange" }
-                                : { cq: "hidden", ca: "visibilitychange" };
-    const _Browser_rAF = () => _Scheduler_binding(function (callback) {
-        var id = _Browser_requestAnimationFrame(function () {
-            callback(_Scheduler_succeed(Date.now()));
-        });
-        return function () {
-            _Browser_cancelAnimationFrame(id);
-        };
-    });
-    const _Browser_now = () => _Scheduler_binding(function (callback) {
-        callback(_Scheduler_succeed(Date.now()));
-    });
-    const _Browser_withNode = (id, doStuff) => _Scheduler_binding(function (callback) {
-        _Browser_requestAnimationFrame(function () {
-            var node = document.getElementById(id);
-            callback(node
-                ? _Scheduler_succeed(doStuff(node))
-                : _Scheduler_fail($elm$browser$Browser$Dom$NotFound(id)));
-        });
-    });
-    const _Browser_withWindow = (doStuff) => _Scheduler_binding(function (callback) {
-        _Browser_requestAnimationFrame(function () {
-            callback(_Scheduler_succeed(doStuff()));
-        });
-    });
-    // FOCUS and BLUR
-    var _Browser_call_raw = (functionName, id) => _Browser_withNode(id, function (node) {
-        node[functionName]();
-        return _Utils_Tuple0;
-    }), _Browser_call = F2(_Browser_call_raw);
-    const _Browser_getViewport = () => ({
-        bT: _Browser_getScene(),
-        b_: {
-            b1: _Browser_window.pageXOffset,
-            b2: _Browser_window.pageYOffset,
-            b$: _Browser_doc.documentElement.clientWidth,
-            bs: _Browser_doc.documentElement.clientHeight
-        }
-    });
-    function _Browser_getScene() {
-        var body = _Browser_doc.body;
-        var elem = _Browser_doc.documentElement;
-        return {
-            b$: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-            bs: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
-        };
-    }
-    var _Browser_setViewport_raw = (x, y) => _Browser_withWindow(function () {
-        _Browser_window.scroll(x, y);
-        return _Utils_Tuple0;
-    }), _Browser_setViewport = F2(_Browser_setViewport_raw);
-    const _Browser_getViewportOf = (id) => _Browser_withNode(id, (node) => ({
-        bT: {
-            b$: node.scrollWidth,
-            bs: node.scrollHeight
-        },
-        b_: {
-            b1: node.scrollLeft,
-            b2: node.scrollTop,
-            b$: node.clientWidth,
-            bs: node.clientHeight
-        }
-    }));
-    var _Browser_setViewportOf_raw = (id, x, y) => _Browser_withNode(id, function (node) {
-        node.scrollLeft = x;
-        node.scrollTop = y;
-        return _Utils_Tuple0;
-    }), _Browser_setViewportOf = F3(_Browser_setViewportOf_raw);
-    const _Browser_getElement = (id) => _Browser_withNode(id, function (node) {
-        var rect = node.getBoundingClientRect();
-        var x = _Browser_window.pageXOffset;
-        var y = _Browser_window.pageYOffset;
-        return {
-            bT: _Browser_getScene(),
-            b_: {
-                b1: x,
-                b2: y,
-                b$: _Browser_doc.documentElement.clientWidth,
-                bs: _Browser_doc.documentElement.clientHeight
-            },
-            ck: {
-                b1: x + rect.left,
-                b2: y + rect.top,
-                b$: rect.width,
-                bs: rect.height
-            }
-        };
-    });
-    const _Browser_reload = (skipCache) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
-        _VirtualDom_doc.location.reload(skipCache);
-    }));
-    const _Browser_load = (url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
-        try {
-            _Browser_window.location = url;
-        }
-        catch (err) {
-            // Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
-            // Other browsers reload the page, so let's be consistent about that.
-            _VirtualDom_doc.location.reload(false);
-        }
-    }));
     var _Benchmark_getTimestamp = typeof performance !== "undefined"
         ? performance.now.bind(performance)
         : Date.now;
@@ -2563,8 +1694,8 @@
         }
         var end = _Benchmark_getTimestamp();
         callback(_Scheduler_succeed(end - start));
-    }), _Benchmark_sample = F2(_Benchmark_sample_raw);
-    const _Benchmark_operation = (thunk) => thunk;
+    });
+    var _Benchmark_operation = (thunk) => thunk;
     // STRINGS
     var _Parser_isSubString_raw = function (smallString, offset, row, col, bigString) {
         var smallLength = smallString.length;
@@ -2578,7 +1709,7 @@
                         : (col++, (code & 63488) === 55296 ? smallString[i++] === bigString[offset++] : 1));
         }
         return _Utils_Tuple3(isGood ? offset : -1, row, col);
-    }, _Parser_isSubString = F5(_Parser_isSubString_raw);
+    };
     // CHARS
     var _Parser_isSubChar_raw = (predicate, offset, string) => (string.length <= offset
         ? -1
@@ -2588,45 +1719,7 @@
                 :
                     (predicate(_Utils_chr(string[offset]))
                         ? ((string[offset] === "\n") ? -2 : (offset + 1))
-                        : -1)), _Parser_isSubChar = F3(_Parser_isSubChar_raw);
-    var _Parser_isAsciiCode_raw = (code, offset, string) => string.charCodeAt(offset) === code, _Parser_isAsciiCode = F3(_Parser_isAsciiCode_raw);
-    // NUMBERS
-    var _Parser_chompBase10_raw = function (offset, string) {
-        for (; offset < string.length; offset++) {
-            var code = string.charCodeAt(offset);
-            if (code < 48 || 57 < code) {
-                return offset;
-            }
-        }
-        return offset;
-    }, _Parser_chompBase10 = F2(_Parser_chompBase10_raw);
-    var _Parser_consumeBase_raw = function (base, offset, string) {
-        for (var total = 0; offset < string.length; offset++) {
-            var digit = string.charCodeAt(offset) - 48;
-            if (digit < 0 || base <= digit)
-                break;
-            total = base * total + digit;
-        }
-        return _Utils_Tuple2(offset, total);
-    }, _Parser_consumeBase = F3(_Parser_consumeBase_raw);
-    var _Parser_consumeBase16_raw = function (offset, string) {
-        for (var total = 0; offset < string.length; offset++) {
-            var code = string.charCodeAt(offset);
-            if (48 <= code && code <= 57) {
-                total = 16 * total + code - 48;
-            }
-            else if (65 <= code && code <= 70) {
-                total = 16 * total + code - 55;
-            }
-            else if (97 <= code && code <= 102) {
-                total = 16 * total + code - 87;
-            }
-            else {
-                break;
-            }
-        }
-        return _Utils_Tuple2(offset, total);
-    }, _Parser_consumeBase16 = F2(_Parser_consumeBase16_raw);
+                        : -1));
     // FIND STRING
     var _Parser_findSubString_raw = function (smallString, offset, row, col, bigString) {
         var newOffset = bigString.indexOf(smallString, offset);
@@ -2638,7 +1731,7 @@
                 : (col++, (code & 63488) === 55296 && offset++);
         }
         return _Utils_Tuple3(newOffset, row, col);
-    }, _Parser_findSubString = F5(_Parser_findSubString_raw);
+    };
     // CREATE
     var _Regex_never = /.^/;
     var _Regex_fromStringWith_raw = function (options, string) {
@@ -2655,9 +1748,9 @@
         catch (error) {
             return $elm$core$Maybe$Nothing;
         }
-    }, _Regex_fromStringWith = F2(_Regex_fromStringWith_raw);
+    };
     // USE
-    var _Regex_contains_raw = (re, string) => string.match(re) !== null, _Regex_contains = F2(_Regex_contains_raw);
+    var _Regex_contains_raw = (re, string) => string.match(re) !== null;
     var _Regex_findAtMost_raw = function (n, re, str) {
         var out = [];
         var number = 0;
@@ -2681,7 +1774,7 @@
         }
         re.lastIndex = lastIndex;
         return _List_fromArray(out);
-    }, _Regex_findAtMost = F3(_Regex_findAtMost_raw);
+    };
     var _Regex_replaceAtMost_raw = function (n, re, replacer, string) {
         var count = 0;
         function jsReplacer(match) {
@@ -2700,32 +1793,9 @@
         }
         return string.replace(re, jsReplacer);
     }, _Regex_replaceAtMost = F4(_Regex_replaceAtMost_raw);
-    var _Regex_splitAtMost_raw = function (n, re, str) {
-        var string = str;
-        var out = [];
-        var start = re.lastIndex;
-        var restoreLastIndex = re.lastIndex;
-        while (n--) {
-            var result = re.exec(string);
-            if (!result)
-                break;
-            out.push(string.slice(start, result.index));
-            start = re.lastIndex;
-        }
-        out.push(string.slice(start));
-        re.lastIndex = restoreLastIndex;
-        return _List_fromArray(out);
-    }, _Regex_splitAtMost = F3(_Regex_splitAtMost_raw);
     var _Regex_infinity = Infinity;
-    var _Bitwise_and_raw = (a, b) => a & b, _Bitwise_and = F2(_Bitwise_and_raw);
-    var _Bitwise_or_raw = (a, b) => a | b, _Bitwise_or = F2(_Bitwise_or_raw);
-    var _Bitwise_xor_raw = (a, b) => a ^ b, _Bitwise_xor = F2(_Bitwise_xor_raw);
-    const _Bitwise_complement = (a) => ~a;
     ;
-    var _Bitwise_shiftLeftBy_raw = (offset, a) => a << offset, _Bitwise_shiftLeftBy = F2(_Bitwise_shiftLeftBy_raw);
-    var _Bitwise_shiftRightBy_raw = (offset, a) => a >> offset, _Bitwise_shiftRightBy = F2(_Bitwise_shiftRightBy_raw);
-    var _Bitwise_shiftRightZfBy_raw = (offset, a) => a >>> offset, _Bitwise_shiftRightZfBy = F2(_Bitwise_shiftRightZfBy_raw);
-    const _Url_percentEncode = (string) => encodeURIComponent(string);
+    var _Url_percentEncode = (string) => encodeURIComponent(string);
     function _Url_percentDecode(string) {
         try {
             return $elm$core$Maybe$Just(decodeURIComponent(string));
@@ -2755,47 +1825,20 @@
                 continue foldr;
             }
         }
-    }, $elm$core$Dict$foldr = F3($elm$core$Dict$foldr_raw);
-    var $elm$core$Dict$toList = (dict) => $elm$core$Dict$foldr_raw(F3((key, value, list) => _List_Cons(_Utils_Tuple2(key, value), list)), _List_Nil, dict);
-    var $elm$core$Dict$keys = (dict) => $elm$core$Dict$foldr_raw(F3((key, value, keyList) => _List_Cons(key, keyList)), _List_Nil, dict);
-    var $elm$core$Set$toList = function (_v0) {
-        var dict = _v0;
-        return $elm$core$Dict$keys(dict);
     };
-    var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
-    var $elm$core$Array$foldr_raw = function (func, baseCase, _v0) {
-        var tree = _v0.c;
-        var tail = _v0.d;
-        var helper = F2(function (node, acc) {
-            if (!node.$) {
-                var subTree = node.a;
-                return _JsArray_foldr_raw(helper, acc, subTree);
-            }
-            else {
-                var values = node.a;
-                return _JsArray_foldr_raw(func, acc, values);
-            }
-        });
-        return _JsArray_foldr_raw(helper, _JsArray_foldr_raw(func, baseCase, tail), tree);
-    }, $elm$core$Array$foldr = F3($elm$core$Array$foldr_raw);
-    var $elm$core$Array$toList = (array) => $elm$core$Array$foldr_raw($elm$core$List$cons, _List_Nil, array);
+    var $elm$core$Dict$toList = (dict) => $elm$core$Dict$foldr_raw(F3((key, value, list) => _List_Cons(_Utils_Tuple2(key, value), list)), _List_Nil, dict);
     var $elm$core$Result$Err = (a) => ({ $: 1, a: a });
-    var $elm$json$Json$Decode$Failure_raw = (a, b) => ({ $: 3, a: a, b: b }), $elm$json$Json$Decode$Failure = F2($elm$json$Json$Decode$Failure_raw);
-    var $elm$json$Json$Decode$Field_raw = (a, b) => ({ $: 0, a: a, b: b }), $elm$json$Json$Decode$Field = F2($elm$json$Json$Decode$Field_raw);
-    var $elm$json$Json$Decode$Index_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm$json$Json$Decode$Index = F2($elm$json$Json$Decode$Index_raw);
+    var $elm$json$Json$Decode$Failure_raw = (a, b) => ({ $: 3, a: a, b: b });
+    var $elm$json$Json$Decode$Field_raw = (a, b) => ({ $: 0, a: a, b: b });
+    var $elm$json$Json$Decode$Index_raw = (a, b) => ({ $: 1, a: a, b: b });
     var $elm$core$Result$Ok = (a) => ({ $: 0, a: a });
     var $elm$json$Json$Decode$OneOf = (a) => ({ $: 2, a: a });
-    var $elm$core$Basics$False = 1;
     var $elm$core$Basics$add = _Basics_add;
     var $elm$core$Maybe$Just = a => ({ $: 0, a });
     var $elm$core$Maybe$Nothing = { $: 1, a: null };
-    var $elm$core$String$all = _String_all;
-    var $elm$core$Basics$and = _Basics_and;
-    var $elm$core$Basics$append = _Utils_append;
-    var $elm$json$Json$Encode$encode = _Json_encode;
     var $elm$core$String$fromInt = _String_fromNumber;
-    var $elm$core$String$join_raw = (sep, chunks) => _String_join_raw(sep, _List_toArray(chunks)), $elm$core$String$join = F2($elm$core$String$join_raw);
-    var $elm$core$String$split_raw = (sep, string) => _List_fromArray(_String_split_raw(sep, string)), $elm$core$String$split = F2($elm$core$String$split_raw);
+    var $elm$core$String$join_raw = (sep, chunks) => _String_join_raw(sep, _List_toArray(chunks));
+    var $elm$core$String$split_raw = (sep, string) => _List_fromArray(_String_split_raw(sep, string));
     var $elm$json$Json$Decode$indent = (str) => $elm$core$String$join_raw("\n    ", $elm$core$String$split_raw("\n", str));
     var $elm$core$List$foldl_raw = function (func, acc, list) {
         foldl: while (true) {
@@ -2812,11 +1855,8 @@
                 continue foldl;
             }
         }
-    }, $elm$core$List$foldl = F3($elm$core$List$foldl_raw);
+    };
     var $elm$core$List$length = (xs) => $elm$core$List$foldl_raw(F2((_v0, i) => i + 1), 0, xs);
-    var $elm$core$List$map2 = _List_map2;
-    var $elm$core$Basics$le = _Utils_le;
-    var $elm$core$Basics$sub = _Basics_sub;
     var $elm$core$List$rangeHelp_raw = function (lo, hi, list) {
         rangeHelp: while (true) {
             if (_Utils_cmp(lo, hi) < 1) {
@@ -2830,9 +1870,9 @@
                 return list;
             }
         }
-    }, $elm$core$List$rangeHelp = F3($elm$core$List$rangeHelp_raw);
-    var $elm$core$List$range_raw = (lo, hi) => $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil), $elm$core$List$range = F2($elm$core$List$range_raw);
-    var $elm$core$List$indexedMap_raw = (f, xs) => _List_map2_raw(f, $elm$core$List$range_raw(0, $elm$core$List$length(xs) - 1), xs), $elm$core$List$indexedMap = F2($elm$core$List$indexedMap_raw);
+    };
+    var $elm$core$List$range_raw = (lo, hi) => $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil);
+    var $elm$core$List$indexedMap_raw = (f, xs) => _List_map2_raw(f, $elm$core$List$range_raw(0, $elm$core$List$length(xs) - 1), xs);
     var $elm$core$Char$toCode = _Char_toCode;
     var $elm$core$Char$isLower = function (_char) {
         var code = $elm$core$Char$toCode(_char);
@@ -2842,7 +1882,6 @@
         var code = $elm$core$Char$toCode(_char);
         return (code <= 90) && (65 <= code);
     };
-    var $elm$core$Basics$or = _Basics_or;
     var $elm$core$Char$isAlpha = (_char) => $elm$core$Char$isLower(_char) || $elm$core$Char$isUpper(_char);
     var $elm$core$Char$isDigit = function (_char) {
         var code = $elm$core$Char$toCode(_char);
@@ -2931,28 +1970,22 @@
                     return introduction + ($elm$json$Json$Decode$indent(_Json_encode_raw(4, json)) + ("\n\n" + msg));
             }
         }
-    }, $elm$json$Json$Decode$errorToStringHelp = F2($elm$json$Json$Decode$errorToStringHelp_raw);
+    };
     var $elm$core$Array$branchFactor = 32;
-    var $elm$core$Array$Array_elm_builtin_raw = (a, b, c, d) => ({ $: 0, a: a, b: b, c: c, d: d }), $elm$core$Array$Array_elm_builtin = F4($elm$core$Array$Array_elm_builtin_raw);
+    var $elm$core$Array$Array_elm_builtin_raw = (a, b, c, d) => ({ $: 0, a: a, b: b, c: c, d: d });
     var $elm$core$Elm$JsArray$empty = _JsArray_empty;
     var $elm$core$Basics$ceiling = _Basics_ceiling;
-    var $elm$core$Basics$fdiv = _Basics_fdiv;
-    var $elm$core$Basics$logBase_raw = (base, number) => _Basics_log(number) / _Basics_log(base), $elm$core$Basics$logBase = F2($elm$core$Basics$logBase_raw);
-    var $elm$core$Basics$toFloat = _Basics_toFloat;
+    var $elm$core$Basics$logBase_raw = (base, number) => _Basics_log(number) / _Basics_log(base);
     var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling($elm$core$Basics$logBase_raw(2, $elm$core$Array$branchFactor));
     var $elm$core$Array$empty = $elm$core$Array$Array_elm_builtin_raw(0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
-    var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
     var $elm$core$Array$Leaf = (a) => ({ $: 1, a: a });
     var $elm$core$Basics$apL_raw = (f, x) => f(x), $elm$core$Basics$apL = F2($elm$core$Basics$apL_raw);
-    var $elm$core$Basics$apR_raw = (x, f) => f(x), $elm$core$Basics$apR = F2($elm$core$Basics$apR_raw);
     var $elm$core$Basics$eq = _Utils_equal;
     var $elm$core$Basics$floor = _Basics_floor;
     var $elm$core$Elm$JsArray$length = _JsArray_length;
-    var $elm$core$Basics$gt = _Utils_gt;
-    var $elm$core$Basics$max_raw = (x, y) => (_Utils_cmp(x, y) > 0) ? x : y, $elm$core$Basics$max = F2($elm$core$Basics$max_raw);
+    var $elm$core$Basics$max_raw = (x, y) => (_Utils_cmp(x, y) > 0) ? x : y;
     var $elm$core$Basics$mul = _Basics_mul;
     var $elm$core$Array$SubTree = (a) => ({ $: 0, a: a });
-    var $elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
     var $elm$core$Array$compressNodes_raw = function (nodes, acc) {
         compressNodes: while (true) {
             var _v0 = _JsArray_initializeFromList_raw($elm$core$Array$branchFactor, nodes);
@@ -2969,10 +2002,6 @@
                 continue compressNodes;
             }
         }
-    }, $elm$core$Array$compressNodes = F2($elm$core$Array$compressNodes_raw);
-    var $elm$core$Tuple$first = function (_v0) {
-        var x = _v0.a;
-        return x;
     };
     var $elm$core$Array$treeFromBuilder_raw = function (nodeList, nodeListSize) {
         treeFromBuilder: while (true) {
@@ -2987,7 +2016,7 @@
                 continue treeFromBuilder;
             }
         }
-    }, $elm$core$Array$treeFromBuilder = F2($elm$core$Array$treeFromBuilder_raw);
+    };
     var $elm$core$Array$builderToArray_raw = function (reverseNodeList, builder) {
         if (!builder.v) {
             return $elm$core$Array$Array_elm_builtin_raw($elm$core$Elm$JsArray$length(builder.x), $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, builder.x);
@@ -2999,9 +2028,7 @@
             var tree = $elm$core$Array$treeFromBuilder_raw(correctNodeList, builder.v);
             return $elm$core$Array$Array_elm_builtin_raw($elm$core$Elm$JsArray$length(builder.x) + treeLen, $elm$core$Basics$max_raw(5, depth * $elm$core$Array$shiftStep), tree, builder.x);
         }
-    }, $elm$core$Array$builderToArray = F2($elm$core$Array$builderToArray_raw);
-    var $elm$core$Basics$idiv = _Basics_idiv;
-    var $elm$core$Basics$lt = _Utils_lt;
+    };
     var $elm$core$Array$initializeHelp_raw = function (fn, fromIndex, len, nodeList, tail) {
         initializeHelp: while (true) {
             if (fromIndex < 0) {
@@ -3018,8 +2045,7 @@
                 continue initializeHelp;
             }
         }
-    }, $elm$core$Array$initializeHelp = F5($elm$core$Array$initializeHelp_raw);
-    var $elm$core$Basics$remainderBy = _Basics_remainderBy;
+    };
     var $elm$core$Array$initialize_raw = function (len, fn) {
         if (len <= 0) {
             return $elm$core$Array$empty;
@@ -3030,8 +2056,7 @@
             var initialFromIndex = (len - tailLen) - $elm$core$Array$branchFactor;
             return $elm$core$Array$initializeHelp_raw(fn, initialFromIndex, len, _List_Nil, tail);
         }
-    }, $elm$core$Array$initialize = F2($elm$core$Array$initialize_raw);
-    var $elm$core$Basics$True = 0;
+    };
     var $elm$core$Result$isOk = function (result) {
         if (!result.$) {
             return true;
@@ -3040,8 +2065,6 @@
             return false;
         }
     };
-    var $elm$json$Json$Decode$map = _Json_map1;
-    var $elm$json$Json$Decode$map2 = _Json_map2;
     var $elm$json$Json$Decode$succeed = _Json_succeed;
     var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
         switch (handler.$) {
@@ -3055,104 +2078,12 @@
                 return 3;
         }
     };
-    var $elm$browser$Browser$External = (a) => ({ $: 1, a: a });
-    var $elm$browser$Browser$Internal = (a) => ({ $: 0, a: a });
     var $elm$core$Basics$identity = (x) => x;
-    var $elm$browser$Browser$Dom$NotFound = $elm$core$Basics$identity;
-    var $elm$url$Url$Http = 0;
-    var $elm$url$Url$Https = 1;
-    var $elm$url$Url$Url_raw = (protocol, host, port_, path, query, fragment) => ({ br: fragment, bu: host, bF: path, bI: port_, bN: protocol, bO: query }), $elm$url$Url$Url = F6($elm$url$Url$Url_raw);
-    var $elm$core$String$contains = _String_contains;
     var $elm$core$String$length = _String_length;
-    var $elm$core$String$slice = _String_slice;
-    var $elm$core$String$dropLeft_raw = (n, string) => (n < 1) ? string : _String_slice_raw(n, $elm$core$String$length(string), string), $elm$core$String$dropLeft = F2($elm$core$String$dropLeft_raw);
-    var $elm$core$String$indexes = _String_indexes;
+    var $elm$core$String$dropLeft_raw = (n, string) => (n < 1) ? string : _String_slice_raw(n, $elm$core$String$length(string), string);
     var $elm$core$String$isEmpty = (string) => string === "";
-    var $elm$core$String$left_raw = (n, string) => (n < 1) ? "" : _String_slice_raw(0, n, string), $elm$core$String$left = F2($elm$core$String$left_raw);
+    var $elm$core$String$left_raw = (n, string) => (n < 1) ? "" : _String_slice_raw(0, n, string);
     var $elm$core$String$toInt = _String_toInt;
-    var $elm$url$Url$chompBeforePath_raw = function (protocol, path, params, frag, str) {
-        if ($elm$core$String$isEmpty(str) || _String_contains_raw("@", str)) {
-            return $elm$core$Maybe$Nothing;
-        }
-        else {
-            var _v0 = _String_indexes_raw(":", str);
-            if (!_v0.b) {
-                return $elm$core$Maybe$Just($elm$url$Url$Url_raw(protocol, str, $elm$core$Maybe$Nothing, path, params, frag));
-            }
-            else {
-                if (!_v0.b.b) {
-                    var i = _v0.a;
-                    var _v1 = $elm$core$String$toInt($elm$core$String$dropLeft_raw(i + 1, str));
-                    if (_v1.$ === 1) {
-                        return $elm$core$Maybe$Nothing;
-                    }
-                    else {
-                        var port_ = _v1;
-                        return $elm$core$Maybe$Just($elm$url$Url$Url_raw(protocol, $elm$core$String$left_raw(i, str), port_, path, params, frag));
-                    }
-                }
-                else {
-                    return $elm$core$Maybe$Nothing;
-                }
-            }
-        }
-    }, $elm$url$Url$chompBeforePath = F5($elm$url$Url$chompBeforePath_raw);
-    var $elm$url$Url$chompBeforeQuery_raw = function (protocol, params, frag, str) {
-        if ($elm$core$String$isEmpty(str)) {
-            return $elm$core$Maybe$Nothing;
-        }
-        else {
-            var _v0 = _String_indexes_raw("/", str);
-            if (!_v0.b) {
-                return $elm$url$Url$chompBeforePath_raw(protocol, "/", params, frag, str);
-            }
-            else {
-                var i = _v0.a;
-                return $elm$url$Url$chompBeforePath_raw(protocol, $elm$core$String$dropLeft_raw(i, str), params, frag, $elm$core$String$left_raw(i, str));
-            }
-        }
-    }, $elm$url$Url$chompBeforeQuery = F4($elm$url$Url$chompBeforeQuery_raw);
-    var $elm$url$Url$chompBeforeFragment_raw = function (protocol, frag, str) {
-        if ($elm$core$String$isEmpty(str)) {
-            return $elm$core$Maybe$Nothing;
-        }
-        else {
-            var _v0 = _String_indexes_raw("?", str);
-            if (!_v0.b) {
-                return $elm$url$Url$chompBeforeQuery_raw(protocol, $elm$core$Maybe$Nothing, frag, str);
-            }
-            else {
-                var i = _v0.a;
-                return $elm$url$Url$chompBeforeQuery_raw(protocol, $elm$core$Maybe$Just($elm$core$String$dropLeft_raw(i + 1, str)), frag, $elm$core$String$left_raw(i, str));
-            }
-        }
-    }, $elm$url$Url$chompBeforeFragment = F3($elm$url$Url$chompBeforeFragment_raw);
-    var $elm$url$Url$chompAfterProtocol_raw = function (protocol, str) {
-        if ($elm$core$String$isEmpty(str)) {
-            return $elm$core$Maybe$Nothing;
-        }
-        else {
-            var _v0 = _String_indexes_raw("#", str);
-            if (!_v0.b) {
-                return $elm$url$Url$chompBeforeFragment_raw(protocol, $elm$core$Maybe$Nothing, str);
-            }
-            else {
-                var i = _v0.a;
-                return $elm$url$Url$chompBeforeFragment_raw(protocol, $elm$core$Maybe$Just($elm$core$String$dropLeft_raw(i + 1, str)), $elm$core$String$left_raw(i, str));
-            }
-        }
-    }, $elm$url$Url$chompAfterProtocol = F2($elm$url$Url$chompAfterProtocol_raw);
-    var $elm$core$String$startsWith = _String_startsWith;
-    var $elm$url$Url$fromString = (str) => _String_startsWith_raw("http://", str) ? $elm$url$Url$chompAfterProtocol_raw(0, $elm$core$String$dropLeft_raw(7, str)) : (_String_startsWith_raw("https://", str) ? $elm$url$Url$chompAfterProtocol_raw(1, $elm$core$String$dropLeft_raw(8, str)) : $elm$core$Maybe$Nothing);
-    var $elm$core$Basics$never = function (_v0) {
-        never: while (true) {
-            var nvr = _v0;
-            var $temp$_v0 = nvr;
-            _v0 = $temp$_v0;
-            continue never;
-        }
-    };
-    var $elm$core$Task$Perform = $elm$core$Basics$identity;
     var $elm$core$Task$succeed = _Scheduler_succeed;
     var $elm$core$Task$init = $elm$core$Task$succeed(0);
     var $elm$core$List$foldrHelper_raw = function (fn, acc, ctr, ls) {
@@ -3186,11 +2117,10 @@
                 }
             }
         }
-    }, $elm$core$List$foldrHelper = F4($elm$core$List$foldrHelper_raw);
-    var $elm$core$List$foldr_raw = (fn, acc, ls) => $elm$core$List$foldrHelper_raw(fn, acc, 0, ls), $elm$core$List$foldr = F3($elm$core$List$foldr_raw);
+    };
+    var $elm$core$List$foldr_raw = (fn, acc, ls) => $elm$core$List$foldrHelper_raw(fn, acc, 0, ls);
     var $elm$core$List$map_raw = (f, xs) => $elm$core$List$foldr_raw(F2((x, acc) => _List_Cons(f(x), acc)), _List_Nil, xs), $elm$core$List$map = F2($elm$core$List$map_raw);
-    var $elm$core$Task$andThen = _Scheduler_andThen;
-    var $elm$core$Task$map_raw = (func, taskA) => _Scheduler_andThen_raw((a) => $elm$core$Task$succeed(func(a)), taskA), $elm$core$Task$map = F2($elm$core$Task$map_raw);
+    var $elm$core$Task$map_raw = (func, taskA) => _Scheduler_andThen_raw((a) => $elm$core$Task$succeed(func(a)), taskA);
     var $elm$core$Task$map2_raw = (func, taskA, taskB) => _Scheduler_andThen_raw((a) => _Scheduler_andThen_raw((b) => $elm$core$Task$succeed(A2(func, a, b)), taskB), taskA), $elm$core$Task$map2 = F3($elm$core$Task$map2_raw);
     var $elm$core$Task$sequence = (tasks) => $elm$core$List$foldr_raw($elm$core$Task$map2($elm$core$List$cons), $elm$core$Task$succeed(_List_Nil), tasks);
     var $elm$core$Platform$sendToApp = _Platform_sendToApp;
@@ -3206,9 +2136,8 @@
     }, $elm$core$Task$cmdMap = F2($elm$core$Task$cmdMap_raw);
     _Platform_effectManagers["Task"] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
     var $elm$core$Task$command = _Platform_leaf("Task");
-    var $elm$core$Task$perform_raw = (toMessage, task) => $elm$core$Task$command($elm$core$Task$map_raw(toMessage, task)), $elm$core$Task$perform = F2($elm$core$Task$perform_raw);
+    var $elm$core$Task$perform_raw = (toMessage, task) => $elm$core$Task$command($elm$core$Task$map_raw(toMessage, task));
     var $elm$browser$Browser$element = _Browser_element;
-    var $author$project$Benchmark$Runner$Json$Update = $elm$core$Basics$identity;
     var $elm$core$Process$sleep = _Process_sleep;
     var $author$project$Benchmark$Runner$Json$breakForRender = (task) => _Scheduler_andThen_raw((_v0) => task, $elm$core$Process$sleep(0));
     var $elm$core$List$any_raw = function (isOkay, list) {
@@ -3230,11 +2159,11 @@
                 }
             }
         }
-    }, $elm$core$List$any = F2($elm$core$List$any_raw);
+    };
     var $elm$core$Basics$composeL_raw = (g, f, x) => g(f(x)), $elm$core$Basics$composeL = F3($elm$core$Basics$composeL_raw);
     var $elm$core$Basics$not = _Basics_not;
-    var $elm$core$List$all_raw = (isOkay, list) => !$elm$core$List$any_raw(A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay), list), $elm$core$List$all = F2($elm$core$List$all_raw);
-    var $elm$core$Basics$clamp_raw = (low, high, number) => (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number), $elm$core$Basics$clamp = F3($elm$core$Basics$clamp_raw);
+    var $elm$core$List$all_raw = (isOkay, list) => !$elm$core$List$any_raw(A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay), list);
+    var $elm$core$Basics$clamp_raw = (low, high, number) => (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
     var $elm$core$Dict$foldl_raw = function (func, acc, dict) {
         foldl: while (true) {
             if (dict.$ === -2) {
@@ -3297,27 +2226,22 @@
     var $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw = (a, b, c) => ({ $: 0, a: a, b: b, c: c }), $elm_explorations$benchmark$Benchmark$Benchmark$Single = F3($elm_explorations$benchmark$Benchmark$Benchmark$Single_raw);
     var $elm_explorations$benchmark$Benchmark$Status$Failure = (a) => ({ $: 3, a: a });
     var $elm_explorations$benchmark$Benchmark$Status$MeasurementError = (a) => ({ $: 0, a: a });
-    var $elm_explorations$benchmark$Benchmark$Status$Pending_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Status$Pending = F2($elm_explorations$benchmark$Benchmark$Status$Pending_raw);
+    var $elm_explorations$benchmark$Benchmark$Status$Pending_raw = (a, b) => ({ $: 2, a: a, b: b });
     var $elm_explorations$benchmark$Benchmark$Status$Unsized = { $: 1 };
     var $elm_explorations$benchmark$Benchmark$Status$bucketSpacingRatio = 2;
-    var $elm_explorations$benchmark$Benchmark$Samples$Samples = $elm$core$Basics$identity;
     var $elm$core$Dict$RBEmpty_elm_builtin = { $: -2 };
     var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
     var $elm_explorations$benchmark$Benchmark$Samples$empty = $elm$core$Dict$empty;
     var $elm_explorations$benchmark$Benchmark$Status$AnalysisError = (a) => ({ $: 1, a: a });
-    var $elm_explorations$benchmark$Benchmark$Status$Success_raw = (a, b) => ({ $: 4, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Status$Success = F2($elm_explorations$benchmark$Benchmark$Status$Success_raw);
-    var $elm$core$Dict$Black = 1;
-    var $elm$core$Dict$RBNode_elm_builtin_raw = (a, b, c, d, e) => ({ $: -1, a: a, b: b, c: c, d: d, e: e }), $elm$core$Dict$RBNode_elm_builtin = F5($elm$core$Dict$RBNode_elm_builtin_raw);
-    var $elm$core$Dict$Red = 0;
+    var $elm_explorations$benchmark$Benchmark$Status$Success_raw = (a, b) => ({ $: 4, a: a, b: b });
+    var $elm$core$Dict$RBNode_elm_builtin_raw = (a, b, c, d, e) => ({ $: -1, a: a, b: b, c: c, d: d, e: e });
     var $elm$core$Dict$balance_raw = function (color, key, value, left, right) {
         if ((right.$ === -1) && (!right.a)) {
-            var _v1 = right.a;
             var rK = right.b;
             var rV = right.c;
             var rLeft = right.d;
             var rRight = right.e;
             if ((left.$ === -1) && (!left.a)) {
-                var _v3 = left.a;
                 var lK = left.b;
                 var lV = left.c;
                 var lLeft = left.d;
@@ -3330,11 +2254,9 @@
         }
         else {
             if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
-                var _v5 = left.a;
                 var lK = left.b;
                 var lV = left.c;
                 var _v6 = left.d;
-                var _v7 = _v6.a;
                 var llK = _v6.b;
                 var llV = _v6.c;
                 var llLeft = _v6.d;
@@ -3346,8 +2268,7 @@
                 return $elm$core$Dict$RBNode_elm_builtin_raw(color, key, value, left, right);
             }
         }
-    }, $elm$core$Dict$balance = F5($elm$core$Dict$balance_raw);
-    var $elm$core$Basics$compare = _Utils_compare;
+    };
     var $elm$core$Dict$insertHelp_raw = function (key, value, dict) {
         if (dict.$ === -2) {
             return $elm$core$Dict$RBNode_elm_builtin_raw(0, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
@@ -3368,11 +2289,10 @@
                     return $elm$core$Dict$balance_raw(nColor, nKey, nValue, nLeft, $elm$core$Dict$insertHelp_raw(key, value, nRight));
             }
         }
-    }, $elm$core$Dict$insertHelp = F3($elm$core$Dict$insertHelp_raw);
+    };
     var $elm$core$Dict$insert_raw = function (key, value, dict) {
         var _v0 = $elm$core$Dict$insertHelp_raw(key, value, dict);
         if ((_v0.$ === -1) && (!_v0.a)) {
-            var _v1 = _v0.a;
             var k = _v0.b;
             var v = _v0.c;
             var l = _v0.d;
@@ -3383,7 +2303,7 @@
             var x = _v0;
             return x;
         }
-    }, $elm$core$Dict$insert = F3($elm$core$Dict$insert_raw);
+    };
     var $BrianHicks$elm_trend$Trend$Linear$line = function (_v0) {
         var precalculated = _v0.a;
         return precalculated;
@@ -3400,7 +2320,7 @@
             var right = dict.e;
             return $elm$core$Dict$RBNode_elm_builtin_raw(color, key, A2(func, key, value), $elm$core$Dict$map_raw(func, left), $elm$core$Dict$map_raw(func, right));
         }
-    }, $elm$core$Dict$map = F2($elm$core$Dict$map_raw);
+    };
     var $elm$core$Result$map_raw = function (func, ra) {
         if (!ra.$) {
             var a = ra.a;
@@ -3410,7 +2330,7 @@
             var e = ra.a;
             return $elm$core$Result$Err(e);
         }
-    }, $elm$core$Result$map = F2($elm$core$Result$map_raw);
+    };
     var $elm$core$List$partition_raw = function (pred, list) {
         var step = F2(function (x, _v0) {
             var trues = _v0.a;
@@ -3418,7 +2338,7 @@
             return pred(x) ? _Utils_Tuple2(_List_Cons(x, trues), falses) : _Utils_Tuple2(trues, _List_Cons(x, falses));
         });
         return $elm$core$List$foldr_raw(step, _Utils_Tuple2(_List_Nil, _List_Nil), list);
-    }, $elm$core$List$partition = F2($elm$core$List$partition_raw);
+    };
     var $elm_explorations$benchmark$Benchmark$Samples$pointify = (samples) => $elm$core$Dict$foldr_raw(F3((sampleSize, values, acc) => _Utils_ap($elm$core$List$map_raw((b) => _Utils_Tuple2(sampleSize, b), values), acc)), _List_Nil, samples);
     var $BrianHicks$elm_trend$Trend$Linear$predictY_raw = function (_v0, x) {
         var slope = _v0.bc;
@@ -3427,8 +2347,8 @@
     }, $BrianHicks$elm_trend$Trend$Linear$predictY = F2($BrianHicks$elm_trend$Trend$Linear$predictY_raw);
     var $BrianHicks$elm_trend$Trend$Math$AllZeros = { $: 1 };
     var $BrianHicks$elm_trend$Trend$Math$NeedMoreValues = (a) => ({ $: 0, a: a });
-    var $BrianHicks$elm_trend$Trend$Linear$Robust_raw = (a, b) => ({ $: 0, a: a, b: b }), $BrianHicks$elm_trend$Trend$Linear$Robust = F2($BrianHicks$elm_trend$Trend$Linear$Robust_raw);
-    var $BrianHicks$elm_trend$Trend$Linear$Trend_raw = (a, b) => ({ $: 0, a: a, b: b }), $BrianHicks$elm_trend$Trend$Linear$Trend = F2($BrianHicks$elm_trend$Trend$Linear$Trend_raw);
+    var $BrianHicks$elm_trend$Trend$Linear$Robust_raw = (a, b) => ({ $: 0, a: a, b: b });
+    var $BrianHicks$elm_trend$Trend$Linear$Trend_raw = (a, b) => ({ $: 0, a: a, b: b });
     var $elm$core$List$filter_raw = (isGood, list) => $elm$core$List$foldr_raw(F2((x, xs) => isGood(x) ? _List_Cons(x, xs) : xs), _List_Nil, list), $elm$core$List$filter = F2($elm$core$List$filter_raw);
     var $elm$core$Result$fromMaybe_raw = function (err, maybe) {
         if (!maybe.$) {
@@ -3438,7 +2358,7 @@
         else {
             return $elm$core$Result$Err(err);
         }
-    }, $elm$core$Result$fromMaybe = F2($elm$core$Result$fromMaybe_raw);
+    };
     var $elm$core$Basics$isInfinite = _Basics_isInfinite;
     var $elm$core$Basics$isNaN = _Basics_isNaN;
     var $elm$core$Maybe$map3_raw = function (func, ma, mb, mc) {
@@ -3461,8 +2381,7 @@
                 }
             }
         }
-    }, $elm$core$Maybe$map3 = F4($elm$core$Maybe$map3_raw);
-    var $elm$core$List$sortBy = _List_sortBy;
+    };
     var $elm$core$List$sort = (xs) => _List_sortBy_raw($elm$core$Basics$identity, xs);
     var $BrianHicks$elm_trend$Trend$Linear$Line_raw = (slope, intercept) => ({ a6: intercept, bc: slope }), $BrianHicks$elm_trend$Trend$Linear$Line = F2($BrianHicks$elm_trend$Trend$Linear$Line_raw);
     var $elm$core$Maybe$andThen_raw = function (callback, maybeValue) {
@@ -3473,7 +2392,7 @@
         else {
             return $elm$core$Maybe$Nothing;
         }
-    }, $elm$core$Maybe$andThen = F2($elm$core$Maybe$andThen_raw);
+    };
     var $elm$core$Maybe$map_raw = function (f, maybe) {
         if (!maybe.$) {
             var value = maybe.a;
@@ -3482,7 +2401,7 @@
         else {
             return $elm$core$Maybe$Nothing;
         }
-    }, $elm$core$Maybe$map = F2($elm$core$Maybe$map_raw);
+    };
     var $elm$core$Maybe$map2_raw = function (func, ma, mb) {
         if (ma.$ === 1) {
             return $elm$core$Maybe$Nothing;
@@ -3497,7 +2416,7 @@
                 return $elm$core$Maybe$Just(A2(func, a, b));
             }
         }
-    }, $elm$core$Maybe$map2 = F3($elm$core$Maybe$map2_raw);
+    };
     var $elm$core$List$drop_raw = function (n, list) {
         drop: while (true) {
             if (n <= 0) {
@@ -3508,7 +2427,6 @@
                     return list;
                 }
                 else {
-                    var x = list.a;
                     var xs = list.b;
                     var $temp$n = n - 1, $temp$list = xs;
                     n = $temp$n;
@@ -3517,11 +2435,10 @@
                 }
             }
         }
-    }, $elm$core$List$drop = F2($elm$core$List$drop_raw);
+    };
     var $elm$core$List$head = function (list) {
         if (list.b) {
             var x = list.a;
-            var xs = list.b;
             return $elm$core$Maybe$Just(x);
         }
         else {
@@ -3557,8 +2474,8 @@
                 }
             }
         }
-    }, $elm$core$List$takeReverse = F3($elm$core$List$takeReverse_raw);
-    var $elm$core$List$takeTailRec_raw = (n, list) => $elm$core$List$reverse($elm$core$List$takeReverse_raw(n, list, _List_Nil)), $elm$core$List$takeTailRec = F2($elm$core$List$takeTailRec_raw);
+    };
+    var $elm$core$List$takeTailRec_raw = (n, list) => $elm$core$List$reverse($elm$core$List$takeReverse_raw(n, list, _List_Nil));
     var $elm$core$List$takeFast_raw = function (ctr, n, list) {
         if (n <= 0) {
             return _List_Nil;
@@ -3628,8 +2545,8 @@
             var x = _v1.a;
             return { $: 1, a: x, b: _List_Nil };
         }
-    }, $elm$core$List$takeFast = F3($elm$core$List$takeFast_raw);
-    var $elm$core$List$take_raw = (n, list) => $elm$core$List$takeFast_raw(0, n, list), $elm$core$List$take = F2($elm$core$List$take_raw);
+    };
+    var $elm$core$List$take_raw = (n, list) => $elm$core$List$takeFast_raw(0, n, list);
     var $elm$core$Result$toMaybe = function (result) {
         if (!result.$) {
             var v = result.a;
@@ -3651,7 +2568,7 @@
             return y - (m * x);
         }, points), slope)));
         return $elm$core$Maybe$map2_raw($BrianHicks$elm_trend$Trend$Linear$Line, slope, intercept);
-    }, $BrianHicks$elm_trend$Trend$Linear$theilSenLine = F3($BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw);
+    };
     var $BrianHicks$elm_trend$Trend$Linear$robust = function (values) {
         if (!values.b) {
             return $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$NeedMoreValues(2));
@@ -3684,7 +2601,7 @@
         else {
             return def;
         }
-    }, $elm$core$Result$withDefault = F2($elm$core$Result$withDefault_raw);
+    };
     var $elm_explorations$benchmark$Benchmark$Samples$groups = function (_v0) {
         var samples = _v0;
         return $elm$core$Result$withDefault_raw(_Utils_Tuple2(samples, $elm$core$Dict$empty), $elm$core$Result$map_raw(A2($elm$core$Dict$foldl, F3(function (key, _v1, _v2) {
@@ -3704,14 +2621,13 @@
         var x = _v0.a;
         var y = _v0.b;
         return _Utils_Tuple2(func(x), y);
-    }, $elm$core$Tuple$mapFirst = F2($elm$core$Tuple$mapFirst_raw);
+    };
     var $elm$core$Tuple$mapSecond_raw = function (func, _v0) {
         var x = _v0.a;
         var y = _v0.b;
         return _Utils_Tuple2(x, func(y));
     }, $elm$core$Tuple$mapSecond = F2($elm$core$Tuple$mapSecond_raw);
     var $elm_explorations$benchmark$Benchmark$Samples$points = (samples) => $elm$core$Tuple$mapSecond_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm$core$Tuple$mapFirst_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm_explorations$benchmark$Benchmark$Samples$groups(samples)));
-    var $BrianHicks$elm_trend$Trend$Linear$Quick = $elm$core$Basics$identity;
     var $elm$core$Result$andThen_raw = function (callback, result) {
         if (!result.$) {
             var value = result.a;
@@ -3721,7 +2637,7 @@
             var msg = result.a;
             return $elm$core$Result$Err(msg);
         }
-    }, $elm$core$Result$andThen = F2($elm$core$Result$andThen_raw);
+    };
     var $elm$core$Result$map2_raw = function (func, ra, rb) {
         if (ra.$ === 1) {
             var x = ra.a;
@@ -3738,7 +2654,7 @@
                 return $elm$core$Result$Ok(A2(func, a, b));
             }
         }
-    }, $elm$core$Result$map2 = F3($elm$core$Result$map2_raw);
+    };
     var $elm$core$Basics$pow = _Basics_pow;
     var $elm$core$Basics$sqrt = _Basics_sqrt;
     var $BrianHicks$elm_trend$Trend$Math$stddev = function (numbers) {
@@ -3764,7 +2680,7 @@
                 return $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$NeedMoreValues(2));
             }
             else {
-                var standardize_raw = (meanResult, stddevResult, series) => $elm$core$Result$map2_raw(F2((meanValue, stddevValue) => $elm$core$List$map_raw((point) => (point - meanValue) / stddevValue, series)), meanResult, stddevResult), standardize = F3(standardize_raw);
+                var standardize_raw = (meanResult, stddevResult, series) => $elm$core$Result$map2_raw(F2((meanValue, stddevValue) => $elm$core$List$map_raw((point) => (point - meanValue) / stddevValue, series)), meanResult, stddevResult);
                 var _v1 = $elm$core$List$unzip(values);
                 var xs = _v1.a;
                 var ys = _v1.b;
@@ -3796,7 +2712,7 @@
                 }
             }
         }
-    }, $elm$core$Result$map3 = F4($elm$core$Result$map3_raw);
+    };
     var $BrianHicks$elm_trend$Trend$Linear$quick = function (values) {
         if (!values.b) {
             return $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$NeedMoreValues(2));
@@ -3853,11 +2769,11 @@
                 continue repeatHelp;
             }
         }
-    }, $elm$core$List$repeatHelp = F3($elm$core$List$repeatHelp_raw);
-    var $elm$core$List$repeat_raw = (n, value) => $elm$core$List$repeatHelp_raw(_List_Nil, n, value), $elm$core$List$repeat = F2($elm$core$List$repeat_raw);
+    };
+    var $elm$core$List$repeat_raw = (n, value) => $elm$core$List$repeatHelp_raw(_List_Nil, n, value);
     var $elm_explorations$benchmark$Benchmark$LowLevel$StackOverflow = { $: 0 };
     var $elm_explorations$benchmark$Benchmark$LowLevel$UnknownError = (a) => ({ $: 1, a: a });
-    var $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw = (n, operation_) => _Benchmark_sample_raw(n, operation_), $elm_explorations$benchmark$Benchmark$LowLevel$sample = F2($elm_explorations$benchmark$Benchmark$LowLevel$sample_raw);
+    var $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw = (n, operation_) => _Benchmark_sample_raw(n, operation_);
     var $elm$core$Basics$round = _Basics_round;
     var $elm_explorations$benchmark$Benchmark$LowLevel$standardizeSampleSize = function (sampleSize) {
         var helper_raw = function (rough, magnitude) {
@@ -3872,7 +2788,7 @@
                     return rough * magnitude;
                 }
             }
-        }, helper = F2(helper_raw);
+        };
         return helper_raw(sampleSize, 1);
     };
     var $elm$core$Maybe$withDefault_raw = function (_default, maybe) {
@@ -3888,11 +2804,8 @@
         var sampleSize = (i) => i * 10;
         var resample = F2((iteration, total) => (_Utils_cmp(total, minimumRuntime) < 0) ? _Scheduler_andThen_raw(resample(iteration + 1), $elm$core$Task$map_raw(A2($elm$core$Basics$composeR, $elm$core$List$minimum, $elm$core$Maybe$withDefault(0)), $elm$core$Task$sequence($elm$core$List$repeat_raw(3, $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize(iteration), operation_))))) : $elm$core$Task$succeed(sampleSize(iteration)));
         return $elm$core$Task$map_raw($elm_explorations$benchmark$Benchmark$LowLevel$standardizeSampleSize, A2(resample, 1, 0));
-    }, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum = F2($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw);
-    var $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0 = $elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize = $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0);
-    var $elm$core$Basics$ge = _Utils_ge;
-    var $elm$core$Basics$modBy = _Basics_modBy;
-    var $elm$core$Task$onError = _Scheduler_onError;
+    };
+    var $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0 = $elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum;
     var $elm$core$Dict$get_raw = function (targetKey, dict) {
         get: while (true) {
             if (dict.$ === -2) {
@@ -3920,7 +2833,7 @@
                 }
             }
         }
-    }, $elm$core$Dict$get = F2($elm$core$Dict$get_raw);
+    };
     var $elm$core$Dict$getMin = function (dict) {
         getMin: while (true) {
             if ((dict.$ === -1) && (dict.d.$ === -1)) {
@@ -3941,17 +2854,14 @@
                 var k = dict.b;
                 var v = dict.c;
                 var _v1 = dict.d;
-                var lClr = _v1.a;
                 var lK = _v1.b;
                 var lV = _v1.c;
                 var lLeft = _v1.d;
                 var lRight = _v1.e;
                 var _v2 = dict.e;
-                var rClr = _v2.a;
                 var rK = _v2.b;
                 var rV = _v2.c;
                 var rLeft = _v2.d;
-                var _v3 = rLeft.a;
                 var rlK = rLeft.b;
                 var rlV = rLeft.c;
                 var rlL = rLeft.d;
@@ -3964,13 +2874,11 @@
                 var k = dict.b;
                 var v = dict.c;
                 var _v4 = dict.d;
-                var lClr = _v4.a;
                 var lK = _v4.b;
                 var lV = _v4.c;
                 var lLeft = _v4.d;
                 var lRight = _v4.e;
                 var _v5 = dict.e;
-                var rClr = _v5.a;
                 var rK = _v5.b;
                 var rV = _v5.c;
                 var rLeft = _v5.d;
@@ -3994,18 +2902,15 @@
                 var k = dict.b;
                 var v = dict.c;
                 var _v1 = dict.d;
-                var lClr = _v1.a;
                 var lK = _v1.b;
                 var lV = _v1.c;
                 var _v2 = _v1.d;
-                var _v3 = _v2.a;
                 var llK = _v2.b;
                 var llV = _v2.c;
                 var llLeft = _v2.d;
                 var llRight = _v2.e;
                 var lRight = _v1.e;
                 var _v4 = dict.e;
-                var rClr = _v4.a;
                 var rK = _v4.b;
                 var rV = _v4.c;
                 var rLeft = _v4.d;
@@ -4017,13 +2922,11 @@
                 var k = dict.b;
                 var v = dict.c;
                 var _v5 = dict.d;
-                var lClr = _v5.a;
                 var lK = _v5.b;
                 var lV = _v5.c;
                 var lLeft = _v5.d;
                 var lRight = _v5.e;
                 var _v6 = dict.e;
-                var rClr = _v6.a;
                 var rK = _v6.b;
                 var rV = _v6.c;
                 var rLeft = _v6.d;
@@ -4042,7 +2945,6 @@
     };
     var $elm$core$Dict$removeHelpPrepEQGT_raw = function (targetKey, dict, color, key, value, left, right) {
         if ((left.$ === -1) && (!left.a)) {
-            var _v1 = left.a;
             var lK = left.b;
             var lV = left.c;
             var lLeft = left.d;
@@ -4054,9 +2956,6 @@
                 if ((right.$ === -1) && (right.a === 1)) {
                     if (right.d.$ === -1) {
                         if (right.d.a === 1) {
-                            var _v3 = right.a;
-                            var _v4 = right.d;
-                            var _v5 = _v4.a;
                             return $elm$core$Dict$moveRedRight(dict);
                         }
                         else {
@@ -4064,8 +2963,6 @@
                         }
                     }
                     else {
-                        var _v6 = right.a;
-                        var _v7 = right.d;
                         return $elm$core$Dict$moveRedRight(dict);
                     }
                 }
@@ -4075,7 +2972,7 @@
             }
             return dict;
         }
-    }, $elm$core$Dict$removeHelpPrepEQGT = F7($elm$core$Dict$removeHelpPrepEQGT_raw);
+    };
     var $elm$core$Dict$removeMin = function (dict) {
         if ((dict.$ === -1) && (dict.d.$ === -1)) {
             var color = dict.a;
@@ -4087,7 +2984,6 @@
             var right = dict.e;
             if (lColor === 1) {
                 if ((lLeft.$ === -1) && (!lLeft.a)) {
-                    var _v3 = lLeft.a;
                     return $elm$core$Dict$RBNode_elm_builtin_raw(color, key, value, $elm$core$Dict$removeMin(left), right);
                 }
                 else {
@@ -4125,10 +3021,8 @@
             var right = dict.e;
             if (_Utils_cmp(targetKey, key) < 0) {
                 if ((left.$ === -1) && (left.a === 1)) {
-                    var _v4 = left.a;
                     var lLeft = left.d;
                     if ((lLeft.$ === -1) && (!lLeft.a)) {
-                        var _v6 = lLeft.a;
                         return $elm$core$Dict$RBNode_elm_builtin_raw(color, key, value, $elm$core$Dict$removeHelp_raw(targetKey, left), right);
                     }
                     else {
@@ -4154,7 +3048,7 @@
                 return $elm$core$Dict$removeHelpEQGT_raw(targetKey, $elm$core$Dict$removeHelpPrepEQGT_raw(targetKey, dict, color, key, value, left, right));
             }
         }
-    }, $elm$core$Dict$removeHelp = F2($elm$core$Dict$removeHelp_raw);
+    };
     var $elm$core$Dict$removeHelpEQGT_raw = function (targetKey, dict) {
         if (dict.$ === -1) {
             var color = dict.a;
@@ -4180,11 +3074,10 @@
         else {
             return $elm$core$Dict$RBEmpty_elm_builtin;
         }
-    }, $elm$core$Dict$removeHelpEQGT = F2($elm$core$Dict$removeHelpEQGT_raw);
+    };
     var $elm$core$Dict$remove_raw = function (key, dict) {
         var _v0 = $elm$core$Dict$removeHelp_raw(key, dict);
         if ((_v0.$ === -1) && (!_v0.a)) {
-            var _v1 = _v0.a;
             var k = _v0.b;
             var v = _v0.c;
             var l = _v0.d;
@@ -4195,7 +3088,7 @@
             var x = _v0;
             return x;
         }
-    }, $elm$core$Dict$remove = F2($elm$core$Dict$remove_raw);
+    };
     var $elm$core$Dict$update_raw = function (targetKey, alter, dictionary) {
         var _v0 = alter($elm$core$Dict$get_raw(targetKey, dictionary));
         if (!_v0.$) {
@@ -4205,7 +3098,7 @@
         else {
             return $elm$core$Dict$remove_raw(targetKey, dictionary);
         }
-    }, $elm$core$Dict$update = F3($elm$core$Dict$update_raw);
+    };
     var $elm_explorations$benchmark$Benchmark$Samples$record_raw = function (sampleSize, sample, _v0) {
         var samplesDict = _v0;
         return $elm$core$Dict$update_raw(sampleSize, function (value) {
@@ -4217,7 +3110,7 @@
                 return $elm$core$Maybe$Just(_List_Cons(sample, samples_));
             }
         }, samplesDict);
-    }, $elm_explorations$benchmark$Benchmark$Samples$record = F3($elm_explorations$benchmark$Benchmark$Samples$record_raw);
+    };
     var $elm_explorations$benchmark$Benchmark$LowLevel$warmup = function (operation_) {
         var toCollect = 1000;
         var sampleSize = 10000;
@@ -4241,7 +3134,7 @@
             default:
                 return $elm$core$Task$succeed(status);
         }
-    }, $elm_explorations$benchmark$Benchmark$stepLowLevel = F2($elm_explorations$benchmark$Benchmark$stepLowLevel_raw);
+    };
     var $elm_explorations$benchmark$Benchmark$step = function (benchmark_) {
         switch (benchmark_.$) {
             case 0:
@@ -4291,8 +3184,8 @@
         var slope = _v0.bc;
         var intercept = _v0.a6;
         return (y - intercept) / slope;
-    }, $BrianHicks$elm_trend$Trend$Linear$predictX = F2($BrianHicks$elm_trend$Trend$Linear$predictX_raw);
-    var $author$project$Benchmark$Runner$Json$runsPerSecond_a0 = $BrianHicks$elm_trend$Trend$Linear$line, $author$project$Benchmark$Runner$Json$runsPerSecond_a1 = A2($elm$core$Basics$composeR, (a) => $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000), $elm$core$Basics$floor), $author$project$Benchmark$Runner$Json$runsPerSecond = A2($elm$core$Basics$composeR, $author$project$Benchmark$Runner$Json$runsPerSecond_a0, $author$project$Benchmark$Runner$Json$runsPerSecond_a1);
+    };
+    var $author$project$Benchmark$Runner$Json$runsPerSecond_a0 = $BrianHicks$elm_trend$Trend$Linear$line, $author$project$Benchmark$Runner$Json$runsPerSecond_a1 = A2($elm$core$Basics$composeR, (a) => $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000), $elm$core$Basics$floor);
     var $elm$json$Json$Encode$string = _Json_wrap;
     var $author$project$Benchmark$Runner$Json$encodeStatus = function (status) {
         switch (status.$) {
@@ -4301,14 +3194,10 @@
             case 1:
                 return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("unsized")), b: _List_Nil });
             case 2:
-                var i = status.a;
-                var samples = status.b;
                 return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("pending")), b: _List_Nil });
             case 3:
-                var error = status.a;
                 return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("failure")), b: _List_Nil });
             default:
-                var samples = status.a;
                 var quickTrend = status.b;
                 return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("success")), b: { $: 1, a: _Utils_Tuple2("runsPerSecond", $elm$json$Json$Encode$int($elm$core$Basics$composeR_raw($author$project$Benchmark$Runner$Json$runsPerSecond_a0, $author$project$Benchmark$Runner$Json$runsPerSecond_a1, quickTrend))), b: { $: 1, a: _Utils_Tuple2("goodnessOfFit", $elm$json$Json$Encode$float($BrianHicks$elm_trend$Trend$Linear$goodnessOfFit(quickTrend))), b: _List_Nil } } });
         }
@@ -4327,7 +3216,7 @@
         }
     }, $elm$core$List$append = F2($elm$core$List$append_raw);
     var $elm$core$List$concat = (lists) => $elm$core$List$foldr_raw($elm$core$List$append, _List_Nil, lists);
-    var $elm$core$List$concatMap_raw = (f, list) => $elm$core$List$concat($elm$core$List$map_raw(f, list)), $elm$core$List$concatMap = F2($elm$core$List$concatMap_raw);
+    var $elm$core$List$concatMap_raw = (f, list) => $elm$core$List$concat($elm$core$List$map_raw(f, list));
     var $author$project$Benchmark$Runner$Json$flattenReportGroup_raw = function (group, report) {
         switch (report.$) {
             case 0:
@@ -4368,11 +3257,11 @@
                 return $elm$core$List$concatMap_raw($author$project$Benchmark$Runner$Json$flattenReportGroup(name), reports);
         }
     };
-    var $elm$json$Json$Encode$list_raw = (func, entries) => _Json_wrap($elm$core$List$foldl_raw(_Json_addEntry(func), _Json_emptyArray(0), entries)), $elm$json$Json$Encode$list = F2($elm$json$Json$Encode$list_raw);
+    var $elm$json$Json$Encode$list_raw = (func, entries) => _Json_wrap($elm$core$List$foldl_raw(_Json_addEntry(func), _Json_emptyArray(0), entries));
     var $author$project$Benchmark$Runner$Json$encodeReport = (report) => $elm$json$Json$Encode$list_raw($author$project$Benchmark$Runner$Json$encodeResultItem, $author$project$Benchmark$Runner$Json$flattenReport(report));
-    var $elm_explorations$benchmark$Benchmark$Reporting$Group_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Group = F2($elm_explorations$benchmark$Benchmark$Reporting$Group_raw);
-    var $elm_explorations$benchmark$Benchmark$Reporting$Series_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Series = F2($elm_explorations$benchmark$Benchmark$Reporting$Series_raw);
-    var $elm_explorations$benchmark$Benchmark$Reporting$Single_raw = (a, b) => ({ $: 0, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Single = F2($elm_explorations$benchmark$Benchmark$Reporting$Single_raw);
+    var $elm_explorations$benchmark$Benchmark$Reporting$Group_raw = (a, b) => ({ $: 2, a: a, b: b });
+    var $elm_explorations$benchmark$Benchmark$Reporting$Series_raw = (a, b) => ({ $: 1, a: a, b: b });
+    var $elm_explorations$benchmark$Benchmark$Reporting$Single_raw = (a, b) => ({ $: 0, a: a, b: b });
     var $elm_explorations$benchmark$Benchmark$Reporting$fromBenchmark = function (internal) {
         switch (internal.$) {
             case 0:
@@ -4407,57 +3296,51 @@
         cI: (_v0) => $elm$core$Platform$Sub$none,
         cL: $author$project$Benchmark$Runner$Json$update(sendReport),
         cN: $author$project$Benchmark$Runner$Json$view
-    }), $author$project$Benchmark$Runner$Json$program = F2($author$project$Benchmark$Runner$Json$program_raw);
+    });
     var $author$project$Run$reportResults = _Platform_outgoingPort("reportResults", $elm$core$Basics$identity);
-    var $elm_explorations$benchmark$Benchmark$describe = $elm_explorations$benchmark$Benchmark$Benchmark$Group;
     var $elm_explorations$benchmark$Benchmark$Status$Cold = { $: 0 };
     var $elm_explorations$benchmark$Benchmark$LowLevel$operation = (fn) => _Benchmark_operation(fn);
-    var $elm_explorations$benchmark$Benchmark$benchmark_raw = (name, fn) => $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw(name, $elm_explorations$benchmark$Benchmark$LowLevel$operation(fn), $elm_explorations$benchmark$Benchmark$Status$Cold), $elm_explorations$benchmark$Benchmark$benchmark = F2($elm_explorations$benchmark$Benchmark$benchmark_raw);
+    var $elm_explorations$benchmark$Benchmark$benchmark_raw = (name, fn) => $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw(name, $elm_explorations$benchmark$Benchmark$LowLevel$operation(fn), $elm_explorations$benchmark$Benchmark$Status$Cold);
     var $author$project$Markdown$Block$BlockQuote = (a) => ({ $: 3, a: a });
     var $author$project$Markdown$RawBlock$Body = (a) => ({ $: 1, a: a });
     var $author$project$Markdown$Block$Cdata = (a) => ({ $: 4, a: a });
     var $author$project$Markdown$Block$CodeBlock = (a) => ({ $: 7, a: a });
     var $author$project$Markdown$RawBlock$CodeBlock = (a) => ({ $: 5, a: a });
     var $author$project$Markdown$Block$CodeSpan = (a) => ({ $: 5, a: a });
-    var $author$project$Markdown$Block$CompletedTask = 2;
     var $elm$parser$Parser$Advanced$Done = (a) => ({ $: 1, a: a });
     var $author$project$Markdown$Block$Emphasis = (a) => ({ $: 3, a: a });
     var $author$project$Markdown$Parser$EmptyBlock = { $: 0 };
     var $elm$parser$Parser$Expecting = (a) => ({ $: 0, a: a });
     var $author$project$Markdown$Block$HardLineBreak = { $: 7 };
-    var $author$project$Markdown$Block$Heading_raw = (a, b) => ({ $: 4, a: a, b: b }), $author$project$Markdown$Block$Heading = F2($author$project$Markdown$Block$Heading_raw);
+    var $author$project$Markdown$Block$Heading_raw = (a, b) => ({ $: 4, a: a, b: b });
     var $author$project$Markdown$RawBlock$Html = (a) => ({ $: 2, a: a });
     var $author$project$Markdown$Block$HtmlBlock = (a) => ({ $: 0, a: a });
     var $author$project$Markdown$Block$HtmlComment = (a) => ({ $: 1, a: a });
-    var $author$project$Markdown$Block$HtmlDeclaration_raw = (a, b) => ({ $: 3, a: a, b: b }), $author$project$Markdown$Block$HtmlDeclaration = F2($author$project$Markdown$Block$HtmlDeclaration_raw);
-    var $author$project$Markdown$Block$HtmlElement_raw = (a, b, c) => ({ $: 0, a: a, b: b, c: c }), $author$project$Markdown$Block$HtmlElement = F3($author$project$Markdown$Block$HtmlElement_raw);
+    var $author$project$Markdown$Block$HtmlDeclaration_raw = (a, b) => ({ $: 3, a: a, b: b });
+    var $author$project$Markdown$Block$HtmlElement_raw = (a, b, c) => ({ $: 0, a: a, b: b, c: c });
     var $author$project$Markdown$Block$HtmlInline = (a) => ({ $: 0, a: a });
-    var $author$project$Markdown$Block$Image_raw = (a, b, c) => ({ $: 2, a: a, b: b, c: c }), $author$project$Markdown$Block$Image = F3($author$project$Markdown$Block$Image_raw);
-    var $author$project$Markdown$Block$IncompleteTask = 1;
+    var $author$project$Markdown$Block$Image_raw = (a, b, c) => ({ $: 2, a: a, b: b, c: c });
     var $author$project$Markdown$Parser$InlineProblem = (a) => ({ $: 2, a: a });
-    var $author$project$Markdown$Block$Link_raw = (a, b, c) => ({ $: 1, a: a, b: b, c: c }), $author$project$Markdown$Block$Link = F3($author$project$Markdown$Block$Link_raw);
-    var $author$project$Markdown$Block$ListItem_raw = (a, b) => ({ $: 0, a: a, b: b }), $author$project$Markdown$Block$ListItem = F2($author$project$Markdown$Block$ListItem_raw);
+    var $author$project$Markdown$Block$Link_raw = (a, b, c) => ({ $: 1, a: a, b: b, c: c });
+    var $author$project$Markdown$Block$ListItem_raw = (a, b) => ({ $: 0, a: a, b: b });
     var $elm$parser$Parser$Advanced$Loop = (a) => ({ $: 0, a: a });
-    var $author$project$Markdown$Block$NoTask = 0;
-    var $author$project$Markdown$Block$OrderedList_raw = (a, b) => ({ $: 2, a: a, b: b }), $author$project$Markdown$Block$OrderedList = F2($author$project$Markdown$Block$OrderedList_raw);
+    var $author$project$Markdown$Block$OrderedList_raw = (a, b) => ({ $: 2, a: a, b: b });
     var $author$project$Markdown$Block$Paragraph = (a) => ({ $: 5, a: a });
     var $author$project$Markdown$Parser$ParsedBlock = (a) => ({ $: 1, a: a });
     var $elm$parser$Parser$Problem = (a) => ({ $: 12, a: a });
     var $author$project$Markdown$Block$ProcessingInstruction = (a) => ({ $: 2, a: a });
     var $author$project$Markdown$Block$Strong = (a) => ({ $: 4, a: a });
-    var $author$project$Markdown$Block$Table_raw = (a, b) => ({ $: 6, a: a, b: b }), $author$project$Markdown$Block$Table = F2($author$project$Markdown$Block$Table_raw);
+    var $author$project$Markdown$Block$Table_raw = (a, b) => ({ $: 6, a: a, b: b });
     var $author$project$Markdown$Block$Text = (a) => ({ $: 6, a: a });
     var $author$project$Markdown$Block$ThematicBreak = { $: 8 };
     var $author$project$Markdown$RawBlock$ThematicBreak = { $: 7 };
     var $author$project$Markdown$Block$UnorderedList = (a) => ({ $: 1, a: a });
-    var $author$project$Markdown$RawBlock$UnparsedInlines = $elm$core$Basics$identity;
     var $author$project$Markdown$Parser$addReference_raw = (state, linkRef) => ({
         af: _List_Cons(linkRef, state.af),
         T: state.T
-    }), $author$project$Markdown$Parser$addReference = F2($author$project$Markdown$Parser$addReference_raw);
-    var $elm$parser$Parser$Advanced$Bad_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm$parser$Parser$Advanced$Bad = F2($elm$parser$Parser$Advanced$Bad_raw);
-    var $elm$parser$Parser$Advanced$Good_raw = (a, b, c) => ({ $: 0, a: a, b: b, c: c }), $elm$parser$Parser$Advanced$Good = F3($elm$parser$Parser$Advanced$Good_raw);
-    var $elm$parser$Parser$Advanced$Parser = $elm$core$Basics$identity;
+    });
+    var $elm$parser$Parser$Advanced$Bad_raw = (a, b) => ({ $: 1, a: a, b: b });
+    var $elm$parser$Parser$Advanced$Good_raw = (a, b, c) => ({ $: 0, a: a, b: b, c: c });
     var $elm$parser$Parser$Advanced$andThen_raw = function (callback, _v0) {
         var parseA = _v0;
         return function (s0) {
@@ -4487,7 +3370,7 @@
                 }
             }
         };
-    }, $elm$parser$Parser$Advanced$andThen = F2($elm$parser$Parser$Advanced$andThen_raw);
+    };
     var $elm$parser$Parser$Advanced$backtrackable = function (_v0) {
         var parse = _v0;
         return function (s0) {
@@ -4504,7 +3387,6 @@
         };
     };
     var $author$project$Markdown$RawBlock$BlankLine = { $: 9 };
-    var $elm$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
     var $elm$core$Basics$negate = (n) => -n;
     var $elm$parser$Parser$Advanced$chompWhileHelp_raw = function (isGood, offset, row, col, s0) {
         chompWhileHelp: while (true) {
@@ -4533,7 +3415,7 @@
                 }
             }
         }
-    }, $elm$parser$Parser$Advanced$chompWhileHelp = F5($elm$parser$Parser$Advanced$chompWhileHelp_raw);
+    };
     var $elm$parser$Parser$Advanced$chompWhile = (isGood) => (s) => $elm$parser$Parser$Advanced$chompWhileHelp_raw(isGood, s.h, s.cE, s.bl, s);
     var $elm$core$Basics$always_raw = (a, _v0) => a, $elm$core$Basics$always = F2($elm$core$Basics$always_raw);
     var $elm$parser$Parser$Advanced$map2_raw = function (func, _v0, _v1) {
@@ -4564,8 +3446,8 @@
                 }
             }
         };
-    }, $elm$parser$Parser$Advanced$map2 = F3($elm$parser$Parser$Advanced$map2_raw);
-    var $elm$parser$Parser$Advanced$ignorer_raw = (keepParser, ignoreParser) => $elm$parser$Parser$Advanced$map2_raw($elm$core$Basics$always, keepParser, ignoreParser), $elm$parser$Parser$Advanced$ignorer = F2($elm$parser$Parser$Advanced$ignorer_raw);
+    };
+    var $elm$parser$Parser$Advanced$ignorer_raw = (keepParser, ignoreParser) => $elm$parser$Parser$Advanced$map2_raw($elm$core$Basics$always, keepParser, ignoreParser);
     var $author$project$Helpers$isSpaceOrTab = function (c) {
         switch (c) {
             case " ":
@@ -4592,14 +3474,13 @@
                 return $elm$parser$Parser$Advanced$Bad_raw(p, x);
             }
         };
-    }, $elm$parser$Parser$Advanced$map = F2($elm$parser$Parser$Advanced$map_raw);
-    var $elm$parser$Parser$Advanced$Token_raw = (a, b) => ({ $: 0, a: a, b: b }), $elm$parser$Parser$Advanced$Token = F2($elm$parser$Parser$Advanced$Token_raw);
+    };
+    var $elm$parser$Parser$Advanced$Token_raw = (a, b) => ({ $: 0, a: a, b: b });
     var $author$project$Parser$Token$newline = $elm$parser$Parser$Advanced$Token_raw("\n", $elm$parser$Parser$Expecting("a newline"));
-    var $elm$parser$Parser$Advanced$AddRight_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm$parser$Parser$Advanced$AddRight = F2($elm$parser$Parser$Advanced$AddRight_raw);
-    var $elm$parser$Parser$Advanced$DeadEnd_raw = (row, col, problem, contextStack) => ({ bl: col, cc: contextStack, cC: problem, cE: row }), $elm$parser$Parser$Advanced$DeadEnd = F4($elm$parser$Parser$Advanced$DeadEnd_raw);
+    var $elm$parser$Parser$Advanced$AddRight_raw = (a, b) => ({ $: 1, a: a, b: b });
+    var $elm$parser$Parser$Advanced$DeadEnd_raw = (row, col, problem, contextStack) => ({ bl: col, cc: contextStack, cC: problem, cE: row });
     var $elm$parser$Parser$Advanced$Empty = { $: 0 };
-    var $elm$parser$Parser$Advanced$fromState_raw = (s, x) => $elm$parser$Parser$Advanced$AddRight_raw($elm$parser$Parser$Advanced$Empty, $elm$parser$Parser$Advanced$DeadEnd_raw(s.cE, s.bl, x, s.l)), $elm$parser$Parser$Advanced$fromState = F2($elm$parser$Parser$Advanced$fromState_raw);
-    var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
+    var $elm$parser$Parser$Advanced$fromState_raw = (s, x) => $elm$parser$Parser$Advanced$AddRight_raw($elm$parser$Parser$Advanced$Empty, $elm$parser$Parser$Advanced$DeadEnd_raw(s.cE, s.bl, x, s.l));
     var $elm$parser$Parser$Advanced$token = function (_v0) {
         var str = _v0.a;
         var expecting = _v0.b;
@@ -4615,7 +3496,7 @@
     var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
     var $author$project$Markdown$Parser$blankLine = $elm$parser$Parser$Advanced$map_raw((_v0) => $author$project$Markdown$RawBlock$BlankLine, $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$backtrackable($elm$parser$Parser$Advanced$chompWhile($author$project$Helpers$isSpaceOrTab)), $elm$parser$Parser$Advanced$symbol($author$project$Parser$Token$newline)));
     var $author$project$Markdown$RawBlock$BlockQuote = (a) => ({ $: 10, a: a });
-    var $elm$parser$Parser$Advanced$Append_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm$parser$Parser$Advanced$Append = F2($elm$parser$Parser$Advanced$Append_raw);
+    var $elm$parser$Parser$Advanced$Append_raw = (a, b) => ({ $: 2, a: a, b: b });
     var $elm$parser$Parser$Advanced$oneOfHelp_raw = function (s0, bag, parsers) {
         oneOfHelp: while (true) {
             if (!parsers.b) {
@@ -4646,7 +3527,7 @@
                 }
             }
         }
-    }, $elm$parser$Parser$Advanced$oneOfHelp = F3($elm$parser$Parser$Advanced$oneOfHelp_raw);
+    };
     var $elm$parser$Parser$Advanced$oneOf = (parsers) => (s) => $elm$parser$Parser$Advanced$oneOfHelp_raw(s, $elm$parser$Parser$Advanced$Empty, parsers);
     var $author$project$Parser$Token$space = $elm$parser$Parser$Advanced$Token_raw(" ", $elm$parser$Parser$Expecting("a space"));
     var $author$project$Markdown$Parser$blockQuoteStarts = { $: 1, a: $elm$parser$Parser$Advanced$symbol($elm$parser$Parser$Advanced$Token_raw(">", $elm$parser$Parser$Expecting(">"))), b: { $: 1, a: $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$backtrackable($elm$parser$Parser$Advanced$symbol($author$project$Parser$Token$space)), $elm$parser$Parser$Advanced$oneOf(_List_fromArray([
@@ -4681,9 +3562,9 @@
                 return $elm$parser$Parser$Advanced$Good_raw(p, A2(func, _String_slice_raw(s0.h, s1.h, s0.b), a), s1);
             }
         };
-    }, $elm$parser$Parser$Advanced$mapChompedString = F2($elm$parser$Parser$Advanced$mapChompedString_raw);
+    };
     var $elm$parser$Parser$Advanced$getChompedString = (parser) => $elm$parser$Parser$Advanced$mapChompedString_raw($elm$core$Basics$always, parser);
-    var $elm$parser$Parser$Advanced$keeper_raw = (parseFunc, parseArg) => $elm$parser$Parser$Advanced$map2_raw($elm$core$Basics$apL, parseFunc, parseArg), $elm$parser$Parser$Advanced$keeper = F2($elm$parser$Parser$Advanced$keeper_raw);
+    var $elm$parser$Parser$Advanced$keeper_raw = (parseFunc, parseArg) => $elm$parser$Parser$Advanced$map2_raw($elm$core$Basics$apL, parseFunc, parseArg);
     var $elm$parser$Parser$Advanced$succeed = (a) => (s) => $elm$parser$Parser$Advanced$Good_raw(false, a, s);
     var $author$project$Markdown$Parser$blockQuote = $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($author$project$Markdown$RawBlock$BlockQuote), $elm$parser$Parser$Advanced$oneOf($author$project$Markdown$Parser$blockQuoteStarts)), $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$symbol($author$project$Parser$Token$space), b: { $: 1, a: $elm$parser$Parser$Advanced$succeed(0), b: _List_Nil } })), $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$getChompedString($elm$parser$Parser$Advanced$chompUntilEndOr("\n")), $author$project$Helpers$endOfLineOrFile));
     var $author$project$Markdown$Parser$problemToString = function (problem) {
@@ -4730,8 +3611,7 @@
         return $elm$core$Dict$insert_raw(key, value, dict);
     }), $elm$core$Dict$empty, assocs);
     var $author$project$Markdown$RawBlock$Heading_raw = (a, b) => ({ $: 0, a: a, b: b }), $author$project$Markdown$RawBlock$Heading = F2($author$project$Markdown$RawBlock$Heading_raw);
-    var $elm$core$String$dropRight_raw = (n, string) => (n < 1) ? string : _String_slice_raw(0, -n, string), $elm$core$String$dropRight = F2($elm$core$String$dropRight_raw);
-    var $elm$core$String$endsWith = _String_endsWith;
+    var $elm$core$String$dropRight_raw = (n, string) => (n < 1) ? string : _String_slice_raw(0, -n, string);
     var $elm$core$String$trimRight = _String_trimRight;
     var $author$project$Markdown$Parser$dropTrailingHashes = (headingString) => _String_endsWith_raw("#", headingString) ? $author$project$Markdown$Parser$dropTrailingHashes($elm$core$String$trimRight($elm$core$String$dropRight_raw(1, headingString))) : headingString;
     var $author$project$Parser$Token$hash = $elm$parser$Parser$Advanced$Token_raw("#", $elm$parser$Parser$Expecting("a `#`"));
@@ -4755,7 +3635,7 @@
     var $elm$parser$Parser$Advanced$chompIf_raw = (isGood, expecting) => function (s) {
         var newOffset = _Parser_isSubChar_raw(isGood, s.h, s.b);
         return _Utils_eq(newOffset, -1) ? $elm$parser$Parser$Advanced$Bad_raw(false, $elm$parser$Parser$Advanced$fromState_raw(s, expecting)) : (_Utils_eq(newOffset, -2) ? $elm$parser$Parser$Advanced$Good_raw(true, 0, { bl: 1, l: s.l, p: s.p, h: s.h + 1, cE: s.cE + 1, b: s.b }) : $elm$parser$Parser$Advanced$Good_raw(true, 0, { bl: s.bl + 1, l: s.l, p: s.p, h: newOffset, cE: s.cE, b: s.b }));
-    }, $elm$parser$Parser$Advanced$chompIf = F2($elm$parser$Parser$Advanced$chompIf_raw);
+    };
     var $author$project$HtmlParser$expectTagNameCharacter = $elm$parser$Parser$Expecting("at least 1 tag name character");
     var $author$project$HtmlParser$tagNameCharacter = function (c) {
         switch (c) {
@@ -4817,12 +3697,10 @@
                 return $elm$parser$Parser$Advanced$Bad_raw(p || p1, x);
             }
         }
-    }, $elm$parser$Parser$Advanced$loopHelp = F4($elm$parser$Parser$Advanced$loopHelp_raw);
-    var $elm$parser$Parser$Advanced$loop_raw = (state, callback) => (s) => $elm$parser$Parser$Advanced$loopHelp_raw(false, state, callback, s), $elm$parser$Parser$Advanced$loop = F2($elm$parser$Parser$Advanced$loop_raw);
-    var $elm$core$Basics$neq = _Utils_notEqual;
+    };
+    var $elm$parser$Parser$Advanced$loop_raw = (state, callback) => (s) => $elm$parser$Parser$Advanced$loopHelp_raw(false, state, callback, s);
     var $author$project$HtmlParser$entities = $elm$core$Dict$fromList({ $: 1, a: _Utils_Tuple2("amp", "&"), b: { $: 1, a: _Utils_Tuple2("lt", "<"), b: { $: 1, a: _Utils_Tuple2("gt", ">"), b: { $: 1, a: _Utils_Tuple2("apos", "'"), b: { $: 1, a: _Utils_Tuple2("quot", "\""), b: _List_Nil } } } } });
     var $elm$core$Char$fromCode = _Char_fromCode;
-    var $elm$core$String$cons = _String_cons;
     var $elm$core$String$fromChar = (_char) => _String_cons_raw(_char, "");
     var $rtfeldman$elm_hex$Hex$fromStringHelp_raw = function (position, chars, accumulated) {
         fromStringHelp: while (true) {
@@ -4935,7 +3813,7 @@
                 }
             }
         }
-    }, $rtfeldman$elm_hex$Hex$fromStringHelp = F3($rtfeldman$elm_hex$Hex$fromStringHelp_raw);
+    };
     var $elm$core$Result$mapError_raw = function (f, result) {
         if (!result.$) {
             var v = result.a;
@@ -4945,10 +3823,9 @@
             var e = result.a;
             return $elm$core$Result$Err(f(e));
         }
-    }, $elm$core$Result$mapError = F2($elm$core$Result$mapError_raw);
+    };
     var $elm$core$List$tail = function (list) {
         if (list.b) {
-            var x = list.a;
             var xs = list.b;
             return $elm$core$Maybe$Just(xs);
         }
@@ -4956,7 +3833,6 @@
             return $elm$core$Maybe$Nothing;
         }
     };
-    var $elm$core$String$foldr = _String_foldr;
     var $elm$core$String$toList = (string) => _String_foldr_raw($elm$core$List$cons, _List_Nil, string);
     var $rtfeldman$elm_hex$Hex$fromString = function (str) {
         if ($elm$core$String$isEmpty(str)) {
@@ -5060,8 +3936,8 @@
     var $author$project$HtmlParser$children = (startTagName) => $elm$parser$Parser$Advanced$loop_raw(_List_Nil, $author$project$HtmlParser$childrenStep($author$project$HtmlParser$childrenStepOptions(startTagName)));
     var $author$project$HtmlParser$childrenStepOptions = (startTagName) => ({ $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((_v1, accum) => $elm$parser$Parser$Advanced$Done($elm$core$List$reverse(accum))), $author$project$HtmlParser$closingTag(startTagName)), b: { $: 1, a: $elm$parser$Parser$Advanced$andThen_raw((text) => $elm$core$String$isEmpty(text) ? $elm$parser$Parser$Advanced$map_raw(F2((_v2, accum) => $elm$parser$Parser$Advanced$Done($elm$core$List$reverse(accum))), $author$project$HtmlParser$closingTag(startTagName)) : $elm$parser$Parser$Advanced$succeed((accum) => $elm$parser$Parser$Advanced$Loop(_List_Cons($author$project$HtmlParser$Text(text), accum))), $author$project$HtmlParser$textNodeString), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((_new, accum) => $elm$parser$Parser$Advanced$Loop(_List_Cons(_new, accum))), $author$project$HtmlParser$cyclic$html()), b: _List_Nil } } });
     var $author$project$HtmlParser$elementContinuation = (startTagName) => $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($author$project$HtmlParser$Element(startTagName)), $author$project$HtmlParser$whiteSpace), $elm$parser$Parser$Advanced$ignorer_raw($author$project$HtmlParser$attributes, $author$project$HtmlParser$whiteSpace)), $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$map_raw((_v0) => _List_Nil, $author$project$HtmlParser$symbol("/>")), b: { $: 1, a: $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($elm$core$Basics$identity), $author$project$HtmlParser$symbol(">")), $author$project$HtmlParser$children(startTagName)), b: _List_Nil } }));
-    const $author$project$HtmlParser$cyclic$html = () => $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$map_raw($author$project$HtmlParser$Cdata, $author$project$HtmlParser$cdata), b: { $: 1, a: $author$project$HtmlParser$processingInstruction, b: { $: 1, a: $author$project$HtmlParser$comment, b: { $: 1, a: $author$project$HtmlParser$docType, b: { $: 1, a: $author$project$HtmlParser$cyclic$element(), b: _List_Nil } } } } });
-    const $author$project$HtmlParser$cyclic$element = () => $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($elm$core$Basics$identity), $author$project$HtmlParser$symbol("<")), $elm$parser$Parser$Advanced$andThen_raw($author$project$HtmlParser$elementContinuation, $author$project$HtmlParser$tagName));
+    var $author$project$HtmlParser$cyclic$html = () => $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$map_raw($author$project$HtmlParser$Cdata, $author$project$HtmlParser$cdata), b: { $: 1, a: $author$project$HtmlParser$processingInstruction, b: { $: 1, a: $author$project$HtmlParser$comment, b: { $: 1, a: $author$project$HtmlParser$docType, b: { $: 1, a: $author$project$HtmlParser$cyclic$element(), b: _List_Nil } } } } });
+    var $author$project$HtmlParser$cyclic$element = () => $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($elm$core$Basics$identity), $author$project$HtmlParser$symbol("<")), $elm$parser$Parser$Advanced$andThen_raw($author$project$HtmlParser$elementContinuation, $author$project$HtmlParser$tagName));
     var $author$project$HtmlParser$html = $author$project$HtmlParser$cyclic$html();
     $author$project$HtmlParser$cyclic$html = () => $author$project$HtmlParser$html;
     var $author$project$HtmlParser$element = $author$project$HtmlParser$cyclic$element();
@@ -5074,7 +3950,7 @@
                 $elm$parser$Parser$Advanced$symbol($elm$parser$Parser$Advanced$Token_raw("  \t", $elm$parser$Parser$ExpectingSymbol("Indentation")))
             ]))), b: _List_Nil } });
     var $author$project$Markdown$Parser$indentedCodeBlock = $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($author$project$Markdown$RawBlock$IndentedCodeBlock), $author$project$Markdown$Parser$exactlyFourSpaces), $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$getChompedString($elm$parser$Parser$Advanced$chompUntilEndOr("\n")), $author$project$Helpers$endOfLineOrFile));
-    var $author$project$Markdown$RawBlock$OrderedListBlock_raw = (a, b) => ({ $: 4, a: a, b: b }), $author$project$Markdown$RawBlock$OrderedListBlock = F2($author$project$Markdown$RawBlock$OrderedListBlock_raw);
+    var $author$project$Markdown$RawBlock$OrderedListBlock_raw = (a, b) => ({ $: 4, a: a, b: b });
     var $author$project$Parser$Token$closingParen = $elm$parser$Parser$Advanced$Token_raw(")", $elm$parser$Parser$Expecting("a `)`"));
     var $author$project$Parser$Token$dot = $elm$parser$Parser$Advanced$Token_raw(".", $elm$parser$Parser$Expecting("a `.`"));
     var $author$project$Markdown$OrderedList$endOrNewline = $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$symbol($author$project$Parser$Token$newline), b: { $: 1, a: $elm$parser$Parser$Advanced$end($elm$parser$Parser$Expecting("end of input")), b: _List_Nil } });
@@ -5100,11 +3976,11 @@
         return $author$project$Markdown$RawBlock$OrderedListBlock_raw(startingIndex, $elm$core$List$map_raw($elm$core$Basics$identity, unparsedLines));
     }, $author$project$Markdown$OrderedList$parser(previousWasBody));
     var $author$project$Markdown$Inline$CodeInline = (a) => ({ $: 2, a: a });
-    var $author$project$Markdown$Inline$Emphasis_raw = (a, b) => ({ $: 6, a: a, b: b }), $author$project$Markdown$Inline$Emphasis = F2($author$project$Markdown$Inline$Emphasis_raw);
+    var $author$project$Markdown$Inline$Emphasis_raw = (a, b) => ({ $: 6, a: a, b: b });
     var $author$project$Markdown$Inline$HardLineBreak = { $: 1 };
     var $author$project$Markdown$Inline$HtmlInline = (a) => ({ $: 5, a: a });
-    var $author$project$Markdown$Inline$Image_raw = (a, b, c) => ({ $: 4, a: a, b: b, c: c }), $author$project$Markdown$Inline$Image = F3($author$project$Markdown$Inline$Image_raw);
-    var $author$project$Markdown$Inline$Link_raw = (a, b, c) => ({ $: 3, a: a, b: b, c: c }), $author$project$Markdown$Inline$Link = F3($author$project$Markdown$Inline$Link_raw);
+    var $author$project$Markdown$Inline$Image_raw = (a, b, c) => ({ $: 4, a: a, b: b, c: c });
+    var $author$project$Markdown$Inline$Link_raw = (a, b, c) => ({ $: 3, a: a, b: b, c: c });
     var $author$project$Markdown$Inline$Text = (a) => ({ $: 0, a: a });
     var $author$project$Markdown$InlineParser$matchToInline = function (_v0) {
         var match = _v0;
@@ -5140,8 +4016,7 @@
         }
     };
     var $author$project$Markdown$InlineParser$matchesToInlines = (matches) => $elm$core$List$map_raw($author$project$Markdown$InlineParser$matchToInline, matches);
-    var $author$project$Markdown$InlineParser$Match = $elm$core$Basics$identity;
-    var $author$project$Markdown$InlineParser$prepareChildMatch_raw = (parentMatch, childMatch) => ({ o: childMatch.o - parentMatch.z, A: childMatch.A, s: childMatch.s - parentMatch.z, t: childMatch.t, I: childMatch.I - parentMatch.z, z: childMatch.z - parentMatch.z, u: childMatch.u }), $author$project$Markdown$InlineParser$prepareChildMatch = F2($author$project$Markdown$InlineParser$prepareChildMatch_raw);
+    var $author$project$Markdown$InlineParser$prepareChildMatch_raw = (parentMatch, childMatch) => ({ o: childMatch.o - parentMatch.z, A: childMatch.A, s: childMatch.s - parentMatch.z, t: childMatch.t, I: childMatch.I - parentMatch.z, z: childMatch.z - parentMatch.z, u: childMatch.u });
     var $author$project$Markdown$InlineParser$addChild_raw = (parentMatch, childMatch) => ({
         o: parentMatch.o,
         A: _List_Cons($author$project$Markdown$InlineParser$prepareChildMatch_raw(parentMatch, childMatch), parentMatch.A),
@@ -5150,7 +4025,7 @@
         I: parentMatch.I,
         z: parentMatch.z,
         u: parentMatch.u
-    }), $author$project$Markdown$InlineParser$addChild = F2($author$project$Markdown$InlineParser$addChild_raw);
+    });
     var $author$project$Markdown$InlineParser$organizeChildren = function (_v4) {
         var match = _v4;
         return {
@@ -5211,11 +4086,10 @@
                 }
             }
         }
-    }, $author$project$Markdown$InlineParser$organizeMatchesHelp = F3($author$project$Markdown$InlineParser$organizeMatchesHelp_raw);
+    };
     var $author$project$Markdown$InlineParser$NormalType = { $: 0 };
     var $author$project$Markdown$Helpers$containsAmpersand = (string) => _String_contains_raw("&", string);
-    var $elm$regex$Regex$Match_raw = (match, index, number, submatches) => ({ c: index, aG: match, cy: number, be: submatches }), $elm$regex$Regex$Match = F4($elm$regex$Regex$Match_raw);
-    var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
+    var $elm$regex$Regex$Match_raw = (match, index, number, submatches) => ({ c: index, aG: match, cy: number, be: submatches });
     var $elm$regex$Regex$fromString = (string) => _Regex_fromStringWith_raw({ b9: false, cx: false }, string);
     var $elm$regex$Regex$never = _Regex_never;
     var $author$project$Markdown$Entity$decimalRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("&#([0-9]{1,8});"));
@@ -5266,10 +4140,8 @@
     };
     var $author$project$Markdown$Entity$replaceEntities = A2($elm$regex$Regex$replace, $author$project$Markdown$Entity$entitiesRegex, $author$project$Markdown$Entity$replaceEntity);
     var $author$project$Markdown$Helpers$escapableRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("(\\\\+)([!\"#$%&\\'()*+,./:;<=>?@[\\\\\\]^_`{|}~-])"));
-    var $elm$core$Bitwise$and = _Bitwise_and;
-    var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
-    var $elm$core$String$repeatHelp_raw = (n, chunk, result) => (n <= 0) ? result : $elm$core$String$repeatHelp_raw(n >> 1, _Utils_ap(chunk, chunk), (!(n & 1)) ? result : _Utils_ap(result, chunk)), $elm$core$String$repeatHelp = F3($elm$core$String$repeatHelp_raw);
-    var $elm$core$String$repeat_raw = (n, chunk) => $elm$core$String$repeatHelp_raw(n, chunk, ""), $elm$core$String$repeat = F2($elm$core$String$repeat_raw);
+    var $elm$core$String$repeatHelp_raw = (n, chunk, result) => (n <= 0) ? result : $elm$core$String$repeatHelp_raw(n >> 1, _Utils_ap(chunk, chunk), (!(n & 1)) ? result : _Utils_ap(result, chunk));
+    var $elm$core$String$repeat_raw = (n, chunk) => $elm$core$String$repeatHelp_raw(n, chunk, "");
     var $author$project$Markdown$Helpers$replaceEscapable = A2($elm$regex$Regex$replace, $author$project$Markdown$Helpers$escapableRegex, function (regexMatch) {
         var _v0 = regexMatch.be;
         if (((_v0.b && (!_v0.a.$)) && _v0.b.b) && (!_v0.b.a.$)) {
@@ -5283,7 +4155,6 @@
         }
     });
     var $author$project$Markdown$Entity$hexadecimalRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("&#[Xx]([0-9a-fA-F]{1,8});"));
-    var $elm$core$String$foldl = _String_foldl;
     var $author$project$Markdown$Entity$hexToInt = function (string) {
         var folder_raw = (hexDigit, _int) => ((_int * 16) + _Basics_modBy_raw(39, $elm$core$Char$toCode(hexDigit))) - 9, folder = F2(folder_raw);
         return _String_foldl_raw(folder, 0, $elm$core$String$toLower(string));
@@ -5329,7 +4200,6 @@
         }
         else {
             var matchHead = parsedMatches.a;
-            var matchesTail = parsedMatches.b;
             var _v4 = matchHead.u;
             if (!_v4.$) {
                 return _List_Cons(updtMatch, parsedMatches);
@@ -5338,7 +4208,7 @@
                 return _Utils_eq(matchModel.o, matchHead.s) ? _List_Cons(updtMatch, parsedMatches) : ((_Utils_cmp(matchModel.o, matchHead.s) < 0) ? _List_Cons(updtMatch, _List_Cons($author$project$Markdown$InlineParser$normalMatch(_String_slice_raw(matchModel.o, matchHead.s, rawText)), parsedMatches)) : parsedMatches);
             }
         }
-    }, $author$project$Markdown$InlineParser$parseTextMatch = F3($author$project$Markdown$InlineParser$parseTextMatch_raw);
+    };
     var $author$project$Markdown$InlineParser$parseTextMatches_raw = function (rawText, parsedMatches, matches) {
         parseTextMatches: while (true) {
             if (!matches.b) {
@@ -5360,7 +4230,7 @@
                 continue parseTextMatches;
             }
         }
-    }, $author$project$Markdown$InlineParser$parseTextMatches = F3($author$project$Markdown$InlineParser$parseTextMatches_raw);
+    };
     var $author$project$Markdown$InlineParser$angleBracketLTokenRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("(\\\\*)(\\<)"));
     var $elm$core$List$maybeCons_raw = function (f, mx, xs) {
         var _v0 = f(mx);
@@ -5372,16 +4242,14 @@
             return xs;
         }
     }, $elm$core$List$maybeCons = F3($elm$core$List$maybeCons_raw);
-    var $elm$core$List$filterMap_raw = (f, xs) => $elm$core$List$foldr_raw($elm$core$List$maybeCons(f), _List_Nil, xs), $elm$core$List$filterMap = F2($elm$core$List$filterMap_raw);
-    var $elm$regex$Regex$find_a0 = _Regex_infinity, $elm$regex$Regex$find = _Regex_findAtMost($elm$regex$Regex$find_a0);
+    var $elm$core$List$filterMap_raw = (f, xs) => $elm$core$List$foldr_raw($elm$core$List$maybeCons(f), _List_Nil, xs);
+    var $elm$regex$Regex$find_a0 = _Regex_infinity;
     var $author$project$Markdown$InlineParser$AngleBracketOpen = { $: 4 };
     var $author$project$Markdown$Helpers$isEven = (_int) => !_Basics_modBy_raw(2, _int);
     var $author$project$Markdown$InlineParser$regMatchToAngleBracketLToken = function (regMatch) {
         var _v0 = regMatch.be;
         if ((_v0.b && _v0.b.b) && (!_v0.b.a.$)) {
             var maybeBackslashes = _v0.a;
-            var _v1 = _v0.b;
-            var delimiter = _v1.a.a;
             var backslashesLength = $elm$core$Maybe$withDefault_raw(0, $elm$core$Maybe$map_raw($elm$core$String$length, maybeBackslashes));
             return $author$project$Markdown$Helpers$isEven(backslashesLength) ? $elm$core$Maybe$Just({ c: regMatch.c + backslashesLength, i: 1, n: $author$project$Markdown$InlineParser$AngleBracketOpen }) : $elm$core$Maybe$Nothing;
         }
@@ -5392,13 +4260,10 @@
     var $author$project$Markdown$InlineParser$findAngleBracketLTokens = (str) => $elm$core$List$filterMap_raw($author$project$Markdown$InlineParser$regMatchToAngleBracketLToken, _Regex_findAtMost_raw($elm$regex$Regex$find_a0, $author$project$Markdown$InlineParser$angleBracketLTokenRegex, str));
     var $author$project$Markdown$InlineParser$angleBracketRTokenRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("(\\\\*)(\\>)"));
     var $author$project$Markdown$InlineParser$AngleBracketClose = (a) => ({ $: 5, a: a });
-    var $author$project$Markdown$InlineParser$Escaped = 0;
-    var $author$project$Markdown$InlineParser$NotEscaped = 1;
     var $author$project$Markdown$InlineParser$regMatchToAngleBracketRToken = function (regMatch) {
         var _v0 = regMatch.be;
         if ((_v0.b && _v0.b.b) && (!_v0.b.a.$)) {
             var maybeBackslashes = _v0.a;
-            var _v1 = _v0.b;
             var backslashesLength = $elm$core$Maybe$withDefault_raw(0, $elm$core$Maybe$map_raw($elm$core$String$length, maybeBackslashes));
             return $elm$core$Maybe$Just({
                 c: regMatch.c + backslashesLength,
@@ -5412,7 +4277,7 @@
     };
     var $author$project$Markdown$InlineParser$findAngleBracketRTokens = (str) => $elm$core$List$filterMap_raw($author$project$Markdown$InlineParser$regMatchToAngleBracketRToken, _Regex_findAtMost_raw($elm$regex$Regex$find_a0, $author$project$Markdown$InlineParser$angleBracketRTokenRegex, str));
     var $author$project$Markdown$InlineParser$asteriskEmphasisTokenRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("(\\\\*)([^*])?(\\*+)([^*])?"));
-    var $author$project$Markdown$InlineParser$EmphasisToken_raw = (a, b) => ({ $: 7, a: a, b: b }), $author$project$Markdown$InlineParser$EmphasisToken = F2($author$project$Markdown$InlineParser$EmphasisToken_raw);
+    var $author$project$Markdown$InlineParser$EmphasisToken_raw = (a, b) => ({ $: 7, a: a, b: b });
     var $author$project$Markdown$InlineParser$isPunctuation = function (c) {
         switch (c) {
             case "!":
@@ -5463,7 +4328,7 @@
                 return false;
         }
     };
-    var $author$project$Markdown$InlineParser$containPunctuation_a0 = F2((c, accum) => accum || $author$project$Markdown$InlineParser$isPunctuation(c)), $author$project$Markdown$InlineParser$containPunctuation_a1 = false, $author$project$Markdown$InlineParser$containPunctuation = A2($elm$core$String$foldl, $author$project$Markdown$InlineParser$containPunctuation_a0, $author$project$Markdown$InlineParser$containPunctuation_a1);
+    var $author$project$Markdown$InlineParser$containPunctuation_a0 = F2((c, accum) => accum || $author$project$Markdown$InlineParser$isPunctuation(c)), $author$project$Markdown$InlineParser$containPunctuation_a1 = false;
     var $author$project$Markdown$InlineParser$isWhitespace = function (c) {
         switch (c) {
             case " ":
@@ -5488,7 +4353,7 @@
                 return false;
         }
     };
-    var $author$project$Markdown$InlineParser$containSpace_a0 = F2((c, accum) => accum || $author$project$Markdown$InlineParser$isWhitespace(c)), $author$project$Markdown$InlineParser$containSpace_a1 = false, $author$project$Markdown$InlineParser$containSpace = A2($elm$core$String$foldl, $author$project$Markdown$InlineParser$containSpace_a0, $author$project$Markdown$InlineParser$containSpace_a1);
+    var $author$project$Markdown$InlineParser$containSpace_a0 = F2((c, accum) => accum || $author$project$Markdown$InlineParser$isWhitespace(c)), $author$project$Markdown$InlineParser$containSpace_a1 = false;
     var $author$project$Markdown$InlineParser$getFringeRank = function (mstring) {
         if (!mstring.$) {
             var string = mstring.a;
@@ -5588,7 +4453,6 @@
                 }
                 else {
                     if (_v0.b.b && (!_v0.b.a.$)) {
-                        var _v1 = _v0.b;
                         return $elm$core$Maybe$Just({
                             c: regMatch.c,
                             i: $elm$core$String$length(regMatch.aG),
@@ -5617,8 +4481,6 @@
                 }
                 else {
                     if (_v0.b.b) {
-                        var _v1 = _v0.b;
-                        var maybeSpaces = _v1.a;
                         return $elm$core$Maybe$Just({
                             c: regMatch.c,
                             i: $elm$core$String$length(regMatch.aG),
@@ -5645,7 +4507,6 @@
         var _v0 = regMatch.be;
         if ((_v0.b && _v0.b.b) && (!_v0.b.a.$)) {
             var maybeBackslashes = _v0.a;
-            var _v1 = _v0.b;
             var backslashesLength = $elm$core$Maybe$withDefault_raw(0, $elm$core$Maybe$map_raw($elm$core$String$length, maybeBackslashes));
             return $author$project$Markdown$Helpers$isEven(backslashesLength) ? $elm$core$Maybe$Just({ c: regMatch.c + backslashesLength, i: 1, n: $author$project$Markdown$InlineParser$SquareBracketClose }) : $elm$core$Maybe$Nothing;
         }
@@ -5655,7 +4516,6 @@
     };
     var $author$project$Markdown$InlineParser$findLinkImageCloseTokens = (str) => $elm$core$List$filterMap_raw($author$project$Markdown$InlineParser$regMatchToLinkImageCloseToken, _Regex_findAtMost_raw($elm$regex$Regex$find_a0, $author$project$Markdown$InlineParser$linkImageCloseTokenRegex, str));
     var $author$project$Markdown$InlineParser$linkImageOpenTokenRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("(\\\\*)(\\!)?(\\[)"));
-    var $author$project$Markdown$InlineParser$Active = 0;
     var $author$project$Markdown$InlineParser$ImageOpenToken = { $: 2 };
     var $author$project$Markdown$InlineParser$LinkOpenToken = (a) => ({ $: 1, a: a });
     var $author$project$Markdown$InlineParser$regMatchToLinkImageOpenToken = function (regMatch) {
@@ -5664,7 +4524,6 @@
             var maybeBackslashes = _v0.a;
             var _v1 = _v0.b;
             var maybeImageOpen = _v1.a;
-            var _v2 = _v1.b;
             var backslashesLength = $elm$core$Maybe$withDefault_raw(0, $elm$core$Maybe$map_raw($elm$core$String$length, maybeBackslashes));
             var isEscaped = !$author$project$Markdown$Helpers$isEven(backslashesLength);
             var index = isEscaped ? ((regMatch.c + backslashesLength) + 1) : (regMatch.c + backslashesLength);
@@ -5716,20 +4575,18 @@
         else {
             return right;
         }
-    }, $author$project$Markdown$InlineParser$mergeByIndex = F2($author$project$Markdown$InlineParser$mergeByIndex_raw);
+    };
     var $author$project$Markdown$InlineParser$tokenize = (rawText) => $author$project$Markdown$InlineParser$mergeByIndex_raw($author$project$Markdown$InlineParser$findAngleBracketRTokens(rawText), $author$project$Markdown$InlineParser$mergeByIndex_raw($author$project$Markdown$InlineParser$findAngleBracketLTokens(rawText), $author$project$Markdown$InlineParser$mergeByIndex_raw($author$project$Markdown$InlineParser$findHardBreakTokens(rawText), $author$project$Markdown$InlineParser$mergeByIndex_raw($author$project$Markdown$InlineParser$findLinkImageCloseTokens(rawText), $author$project$Markdown$InlineParser$mergeByIndex_raw($author$project$Markdown$InlineParser$findLinkImageOpenTokens(rawText), $author$project$Markdown$InlineParser$mergeByIndex_raw($author$project$Markdown$InlineParser$findUnderlineEmphasisTokens(rawText), $author$project$Markdown$InlineParser$mergeByIndex_raw($author$project$Markdown$InlineParser$findAsteriskEmphasisTokens(rawText), $author$project$Markdown$InlineParser$findCodeTokens(rawText))))))));
     var $author$project$Markdown$InlineParser$CodeType = { $: 2 };
     var $author$project$Markdown$InlineParser$EmphasisType = (a) => ({ $: 7, a: a });
     var $author$project$Markdown$InlineParser$HtmlType = (a) => ({ $: 6, a: a });
     var $author$project$Markdown$InlineParser$ImageType = (a) => ({ $: 5, a: a });
-    var $author$project$Markdown$InlineParser$Inactive = 1;
     var $author$project$Markdown$InlineParser$LinkType = (a) => ({ $: 4, a: a });
     var $author$project$Markdown$InlineParser$AutolinkType = (a) => ({ $: 3, a: a });
-    var $elm$regex$Regex$contains = _Regex_contains;
     var $author$project$Markdown$InlineParser$decodeUrlRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("%(?:3B|2C|2F|3F|3A|40|26|3D|2B|24|23|25)"));
     var $elm$url$Url$percentDecode = _Url_percentDecode;
     var $elm$url$Url$percentEncode = _Url_percentEncode;
-    var $author$project$Markdown$InlineParser$encodeUrl_a0 = $elm$url$Url$percentEncode, $author$project$Markdown$InlineParser$encodeUrl_a1 = A2($elm$regex$Regex$replace, $author$project$Markdown$InlineParser$decodeUrlRegex, (match) => $elm$core$Maybe$withDefault_raw(match.aG, $elm$url$Url$percentDecode(match.aG))), $author$project$Markdown$InlineParser$encodeUrl = A2($elm$core$Basics$composeR, $author$project$Markdown$InlineParser$encodeUrl_a0, $author$project$Markdown$InlineParser$encodeUrl_a1);
+    var $author$project$Markdown$InlineParser$encodeUrl_a0 = $elm$url$Url$percentEncode, $author$project$Markdown$InlineParser$encodeUrl_a1 = A2($elm$regex$Regex$replace, $author$project$Markdown$InlineParser$decodeUrlRegex, (match) => $elm$core$Maybe$withDefault_raw(match.aG, $elm$url$Url$percentDecode(match.aG)));
     var $author$project$Markdown$InlineParser$urlRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("^([A-Za-z][A-Za-z0-9.+\\-]{1,31}:[^<>\\x00-\\x20]*)$"));
     var $author$project$Markdown$InlineParser$autolinkToMatch = function (_v0) {
         var match = _v0;
@@ -5737,12 +4594,11 @@
             u: $author$project$Markdown$InlineParser$AutolinkType(_Utils_Tuple2(match.t, $elm$core$Basics$composeR_raw($author$project$Markdown$InlineParser$encodeUrl_a0, $author$project$Markdown$InlineParser$encodeUrl_a1, match.t)))
         })) : $elm$core$Result$Err(match);
     };
-    var $elm$regex$Regex$findAtMost = _Regex_findAtMost;
     var $author$project$Markdown$Helpers$insideSquareBracketRegex = "[^\\[\\]\\\\]*(?:\\\\.[^\\[\\]\\\\]*)*";
     var $author$project$Markdown$InlineParser$refLabelRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("^\\[\\s*(" + ($author$project$Markdown$Helpers$insideSquareBracketRegex + ")\\s*\\]")));
     var $author$project$Markdown$Helpers$cleanWhitespaces = (original) => original;
     var $author$project$Markdown$Helpers$prepareRefLabel_a0 = $author$project$Markdown$Helpers$cleanWhitespaces, $author$project$Markdown$Helpers$prepareRefLabel_a1 = $elm$core$String$toLower, $author$project$Markdown$Helpers$prepareRefLabel = A2($elm$core$Basics$composeR, $author$project$Markdown$Helpers$prepareRefLabel_a0, $author$project$Markdown$Helpers$prepareRefLabel_a1);
-    var $author$project$Markdown$InlineParser$prepareUrlAndTitle_raw = (rawUrl, maybeTitle) => _Utils_Tuple2($elm$core$Basics$composeR_raw($author$project$Markdown$InlineParser$encodeUrl_a0, $author$project$Markdown$InlineParser$encodeUrl_a1, $author$project$Markdown$Helpers$formatStr(rawUrl)), $elm$core$Maybe$map_raw($author$project$Markdown$Helpers$formatStr, maybeTitle)), $author$project$Markdown$InlineParser$prepareUrlAndTitle = F2($author$project$Markdown$InlineParser$prepareUrlAndTitle_raw);
+    var $author$project$Markdown$InlineParser$prepareUrlAndTitle_raw = (rawUrl, maybeTitle) => _Utils_Tuple2($elm$core$Basics$composeR_raw($author$project$Markdown$InlineParser$encodeUrl_a0, $author$project$Markdown$InlineParser$encodeUrl_a1, $author$project$Markdown$Helpers$formatStr(rawUrl)), $elm$core$Maybe$map_raw($author$project$Markdown$Helpers$formatStr, maybeTitle));
     var $author$project$Markdown$InlineParser$refRegexToMatch_raw = function (matchModel, references, maybeRegexMatch) {
         var refLabel = ((str) => $elm$core$String$isEmpty(str) ? matchModel.t : str)($elm$core$Maybe$withDefault_raw(matchModel.t, $elm$core$Maybe$withDefault_raw($elm$core$Maybe$Nothing, $elm$core$Maybe$andThen_raw(A2($elm$core$Basics$composeR, ($) => $.be, $elm$core$List$head), maybeRegexMatch))));
         var _v0 = $elm$core$Dict$get_raw($elm$core$Basics$composeR_raw($author$project$Markdown$Helpers$prepareRefLabel_a0, $author$project$Markdown$Helpers$prepareRefLabel_a1, refLabel), references);
@@ -5773,12 +4629,12 @@
             }();
             return $elm$core$Maybe$Just(_Utils_update(matchModel, { o: matchModel.o + regexMatchLength, u: type_ }));
         }
-    }, $author$project$Markdown$InlineParser$refRegexToMatch = F3($author$project$Markdown$InlineParser$refRegexToMatch_raw);
+    };
     var $author$project$Markdown$InlineParser$checkForInlineReferences_raw = function (remainText, _v0, references) {
         var tempMatch = _v0;
         var matches = _Regex_findAtMost_raw(1, $author$project$Markdown$InlineParser$refLabelRegex, remainText);
         return $author$project$Markdown$InlineParser$refRegexToMatch_raw(tempMatch, references, $elm$core$List$head(matches));
-    }, $author$project$Markdown$InlineParser$checkForInlineReferences = F3($author$project$Markdown$InlineParser$checkForInlineReferences_raw);
+    };
     var $author$project$Markdown$Helpers$lineEndChars = "\\f\\v\\r\\n";
     var $author$project$Markdown$Helpers$whiteSpaceChars = " \\t\\f\\v\\r\\n";
     var $author$project$Markdown$InlineParser$hrefRegex = "(?:<([^<>" + ($author$project$Markdown$Helpers$lineEndChars + ("]*)>|([^" + ($author$project$Markdown$Helpers$whiteSpaceChars + ("\\(\\)\\\\]*(?:\\\\.[^" + ($author$project$Markdown$Helpers$whiteSpaceChars + "\\(\\)\\\\]*)*))")))));
@@ -5827,7 +4683,7 @@
         else {
             return $elm$core$Maybe$Nothing;
         }
-    }, $author$project$Markdown$InlineParser$inlineLinkTypeOrImageTypeRegexToMatch = F2($author$project$Markdown$InlineParser$inlineLinkTypeOrImageTypeRegexToMatch_raw);
+    };
     var $author$project$Markdown$InlineParser$checkForInlineLinkTypeOrImageType_raw = function (remainText, _v0, refs) {
         var tempMatch = _v0;
         var _v1 = _Regex_findAtMost_raw(1, $author$project$Markdown$InlineParser$inlineLinkTypeOrImageTypeRegex, remainText);
@@ -5845,7 +4701,7 @@
         else {
             return $author$project$Markdown$InlineParser$checkForInlineReferences_raw(remainText, tempMatch, refs);
         }
-    }, $author$project$Markdown$InlineParser$checkForInlineLinkTypeOrImageType = F3($author$project$Markdown$InlineParser$checkForInlineLinkTypeOrImageType_raw);
+    };
     var $elm$core$List$isEmpty = function (xs) {
         if (!xs.b) {
             return true;
@@ -5861,7 +4717,7 @@
             return (_Utils_cmp(match.o, testMatch.s) > 0) && (_Utils_cmp(match.o, testMatch.o) < 0);
         });
         return ($elm$core$List$isEmpty(remainMatches) || $elm$core$List$isEmpty(overlappingMatches(remainMatches))) ? $elm$core$Maybe$Just(_List_Cons(match, remainMatches)) : $elm$core$Maybe$Nothing;
-    }, $author$project$Markdown$InlineParser$checkParsedAheadOverlapping = F2($author$project$Markdown$InlineParser$checkParsedAheadOverlapping_raw);
+    };
     var $author$project$Markdown$InlineParser$emailRegex = $elm$core$Maybe$withDefault_raw($elm$regex$Regex$never, $elm$regex$Regex$fromString("^([a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~\\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?)*)$"));
     var $author$project$Markdown$InlineParser$emailAutolinkTypeToMatch = function (_v0) {
         var match = _v0;
@@ -5889,10 +4745,9 @@
                 }
             }
         }
-    }, $author$project$Markdown$InlineParser$findTokenHelp = F3($author$project$Markdown$InlineParser$findTokenHelp_raw);
-    var $author$project$Markdown$InlineParser$findToken_raw = (isToken, tokens) => $author$project$Markdown$InlineParser$findTokenHelp_raw(_List_Nil, isToken, tokens), $author$project$Markdown$InlineParser$findToken = F2($author$project$Markdown$InlineParser$findToken_raw);
-    var $author$project$Markdown$InlineParser$HtmlToken_raw = (a, b) => ({ $: 6, a: a, b: b }), $author$project$Markdown$InlineParser$HtmlToken = F2($author$project$Markdown$InlineParser$HtmlToken_raw);
-    var $author$project$Markdown$InlineParser$NotOpening = 1;
+    };
+    var $author$project$Markdown$InlineParser$findToken_raw = (isToken, tokens) => $author$project$Markdown$InlineParser$findTokenHelp_raw(_List_Nil, isToken, tokens);
+    var $author$project$Markdown$InlineParser$HtmlToken_raw = (a, b) => ({ $: 6, a: a, b: b });
     var $elm$parser$Parser$Advanced$getOffset = (s) => $elm$parser$Parser$Advanced$Good_raw(false, s.h, s);
     var $elm$parser$Parser$Advanced$bagToList_raw = function (bag, list) {
         bagToList: while (true) {
@@ -5915,7 +4770,7 @@
                     continue bagToList;
             }
         }
-    }, $elm$parser$Parser$Advanced$bagToList = F2($elm$parser$Parser$Advanced$bagToList_raw);
+    };
     var $elm$parser$Parser$Advanced$run_raw = function (_v0, src) {
         var parse = _v0;
         var _v1 = parse({ bl: 1, l: _List_Nil, p: 1, h: 0, cE: 1, b: src });
@@ -5927,7 +4782,7 @@
             var bag = _v1.b;
             return $elm$core$Result$Err($elm$parser$Parser$Advanced$bagToList_raw(bag, _List_Nil));
         }
-    }, $elm$parser$Parser$Advanced$run = F2($elm$parser$Parser$Advanced$run_raw);
+    };
     var $author$project$Markdown$InlineParser$htmlToToken_raw = function (rawText, _v0) {
         var match = _v0;
         var consumedCharacters = $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$succeed(F3((startOffset, htmlTag, endOffset) => ({ bv: htmlTag, i: endOffset - startOffset }))), $elm$parser$Parser$Advanced$getOffset), $author$project$HtmlParser$html), $elm$parser$Parser$Advanced$getOffset);
@@ -5941,7 +4796,7 @@
         else {
             return $elm$core$Maybe$Nothing;
         }
-    }, $author$project$Markdown$InlineParser$htmlToToken = F2($author$project$Markdown$InlineParser$htmlToToken_raw);
+    };
     var $author$project$Markdown$Helpers$ifError_raw = function (_function, result) {
         if (!result.$) {
             return result;
@@ -5950,17 +4805,15 @@
             var err = result.a;
             return _function(err);
         }
-    }, $author$project$Markdown$Helpers$ifError = F2($author$project$Markdown$Helpers$ifError_raw);
+    };
     var $author$project$Markdown$InlineParser$isCloseToken_raw = (htmlModel, token) => false, $author$project$Markdown$InlineParser$isCloseToken = F2($author$project$Markdown$InlineParser$isCloseToken_raw);
     var $author$project$Markdown$InlineParser$isCodeTokenPair_raw = function (closeToken, openToken) {
         var _v0 = openToken.n;
         if (!_v0.$) {
             if (!_v0.a) {
-                var _v1 = _v0.a;
                 return _Utils_eq(openToken.i - 1, closeToken.i);
             }
             else {
-                var _v2 = _v0.a;
                 return _Utils_eq(openToken.i, closeToken.i);
             }
         }
@@ -5999,7 +4852,7 @@
         }
     }, $author$project$Markdown$InlineParser$isOpenEmphasisToken = F2($author$project$Markdown$InlineParser$isOpenEmphasisToken_raw);
     var $author$project$Markdown$InlineParser$HardLineBreakType = { $: 1 };
-    var $author$project$Markdown$InlineParser$tokenToMatch_raw = (token, type_) => ({ o: token.c + token.i, A: _List_Nil, s: token.c, t: "", I: 0, z: 0, u: type_ }), $author$project$Markdown$InlineParser$tokenToMatch = F2($author$project$Markdown$InlineParser$tokenToMatch_raw);
+    var $author$project$Markdown$InlineParser$tokenToMatch_raw = (token, type_) => ({ o: token.c + token.i, A: _List_Nil, s: token.c, t: "", I: 0, z: 0, u: type_ });
     var $author$project$Markdown$InlineParser$lineBreakTTM_raw = function (remaining, tokens, matches, refs, rawText) {
         lineBreakTTM: while (true) {
             if (!remaining.b) {
@@ -6029,11 +4882,11 @@
                 }
             }
         }
-    }, $author$project$Markdown$InlineParser$lineBreakTTM = F5($author$project$Markdown$InlineParser$lineBreakTTM_raw);
+    };
     var $author$project$Markdown$InlineParser$removeParsedAheadTokens_raw = function (_v0, tokensTail) {
         var match = _v0;
         return $elm$core$List$filter_raw((token) => _Utils_cmp(token.c, match.o) > -1, tokensTail);
-    }, $author$project$Markdown$InlineParser$removeParsedAheadTokens = F2($author$project$Markdown$InlineParser$removeParsedAheadTokens_raw);
+    };
     var $author$project$Markdown$InlineParser$angleBracketsToMatch_raw = function (closeToken, escaped, matches, references, rawText, _v39) {
         var openToken = _v39.a;
         var remainTokens = _v39.c;
@@ -6058,7 +4911,7 @@
             var newMatch = result.a;
             return $elm$core$Maybe$Just(_Utils_Tuple2(remainTokens, _List_Cons(newMatch, matches)));
         }
-    }, $author$project$Markdown$InlineParser$angleBracketsToMatch = F6($author$project$Markdown$InlineParser$angleBracketsToMatch_raw);
+    };
     var $author$project$Markdown$InlineParser$codeAutolinkTypeHtmlTagTTM_raw = function (remaining, tokens, matches, references, rawText) {
         codeAutolinkTypeHtmlTagTTM: while (true) {
             if (!remaining.b) {
@@ -6151,14 +5004,13 @@
                 }
             }
         }
-    }, $author$project$Markdown$InlineParser$codeAutolinkTypeHtmlTagTTM = F5($author$project$Markdown$InlineParser$codeAutolinkTypeHtmlTagTTM_raw);
+    };
     var $author$project$Markdown$InlineParser$codeToMatch_raw = function (closeToken, matches, references, rawText, _v27) {
         var openToken = _v27.a;
         var remainTokens = _v27.c;
         var updatedOpenToken = function () {
             var _v28 = openToken.n;
             if ((!_v28.$) && (!_v28.a)) {
-                var _v29 = _v28.a;
                 return _Utils_update(openToken, { c: openToken.c + 1, i: openToken.i - 1 });
             }
             else {
@@ -6167,7 +5019,7 @@
         }();
         var match = $author$project$Markdown$InlineParser$tokenPairToMatch_raw(references, rawText, $author$project$Markdown$Helpers$cleanWhitespaces, $author$project$Markdown$InlineParser$CodeType, updatedOpenToken, closeToken, _List_Nil);
         return _Utils_Tuple2(remainTokens, _List_Cons(match, matches));
-    }, $author$project$Markdown$InlineParser$codeToMatch = F5($author$project$Markdown$InlineParser$codeToMatch_raw);
+    };
     var $author$project$Markdown$InlineParser$emphasisTTM_raw = function (remaining, tokens, matches, references, rawText) {
         emphasisTTM: while (true) {
             if (!remaining.b) {
@@ -6267,7 +5119,7 @@
                 }
             }
         }
-    }, $author$project$Markdown$InlineParser$emphasisTTM = F5($author$project$Markdown$InlineParser$emphasisTTM_raw);
+    };
     var $author$project$Markdown$InlineParser$emphasisToMatch_raw = function (references, rawText, closeToken, tokensTail, _v20) {
         var openToken = _v20.a;
         var innerTokens = _v20.b;
@@ -6286,7 +5138,7 @@
         });
         var match = $author$project$Markdown$InlineParser$tokenPairToMatch_raw(references, rawText, (s) => s, $author$project$Markdown$InlineParser$EmphasisType(updt.aH.i), updt.aH, updt.aR, $elm$core$List$reverse(innerTokens));
         return _Utils_Tuple3(updt.a2, match, updt.aZ);
-    }, $author$project$Markdown$InlineParser$emphasisToMatch = F5($author$project$Markdown$InlineParser$emphasisToMatch_raw);
+    };
     var $author$project$Markdown$InlineParser$htmlElementTTM_raw = function (remaining, tokens, matches, references, rawText) {
         htmlElementTTM: while (true) {
             if (!remaining.b) {
@@ -6346,7 +5198,7 @@
                 }
             }
         }
-    }, $author$project$Markdown$InlineParser$htmlElementTTM = F5($author$project$Markdown$InlineParser$htmlElementTTM_raw);
+    };
     var $author$project$Markdown$InlineParser$linkImageTypeTTM_raw = function (remaining, tokens, matches, references, rawText) {
         linkImageTypeTTM: while (true) {
             if (!remaining.b) {
@@ -6405,7 +5257,7 @@
                 }
             }
         }
-    }, $author$project$Markdown$InlineParser$linkImageTypeTTM = F5($author$project$Markdown$InlineParser$linkImageTypeTTM_raw);
+    };
     var $author$project$Markdown$InlineParser$linkOrImageTypeToMatch_raw = function (closeToken, tokensTail, oldMatches, references, rawText, _v1) {
         var openToken = _v1.a;
         var innerTokens = _v1.b;
@@ -6445,7 +5297,6 @@
                 }
             case 1:
                 if (!_v2.a) {
-                    var _v5 = _v2.a;
                     var tempMatch = findTempMatch(true);
                     var _v6 = $author$project$Markdown$InlineParser$checkForInlineLinkTypeOrImageType_raw(remainText, tempMatch, references);
                     if (_v6.$ === 1) {
@@ -6464,13 +5315,12 @@
                     }
                 }
                 else {
-                    var _v8 = _v2.a;
                     return $elm$core$Maybe$Just(removeOpenToken);
                 }
             default:
                 return $elm$core$Maybe$Nothing;
         }
-    }, $author$project$Markdown$InlineParser$linkOrImageTypeToMatch = F6($author$project$Markdown$InlineParser$linkOrImageTypeToMatch_raw);
+    };
     var $author$project$Markdown$InlineParser$tokenPairToMatch_raw = function (references, rawText, processText, type_, openToken, closeToken, innerTokens) {
         var textStart = openToken.c + openToken.i;
         var textEnd = closeToken.c;
@@ -6483,14 +5333,14 @@
             return $author$project$Markdown$InlineParser$prepareChildMatch_raw(match, matchModel);
         }, $author$project$Markdown$InlineParser$tokensToMatches_raw(innerTokens, _List_Nil, references, rawText));
         return { o: end, A: matches, s: start, t: text, I: textEnd, z: textStart, u: type_ };
-    }, $author$project$Markdown$InlineParser$tokenPairToMatch = F7($author$project$Markdown$InlineParser$tokenPairToMatch_raw);
-    var $author$project$Markdown$InlineParser$tokensToMatches_raw = (tokens, matches, references, rawText) => $author$project$Markdown$InlineParser$codeAutolinkTypeHtmlTagTTM_raw(tokens, _List_Nil, matches, references, rawText), $author$project$Markdown$InlineParser$tokensToMatches = F4($author$project$Markdown$InlineParser$tokensToMatches_raw);
+    };
+    var $author$project$Markdown$InlineParser$tokensToMatches_raw = (tokens, matches, references, rawText) => $author$project$Markdown$InlineParser$codeAutolinkTypeHtmlTagTTM_raw(tokens, _List_Nil, matches, references, rawText);
     var $elm$core$String$trim = _String_trim;
     var $author$project$Markdown$InlineParser$parse_raw = function (refs, rawText_) {
         var rawText = $elm$core$String$trim(rawText_);
         var tokens = $author$project$Markdown$InlineParser$tokenize(rawText);
         return $author$project$Markdown$InlineParser$matchesToInlines($author$project$Markdown$InlineParser$parseTextMatches_raw(rawText, _List_Nil, $author$project$Markdown$InlineParser$organizeMatches($author$project$Markdown$InlineParser$tokensToMatches_raw(tokens, _List_Nil, refs, rawText))));
-    }, $author$project$Markdown$InlineParser$parse = F2($author$project$Markdown$InlineParser$parse_raw);
+    };
     var $author$project$Markdown$Parser$thisIsDefinitelyNotAnHtmlTag = $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$token($elm$parser$Parser$Advanced$Token_raw(" ", $elm$parser$Parser$Expecting(" "))), b: { $: 1, a: $elm$parser$Parser$Advanced$token($elm$parser$Parser$Advanced$Token_raw(">", $elm$parser$Parser$Expecting(">"))), b: { $: 1, a: $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$chompIf_raw($elm$core$Char$isAlpha, $elm$parser$Parser$Expecting("Alpha")), $elm$parser$Parser$Advanced$chompWhile((c) => $elm$core$Char$isAlphaNum(c) || (c === "-"))), $elm$parser$Parser$Advanced$oneOf(_List_fromArray([
                     $elm$parser$Parser$Advanced$token($elm$parser$Parser$Advanced$Token_raw(":", $elm$parser$Parser$Expecting(":"))),
                     $elm$parser$Parser$Advanced$token($elm$parser$Parser$Advanced$Token_raw("@", $elm$parser$Parser$Expecting("@"))),
@@ -6499,8 +5349,7 @@
                     $elm$parser$Parser$Advanced$token($elm$parser$Parser$Advanced$Token_raw(".", $elm$parser$Parser$Expecting(".")))
                 ]))), b: _List_Nil } } });
     var $author$project$Markdown$Parser$parseAsParagraphInsteadOfHtmlBlock = $elm$parser$Parser$Advanced$backtrackable($elm$parser$Parser$Advanced$mapChompedString_raw(F2((rawLine, _v0) => $author$project$Markdown$RawBlock$Body(rawLine)), $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$token($elm$parser$Parser$Advanced$Token_raw("<", $elm$parser$Parser$Expecting("<"))), $author$project$Markdown$Parser$thisIsDefinitelyNotAnHtmlTag), $elm$parser$Parser$Advanced$chompUntilEndOr("\n")), $author$project$Helpers$endOfLineOrFile)));
-    var $elm$parser$Parser$Advanced$findSubString = _Parser_findSubString;
-    var $elm$parser$Parser$Advanced$fromInfo_raw = (row, col, x, context) => $elm$parser$Parser$Advanced$AddRight_raw($elm$parser$Parser$Advanced$Empty, $elm$parser$Parser$Advanced$DeadEnd_raw(row, col, x, context)), $elm$parser$Parser$Advanced$fromInfo = F4($elm$parser$Parser$Advanced$fromInfo_raw);
+    var $elm$parser$Parser$Advanced$fromInfo_raw = (row, col, x, context) => $elm$parser$Parser$Advanced$AddRight_raw($elm$parser$Parser$Advanced$Empty, $elm$parser$Parser$Advanced$DeadEnd_raw(row, col, x, context));
     var $elm$parser$Parser$Advanced$chompUntil = function (_v0) {
         var str = _v0.a;
         var expecting = _v0.b;
@@ -6523,8 +5372,8 @@
     }, $author$project$Markdown$CodeBlock$openingCodeFence);
     var $author$project$Markdown$CodeBlock$parser = $author$project$Markdown$CodeBlock$parserHelp;
     var $author$project$Parser$Token$greaterThan = $elm$parser$Parser$Advanced$Token_raw(">", $elm$parser$Parser$Expecting("a `>`"));
-    var $elm$parser$Parser$Advanced$Located_raw = (row, col, context) => ({ bl: col, l: context, cE: row }), $elm$parser$Parser$Advanced$Located = F3($elm$parser$Parser$Advanced$Located_raw);
-    var $elm$parser$Parser$Advanced$changeContext_raw = (newContext, s) => ({ bl: s.bl, l: newContext, p: s.p, h: s.h, cE: s.cE, b: s.b }), $elm$parser$Parser$Advanced$changeContext = F2($elm$parser$Parser$Advanced$changeContext_raw);
+    var $elm$parser$Parser$Advanced$Located_raw = (row, col, context) => ({ bl: col, l: context, cE: row });
+    var $elm$parser$Parser$Advanced$changeContext_raw = (newContext, s) => ({ bl: s.bl, l: newContext, p: s.p, h: s.h, cE: s.cE, b: s.b });
     var $elm$parser$Parser$Advanced$inContext_raw = function (context, _v0) {
         var parse = _v0;
         return function (s0) {
@@ -6540,7 +5389,7 @@
                 return step;
             }
         };
-    }, $elm$parser$Parser$Advanced$inContext = F2($elm$parser$Parser$Advanced$inContext_raw);
+    };
     var $author$project$Helpers$isGfmWhitespace = function (_char) {
         switch (_char) {
             case " ":
@@ -6587,7 +5436,6 @@
             $elm$parser$Parser$Advanced$succeed(0)
         ]))), b: { $: 1, a: $elm$parser$Parser$Advanced$succeed(0), b: _List_Nil } });
     var $author$project$Markdown$LinkReferenceDefinition$parser = $elm$parser$Parser$Advanced$inContext_raw("link reference definition", $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed(F3((label, destination, title) => _Utils_Tuple2(label, { cg: destination, cK: title }))), $author$project$Helpers$upToThreeSpaces), $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$ignorer_raw($author$project$Markdown$LinkReferenceDefinition$labelParser, $elm$parser$Parser$Advanced$chompWhile($author$project$Helpers$isSpaceOrTab)), $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$symbol($author$project$Parser$Token$newline), b: { $: 1, a: $elm$parser$Parser$Advanced$succeed(0), b: _List_Nil } })), $elm$parser$Parser$Advanced$chompWhile($author$project$Helpers$isSpaceOrTab))), $author$project$Markdown$LinkReferenceDefinition$destinationParser), $author$project$Markdown$LinkReferenceDefinition$titleParser));
-    var $author$project$ThematicBreak$ThematicBreak = 0;
     var $author$project$ThematicBreak$isSpace = function (c) {
         switch (c) {
             case " ":
@@ -6628,8 +5476,8 @@
                 return _Utils_ap(string1, _Utils_ap(joinWith, string2));
             }
         }
-    }, $author$project$Markdown$Parser$joinRawStringsWith = F3($author$project$Markdown$Parser$joinRawStringsWith_raw);
-    var $author$project$Markdown$Parser$joinStringsPreserveAll_raw = (string1, string2) => string1 + ("\n" + string2), $author$project$Markdown$Parser$joinStringsPreserveAll = F2($author$project$Markdown$Parser$joinStringsPreserveAll_raw);
+    };
+    var $author$project$Markdown$Parser$joinStringsPreserveAll_raw = (string1, string2) => string1 + ("\n" + string2);
     var $author$project$Markdown$Parser$possiblyMergeBlocks_raw = (state, newRawBlock) => ({
         af: state.af,
         T: function () {
@@ -6700,13 +5548,7 @@
             }
             return _List_Cons(newRawBlock, state.T);
         }()
-    }), $author$project$Markdown$Parser$possiblyMergeBlocks = F2($author$project$Markdown$Parser$possiblyMergeBlocks_raw);
-    var $author$project$Markdown$Block$H1 = 0;
-    var $author$project$Markdown$Block$H2 = 1;
-    var $author$project$Markdown$Block$H3 = 2;
-    var $author$project$Markdown$Block$H4 = 3;
-    var $author$project$Markdown$Block$H5 = 4;
-    var $author$project$Markdown$Block$H6 = 5;
+    });
     var $author$project$Markdown$Parser$toHeading = function (level) {
         switch (level) {
             case 1:
@@ -6732,8 +5574,6 @@
     var $author$project$Markdown$UnorderedList$listMarkerParser = $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($author$project$Parser$Token$minus), $elm$parser$Parser$Advanced$symbol($author$project$Parser$Token$minus)), b: { $: 1, a: $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($author$project$Parser$Token$plus), $elm$parser$Parser$Advanced$symbol($author$project$Parser$Token$plus)), b: { $: 1, a: $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed($author$project$Parser$Token$asterisk), $elm$parser$Parser$Advanced$symbol($author$project$Parser$Token$asterisk)), b: _List_Nil } } });
     var $author$project$Markdown$ListItem$PlainItem = (a) => ({ $: 1, a: a });
     var $author$project$Markdown$ListItem$TaskItem_raw = (a, b) => ({ $: 0, a: a, b: b }), $author$project$Markdown$ListItem$TaskItem = F2($author$project$Markdown$ListItem$TaskItem_raw);
-    var $author$project$Markdown$ListItem$Complete = 1;
-    var $author$project$Markdown$ListItem$Incomplete = 0;
     var $author$project$Markdown$ListItem$taskItemParser = $elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed(1), $elm$parser$Parser$Advanced$symbol($elm$parser$Parser$Advanced$Token_raw("[x] ", $elm$parser$Parser$ExpectingSymbol("[x] ")))), b: { $: 1, a: $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed(1), $elm$parser$Parser$Advanced$symbol($elm$parser$Parser$Advanced$Token_raw("[X] ", $elm$parser$Parser$ExpectingSymbol("[X] ")))), b: { $: 1, a: $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$succeed(0), $elm$parser$Parser$Advanced$symbol($elm$parser$Parser$Advanced$Token_raw("[ ] ", $elm$parser$Parser$ExpectingSymbol("[ ] ")))), b: _List_Nil } } });
     var $author$project$Parser$Extra$zeroOrMore = (condition) => $elm$parser$Parser$Advanced$chompWhile(condition);
     var $author$project$Markdown$ListItem$parser = $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$oneOf({ $: 1, a: $elm$parser$Parser$Advanced$keeper_raw($elm$parser$Parser$Advanced$succeed($author$project$Markdown$ListItem$TaskItem), $elm$parser$Parser$Advanced$ignorer_raw($author$project$Markdown$ListItem$taskItemParser, $author$project$Parser$Extra$zeroOrMore($author$project$Helpers$isSpaceOrTab))), b: { $: 1, a: $elm$parser$Parser$Advanced$succeed($author$project$Markdown$ListItem$PlainItem), b: _List_Nil } }), $elm$parser$Parser$Advanced$ignorer_raw($elm$parser$Parser$Advanced$getChompedString($elm$parser$Parser$Advanced$chompUntilEndOr("\n")), $author$project$Helpers$endOfLineOrFile));
@@ -6809,7 +5649,7 @@
                 var content = node.b;
                 return $elm$core$Result$Ok(_List_Cons($author$project$Markdown$Block$HtmlBlock($author$project$Markdown$Block$HtmlDeclaration_raw(declarationType, content)), blocks));
         }
-    }, $author$project$Markdown$Parser$childToBlocks = F2($author$project$Markdown$Parser$childToBlocks_raw);
+    };
     var $author$project$Markdown$Parser$inlineParseHelper_raw = function (referencesDict, _v21) {
         var unparsedInlines = _v21;
         var referencesDict2 = $elm$core$Dict$fromList($elm$core$List$map_raw($elm$core$Tuple$mapSecond(function (_v22) {
@@ -6818,7 +5658,7 @@
             return _Utils_Tuple2(destination, title);
         }), referencesDict));
         return $elm$core$List$map_raw($author$project$Markdown$Parser$mapInline, $author$project$Markdown$InlineParser$parse_raw(referencesDict2, unparsedInlines));
-    }, $author$project$Markdown$Parser$inlineParseHelper = F2($author$project$Markdown$Parser$inlineParseHelper_raw);
+    };
     var $author$project$Markdown$Parser$mapInline = function (inline) {
         switch (inline.$) {
             case 0:
@@ -6858,7 +5698,6 @@
     var $author$project$Markdown$Parser$nodeToRawBlock = function (node) {
         switch (node.$) {
             case 1:
-                var innerText = node.a;
                 return $author$project$Markdown$Block$HtmlComment("TODO this never happens, but use types to drop this case.");
             case 0:
                 var tag = node.a;
@@ -6912,7 +5751,7 @@
                 return $elm$core$Result$Ok($elm$core$List$reverse(soFar));
             }
         }
-    }, $author$project$Markdown$Parser$nodesToBlocksHelp = F2($author$project$Markdown$Parser$nodesToBlocksHelp_raw);
+    };
     var $author$project$Markdown$Parser$parse = function (input) {
         var _v12 = $elm$parser$Parser$Advanced$run_raw($elm$parser$Parser$Advanced$ignorer_raw($author$project$Markdown$Parser$cyclic$rawBlockParser(), $author$project$Helpers$endOfFile), input);
         if (_v12.$ === 1) {
@@ -6970,7 +5809,7 @@
                 return $elm$core$Result$Ok(parsedBlocks);
             }
         }
-    }, $author$project$Markdown$Parser$parseAllInlinesHelp = F3($author$project$Markdown$Parser$parseAllInlinesHelp_raw);
+    };
     var $author$project$Markdown$Parser$parseInlines_raw = function (linkReferences, rawBlock) {
         switch (rawBlock.$) {
             case 0:
@@ -7048,7 +5887,6 @@
             default:
                 var _v8 = rawBlock.a;
                 var header = _v8.a;
-                var rows = _v8.b;
                 var parseHeader = function (_v9) {
                     var label = _v9.aE;
                     var alignment = _v9.aQ;
@@ -7057,7 +5895,7 @@
                 };
                 return $author$project$Markdown$Parser$ParsedBlock($author$project$Markdown$Block$Table_raw($elm$core$List$map_raw(parseHeader, header), _List_Nil));
         }
-    }, $author$project$Markdown$Parser$parseInlines = F2($author$project$Markdown$Parser$parseInlines_raw);
+    };
     var $author$project$Markdown$Parser$parseRawInline_raw = (linkReferences, wrap, unparsedInlines) => wrap($author$project$Markdown$Parser$inlineParseHelper_raw(linkReferences, unparsedInlines)), $author$project$Markdown$Parser$parseRawInline = F3($author$project$Markdown$Parser$parseRawInline_raw);
     var $author$project$Markdown$Parser$stepRawBlock = function (revStmts) {
         var _v2 = revStmts.T;
@@ -7102,7 +5940,7 @@
                 return $elm$parser$Parser$Advanced$succeed($author$project$Markdown$RawBlock$Html($author$project$Markdown$Block$HtmlDeclaration_raw(declarationType, content)));
         }
     };
-    const $author$project$Markdown$Parser$cyclic$whenPreviousWasNotBody = () => ({ $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((_v25, revStmts) => $elm$parser$Parser$Advanced$Done(revStmts)), $author$project$Helpers$endOfFile), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((block, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$possiblyMergeBlocks_raw(revStmts, block))), $author$project$Markdown$Parser$parseAsParagraphInsteadOfHtmlBlock), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((reference, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$addReference_raw(revStmts, reference))), $elm$parser$Parser$Advanced$backtrackable($author$project$Markdown$LinkReferenceDefinition$parser)), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((block, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$possiblyMergeBlocks_raw(revStmts, block))), $elm$parser$Parser$Advanced$oneOf(_List_fromArray([
+    var $author$project$Markdown$Parser$cyclic$whenPreviousWasNotBody = () => ({ $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((_v25, revStmts) => $elm$parser$Parser$Advanced$Done(revStmts)), $author$project$Helpers$endOfFile), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((block, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$possiblyMergeBlocks_raw(revStmts, block))), $author$project$Markdown$Parser$parseAsParagraphInsteadOfHtmlBlock), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((reference, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$addReference_raw(revStmts, reference))), $elm$parser$Parser$Advanced$backtrackable($author$project$Markdown$LinkReferenceDefinition$parser)), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((block, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$possiblyMergeBlocks_raw(revStmts, block))), $elm$parser$Parser$Advanced$oneOf(_List_fromArray([
                         $author$project$Markdown$Parser$blankLine,
                         $author$project$Markdown$Parser$blockQuote,
                         $elm$parser$Parser$Advanced$map_raw($author$project$Markdown$RawBlock$CodeBlock, $elm$parser$Parser$Advanced$backtrackable($author$project$Markdown$CodeBlock$parser)),
@@ -7114,7 +5952,7 @@
                         $author$project$Markdown$Parser$cyclic$htmlParser(),
                         $author$project$Markdown$Parser$plainLine
                     ]))), b: _List_Nil } } } });
-    const $author$project$Markdown$Parser$cyclic$whenPreviousWasBody = () => ({ $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((_v23, revStmts) => $elm$parser$Parser$Advanced$Done(revStmts)), $author$project$Helpers$endOfFile), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((block, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$possiblyMergeBlocks_raw(revStmts, block))), $author$project$Markdown$Parser$parseAsParagraphInsteadOfHtmlBlock), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((reference, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$addReference_raw(revStmts, reference))), $elm$parser$Parser$Advanced$backtrackable($author$project$Markdown$LinkReferenceDefinition$parser)), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((block, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$possiblyMergeBlocks_raw(revStmts, block))), $elm$parser$Parser$Advanced$oneOf(_List_fromArray([
+    var $author$project$Markdown$Parser$cyclic$whenPreviousWasBody = () => ({ $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((_v23, revStmts) => $elm$parser$Parser$Advanced$Done(revStmts)), $author$project$Helpers$endOfFile), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((block, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$possiblyMergeBlocks_raw(revStmts, block))), $author$project$Markdown$Parser$parseAsParagraphInsteadOfHtmlBlock), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((reference, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$addReference_raw(revStmts, reference))), $elm$parser$Parser$Advanced$backtrackable($author$project$Markdown$LinkReferenceDefinition$parser)), b: { $: 1, a: $elm$parser$Parser$Advanced$map_raw(F2((block, revStmts) => $elm$parser$Parser$Advanced$Loop($author$project$Markdown$Parser$possiblyMergeBlocks_raw(revStmts, block))), $elm$parser$Parser$Advanced$oneOf(_List_fromArray([
                         $author$project$Markdown$Parser$blankLine,
                         $author$project$Markdown$Parser$blockQuote,
                         $elm$parser$Parser$Advanced$map_raw($author$project$Markdown$RawBlock$CodeBlock, $elm$parser$Parser$Advanced$backtrackable($author$project$Markdown$CodeBlock$parser)),
@@ -7125,8 +5963,8 @@
                         $author$project$Markdown$Parser$cyclic$htmlParser(),
                         $author$project$Markdown$Parser$plainLine
                     ]))), b: _List_Nil } } } });
-    const $author$project$Markdown$Parser$cyclic$htmlParser = () => $elm$parser$Parser$Advanced$andThen_raw($author$project$Markdown$Parser$xmlNodeToHtmlNode, $author$project$HtmlParser$html);
-    const $author$project$Markdown$Parser$cyclic$rawBlockParser = () => $elm$parser$Parser$Advanced$loop_raw({ af: _List_Nil, T: _List_Nil }, $author$project$Markdown$Parser$stepRawBlock);
+    var $author$project$Markdown$Parser$cyclic$htmlParser = () => $elm$parser$Parser$Advanced$andThen_raw($author$project$Markdown$Parser$xmlNodeToHtmlNode, $author$project$HtmlParser$html);
+    var $author$project$Markdown$Parser$cyclic$rawBlockParser = () => $elm$parser$Parser$Advanced$loop_raw({ af: _List_Nil, T: _List_Nil }, $author$project$Markdown$Parser$stepRawBlock);
     var $author$project$Markdown$Parser$whenPreviousWasNotBody = $author$project$Markdown$Parser$cyclic$whenPreviousWasNotBody();
     $author$project$Markdown$Parser$cyclic$whenPreviousWasNotBody = () => $author$project$Markdown$Parser$whenPreviousWasNotBody;
     var $author$project$Markdown$Parser$whenPreviousWasBody = $author$project$Markdown$Parser$cyclic$whenPreviousWasBody();
@@ -7135,7 +5973,7 @@
     $author$project$Markdown$Parser$cyclic$htmlParser = () => $author$project$Markdown$Parser$htmlParser;
     var $author$project$Markdown$Parser$rawBlockParser = $author$project$Markdown$Parser$cyclic$rawBlockParser();
     $author$project$Markdown$Parser$cyclic$rawBlockParser = () => $author$project$Markdown$Parser$rawBlockParser;
-    var $author$project$Benchmarks$compare_raw = (title, markdown) => $elm_explorations$benchmark$Benchmark$benchmark_raw(title, (_v0) => $author$project$Markdown$Parser$parse(markdown)), $author$project$Benchmarks$compare = F2($author$project$Benchmarks$compare_raw);
+    var $author$project$Benchmarks$compare_raw = (title, markdown) => $elm_explorations$benchmark$Benchmark$benchmark_raw(title, (_v0) => $author$project$Markdown$Parser$parse(markdown));
     var $author$project$Benchmarks$elmMarkdownExplorationsReadme = function () {
         var source = "# elm-markdown\n\n## Level 2 heading\n\n### Level 3 heading\n\n";
         return $author$project$Benchmarks$compare_raw("elm-explorations/markdown readme", source);

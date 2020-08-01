@@ -5,10 +5,10 @@
         wrapper.f = fun;
         return wrapper;
     }
-    const F2 = (fun) => F(2, fun, (a) => (b) => fun(a, b));
-    const F4 = (fun) => F(4, fun, (a) => (b) => (c) => (d) => fun(a, b, c, d));
-    const A2 = (fun, a, b) => fun.a === 2 ? fun.f(a, b) : fun(a)(b);
-    const A3 = (fun, a, b, c) => fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
+    var F2 = (fun) => F(2, fun, (a) => (b) => fun(a, b));
+    var F4 = (fun) => F(4, fun, (a) => (b) => (c) => (d) => fun(a, b, c, d));
+    var A2 = (fun, a, b) => fun.a === 2 ? fun.f(a, b) : fun(a)(b);
+    var A3 = (fun, a, b, c) => fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
     // COMPARISONS
     // Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
     // the particular integer values assigned to LT, EQ, and GT.
@@ -41,10 +41,10 @@
         for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) { } // WHILE_CONSES
         return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
     }
-    const _Utils_Tuple2 = (a, b) => ({ a: a, b: b });
-    const _Utils_chr = (c) => c;
+    var _Utils_Tuple2 = (a, b) => ({ a: a, b: b });
+    var _Utils_chr = (c) => c;
     var _List_Nil = { $: 0, a: null, b: null };
-    const _List_Cons = (hd, tl) => ({ $: 1, a: hd, b: tl });
+    var _List_Cons = (hd, tl) => ({ $: 1, a: hd, b: tl });
     var _List_cons = F2(_List_Cons);
     function _List_fromArray(arr) {
         var out = _List_Nil;
@@ -68,7 +68,7 @@
         return _List_fromArray(arr);
     };
     var _JsArray_empty = [];
-    const _JsArray_length = (array) => array.length;
+    var _JsArray_length = (array) => array.length;
     var _JsArray_initialize_raw = function (size, offset, func) {
         var result = new Array(size);
         for (var i = 0; i < size; i++) {
@@ -117,7 +117,7 @@
         }
         return true;
     };
-    const _String_fromNumber = (number) => number + "";
+    var _String_fromNumber = (number) => number + "";
     function _Char_toCode(char) {
         var code = char.charCodeAt(0);
         if (55296 <= code && code <= 56319) {
@@ -221,9 +221,9 @@
         }
         return $elm$core$Result$Ok(toElmValue(array));
     }
-    const _Json_isArray = (value) => Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
-    const _Json_toElmArray = (array) => $elm$core$Array$initialize_raw(array.length, (i) => array[i]);
-    const _Json_expecting = (type, value) => $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
+    var _Json_isArray = (value) => Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
+    var _Json_toElmArray = (array) => $elm$core$Array$initialize_raw(array.length, (i) => array[i]);
+    var _Json_expecting = (type, value) => $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
     // EQUALITY
     function _Json_equality(x, y) {
         if (x === y) {
@@ -270,8 +270,8 @@
     }
     // ENCODE
     var _Json_encode_raw = (indentLevel, value) => JSON.stringify(_Json_unwrap(value), null, indentLevel) + "";
-    const _Json_wrap = (value) => value;
-    const _Json_unwrap = (value) => value;
+    var _Json_wrap = (value) => value;
+    var _Json_unwrap = (value) => value;
     /* STEP PROCESSES
     
     type alias Process =
@@ -369,7 +369,7 @@
         node.parentNode.replaceChild(_VirtualDom_render(virtualNode, function () { }), node);
         return {};
     }, _VirtualDom_init = F4(_VirtualDom_init_raw);
-    const _VirtualDom_text = (string) => ({
+    var _VirtualDom_text = (string) => ({
         $: 0,
         a: string
     });
@@ -530,7 +530,7 @@
         callback.q = initialHandler;
         return callback;
     }
-    const _VirtualDom_equalEvents = (x, y) => x.$ == y.$ && _Json_equality(x.a, y.a);
+    var _VirtualDom_equalEvents = (x, y) => x.$ == y.$ && _Json_equality(x.a, y.a);
     function _VirtualDom_pushPatch(patches, type, index, data) {
         var patch = {
             $: type,

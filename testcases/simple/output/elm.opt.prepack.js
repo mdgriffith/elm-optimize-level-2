@@ -64,7 +64,7 @@
     var out = _P__36temp_36list;
 
     for (var i = arr.length; i--;) {
-      out = _Z_(arr[i], out);
+      out = _Z__95List_95Cons(arr[i], out);
     }
 
     return out;
@@ -76,27 +76,27 @@
         return decoder.b(value);
 
       case 5:
-        return value === null ? _N__36elm_36core_36Result_36Ok(decoder.c) : _O_("null", value);
+        return value === null ? _N__36elm_36core_36Result_36Ok(decoder.c) : _S__95Json_95expecting("null", value);
 
       case 3:
-        if (!_S_(value)) {
-          return _O_("a LIST", value);
+        if (!_T__95Json_95isArray(value)) {
+          return _S__95Json_95expecting("a LIST", value);
         }
 
-        return _T__95Json_95runArrayDecoder(decoder.b, value, _U__95List_95fromArray);
+        return _O__95Json_95runArrayDecoder(decoder.b, value, _U__95List_95fromArray);
 
       case 4:
-        if (!_S_(value)) {
-          return _O_("an ARRAY", value);
+        if (!_T__95Json_95isArray(value)) {
+          return _S__95Json_95expecting("an ARRAY", value);
         }
 
-        return _T__95Json_95runArrayDecoder(decoder.b, value, _V_);
+        return _O__95Json_95runArrayDecoder(decoder.b, value, _V__95Json_95toElmArray);
 
       case 6:
         var field = decoder.d;
 
         if (typeof value !== "object" || value === null || !(field in value)) {
-          return _O_("an OBJECT with a field named `" + field + "`", value);
+          return _S__95Json_95expecting("an OBJECT with a field named `" + field + "`", value);
         }
 
         var result = _L__95Json_95runHelp(decoder.b, value[field]);
@@ -106,12 +106,12 @@
       case 7:
         var index = decoder.e;
 
-        if (!_S_(value)) {
-          return _O_("an ARRAY", value);
+        if (!_T__95Json_95isArray(value)) {
+          return _S__95Json_95expecting("an ARRAY", value);
         }
 
         if (index >= value.length) {
-          return _O_("a LONGER array. Need index " + index + " but only see " + value.length + " entries", value);
+          return _S__95Json_95expecting("a LONGER array. Need index " + index + " but only see " + value.length + " entries", value);
         }
 
         var result = _L__95Json_95runHelp(decoder.b, value[index]);
@@ -119,8 +119,8 @@
         return _M__36elm_36core_36Result_36isOk(result) ? result : _W__36elm_36core_36Result_36Err(_Y__36elm_36json_36Json_36Decode_36Index_95raw(index, result.a));
 
       case 8:
-        if (typeof value !== "object" || value === null || _S_(value)) {
-          return _O_("an OBJECT", value);
+        if (typeof value !== "object" || value === null || _T__95Json_95isArray(value)) {
+          return _S__95Json_95expecting("an OBJECT", value);
         }
 
         var keyValuePairs = _P__36temp_36list; // TODO test perf of Object.keys and switch when support is good enough
@@ -133,7 +133,7 @@
               return _W__36elm_36core_36Result_36Err(_X__36elm_36json_36Json_36Decode_36Field_95raw(key, result.a));
             }
 
-            keyValuePairs = _Z_(_a_(key, result.a), keyValuePairs);
+            keyValuePairs = _Z__95List_95Cons(_a__95Utils_95Tuple2(key, result.a), keyValuePairs);
           }
         }
 
@@ -171,20 +171,20 @@
             return result;
           }
 
-          errors = _Z_(result.a, errors);
+          errors = _Z__95List_95Cons(result.a, errors);
         }
 
         return _W__36elm_36core_36Result_36Err(_c__36elm_36json_36Json_36Decode_36OneOf(_b__36elm_36core_36List_36reverse(errors)));
 
       case 1:
-        return _W__36elm_36core_36Result_36Err(_d__36elm_36json_36Json_36Decode_36Failure_95raw(decoder.a, _e_(value)));
+        return _W__36elm_36core_36Result_36Err(_d__36elm_36json_36Json_36Decode_36Failure_95raw(decoder.a, _e__95Json_95wrap(value)));
 
       case 0:
         return _N__36elm_36core_36Result_36Ok(decoder.a);
     }
   };
 
-  var _T__95Json_95runArrayDecoder = function (decoder, value, toElmValue) {
+  var _O__95Json_95runArrayDecoder = function (decoder, value, toElmValue) {
     var len = value.length;
     var array = new Array(len);
 
@@ -363,7 +363,7 @@
     return callback;
   };
 
-  var _q__95JsArray_95initialize_95raw = function (size, offset, func) {
+  var _p__95JsArray_95initialize_95raw = function (size, offset, func) {
     var result = new Array(size);
 
     for (var i = 0; i < size; i++) {
@@ -382,7 +382,7 @@
     }
 
     result.length = i;
-    return _a_(result, ls);
+    return _a__95Utils_95Tuple2(result, ls);
   };
 
   var _9__95VirtualDom_95init_95raw = function (virtualNode, flagDecoder, debugMetadata, args) {
@@ -408,7 +408,7 @@
         var xs = list.b;
 
         var $temp$func = func,
-            $temp$acc = _p_(func, x, acc),
+            $temp$acc = _r_A2(func, x, acc),
             $temp$list = xs;
 
         func = $temp$func;
@@ -426,7 +426,7 @@
       var node = _v0.a;
       var remainingNodes = _v0.b;
 
-      var newAcc = _Z_(_16__36elm_36core_36Array_36SubTree(node), acc);
+      var newAcc = _Z__95List_95Cons(_16__36elm_36core_36Array_36SubTree(node), acc);
 
       if (!remainingNodes.b) {
         return _b__36elm_36core_36List_36reverse(newAcc);
@@ -473,7 +473,7 @@
     }
   };
 
-  var _r__36elm_36core_36Array_36initializeHelp_95raw = function (fn, fromIndex, len, nodeList, tail) {
+  var _q__36elm_36core_36Array_36initializeHelp_95raw = function (fn, fromIndex, len, nodeList, tail) {
     initializeHelp: while (true) {
       if (fromIndex < 0) {
         return _s__36elm_36core_36Array_36builderToArray_95raw(false, {
@@ -482,12 +482,12 @@
           c: tail
         });
       } else {
-        var leaf = _t__36elm_36core_36Array_36Leaf(_q__95JsArray_95initialize_95raw(32, fromIndex, fn));
+        var leaf = _t__36elm_36core_36Array_36Leaf(_p__95JsArray_95initialize_95raw(32, fromIndex, fn));
 
         var $temp$fn = fn,
             $temp$fromIndex = fromIndex - 32,
             $temp$len = len,
-            $temp$nodeList = _Z_(leaf, nodeList),
+            $temp$nodeList = _Z__95List_95Cons(leaf, nodeList),
             $temp$tail = tail;
 
         fn = $temp$fn;
@@ -506,10 +506,10 @@
     } else {
       var tailLen = len % 32;
 
-      var tail = _q__95JsArray_95initialize_95raw(tailLen, len - tailLen, fn);
+      var tail = _p__95JsArray_95initialize_95raw(tailLen, len - tailLen, fn);
 
       var initialFromIndex = len - tailLen - 32;
-      return _r__36elm_36core_36Array_36initializeHelp_95raw(fn, initialFromIndex, len, _P__36temp_36list, tail);
+      return _q__36elm_36core_36Array_36initializeHelp_95raw(fn, initialFromIndex, len, _P__36temp_36list, tail);
     }
   };
 
@@ -546,11 +546,11 @@
     };
   };
 
-  var _O_ = (type, value) => {
-    return _W__36elm_36core_36Result_36Err(_d__36elm_36json_36Json_36Decode_36Failure_95raw("Expecting " + type, _e_(value)));
+  var _S__95Json_95expecting = (type, value) => {
+    return _W__36elm_36core_36Result_36Err(_d__36elm_36json_36Json_36Decode_36Failure_95raw("Expecting " + type, _e__95Json_95wrap(value)));
   };
 
-  var _S_ = value => {
+  var _T__95Json_95isArray = value => {
     return Array.isArray(value) || typeof FileList !== "undefined" && value instanceof FileList;
   };
 
@@ -577,7 +577,7 @@
     };
   };
 
-  var _Z_ = (hd, tl) => {
+  var _Z__95List_95Cons = (hd, tl) => {
     return {
       $: 1,
       a: hd,
@@ -585,7 +585,7 @@
     };
   };
 
-  var _e_ = value => {
+  var _e__95Json_95wrap = value => {
     return value;
   };
 
@@ -618,7 +618,7 @@
     };
   };
 
-  var _V_ = array => {
+  var _V__95Json_95toElmArray = array => {
     return _f__36elm_36core_36Array_36initialize_95raw(array.length, i => array[i]);
   };
 
@@ -637,18 +637,18 @@
   $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_JsArray_length", _$2_Object_46defineProperty(_v__36elm_36core_36Elm_36JsArray_36length, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
 
   var _b__36elm_36core_36List_36reverse = list => {
-    return _g__36elm_36core_36List_36foldl_95raw(_m__36elm_36core_36List_36cons, _P__36temp_36list, list);
+    return _g__36elm_36core_36List_36foldl_95raw(_n__36elm_36core_36List_36cons, _P__36temp_36list, list);
   };
 
-  var _a_ = (a, b) => {
+  var _a__95Utils_95Tuple2 = (a, b) => {
     return {
       a: a,
       b: b
     };
   };
 
-  var _m__36elm_36core_36List_36cons = a => {
-    return b => _Z_(a, b);
+  var _n__36elm_36core_36List_36cons = a => {
+    return b => _Z__95List_95Cons(a, b);
   };
 
   var _c__36elm_36json_36Json_36Decode_36OneOf = a => {
@@ -658,7 +658,7 @@
     };
   };
 
-  var _p_ = (fun, a, b) => {
+  var _r_A2 = (fun, a, b) => {
     return fun.a === 2 ? fun.f(a, b) : fun(a)(b);
   };
 
@@ -676,8 +676,8 @@
     };
   };
 
-  _m__36elm_36core_36List_36cons.a = 2;
-  _m__36elm_36core_36List_36cons.f = _Z_;
+  _n__36elm_36core_36List_36cons.a = 2;
+  _n__36elm_36core_36List_36cons.f = _Z__95List_95Cons;
   var _12__36elm_36core_36Basics_36ceiling = _$6_Math_46ceil;
 
   var _10__36elm_36core_36Basics_36max_95raw = (x, y) => {

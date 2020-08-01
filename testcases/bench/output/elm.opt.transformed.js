@@ -5,12 +5,12 @@
         wrapper.f = fun;
         return wrapper;
     }
-    const F2 = (fun) => F(2, fun, (a) => (b) => fun(a, b));
-    const F3 = (fun) => F(3, fun, (a) => (b) => (c) => fun(a, b, c));
-    const F4 = (fun) => F(4, fun, (a) => (b) => (c) => (d) => fun(a, b, c, d));
-    const A2 = (fun, a, b) => fun.a === 2 ? fun.f(a, b) : fun(a)(b);
-    const A3 = (fun, a, b, c) => fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
-    const A4 = (fun, a, b, c, d) => fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
+    var F2 = (fun) => F(2, fun, (a) => (b) => fun(a, b));
+    var F3 = (fun) => F(3, fun, (a) => (b) => (c) => fun(a, b, c));
+    var F4 = (fun) => F(4, fun, (a) => (b) => (c) => (d) => fun(a, b, c, d));
+    var A2 = (fun, a, b) => fun.a === 2 ? fun.f(a, b) : fun(a)(b);
+    var A3 = (fun, a, b, c) => fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
+    var A4 = (fun, a, b, c, d) => fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
     // EQUALITY
     function _Utils_eq(x, y) {
         for (var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack); isEqual && (pair = stack.pop()); isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)) { }
@@ -92,9 +92,9 @@
     };
     // COMMON VALUES
     var _Utils_Tuple0 = 0;
-    const _Utils_Tuple2 = (a, b) => ({ a: a, b: b });
-    const _Utils_Tuple3 = (a, b, c) => ({ a: a, b: b, c: c });
-    const _Utils_chr = (c) => c;
+    var _Utils_Tuple2 = (a, b) => ({ a: a, b: b });
+    var _Utils_Tuple3 = (a, b, c) => ({ a: a, b: b, c: c });
+    var _Utils_chr = (c) => c;
     const _Utils_update = (oldRecord, updatedFields) => ({ ...oldRecord, ...updatedFields });
     function _Utils_ap(xs, ys) {
         // append Strings
@@ -114,7 +114,7 @@
         return root;
     }
     var _List_Nil = { $: 0, a: null, b: null };
-    const _List_Cons = (hd, tl) => ({ $: 1, a: hd, b: tl });
+    var _List_Cons = (hd, tl) => ({ $: 1, a: hd, b: tl });
     var _List_cons = F2(_List_Cons);
     function _List_fromArray(arr) {
         var out = _List_Nil;
@@ -139,7 +139,7 @@
     };
     var _List_sortBy_raw = (f, xs) => _List_fromArray(_List_toArray(xs).sort((a, b) => _Utils_cmp(f(a), f(b))));
     var _JsArray_empty = [];
-    const _JsArray_length = (array) => array.length;
+    var _JsArray_length = (array) => array.length;
     var _JsArray_initialize_raw = function (size, offset, func) {
         var result = new Array(size);
         for (var i = 0; i < size; i++) {
@@ -174,14 +174,14 @@
                     ? answer + modulus
                     : answer;
     };
-    const _Basics_isInfinite = (n) => n === Infinity || n === -Infinity;
+    var _Basics_isInfinite = (n) => n === Infinity || n === -Infinity;
     var _Basics_ceiling = Math.ceil;
     var _Basics_floor = Math.floor;
     var _Basics_round = Math.round;
     var _Basics_sqrt = Math.sqrt;
     var _Basics_log = Math.log;
     var _Basics_isNaN = isNaN;
-    const _Basics_not = (bool) => !bool;
+    var _Basics_not = (bool) => !bool;
     function _String_uncons(string) {
         var word = string.charCodeAt(0);
         return !isNaN(word)
@@ -207,7 +207,7 @@
         }
         return true;
     };
-    const _String_fromNumber = (number) => number + "";
+    var _String_fromNumber = (number) => number + "";
     function _Char_toCode(char) {
         var code = char.charCodeAt(0);
         if (55296 <= code && code <= 56319) {
@@ -215,7 +215,7 @@
         }
         return code;
     }
-    const _Json_succeed = (msg) => ({
+    var _Json_succeed = (msg) => ({
         $: 0,
         a: msg
     });
@@ -316,9 +316,9 @@
         }
         return $elm$core$Result$Ok(toElmValue(array));
     }
-    const _Json_isArray = (value) => Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
-    const _Json_toElmArray = (array) => $elm$core$Array$initialize_raw(array.length, (i) => array[i]);
-    const _Json_expecting = (type, value) => $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
+    var _Json_isArray = (value) => Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
+    var _Json_toElmArray = (array) => $elm$core$Array$initialize_raw(array.length, (i) => array[i]);
+    var _Json_expecting = (type, value) => $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
     // EQUALITY
     function _Json_equality(x, y) {
         if (x === y) {
@@ -365,27 +365,27 @@
     }
     // ENCODE
     var _Json_encode_raw = (indentLevel, value) => JSON.stringify(_Json_unwrap(value), null, indentLevel) + "";
-    const _Json_wrap = (value) => value;
-    const _Json_unwrap = (value) => value;
-    const _Json_emptyArray = () => [];
-    const _Json_emptyObject = () => ({});
+    var _Json_wrap = (value) => value;
+    var _Json_unwrap = (value) => value;
+    var _Json_emptyArray = () => [];
+    var _Json_emptyObject = () => ({});
     var _Json_addField_raw = function (key, value, object) {
         object[key] = _Json_unwrap(value);
         return object;
     };
-    const _Json_addEntry = (func) => F2(function (entry, array) {
+    var _Json_addEntry = (func) => F2(function (entry, array) {
         array.push(_Json_unwrap(func(entry)));
         return array;
     });
-    const _Scheduler_succeed = (value) => ({
+    var _Scheduler_succeed = (value) => ({
         $: 0,
         a: value
     });
-    const _Scheduler_fail = (error) => ({
+    var _Scheduler_fail = (error) => ({
         $: 1,
         a: error
     });
-    const _Scheduler_binding = (callback) => ({
+    var _Scheduler_binding = (callback) => ({
         $: 2,
         b: callback,
         c: null
@@ -400,7 +400,7 @@
         b: callback,
         d: task
     });
-    const _Scheduler_receive = (callback) => ({
+    var _Scheduler_receive = (callback) => ({
         $: 5,
         b: callback
     });
@@ -417,7 +417,7 @@
         _Scheduler_enqueue(proc);
         return proc;
     }
-    const _Scheduler_spawn = (task) => _Scheduler_binding(function (callback) {
+    var _Scheduler_spawn = (task) => _Scheduler_binding(function (callback) {
         callback(_Scheduler_succeed(_Scheduler_rawSpawn(task)));
     });
     function _Scheduler_rawSend(proc, msg) {
@@ -485,7 +485,7 @@
             }
         }
     }
-    const _Process_sleep = (time) => _Scheduler_binding(function (callback) {
+    var _Process_sleep = (time) => _Scheduler_binding(function (callback) {
         var id = setTimeout(function () {
             callback(_Scheduler_succeed(_Utils_Tuple0));
         }, time);
@@ -523,7 +523,7 @@
         }
         return ports;
     }
-    const _Platform_createManager = (init, onEffects, onSelfMsg, cmdMap, subMap) => ({
+    var _Platform_createManager = (init, onEffects, onSelfMsg, cmdMap, subMap) => ({
         b: init,
         c: onEffects,
         d: onSelfMsg,
@@ -539,7 +539,7 @@
         var onSelfMsg = info.d;
         var cmdMap = info.e;
         var subMap = info.f;
-        const loop = (state) => _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
+        var loop = (state) => _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
             var value = msg.a;
             if (msg.$ === 0) {
                 return A3(onSelfMsg, router, value, state);
@@ -555,12 +555,12 @@
         router.g(msg);
         callback(_Scheduler_succeed(_Utils_Tuple0));
     }), _Platform_sendToApp = F2(_Platform_sendToApp_raw);
-    const _Platform_leaf = (home) => (value) => ({
+    var _Platform_leaf = (home) => (value) => ({
         $: 1,
         k: home,
         l: value
     });
-    const _Platform_batch = (list) => ({
+    var _Platform_batch = (list) => ({
         $: 2,
         m: list
     });
@@ -732,7 +732,7 @@
     function _VirtualDom_appendChild(parent, child) {
         parent.appendChild(child);
     }
-    const _VirtualDom_text = (string) => ({
+    var _VirtualDom_text = (string) => ({
         $: 0,
         a: string
     });
@@ -942,7 +942,7 @@
         callback.q = initialHandler;
         return callback;
     }
-    const _VirtualDom_equalEvents = (x, y) => x.$ == y.$ && _Json_equality(x.a, y.a);
+    var _VirtualDom_equalEvents = (x, y) => x.$ == y.$ && _Json_equality(x.a, y.a);
     // DIFF
     // TODO: Should we do patches like in iOS?
     //
@@ -1632,7 +1632,7 @@
         var end = _Benchmark_getTimestamp();
         callback(_Scheduler_succeed(end - start));
     });
-    const _Benchmark_operation = (thunk) => thunk;
+    var _Benchmark_operation = (thunk) => thunk;
     var $elm$core$Basics$EQ = 1;
     var $elm$core$Basics$GT = 2;
     var $elm$core$Basics$LT = 0;
