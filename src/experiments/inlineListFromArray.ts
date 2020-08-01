@@ -78,23 +78,6 @@ const LIST_CONS_F_NAME = '_List_cons';
 const listNil = ts.createIdentifier(LIST_NIL_NAME);
 const listConsCall = ts.createIdentifier(LIST_CONS_F_NAME);
 
-const appendToFront = (inlineMode: InlineMode) => (
-  list: ts.Expression,
-  element: ts.Expression
-): ts.Expression => {
-  return InlineMode.match(inlineMode, {
-    UsingConsFunc: (): ts.Expression =>
-      ts.createCall(listConsCall, undefined, [element, list]),
-
-    UsingLiteralObjects: mode =>
-      ts.createObjectLiteral([
-        ts.createPropertyAssignment('$', listElementMarker(mode)),
-        ts.createPropertyAssignment('a', element),
-        ts.createPropertyAssignment('b', list),
-      ]),
-  });
-};
-
 export const createInlineListFromArrayTransformer = (
   inlineMode: InlineMode
 ): ts.TransformerFactory<ts.SourceFile> => context => {
@@ -114,7 +97,22 @@ export const createInlineListFromArrayTransformer = (
           // detects _List_fromArray([..])
           if (ts.isArrayLiteralExpression(arrayLiteral)) {
             return arrayLiteral.elements.reduceRight(
-              appendToFront(inlineMode),
+              (list: ts.Expression, element: ts.Expression): ts.Expression => {
+                return InlineMode.match(inlineMode, {
+                  UsingConsFunc: (): ts.Expression =>
+                    ts.createCall(listConsCall, undefined, [
+                      ts.visitNode(element, visitor),
+                      list,
+                    ]),
+
+                  UsingLiteralObjects: mode =>
+                    ts.createObjectLiteral([
+                      ts.createPropertyAssignment('$', listElementMarker(mode)),
+                      ts.createPropertyAssignment('a', element),
+                      ts.createPropertyAssignment('b', list),
+                    ]),
+                });
+              },
               listNil
             );
           }

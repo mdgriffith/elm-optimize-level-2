@@ -22,6 +22,7 @@ import {
   convertFunctionExpressionsToArrowFuncs,
   NativeSpread,
 } from './experiments/modernizeJS';
+import { createRemoveUnusedLocalsTransform } from './experiments/removeUnusedLocals';
 
 type TransformOptions = {
   prepack: boolean;
@@ -70,21 +71,25 @@ export const compileAndTransform = async (
     Mode.Prod
   );
 
-  const inlineListFromArrayCalls = createInlineListFromArrayTransformer(
-    InlineMode.UsingLiteralObjects(Mode.Prod)
-  );
-
-  const [result] = ts.transform(source, [
+  const {
+    transformed: [result],
+    diagnostics,
+  } = ts.transform(source, [
     normalizeVariantShapes,
     createFunctionInlineTransformer(reportInlineTransformResult),
-    inlineListFromArrayCalls,
+    createInlineListFromArrayTransformer(
+      InlineMode.UsingLiteralObjects(Mode.Prod)
+      // InlineMode.UsingLiteralObjects(Mode.Prod)
+    ),
     createReplaceUtilsUpdateWithObjectSpread(
-      NativeSpread.UseSpreadOnlyToMakeACopy
+      NativeSpread.UseSpreadForUpdateAndOriginalRecord
     ),
 
     // Arrow functions are disabled because somethings not quite right with them.
     convertFunctionExpressionsToArrowFuncs,
-  ]).transformed;
+
+    createRemoveUnusedLocalsTransform(),
+  ]);
 
   const printer = ts.createPrinter();
 
