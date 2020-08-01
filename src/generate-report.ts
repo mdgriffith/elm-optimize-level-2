@@ -23,7 +23,7 @@ const visitBenchmark = async (tag: string | null, file: string) => {
   let result = [];
   try {
     await driver.get('file://' + path.resolve(file));
-    await driver.wait(webdriver.until.titleIs('done'), 120000);
+    await driver.wait(webdriver.until.titleIs('done'), 240000);
     result = await driver.executeScript('return window.results;');
   } finally {
     await driver.quit();
