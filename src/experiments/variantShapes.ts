@@ -30,7 +30,7 @@ import ts from 'typescript';
 import { Mode, ElmVariant } from '../types';
 
 // TODO fill a proper array
-const argNames = ['a', 'b', 'c', 'd', 'e'];
+const argNames = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
 const createVariantObjectLiteral = (
   { name, totalTypeSlotCount, slots, index }: ElmVariant,
@@ -46,7 +46,7 @@ const createVariantObjectLiteral = (
     // existing arguments
     ...argNames
       .slice(0, slots.length)
-      .map(arg => ts.createShorthandPropertyAssignment(arg)),
+      .map(arg => ts.createPropertyAssignment(arg, ts.createIdentifier(arg))),
     // fillings with nulls for the rest
     ...argNames
       .slice(slots.length, totalTypeSlotCount)
