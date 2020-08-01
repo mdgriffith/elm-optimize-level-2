@@ -77,7 +77,7 @@ const run = async function() {
     await visitBenchmark('transformed', 'testcases/bench/transformed.html')
   );
   results.push(
-    await visitBenchmark('transformed', 'testcases/elm-markup/standard.html')
+    await visitBenchmark(null, 'testcases/elm-markup/standard.html')
   );
   results.push(
     await visitBenchmark('transformed', 'testcases/elm-markup/transformed.html')
