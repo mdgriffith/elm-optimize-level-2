@@ -4990,7 +4990,7 @@
         return _Utils_update(record, { aO: 87 });
     });
     var $author$project$Main$suite = A2($elm_explorations$benchmark$Benchmark$describe, "Benchmarks", _List_fromArray([
-        A2($elm_explorations$benchmark$Benchmark$benchmark, "sum 1000 entities in a list", function (_v0) {
+        A2($elm_explorations$benchmark$Benchmark$benchmark, "sum 100 entities in a list", function (_v0) {
             return A3($elm$core$List$foldl, $author$project$Main$addMyType, 0, $author$project$Main$many);
         }),
         A2($elm_explorations$benchmark$Benchmark$benchmark, "1000 record updates", function (_v1) {
