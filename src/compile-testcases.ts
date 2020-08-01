@@ -85,10 +85,10 @@ export const compileAndTransform = async (
       NativeSpread.UseSpreadForUpdateAndOriginalRecord
     ),
 
-    // Arrow functions are disabled because somethings not quite right with them.
     convertFunctionExpressionsToArrowFuncs,
 
-    createRemoveUnusedLocalsTransform(),
+    // This is awesome work, but disabling it for now to make things run faster
+    // createRemoveUnusedLocalsTransform(),
   ]);
 
   const printer = ts.createPrinter();
