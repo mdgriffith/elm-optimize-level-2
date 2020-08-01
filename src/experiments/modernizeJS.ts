@@ -110,8 +110,8 @@ export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.So
                     ts.visitNode(returnStatement.expression, visitor)
                   )
                 ),
-              ],
-              ts.NodeFlags.Const
+              ]
+              // ts.NodeFlags.Const
             )
           );
         }
