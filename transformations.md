@@ -12,24 +12,24 @@ Currently the Elm compiler will generate objects that match the shape of a given
 
 So, Maybe looks like this:
 
-```
-var elm$core$Maybe$Just = function (a) {
-    return {$: 0, a: a};
+```js
+var elm$core$Maybe$Just = function(a) {
+  return { $: 0, a: a };
 };
 
-var elm$core$Maybe$Nothing = {$: 1};
+var elm$core$Maybe$Nothing = { $: 1 };
 ```
 
 However, the V8 engine is likely better able to optimize these objects if they have the same shape.
 
 So, this transformation fills out the rest of the variants with `field: null` so that they have the same shape.
 
-```
-var elm$core$Maybe$Just = function (a) {
-    return {$: 0, a: a};
+```js
+var elm$core$Maybe$Just = function(a) {
+  return { $: 0, a: a };
 };
 
-var elm$core$Maybe$Nothing = {$: 1, a: null};
+var elm$core$Maybe$Nothing = { $: 1, a: null };
 ```
 
 This does require information from the Elm code itself, which we're currently getting through `elm-tree-sitter`.
@@ -45,24 +45,39 @@ _List_fromArray(['a', 'b', 'c']);
 with `InlineMode.UsingConsFunc`
 
 ```js
-_List_cons("a", _List_cons("b", _List_cons("c", _List_Nil)))
-`
+_List_cons('a', _List_cons('b', _List_cons('c', _List_Nil)));
+```
 
 with InlineMode.UsingLiteralObjects(Mode.Prod)
-```
-
-({ $: 1, a: "a", b: { $: 1, a: "b", b: { \$: 1, a: "c", b: \_List_Nil } } });
 
 ```js
+({ $: 1, a: 'a', b: { $: 1, a: 'b', b: { \$: 1, a: 'c', b: _List_Nil } } });
+```
+
 with InlineMode.UsingLiteralObjects(Mode.Dev)
+
+```js
+({
+  $: '::',
+  a: 'a',
+  b: { $: '::', a: 'b', b: { \$: '::', a: 'c', b: _List_Nil } },
+});
 ```
 
-({ $: "::", a: "a", b: { $: "::", a: "b", b: { \$: "::", a: "c", b: \_List_Nil } } });
+## Applying Functions Directly
 
+## Separating Type and Payload Data
+
+we usually have this shape for a variant
+
+```json
+{ "$": "typename", "a": a, "b": b }
 ```
 
+I wonder if this shape would improve representations
 
-
-
-### Applying Functions Directly
+```json
+{ "$": "typename", "vals": { "a": a, "b": b } }
 ```
+
+This would mean that the standardized object form would be passed around `{$,vals}`, and also that the object in vals has the same shape based on the value of `$`.
