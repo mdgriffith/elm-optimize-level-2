@@ -9,6 +9,7 @@ import * as compile from './compile-testcases';
 import * as webdriver from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
 import * as path from 'path';
+import * as fs from 'fs';
 
 const visitBenchmark = async (tag: string | null, file: string) => {
   let driver = new webdriver.Builder()
@@ -22,7 +23,7 @@ const visitBenchmark = async (tag: string | null, file: string) => {
   let result = [];
   try {
     await driver.get('file://' + path.resolve(file));
-    await driver.wait(webdriver.until.titleIs('done'), 60000);
+    await driver.wait(webdriver.until.titleIs('done'), 120000);
     result = await driver.executeScript('return window.results;');
   } finally {
     await driver.quit();
@@ -30,21 +31,59 @@ const visitBenchmark = async (tag: string | null, file: string) => {
   return { tag: tag, browser: 'chrome', results: result };
 };
 
+export interface Stat {
+  name: string;
+  bytes: number;
+}
+
+const assetSizeStats = (dir: string): Stat[] => {
+  let stats: Stat[] = [];
+  fs.readdir(dir, function(err, files) {
+    if (err) {
+      console.log('Error getting directory information.');
+    } else {
+      files.forEach(function(file) {
+        const stat = fs.statSync(path.join(dir, file));
+        stats.push({
+          name: path.basename(file),
+          bytes: stat.size,
+        });
+      });
+    }
+  });
+  return stats;
+};
+
 const run = async function() {
-  compile.compileAndTransform('testcases/simple', 'Main.elm', {
+  await compile.compileAndTransform('testcases/simple', 'Main.elm', {
     prepack: true,
   });
-  compile.compileAndTransform('testcases/bench', 'Main.elm', {
+  await compile.compileAndTransform('testcases/bench', 'Main.elm', {
     prepack: true,
   });
+  await compile.compileAndTransform('testcases/elm-markup', 'Run.elm', {
+    prepack: true,
+  });
+
+  const assets = {
+    bench: assetSizeStats('testcases/bench/output'),
+    simple: assetSizeStats('testcases/simple/output'),
+    elmMarkup: assetSizeStats('testcases/elm-markup/output'),
+  };
 
   let results = [];
   results.push(await visitBenchmark(null, 'testcases/bench/standard.html'));
   results.push(
     await visitBenchmark('transformed', 'testcases/bench/transformed.html')
   );
+  results.push(
+    await visitBenchmark(null, 'testcases/elm-markup/standard.html')
+  );
+  results.push(
+    await visitBenchmark('transformed', 'testcases/elm-markup/transformed.html')
+  );
 
-  console.log(markdownNewResults(reformat(results)));
+  console.log(markdownNewResults(assets, reformat(results)));
 };
 
 const markdownResults = (results: any): string => {
@@ -78,11 +117,35 @@ const markdownResults = (results: any): string => {
   return buffer.join('\n');
 };
 
-const markdownNewResults = (results: any): string => {
+const markdownNewResults = (
+  assets: { [key: string]: Stat[] },
+  results: any
+): string => {
   let buffer: string[] = [];
 
   buffer.push('# Benchmark results');
   buffer.push('');
+
+  // List asset sizes
+  for (let key in assets) {
+    buffer.push('## ' + key + ' asset overview');
+    buffer.push('');
+    assets[key].forEach((item: Stat) => {
+      buffer.push(
+        '    ' +
+          item.name.padEnd(40, ' ') +
+          '' +
+          humanizeNumber(
+            roundToDecimal(1, item.bytes / Math.pow(2, 10))
+          ).padStart(10, ' ') +
+          'kb'
+      );
+    });
+    buffer.push('');
+  }
+  buffer.push('');
+
+  // List benchmarks
   for (let key in results) {
     buffer.push('## ' + key);
     buffer.push('');
@@ -175,8 +238,13 @@ function reformat(results: any): any {
 }
 
 // adds commas to the number so its easier to read.
-function humanizeNumber(x: string): string {
+function humanizeNumber(x: number): string {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function roundToDecimal(level: number, num: number): number {
+  let factor: number = Math.pow(10, level);
+  return Math.round(num * factor) / factor;
 }
 
 run();
