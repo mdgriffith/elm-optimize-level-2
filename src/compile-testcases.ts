@@ -125,6 +125,11 @@ export const compileAndTransform = async (
     pathInOutput('elm.opt.transformed.min.js')
   );
   gzip(pathInOutput('elm.opt.transformed.min.js'));
+  await minify(
+    pathInOutput('elm.opt.prepack.js'),
+    pathInOutput('elm.opt.prepack.min.js')
+  );
+  gzip(pathInOutput('elm.opt.prepack.min.js'));
 
   return {};
 };
