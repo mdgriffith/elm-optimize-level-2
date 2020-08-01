@@ -25,4 +25,5 @@ export type Transforms = {
 export enum ObjectUpdate {
   UseSpreadForUpdateAndOriginalRecord = 'for_both',
   UseSpreadOnlyToMakeACopy = 'for_copy',
+  UseAssign = 'use_assign',
 }
