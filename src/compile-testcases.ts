@@ -27,11 +27,11 @@ type TransformOptions = {
   prepack: boolean;
 };
 
-export const compileAndTransform = (
+export const compileAndTransform = async (
   dir: string,
   file: string,
   options?: TransformOptions
-): {} => {
+): Promise<{}> => {
   // Compile examples in `testcases/*` folder as js
   // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
   compileSync([file], {
@@ -113,9 +113,9 @@ export const compileAndTransform = (
     fs.writeFileSync(pathInOutput('elm.opt.prepack.js'), code);
   }
 
-  minify(pathInOutput('elm.opt.js'), pathInOutput('elm.opt.min.js'));
+  await minify(pathInOutput('elm.opt.js'), pathInOutput('elm.opt.min.js'));
   gzip(pathInOutput('elm.opt.min.js'));
-  minify(
+  await minify(
     pathInOutput('elm.opt.transformed.js'),
     pathInOutput('elm.opt.transformed.min.js')
   );

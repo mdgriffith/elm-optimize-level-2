@@ -23,7 +23,7 @@ const visitBenchmark = async (tag: string | null, file: string) => {
   let result = [];
   try {
     await driver.get('file://' + path.resolve(file));
-    await driver.wait(webdriver.until.titleIs('done'), 60000);
+    await driver.wait(webdriver.until.titleIs('done'), 120000);
     result = await driver.executeScript('return window.results;');
   } finally {
     await driver.quit();
@@ -55,22 +55,32 @@ const assetSizeStats = (dir: string): Stat[] => {
 };
 
 const run = async function() {
-  compile.compileAndTransform('testcases/simple', 'Main.elm', {
+  await compile.compileAndTransform('testcases/simple', 'Main.elm', {
     prepack: true,
   });
-  compile.compileAndTransform('testcases/bench', 'Main.elm', {
+  await compile.compileAndTransform('testcases/bench', 'Main.elm', {
+    prepack: true,
+  });
+  await compile.compileAndTransform('testcases/elm-markup', 'Run.elm', {
     prepack: true,
   });
 
   const assets = {
     bench: assetSizeStats('testcases/bench/output'),
     simple: assetSizeStats('testcases/simple/output'),
+    elmMarkup: assetSizeStats('testcases/elm-markup/output'),
   };
 
   let results = [];
   results.push(await visitBenchmark(null, 'testcases/bench/standard.html'));
   results.push(
     await visitBenchmark('transformed', 'testcases/bench/transformed.html')
+  );
+  results.push(
+    await visitBenchmark('transformed', 'testcases/elm-markup/standard.html')
+  );
+  results.push(
+    await visitBenchmark('transformed', 'testcases/elm-markup/transformed.html')
   );
 
   console.log(markdownNewResults(assets, reformat(results)));
