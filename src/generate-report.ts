@@ -64,11 +64,15 @@ const run = async function() {
   await compile.compileAndTransform('testcases/elm-markup', 'Run.elm', {
     prepack: true,
   });
+  await compile.compileAndTransform('testcases/elm-obj-file', 'Run.elm', {
+    prepack: true,
+  });
 
   const assets = {
     bench: assetSizeStats('testcases/bench/output'),
     simple: assetSizeStats('testcases/simple/output'),
     elmMarkup: assetSizeStats('testcases/elm-markup/output'),
+    elmObjFile: assetSizeStats('testcases/elm-obj-file/output'),
   };
 
   let results = [];
@@ -81,6 +85,15 @@ const run = async function() {
   );
   results.push(
     await visitBenchmark('transformed', 'testcases/elm-markup/transformed.html')
+  );
+  results.push(
+    await visitBenchmark(null, 'testcases/elm-obj-file/standard.html')
+  );
+  results.push(
+    await visitBenchmark(
+      'transformed',
+      'testcases/elm-obj-file/transformed.html'
+    )
   );
 
   console.log(markdownNewResults(assets, reformat(results)));

@@ -1,3 +1,6 @@
-[submodule "testcases/elm-markup/repo"]
-	path = testcases/elm-markup/repo
+[submodule "testcases/elm-markdown/repo"]
+	path = testcases/elm-markdown/repo
 	url = https://github.com/dillonkearns/elm-markdown
+[submodule "testcases/elm-obj-file/repo"]
+	path = testcases/elm-obj-file/repo
+	url = https://github.com/w0rm/elm-obj-file
