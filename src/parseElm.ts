@@ -124,8 +124,21 @@ export const parseElm = ({
                     break;
                   }
 
-                  default: {
+                  case 'type_ref': {
                     slots.push(detail.text);
+                    break;
+                  }
+
+                  case 'type_variable': {
+                    slots.push(detail.text);
+                    break;
+                  }
+                  case 'type_expression': {
+                    slots.push(detail.text);
+                    break;
+                  }
+
+                  default: {
                     break;
                   }
                 }

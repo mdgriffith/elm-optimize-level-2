@@ -50,8 +50,7 @@ export const compileAndTransform = async (
     source: elmSource,
   });
 
-  // This will parse everything in `elm-packages`, but it causes everything to fail for some reason :/
-  // Object.assign(parsedVariants, parseDir('elm-packages'));
+  Object.assign(parsedVariants, parseDir('elm-packages'));
 
   const source = ts.createSourceFile(
     'elm.js',
