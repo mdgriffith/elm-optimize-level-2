@@ -61,7 +61,7 @@ updateRecord attr record =
 suite : Benchmark
 suite =
     describe "Benchmarks"
-        [ benchmark "sum 1000 entities in a list" <|
+        [ benchmark "sum 100 entities in a list" <|
             \_ -> List.foldl addMyType 0 many
         , benchmark "1000 record updates" <|
             \_ ->
