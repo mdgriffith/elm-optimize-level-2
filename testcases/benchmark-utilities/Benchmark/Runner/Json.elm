@@ -5,6 +5,7 @@ import Benchmark.Reporting
 import Benchmark.Status
 import Browser
 import Html exposing (Html)
+import Html.Attributes as Attr
 import Json.Encode as Encode
 import Process
 import Task exposing (Task)
@@ -77,7 +78,7 @@ next benchmark =
 
 view : Model -> Html Msg
 view model =
-    Html.div []
+    Html.div [ Attr.style "white-space" "pre" ]
         [ Html.text
             (Encode.encode 4 (encode model))
         ]
@@ -146,7 +147,9 @@ encodeStatus status =
 
         Benchmark.Status.Pending i samples ->
             Encode.object
-                [ ( "status", Encode.string "pending" ) ]
+                [ ( "status", Encode.string "pending" )
+                , ( "progress", Encode.float (Benchmark.Status.progress status) )
+                ]
 
         Benchmark.Status.Failure error ->
             Encode.object
