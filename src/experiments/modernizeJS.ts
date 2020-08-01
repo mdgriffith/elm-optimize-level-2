@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import { ObjectUpdate } from './../types';
 
 const copyWithSpread = `
 const _Utils_update = (oldRecord, updatedFields) => {
@@ -21,13 +22,8 @@ const extractBody = (sourceText: string): ts.Node => {
   return source.statements[0];
 };
 
-export enum NativeSpread {
-  UseSpreadForUpdateAndOriginalRecord = 'for_both',
-  UseSpreadOnlyToMakeACopy = 'for_copy',
-}
-
 export const createReplaceUtilsUpdateWithObjectSpread = (
-  kind: NativeSpread
+  kind: ObjectUpdate
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
@@ -37,9 +33,9 @@ export const createReplaceUtilsUpdateWithObjectSpread = (
         node.name?.text === '_Utils_update'
       ) {
         switch (kind) {
-          case NativeSpread.UseSpreadForUpdateAndOriginalRecord:
+          case ObjectUpdate.UseSpreadForUpdateAndOriginalRecord:
             return extractBody(spreadForBoth);
-          case NativeSpread.UseSpreadOnlyToMakeACopy:
+          case ObjectUpdate.UseSpreadOnlyToMakeACopy:
             return extractBody(copyWithSpread);
         }
       }

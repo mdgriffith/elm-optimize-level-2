@@ -4,7 +4,7 @@ import * as path from 'path';
 import { parseElm } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './experiments/variantShapes';
-import { Mode } from './types';
+import { Mode, Transforms, ObjectUpdate } from './types';
 import {
   createFunctionInlineTransformer,
   InlineContext,
@@ -20,18 +20,13 @@ import { execSync } from 'child_process';
 import {
   createReplaceUtilsUpdateWithObjectSpread,
   convertFunctionExpressionsToArrowFuncs,
-  NativeSpread,
 } from './experiments/modernizeJS';
 import { createRemoveUnusedLocalsTransform } from './experiments/removeUnusedLocals';
-
-type TransformOptions = {
-  prepack: boolean;
-};
 
 export const compileAndTransform = async (
   dir: string,
   file: string,
-  options?: TransformOptions
+  options: Transforms
 ): Promise<{}> => {
   // Compile examples in `testcases/*` folder as js
   // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
@@ -71,25 +66,27 @@ export const compileAndTransform = async (
     Mode.Prod
   );
 
+  const transformations = removeDisabled([
+    [options.variantShapes, normalizeVariantShapes],
+    [
+      options.inlineFunctions,
+      createFunctionInlineTransformer(reportInlineTransformResult),
+    ],
+    [
+      options.listLiterals,
+      createInlineListFromArrayTransformer(
+        InlineMode.UsingLiteralObjects(Mode.Prod)
+      ),
+    ],
+    includeObjectUpdate(options.objectUpdate),
+    [options.arrowFns, convertFunctionExpressionsToArrowFuncs],
+    [options.unusedValues, createRemoveUnusedLocalsTransform()],
+  ]);
+
   const {
     transformed: [result],
     diagnostics,
-  } = ts.transform(source, [
-    normalizeVariantShapes,
-    createFunctionInlineTransformer(reportInlineTransformResult),
-    createInlineListFromArrayTransformer(
-      InlineMode.UsingLiteralObjects(Mode.Prod)
-      // InlineMode.UsingLiteralObjects(Mode.Prod)
-    ),
-    createReplaceUtilsUpdateWithObjectSpread(
-      NativeSpread.UseSpreadForUpdateAndOriginalRecord
-    ),
-
-    convertFunctionExpressionsToArrowFuncs,
-
-    // This is awesome work, but disabling it for now to make things run faster
-    // createRemoveUnusedLocalsTransform(),
-  ]);
+  } = ts.transform(source, transformations);
 
   const printer = ts.createPrinter();
 
@@ -106,16 +103,19 @@ export const compileAndTransform = async (
 
   fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
 
-  if (options?.prepack) {
-    // console.log('here');
+  if (options.prepack) {
     const { code } = prepackFileSync([pathInOutput('elm.opt.transformed.js')], {
       debugNames: true,
       inlineExpressions: true,
       maxStackDepth: 1200, // that didn't help
     });
-    // console.log('there', code.length);
 
     fs.writeFileSync(pathInOutput('elm.opt.prepack.js'), code);
+    await minify(
+      pathInOutput('elm.opt.prepack.js'),
+      pathInOutput('elm.opt.prepack.min.js')
+    );
+    gzip(pathInOutput('elm.opt.prepack.min.js'));
   }
 
   await minify(pathInOutput('elm.opt.js'), pathInOutput('elm.opt.min.js'));
@@ -125,14 +125,27 @@ export const compileAndTransform = async (
     pathInOutput('elm.opt.transformed.min.js')
   );
   gzip(pathInOutput('elm.opt.transformed.min.js'));
-  await minify(
-    pathInOutput('elm.opt.prepack.js'),
-    pathInOutput('elm.opt.prepack.min.js')
-  );
-  gzip(pathInOutput('elm.opt.prepack.min.js'));
 
   return {};
 };
+
+function includeObjectUpdate(objectUpdate: ObjectUpdate | null): any {
+  if (objectUpdate != null) {
+    return [true, createReplaceUtilsUpdateWithObjectSpread(objectUpdate)];
+  } else {
+    return [];
+  }
+}
+
+function removeDisabled(list: any[]) {
+  let newList: any[] = [];
+  list.forEach(item => {
+    if (item != 0 && item[0]) {
+      newList.push(item[1]);
+    }
+  });
+  return newList;
+}
 
 async function minify(inputFilename: string, outputFilename: string) {
   const compress = {
