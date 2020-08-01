@@ -6,6 +6,13 @@
       "name": "run testcases",
       "runtimeArgs": ["-r", "ts-node/register/transpile-only.js"],
       "args": ["${workspaceFolder}/src/compile-testcases.ts"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "run index",
+      "runtimeArgs": ["-r", "ts-node/register/transpile-only.js"],
+      "args": ["${workspaceFolder}/src/index.ts"]
     }
   ]
 }

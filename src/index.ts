@@ -1,119 +1,110 @@
 import ts from 'typescript';
-import { createCustomTypesTransformer } from './experiments/variantShapes';
-import { createFunctionInlineTransformer } from './experiments/inlineWrappedFunctions';
-import { Mode, ElmVariant } from './types';
 
-import {
-  createInlineListFromArrayTransformer,
-  InlineMode,
-} from './experiments/inlineListFromArray';
-import { convertFunctionExpressionsToArrowFuncs } from './experiments/modernizeJS';
+const filename = 'test.js';
+const code = `
+(function (){
+  function f () {}
+  const f2 = () => 1;
+  const test = 1 + 2;
+  console.log(test);
+})()
+`;
+// (function() {
+//   function f() {}
+//   const f2 = () => 1;
+//   const test: number = 1 + 2;
+// })();
 
-const elmOutput = `
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
+const sourceFile = ts.createSourceFile(filename, code, ts.ScriptTarget.Latest);
 
-var $elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
+const defaultCompilerHost = ts.createCompilerHost({});
+
+const customCompilerHost: ts.CompilerHost = {
+  getSourceFile: (name, languageVersion) => {
+    console.log(`getSourceFile ${name}`);
+
+    if (name === filename) {
+      return sourceFile;
+    } else {
+      return defaultCompilerHost.getSourceFile(name, languageVersion);
+    }
+  },
+  writeFile: () => {},
+  getDefaultLibFileName: () =>
+    'node_modules/typescript/lib/lib.es2018.full.d.ts',
+  useCaseSensitiveFileNames: () => false,
+  getCanonicalFileName: filename => filename,
+  getCurrentDirectory: () => '',
+  getNewLine: () => '\n',
+  getDirectories: () => [],
+  fileExists: () => true,
+  readFile: () => '',
 };
 
-var $author$project$Main$Three = F3(
-  function (a, b, c) {
-      return {$: 'Three', a: a, b: b, c: c};
-  });
+const program = ts.createProgram(
+  [filename],
+  { allowJs: true, noUnusedLocals: true, outDir: 'yo', checkJs: true },
+  customCompilerHost
+);
 
-var _v1 = A3($author$project$Main$Three, a, b, c);
+const diagnostics = ts.getPreEmitDiagnostics(program);
 
-_List_fromArray(['a', 'b', 'c']);
+for (const diagnostic of diagnostics) {
+  const message = diagnostic.messageText;
+  const file = diagnostic.file;
+  const filename = file!.fileName;
 
-function _List_Cons(hd, tl) {
-    return { $: 1, a: hd, b: tl };
+  const lineAndChar = file!.getLineAndCharacterOfPosition(diagnostic!.start!);
+
+  const line = lineAndChar.line + 1;
+  const character = lineAndChar.character + 1;
+
+  console.log(message);
+  console.log(
+    `(${filename}:${line}:${character}), pos = (${
+      diagnostic?.start
+    },${(diagnostic?.start || 0) + (diagnostic?.length || 0)})`
+  );
 }
 
-var _List_cons = F2(_List_Cons);
+console.log('--------A--------------');
+const typeChecker = program.getTypeChecker();
 
-var $elm$core$List$cons = _List_cons;
-A2($elm$core$List$cons, key, keyList);
-$elm$core$String$join_raw("\n\n", A2($elm$core$List$cons, introduction, A2($elm$core$List$indexedMap, $elm$json$Json$Decode$errorOneOf, errors)));
-`;
+function recursivelyPrintVariableDeclarations(
+  node: ts.Node,
+  sourceFile: ts.SourceFile
+) {
+  if (ts.isVariableDeclaration(node)) {
+    const nodeText = node.getText(sourceFile);
+    const type = typeChecker.getTypeAtLocation(node);
+    const typeName = typeChecker.typeToString(type, node);
 
-const source = ts.createSourceFile('elm.js', elmOutput, ts.ScriptTarget.ES2018);
+    console.log(nodeText);
+    console.log(`(${typeName})`);
+  }
 
-const replacements: ElmVariant[] = [
-  {
-    jsName: '$elm$core$Maybe$Nothing',
-    typeName: 'Maybe',
-    name: 'Nothing',
-    slots: [],
-    index: 1,
-    totalTypeSlotCount: 2,
-  },
+  node.forEachChild(child =>
+    recursivelyPrintVariableDeclarations(child, sourceFile)
+  );
+}
 
-  {
-    jsName: '$elm$core$Maybe$Just',
-    typeName: 'Maybe',
-    name: 'Just',
-    slots: [],
-    index: 0,
-    totalTypeSlotCount: 2,
-  },
-  {
-    jsName: '$author$project$Main$Three',
-    typeName: 'Bla',
-    name: 'Three',
-    slots: ['a', 'b', 'c'],
-    index: 100500,
-    totalTypeSlotCount: 4,
-  },
-];
+recursivelyPrintVariableDeclarations(sourceFile, sourceFile);
 
-const customTypeTransformer = createCustomTypesTransformer(
-  replacements,
-  Mode.Prod
-);
-const [newFile] = ts.transform(source, [customTypeTransformer]).transformed;
+console.log('--------B--------------');
+function printRecursiveFrom(
+  node: ts.Node,
+  indentLevel: number,
+  sourceFile: ts.SourceFile
+) {
+  const indentation = '-'.repeat(indentLevel);
+  const syntaxKind = ts.SyntaxKind[node.kind];
+  const nodeText = node.getText(sourceFile);
+  console.log(`${indentation}${syntaxKind}: ${nodeText}`);
+  console.log(`pos: (${node.pos}, ${node.end})`);
 
-const printer = ts.createPrinter();
-console.log('----------AFTER CUSTOM TYPE SHAPES TRANSFORM ----------------');
-console.log(printer.printFile(source));
-console.log(printer.printFile(newFile));
+  node.forEachChild(child =>
+    printRecursiveFrom(child, indentLevel + 1, sourceFile)
+  );
+}
 
-console.log('----------AFTER INLINE A(n) TRANSFORM ----------------');
-const funcInlineTransformer = createFunctionInlineTransformer();
-const [sourceWithInlinedFuntioncs] = ts.transform(newFile, [
-  funcInlineTransformer,
-]).transformed;
-
-console.log(printer.printFile(sourceWithInlinedFuntioncs));
-
-console.log(
-  '----------AFTER INLINE _List_fromArray TRANSFORM ----------------'
-);
-const inlineListFromArrayCalls = createInlineListFromArrayTransformer(
-  InlineMode.UsingLiteralObjects(Mode.Prod)
-  // InlineMode.UsingConsFunc
-);
-const [sourceWithInlinedListFromArr] = ts.transform(
-  sourceWithInlinedFuntioncs,
-  [inlineListFromArrayCalls]
-).transformed;
-
-console.log(printer.printFile(sourceWithInlinedListFromArr));
-
-const funcSource = ts.createSourceFile(
-  'elm.js',
-  `
-        function F3(fun) {
-          return F(3, fun, function (a) {
-            return function (b) { return function (c) { return fun(a, b, c); }; };
-          });
-        }
-        `,
-  ts.ScriptTarget.ES2018
-);
-
-console.log('---------- Arrow Transformation ----------------');
-const [fRes] = ts.transform(funcSource, [
-  convertFunctionExpressionsToArrowFuncs,
-]).transformed;
-
-console.log(printer.printFile(fRes));
+printRecursiveFrom(sourceFile, 0, sourceFile);
