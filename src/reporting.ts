@@ -9,6 +9,7 @@ export interface Stat {
   bytes: number;
 }
 
+// Asset Sizes
 export const assetSizeStats = (dir: string): Stat[] => {
   let stats: Stat[] = [];
   fs.readdir(dir, function(err, files) {
@@ -32,6 +33,7 @@ type Results = {
   benchmarks: any;
 };
 
+// Render results as markdown
 export const markdown = (report: Results): string => {
   let buffer: string[] = [];
 
@@ -171,6 +173,7 @@ type Testcase = {
   options: Transforms;
 };
 
+// Run a list of testcases
 export const run = async function(runnable: Testcase[]) {
   let results: any[] = [];
   let assets: any = {};
@@ -192,6 +195,115 @@ export const run = async function(runnable: Testcase[]) {
         path.join(instance.dir, 'transformed.html')
       )
     );
+  }
+
+  return { assets: assets, benchmarks: reformat(results) };
+};
+
+const emptyOpts: Transforms = {
+  prepack: false,
+  variantShapes: false,
+  inlineFunctions: false,
+  listLiterals: false,
+  arrowFns: false,
+  objectUpdate: null,
+  unusedValues: false,
+};
+
+const breakdown = function(
+  options: Transforms
+): { name: string; options: Transforms }[] {
+  let transforms: { name: string; options: Transforms }[] = [];
+
+  let full: { name: string; include: boolean; options: Transforms }[] = [
+    {
+      include: options.variantShapes,
+      name: 'variant shapes',
+      options: Object.assign({}, emptyOpts, { variantShapes: true }),
+    },
+    {
+      include: options.inlineFunctions,
+      name: 'inline functions',
+      options: Object.assign({}, emptyOpts, { inlineFunctions: true }),
+    },
+    {
+      include: options.listLiterals,
+      name: 'inline list literal construction',
+      options: Object.assign({}, emptyOpts, { listLiterals: true }),
+    },
+    {
+      include: options.arrowFns,
+      name: 'arrowize functions',
+      options: Object.assign({}, emptyOpts, { arrowFns: true }),
+    },
+    {
+      include: options.objectUpdate != null,
+      name: 'object update',
+      options: Object.assign({}, emptyOpts, {
+        objectUpdate: options.objectUpdate,
+      }),
+    },
+    {
+      include: options.unusedValues,
+      name: 'Thorough removal of unused values',
+      options: Object.assign({}, emptyOpts, {
+        unusedValues: options.unusedValues,
+      }),
+    },
+  ];
+
+  for (let i in full) {
+    if (full[i].include) {
+      transforms.push(full[i]);
+    }
+  }
+
+  return transforms;
+};
+
+// Run a list of test cases
+// But we'll run each transformation individually to see what the breakdown is.
+// We'll also run a final case with all the requested transformations
+export const runWithBreakdown = async function(runnable: Testcase[]) {
+  let results: any[] = [];
+  let assets: any = {};
+
+  for (let instance of runnable) {
+    await Compile.compileAndTransform(
+      instance.dir,
+      instance.elmFile,
+      instance.options
+    );
+    assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+
+    results.push(
+      await Visit.benchmark(null, path.join(instance.dir, 'standard.html'))
+    );
+    results.push(
+      await Visit.benchmark(
+        'transformed',
+        path.join(instance.dir, 'transformed.html')
+      )
+    );
+
+    let steps = breakdown(instance.options);
+    for (let i in steps) {
+      console.log('running', steps[i]);
+      await Compile.compileAndTransform(
+        instance.dir,
+        instance.elmFile,
+        steps[i].options
+      );
+      // TODO: figure out how to capture asset sizes for the breakdown
+      // assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+
+      results.push(
+        await Visit.benchmark(
+          steps[i].name,
+          path.join(instance.dir, 'transformed.html')
+        )
+      );
+    }
   }
 
   return { assets: assets, benchmarks: reformat(results) };

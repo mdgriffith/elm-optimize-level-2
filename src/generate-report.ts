@@ -20,6 +20,8 @@ const defaultOptions = {
 
 async function go() {
   const report = await Reporting.run([
+    // Use `runWithBreakdown` if you want the breakdown
+    // const report = await Reporting.runWithBreakdown([
     // { name: 'simple',
     //   dir: 'testcases/simple',
     //   elmFile: 'main',
@@ -40,6 +42,13 @@ async function go() {
     // {
     //   name: 'elm-markdown',
     //   dir: 'testcases/elm-markdown',
+    //   elmFile: 'Run.elm',
+    //   options: defaultOptions,
+    // },
+    // This one takes forever
+    // {
+    //   name: 'elm-obj-file',
+    //   dir: 'testcases/elm-obj-file',
     //   elmFile: 'Run.elm',
     //   options: defaultOptions,
     // },
