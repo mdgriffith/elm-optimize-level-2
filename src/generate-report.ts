@@ -32,11 +32,17 @@ async function go() {
       options: defaultOptions,
     },
     {
-      name: 'elm-markdown',
-      dir: 'testcases/elm-markdown',
-      elmFile: 'Run.elm',
+      name: 'html',
+      dir: 'testcases/html',
+      elmFile: 'Main.elm',
       options: defaultOptions,
     },
+    // {
+    //   name: 'elm-markdown',
+    //   dir: 'testcases/elm-markdown',
+    //   elmFile: 'Run.elm',
+    //   options: defaultOptions,
+    // },
   ]);
 
   console.log(Reporting.markdown(await report));
