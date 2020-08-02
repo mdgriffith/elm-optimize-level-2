@@ -22,18 +22,33 @@ var $elm$core$String$join_raw = function (sep, chunks) {
 
 */
 
-export type PartialApplication = { split: FuncSplit; appliedArgs: string[] };
+export type PartialApplication = {
+  split: FuncSplit;
+  appliedArgs: string[];
+  funcReturnsWrapper?: FunctionInfoThatReturnsWrappedFunc;
+};
+
+type FunctionInfoThatReturnsWrappedFunc = {
+  arity: number;
+  resultArity: number;
+};
 
 export type InlineContext = {
+  functionsThatWrapFunctions: Map<string, FunctionInfoThatReturnsWrappedFunc>;
   splits: Map<string, FuncSplit>;
   partialApplications: Map<string, PartialApplication>;
-  inlinedCount: number;
-  inlinedPartialApplications: number;
+  inlined: {
+    fromAlias: number;
+    fromRawFunc: number;
+    fromWrapper: number;
+    partialApplications: number;
+  };
 };
 
 export type FuncSplit = {
   rawLambdaName: string;
   arity: number;
+  type: 'alias' | 'raw_func' | 'returned_wrapper';
 };
 
 const deriveRawLambdaName = (wrappedName: string): string =>
@@ -43,15 +58,37 @@ const wrapperRegex = /F(?<arity>[1-9]+[0-9]*)/;
 
 const invocationRegex = /A(?<arity>[1-9]+[0-9]*)/;
 
+function reportInlinining(split: FuncSplit, { inlined }: InlineContext) {
+  switch (split.type) {
+    case 'alias': {
+      inlined.fromAlias += 1;
+      break;
+    }
+    case 'raw_func': {
+      inlined.fromRawFunc += 1;
+      break;
+    }
+    case 'returned_wrapper': {
+      inlined.fromWrapper += 1;
+      break;
+    }
+  }
+}
+
 export const createFunctionInlineTransformer = (
   reportResult?: (res: InlineContext) => void
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const inlineContext: InlineContext = {
-      splits: new Map<string, FuncSplit>(),
-      partialApplications: new Map<string, PartialApplication>(),
-      inlinedCount: 0,
-      inlinedPartialApplications: 0,
+      functionsThatWrapFunctions: new Map(),
+      splits: new Map(),
+      partialApplications: new Map(),
+      inlined: {
+        fromAlias: 0,
+        fromRawFunc: 0,
+        fromWrapper: 0,
+        partialApplications: 0,
+      },
     };
 
     const splitter = createSplitterVisitor(inlineContext, context);
@@ -62,6 +99,7 @@ export const createFunctionInlineTransformer = (
 
     if (reportResult) {
       reportResult(inlineContext);
+      // console.log(inlineContext);
     }
 
     return result;
@@ -69,7 +107,7 @@ export const createFunctionInlineTransformer = (
 };
 
 const createSplitterVisitor = (
-  { splits, partialApplications }: InlineContext,
+  { splits, partialApplications, functionsThatWrapFunctions }: InlineContext,
   context: ts.TransformationContext
 ) => {
   const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
@@ -83,31 +121,59 @@ const createSplitterVisitor = (
       if (ts.isIdentifier(node.initializer)) {
         const existingSplit = splits.get(node.initializer.text);
         if (existingSplit) {
-          splits.set(node.name.text, existingSplit);
+          splits.set(node.name.text, { ...existingSplit, type: 'alias' });
         }
       }
 
-      // detects "var a = [exp](..)"
+      if (
+        ts.isArrowFunction(node.initializer) ||
+        ts.isFunctionExpression(node.initializer)
+      ) {
+        const maybeWrapper = checkIfFunctionReturnsWrappedFunction(
+          node.initializer
+        );
+
+        if (maybeWrapper) {
+          functionsThatWrapFunctions.set(node.name.text, maybeWrapper);
+        }
+      }
+
       if (ts.isCallExpression(node.initializer)) {
+        // detects "var a = [exp](..)"
         const callExpression = node.initializer.expression;
         // detects "var a = f(..)"
         if (ts.isIdentifier(callExpression)) {
           // detects "var a = F123(..)"
-          const maybeMatch = callExpression.text.match(wrapperRegex);
-          if (maybeMatch && maybeMatch.groups) {
+          const wrapperMatch = callExpression.text.match(wrapperRegex);
+          if (wrapperMatch && wrapperMatch.groups) {
             const args = node.initializer.arguments;
             // checks that it should be called with only one argument
             if (args.length === 1) {
               const [maybeFuncExpression] = args;
 
-              const arity = Number(maybeMatch.groups.arity);
+              const arity = Number(wrapperMatch.groups.arity);
               const originalName = node.name.text;
 
+              // detects var a = F123(innerFunc)
               if (ts.isIdentifier(maybeFuncExpression)) {
                 splits.set(originalName, {
                   arity,
                   rawLambdaName: maybeFuncExpression.text,
+                  type: 'raw_func',
                 });
+
+                // check if the inner functions was marked as the func that returns a wrapper
+                // example
+                // var inner = (a,b) => F2((c, d) =>  a + b + c + d)
+                // var wrapped = F2(inner)
+                // in that case we mark "wrapped" functions as a functions that returns a wrapper too
+                const maybeWrapper = functionsThatWrapFunctions.get(
+                  maybeFuncExpression.text
+                );
+
+                if (maybeWrapper) {
+                  functionsThatWrapFunctions.set(node.name.text, maybeWrapper);
+                }
               }
 
               // and it is a function
@@ -123,6 +189,7 @@ const createSplitterVisitor = (
                 splits.set(originalName, {
                   arity,
                   rawLambdaName,
+                  type: 'raw_func',
                 });
 
                 const lambdaDeclaration = ts.createVariableDeclaration(
@@ -139,6 +206,14 @@ const createSplitterVisitor = (
                     ts.createIdentifier(rawLambdaName),
                   ])
                 );
+
+                const maybeWrapper = checkIfFunctionReturnsWrappedFunction(
+                  maybeFuncExpression
+                );
+
+                if (maybeWrapper) {
+                  functionsThatWrapFunctions.set(node.name.text, maybeWrapper);
+                }
 
                 return [lambdaDeclaration, newDeclaration];
               }
@@ -164,57 +239,102 @@ const createSplitterVisitor = (
             // it might be a partially applied version of existing thing
             const existingSplit = splits.get(funcName);
 
-            if (existingSplit) {
-              // that means something like
-              // var partiallyApplied = func(1);
-              // where number of arguments is less than arity
+            // that means something like
+            // var partiallyApplied = func(1);
+            // where number of arguments is less than arity
 
-              // const appliedArgsNodes = node.initializer.arguments;
+            // const appliedArgsNodes = node.initializer.arguments;
 
-              // means that the number of args is less than arity, thus partially applied
-              if (appliedArgsNodes.length < existingSplit.arity) {
-                const partiallyAppliedFuncName = node.name.text;
+            // means that the number of args is less than arity, thus partially applied
+            if (
+              existingSplit &&
+              appliedArgsNodes.length < existingSplit.arity
+            ) {
+              const partiallyAppliedFuncName = node.name.text;
 
-                const nameOfArg = (i: number) =>
-                  `${partiallyAppliedFuncName}_a${i}`;
+              const nameOfArg = (i: number) =>
+                `${partiallyAppliedFuncName}_a${i}`;
 
-                const appliedArgs = appliedArgsNodes.map((_, i) =>
-                  nameOfArg(i)
-                );
+              const appliedArgs = appliedArgsNodes.map((_, i) => nameOfArg(i));
 
-                partialApplications.set(partiallyAppliedFuncName, {
-                  split: existingSplit,
-                  appliedArgs,
-                });
+              const funcWrapper = functionsThatWrapFunctions.get(funcName);
 
-                const argsIdentifiers = appliedArgs.map(name =>
-                  ts.createIdentifier(name)
-                );
+              partialApplications.set(partiallyAppliedFuncName, {
+                split: existingSplit,
+                appliedArgs,
+                funcReturnsWrapper: funcWrapper,
+              });
 
-                return [
-                  ...appliedArgsNodes.map((argExpression, i) =>
-                    ts.createVariableDeclaration(
-                      nameOfArg(i),
-                      undefined,
-                      argExpression
-                    )
-                  ),
+              const argsIdentifiers = appliedArgs.map(name =>
+                ts.createIdentifier(name)
+              );
 
-                  ts.updateVariableDeclaration(
-                    node,
-                    node.name,
+              return [
+                ...appliedArgsNodes.map((argExpression, i) =>
+                  ts.createVariableDeclaration(
+                    nameOfArg(i),
                     undefined,
-                    ts.updateCall(
-                      node.initializer,
-                      callExpression,
-                      undefined,
-                      isWrappedWithA
-                        ? [ts.createIdentifier(funcName), ...argsIdentifiers]
-                        : argsIdentifiers
-                    )
-                  ),
-                ];
-              }
+                    argExpression
+                  )
+                ),
+
+                ts.updateVariableDeclaration(
+                  node,
+                  node.name,
+                  undefined,
+                  ts.updateCall(
+                    node.initializer,
+                    callExpression,
+                    undefined,
+                    isWrappedWithA
+                      ? [ts.createIdentifier(funcName), ...argsIdentifiers]
+                      : argsIdentifiers
+                  )
+                ),
+              ];
+            }
+
+            // console.log('checking', node.name.text, 'with', funcName);
+
+            const partialApplication = partialApplications.get(funcName);
+
+            // can either be a direct call
+            const wrapperFunc = functionsThatWrapFunctions.get(funcName);
+
+            // that means that result is another function wrapped in F(n)
+            if (
+              (wrapperFunc && appliedArgsNodes.length === wrapperFunc.arity) ||
+              (partialApplication &&
+                partialApplication.funcReturnsWrapper &&
+                partialApplication.appliedArgs.length +
+                  appliedArgsNodes.length ===
+                  partialApplication.split.arity)
+            ) {
+              const rawFunName = deriveRawLambdaName(node.name.text);
+
+              splits.set(node.name.text, {
+                arity:
+                  wrapperFunc?.resultArity ??
+                  partialApplication?.funcReturnsWrapper?.resultArity ??
+                  0,
+                rawLambdaName: rawFunName,
+                type: 'returned_wrapper',
+              });
+
+              // console.log('!!', node.name.text);
+
+              // var f = A2(g, a,b);  where g returns F2
+              // splits into
+              // var f = A2(g, a,b);
+              // var f_raw = f.f;
+              return [
+                node,
+                ts.createVariableDeclaration(
+                  ts.createIdentifier(rawFunName),
+                  undefined,
+                  ts.createPropertyAccess(node.name, ts.createIdentifier('f'))
+                ),
+              ];
             }
           }
         }
@@ -257,7 +377,7 @@ const createInlinerVisitor = (
             const split = splits.get(funcName.text);
 
             if (split && split.arity === arity) {
-              inlineContext.inlinedCount += 1;
+              reportInlinining(split, inlineContext);
               return ts.createCall(
                 ts.createIdentifier(split.rawLambdaName),
                 undefined,
@@ -273,7 +393,7 @@ const createInlinerVisitor = (
               partialApplication.appliedArgs.length + arity ===
                 partialApplication.split.arity
             ) {
-              inlineContext.inlinedPartialApplications += 1;
+              inlineContext.inlined.partialApplications += 1;
 
               return ts.createCall(
                 ts.createIdentifier(partialApplication.split.rawLambdaName),
@@ -297,7 +417,7 @@ const createInlinerVisitor = (
             partialApplication.appliedArgs.length ===
               partialApplication.split.arity - 1
           ) {
-            inlineContext.inlinedPartialApplications += 1;
+            inlineContext.inlined.partialApplications += 1;
 
             return ts.createCall(
               ts.createIdentifier(partialApplication.split.rawLambdaName),
@@ -319,3 +439,45 @@ const createInlinerVisitor = (
 
   return inliner;
 };
+function checkIfFunctionReturnsWrappedFunction(
+  func: ts.ArrowFunction | ts.FunctionExpression
+): FunctionInfoThatReturnsWrappedFunc | undefined {
+  let returnExpression: ts.Expression | undefined;
+
+  if (ts.isFunctionExpression(func) && func.body.statements.length === 1) {
+    // console.log('$$body', node.body.getText());
+    const [returnStatement] = func.body.statements;
+
+    if (
+      ts.isReturnStatement(returnStatement) &&
+      returnStatement.expression !== undefined
+    ) {
+      returnExpression = returnStatement.expression;
+    }
+  } else if (ts.isArrowFunction(func) && !ts.isBlock(func.body)) {
+    returnExpression = func.body;
+  }
+
+  const arity = func.parameters.length;
+
+  // matches
+  // function (...) { return F2(...) }
+  // or
+  // (...) => F2(...)
+  if (
+    returnExpression &&
+    ts.isCallExpression(returnExpression) &&
+    ts.isIdentifier(returnExpression.expression)
+  ) {
+    const maybeWrapper = returnExpression.expression.text.match(wrapperRegex);
+
+    if (maybeWrapper && maybeWrapper.groups) {
+      return {
+        arity,
+        resultArity: Number(maybeWrapper.groups.arity),
+      };
+    }
+  }
+
+  return undefined;
+}

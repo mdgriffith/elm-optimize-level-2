@@ -7164,18 +7164,6 @@ var $author$project$Benchmark$Runner$Json$program = F2(
 			});
 	});
 var $author$project$Main$reportResults = _Platform_outgoingPort('reportResults', $elm$core$Basics$identity);
-var $author$project$Main$addMyType = F2(
-	function (mine, sum) {
-		switch (mine.$) {
-			case 'Zero':
-				return sum;
-			case 'One':
-				var i = mine.a;
-				return i + sum;
-			default:
-				return sum;
-		}
-	});
 var $elm_explorations$benchmark$Benchmark$Status$Cold = {$: 'Cold'};
 var $elm_explorations$benchmark$Benchmark$LowLevel$operation = function (fn) {
 	return _Benchmark_operation(fn);
@@ -7189,48 +7177,33 @@ var $elm_explorations$benchmark$Benchmark$benchmark = F2(
 			$elm_explorations$benchmark$Benchmark$Status$Cold);
 	});
 var $elm_explorations$benchmark$Benchmark$describe = $elm_explorations$benchmark$Benchmark$Benchmark$Group;
-var $author$project$Main$One = function (a) {
-	return {$: 'One', a: a};
-};
-var $author$project$Main$Two = F2(
-	function (a, b) {
-		return {$: 'Two', a: a, b: b};
-	});
-var $author$project$Main$Zero = {$: 'Zero'};
-var $author$project$Main$values = _List_fromArray(
-	[
-		$author$project$Main$Zero,
-		$author$project$Main$One(5),
-		A2($author$project$Main$Two, 'Two', 'two')
-	]);
-var $author$project$Main$many = $elm$core$List$concat(
-	A2($elm$core$List$repeat, 100, $author$project$Main$values));
-var $author$project$Main$updateRecord = F2(
-	function (attr, record) {
-		return _Utils_update(
-			record,
-			{one: 87});
+var $author$project$Main$three = A2($elm$core$List$repeat, 3, 0);
+var $author$project$Main$viewLevels = F2(
+	function (level, _v0) {
+		return (!level) ? $elm$html$Html$text('') : A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			A2(
+				$elm$core$List$map,
+				$author$project$Main$viewLevels(level - 1),
+				$author$project$Main$three));
 	});
 var $author$project$Main$suite = A2(
 	$elm_explorations$benchmark$Benchmark$describe,
-	'Benchmarks',
+	'HTML',
 	_List_fromArray(
 		[
 			A2(
 			$elm_explorations$benchmark$Benchmark$benchmark,
-			'sum 100 entities in a list',
+			'create a 4 level nested html tree',
 			function (_v0) {
-				return A3($elm$core$List$foldl, $author$project$Main$addMyType, 0, $author$project$Main$many);
-			}),
-			A2(
-			$elm_explorations$benchmark$Benchmark$benchmark,
-			'1000 record updates',
-			function (_v1) {
-				return A3(
-					$elm$core$List$foldl,
-					$author$project$Main$updateRecord,
-					{one: 1, three: 3, two: 2},
-					$author$project$Main$many);
+				return A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					A2(
+						$elm$core$List$map,
+						$author$project$Main$viewLevels(4),
+						$author$project$Main$three));
 			})
 		]));
 var $author$project$Main$main = A2($author$project$Benchmark$Runner$Json$program, $author$project$Main$reportResults, $author$project$Main$suite);
