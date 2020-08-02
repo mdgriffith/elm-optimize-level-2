@@ -4810,7 +4810,8 @@
                 var i = status.a;
                 var samples = status.b;
                 return $elm$json$Json$Encode$object(_List_fromArray([
-                    _Utils_Tuple2("status", $elm$json$Json$Encode$string("pending"))
+                    _Utils_Tuple2("status", $elm$json$Json$Encode$string("pending")),
+                    _Utils_Tuple2("progress", $elm$json$Json$Encode$float($elm_explorations$benchmark$Benchmark$Status$progress(status)))
                 ]));
             case 3:
                 var error = status.a;
@@ -4936,10 +4937,14 @@
         return $elm_explorations$benchmark$Benchmark$done(benchmark) ? _Utils_Tuple2(benchmark, sendReport($author$project$Benchmark$Runner$Json$encode(benchmark))) : _Utils_Tuple2(benchmark, $author$project$Benchmark$Runner$Json$next(benchmark));
     });
     var $elm$html$Html$div = _VirtualDom_node("div");
+    var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+    var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
     var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
     var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
     var $author$project$Benchmark$Runner$Json$view = function (model) {
-        return A2($elm$html$Html$div, _List_Nil, _List_fromArray([
+        return A2($elm$html$Html$div, _List_fromArray([
+            A2($elm$html$Html$Attributes$style, "white-space", "pre")
+        ]), _List_fromArray([
             $elm$html$Html$text(A2($elm$json$Json$Encode$encode, 4, $author$project$Benchmark$Runner$Json$encode(model)))
         ]));
     };

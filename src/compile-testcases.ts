@@ -202,14 +202,10 @@ async function gzip(file: string) {
 }
 
 function reportInlineTransformResult(ctx: InlineContext) {
-  const {
-    splits,
-    partialApplications,
-    inlinedCount,
-    inlinedPartialApplications,
-  } = ctx;
+  const { splits, partialApplications, inlined } = ctx;
 
   console.log(
-    `functionInlineTransformer: splitCount=${splits.size}, partialApplicationCount=${partialApplications.size}, inlined=${inlinedCount}, inlinedPartialApplications=${inlinedPartialApplications}`
+    `functionInlineTransformer: splitCount=${splits.size}, partialApplicationCount=${partialApplications.size}`,
+    inlined
   );
 }

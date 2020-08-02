@@ -71,19 +71,19 @@
   var _$B_Math_46pow = _$3_Math.pow;
   var _$C_isNaN = _$0_global.isNaN;
 
-  var _Dk_F = function (arity, fun, wrapper) {
+  var _Dc_F = function (arity, fun, wrapper) {
     wrapper.a = arity;
     wrapper.f = fun;
     return wrapper;
   };
 
-  var _C8__95Utils_95eq = function (x, y) {
-    for (var pair, stack = [], isEqual = _DA__95Utils_95eqHelp(x, y, 0, stack); isEqual && (pair = stack.pop()); isEqual = _DA__95Utils_95eqHelp(pair.a, pair.b, 0, stack)) {}
+  var _Bt__95Utils_95eq = function (x, y) {
+    for (var pair, stack = [], isEqual = _Cy__95Utils_95eqHelp(x, y, 0, stack); isEqual && (pair = stack.pop()); isEqual = _Cy__95Utils_95eqHelp(pair.a, pair.b, 0, stack)) {}
 
     return isEqual;
   };
 
-  var _DA__95Utils_95eqHelp = function (x, y, depth, stack) {
+  var _Cy__95Utils_95eqHelp = function (x, y, depth, stack) {
     if (x === y) {
       return true;
     }
@@ -94,7 +94,7 @@
     }
 
     if (depth > 100) {
-      stack.push(_Ak__95Utils_95Tuple2(x, y));
+      stack.push(_Al__95Utils_95Tuple2(x, y));
       return true;
     }
     /**_UNUSED/
@@ -114,13 +114,13 @@
 
 
     if (x.$ < 0) {
-      x = _E7__36elm_36core_36Dict_36toList(x);
-      y = _E7__36elm_36core_36Dict_36toList(y);
+      x = _Dr__36elm_36core_36Dict_36toList(x);
+      y = _Dr__36elm_36core_36Dict_36toList(y);
     } //*/
 
 
     for (var key in x) {
-      if (!_DA__95Utils_95eqHelp(x[key], y[key], depth + 1, stack)) {
+      if (!_Cy__95Utils_95eqHelp(x[key], y[key], depth + 1, stack)) {
         return false;
       }
     }
@@ -183,23 +183,23 @@
       return ys;
     }
 
-    var root = _Av__95List_95Cons(xs.a, ys);
+    var root = _Ax__95List_95Cons(xs.a, ys);
 
     xs = xs.b;
 
     for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
     {
-      curr = curr.b = _Av__95List_95Cons(xs.a, ys);
+      curr = curr.b = _Ax__95List_95Cons(xs.a, ys);
     }
 
     return root;
   };
 
-  var _CU__95List_95fromArray = function (arr) {
+  var _Ce__95List_95fromArray = function (arr) {
     var out = _T_r3;
 
     for (var i = arr.length; i--;) {
-      out = _Av__95List_95Cons(arr[i], out);
+      out = _Ax__95List_95Cons(arr[i], out);
     }
 
     return out;
@@ -218,81 +218,81 @@
     throw new Error("https://github.com/elm/core/blob/1.0.0/hints/" + identifier + ".md");
   };
 
-  var _BA__95Json_95runHelp = function (decoder, value) {
+  var _BJ__95Json_95runHelp = function (decoder, value) {
     switch (decoder.$) {
       case 2:
         return decoder.b(value);
 
       case 5:
-        return value === null ? _Bw__36elm_36core_36Result_36Ok(decoder.c) : _By__95Json_95expecting("null", value);
+        return value === null ? _C2__36elm_36core_36Result_36Ok(decoder.c) : _C4__95Json_95expecting("null", value);
 
       case 3:
-        if (!_Bz__95Json_95isArray(value)) {
-          return _By__95Json_95expecting("a LIST", value);
+        if (!_C5__95Json_95isArray(value)) {
+          return _C4__95Json_95expecting("a LIST", value);
         }
 
-        return _Bx__95Json_95runArrayDecoder(decoder.b, value, _CU__95List_95fromArray);
+        return _C3__95Json_95runArrayDecoder(decoder.b, value, _Ce__95List_95fromArray);
 
       case 4:
-        if (!_Bz__95Json_95isArray(value)) {
-          return _By__95Json_95expecting("an ARRAY", value);
+        if (!_C5__95Json_95isArray(value)) {
+          return _C4__95Json_95expecting("an ARRAY", value);
         }
 
-        return _Bx__95Json_95runArrayDecoder(decoder.b, value, _C0__95Json_95toElmArray);
+        return _C3__95Json_95runArrayDecoder(decoder.b, value, _C6__95Json_95toElmArray);
 
       case 6:
         var field = decoder.d;
 
         if (typeof value !== "object" || value === null || !(field in value)) {
-          return _By__95Json_95expecting("an OBJECT with a field named `" + field + "`", value);
+          return _C4__95Json_95expecting("an OBJECT with a field named `" + field + "`", value);
         }
 
-        var result = _BA__95Json_95runHelp(decoder.b, value[field]);
+        var result = _BJ__95Json_95runHelp(decoder.b, value[field]);
 
-        return _Aj__36elm_36core_36Result_36isOk(result) ? result : _C1__36elm_36core_36Result_36Err(_C2__36elm_36json_36Json_36Decode_36Field_95raw(field, result.a));
+        return _Aj__36elm_36core_36Result_36isOk(result) ? result : _C7__36elm_36core_36Result_36Err(_C8__36elm_36json_36Json_36Decode_36Field_95raw(field, result.a));
 
       case 7:
         var index = decoder.e;
 
-        if (!_Bz__95Json_95isArray(value)) {
-          return _By__95Json_95expecting("an ARRAY", value);
+        if (!_C5__95Json_95isArray(value)) {
+          return _C4__95Json_95expecting("an ARRAY", value);
         }
 
         if (index >= value.length) {
-          return _By__95Json_95expecting("a LONGER array. Need index " + index + " but only see " + value.length + " entries", value);
+          return _C4__95Json_95expecting("a LONGER array. Need index " + index + " but only see " + value.length + " entries", value);
         }
 
-        var result = _BA__95Json_95runHelp(decoder.b, value[index]);
+        var result = _BJ__95Json_95runHelp(decoder.b, value[index]);
 
-        return _Aj__36elm_36core_36Result_36isOk(result) ? result : _C1__36elm_36core_36Result_36Err(_C3__36elm_36json_36Json_36Decode_36Index_95raw(index, result.a));
+        return _Aj__36elm_36core_36Result_36isOk(result) ? result : _C7__36elm_36core_36Result_36Err(_C9__36elm_36json_36Json_36Decode_36Index_95raw(index, result.a));
 
       case 8:
-        if (typeof value !== "object" || value === null || _Bz__95Json_95isArray(value)) {
-          return _By__95Json_95expecting("an OBJECT", value);
+        if (typeof value !== "object" || value === null || _C5__95Json_95isArray(value)) {
+          return _C4__95Json_95expecting("an OBJECT", value);
         }
 
         var keyValuePairs = _T_r3; // TODO test perf of Object.keys and switch when support is good enough
 
         for (var key in value) {
           if (value.hasOwnProperty(key)) {
-            var result = _BA__95Json_95runHelp(decoder.b, value[key]);
+            var result = _BJ__95Json_95runHelp(decoder.b, value[key]);
 
             if (!_Aj__36elm_36core_36Result_36isOk(result)) {
-              return _C1__36elm_36core_36Result_36Err(_C2__36elm_36json_36Json_36Decode_36Field_95raw(key, result.a));
+              return _C7__36elm_36core_36Result_36Err(_C8__36elm_36json_36Json_36Decode_36Field_95raw(key, result.a));
             }
 
-            keyValuePairs = _Av__95List_95Cons(_Ak__95Utils_95Tuple2(key, result.a), keyValuePairs);
+            keyValuePairs = _Ax__95List_95Cons(_Al__95Utils_95Tuple2(key, result.a), keyValuePairs);
           }
         }
 
-        return _Bw__36elm_36core_36Result_36Ok(_C4__36elm_36core_36List_36reverse(keyValuePairs));
+        return _C2__36elm_36core_36Result_36Ok(_CA__36elm_36core_36List_36reverse(keyValuePairs));
 
       case 9:
         var answer = decoder.f;
         var decoders = decoder.g;
 
         for (var i = 0; i < decoders.length; i++) {
-          var result = _BA__95Json_95runHelp(decoders[i], value);
+          var result = _BJ__95Json_95runHelp(decoders[i], value);
 
           if (!_Aj__36elm_36core_36Result_36isOk(result)) {
             return result;
@@ -301,55 +301,55 @@
           answer = answer(result.a);
         }
 
-        return _Bw__36elm_36core_36Result_36Ok(answer);
+        return _C2__36elm_36core_36Result_36Ok(answer);
 
       case 10:
-        var result = _BA__95Json_95runHelp(decoder.b, value);
+        var result = _BJ__95Json_95runHelp(decoder.b, value);
 
-        return !_Aj__36elm_36core_36Result_36isOk(result) ? result : _BA__95Json_95runHelp(decoder.h(result.a), value);
+        return !_Aj__36elm_36core_36Result_36isOk(result) ? result : _BJ__95Json_95runHelp(decoder.h(result.a), value);
 
       case 11:
         var errors = _T_r3;
 
         for (var temp = decoder.g; temp.b; temp = temp.b) // WHILE_CONS
         {
-          var result = _BA__95Json_95runHelp(temp.a, value);
+          var result = _BJ__95Json_95runHelp(temp.a, value);
 
           if (_Aj__36elm_36core_36Result_36isOk(result)) {
             return result;
           }
 
-          errors = _Av__95List_95Cons(result.a, errors);
+          errors = _Ax__95List_95Cons(result.a, errors);
         }
 
-        return _C1__36elm_36core_36Result_36Err(_C5__36elm_36json_36Json_36Decode_36OneOf(_C4__36elm_36core_36List_36reverse(errors)));
+        return _C7__36elm_36core_36Result_36Err(_CB__36elm_36json_36Json_36Decode_36OneOf(_CA__36elm_36core_36List_36reverse(errors)));
 
       case 1:
-        return _C1__36elm_36core_36Result_36Err(_C6__36elm_36json_36Json_36Decode_36Failure_95raw(decoder.a, _Ah__36elm_36json_36Json_36Encode_36string(value)));
+        return _C7__36elm_36core_36Result_36Err(_CC__36elm_36json_36Json_36Decode_36Failure_95raw(decoder.a, _Ah__36elm_36json_36Json_36Encode_36string(value)));
 
       case 0:
-        return _Bw__36elm_36core_36Result_36Ok(decoder.a);
+        return _C2__36elm_36core_36Result_36Ok(decoder.a);
     }
   };
 
-  var _Bx__95Json_95runArrayDecoder = function (decoder, value, toElmValue) {
+  var _C3__95Json_95runArrayDecoder = function (decoder, value, toElmValue) {
     var len = value.length;
     var array = new Array(len);
 
     for (var i = 0; i < len; i++) {
-      var result = _BA__95Json_95runHelp(decoder, value[i]);
+      var result = _BJ__95Json_95runHelp(decoder, value[i]);
 
       if (!_Aj__36elm_36core_36Result_36isOk(result)) {
-        return _C1__36elm_36core_36Result_36Err(_C3__36elm_36json_36Json_36Decode_36Index_95raw(i, result.a));
+        return _C7__36elm_36core_36Result_36Err(_C9__36elm_36json_36Json_36Decode_36Index_95raw(i, result.a));
       }
 
       array[i] = result.a;
     }
 
-    return _Bw__36elm_36core_36Result_36Ok(toElmValue(array));
+    return _C2__36elm_36core_36Result_36Ok(toElmValue(array));
   };
 
-  var _Do__95Json_95equality = function (x, y) {
+  var _Dn__95Json_95equality = function (x, y) {
     if (x === y) {
       return true;
     }
@@ -372,26 +372,26 @@
       case 3:
       case 4:
       case 8:
-        return _Do__95Json_95equality(x.b, y.b);
+        return _Dn__95Json_95equality(x.b, y.b);
 
       case 6:
-        return x.d === y.d && _Do__95Json_95equality(x.b, y.b);
+        return x.d === y.d && _Dn__95Json_95equality(x.b, y.b);
 
       case 7:
-        return x.e === y.e && _Do__95Json_95equality(x.b, y.b);
+        return x.e === y.e && _Dn__95Json_95equality(x.b, y.b);
 
       case 9:
-        return x.f === y.f && _EV__95Json_95listEquality(x.g, y.g);
+        return x.f === y.f && _EZ__95Json_95listEquality(x.g, y.g);
 
       case 10:
-        return x.h === y.h && _Do__95Json_95equality(x.b, y.b);
+        return x.h === y.h && _Dn__95Json_95equality(x.b, y.b);
 
       case 11:
-        return _EV__95Json_95listEquality(x.g, y.g);
+        return _EZ__95Json_95listEquality(x.g, y.g);
     }
   };
 
-  var _EV__95Json_95listEquality = function (aDecoders, bDecoders) {
+  var _EZ__95Json_95listEquality = function (aDecoders, bDecoders) {
     var len = aDecoders.length;
 
     if (len !== bDecoders.length) {
@@ -399,7 +399,7 @@
     }
 
     for (var i = 0; i < len; i++) {
-      if (!_Do__95Json_95equality(aDecoders[i], bDecoders[i])) {
+      if (!_Dn__95Json_95equality(aDecoders[i], bDecoders[i])) {
         return false;
       }
     }
@@ -418,7 +418,7 @@
       h: []
     };
 
-    _Dl__95Scheduler_95enqueue(proc);
+    _Dd__95Scheduler_95enqueue(proc);
 
     return proc;
   };
@@ -426,13 +426,13 @@
   var _Cj__95Scheduler_95rawSend = function (proc, msg) {
     proc.h.push(msg);
 
-    _Dl__95Scheduler_95enqueue(proc);
+    _Dd__95Scheduler_95enqueue(proc);
   };
 
-  var _Dl__95Scheduler_95enqueue = function (proc) {
+  var _Dd__95Scheduler_95enqueue = function (proc) {
     var __captured__scope_1_ = __scope_0_main[0] || __get_scope_binding_0_get_95scope_95binding(0);
 
-    _E6__95Scheduler_95queue.push(proc);
+    _Dq__95Scheduler_95queue.push(proc);
 
     if (__captured__scope_1_[1]) {
       return;
@@ -440,7 +440,7 @@
 
     __captured__scope_1_[1] = true;
 
-    while (proc = _E6__95Scheduler_95queue.shift()) {
+    while (proc = _Dq__95Scheduler_95queue.shift()) {
       _EQ__95Scheduler_95step(proc);
     }
 
@@ -466,7 +466,7 @@
         proc.f.c = proc.f.b(function (newRoot) {
           proc.f = newRoot;
 
-          _Dl__95Scheduler_95enqueue(proc);
+          _Dd__95Scheduler_95enqueue(proc);
         });
         return;
       } else if (rootTag === 5) {
@@ -501,7 +501,7 @@
     var ports = _At__95Platform_95setupEffects(managers, sendToApp);
 
     function sendToApp(msg, viewMetadata) {
-      var pair = _e_A2(update, msg, model);
+      var pair = _Ak_A2(update, msg, model);
 
       stepper(model = pair.a, viewMetadata);
 
@@ -518,8 +518,8 @@
   var _At__95Platform_95setupEffects = function (managers, sendToApp) {
     var ports; // setup all necessary effect managers
 
-    for (var key in _BC__95Platform_95effectManagers) {
-      var manager = _BC__95Platform_95effectManagers[key];
+    for (var key in _B8__95Platform_95effectManagers) {
+      var manager = _B8__95Platform_95effectManagers[key];
 
       if (manager.a) {
         ports = ports || {};
@@ -542,23 +542,23 @@
     var cmdMap = info.e;
     var subMap = info.f;
 
-    var loop = state => _CH__95Scheduler_95andThen_95raw(loop, _Ch__95Scheduler_95receive(function (msg) {
+    var loop = state => _CI__95Scheduler_95andThen_95raw(loop, _Ch__95Scheduler_95receive(function (msg) {
       var value = msg.a;
 
       if (msg.$ === 0) {
-        return _Ax_A3(onSelfMsg, router, value, state);
+        return _Az_A3(onSelfMsg, router, value, state);
       }
 
-      return cmdMap && subMap ? _Ci_A4(onEffects, router, value.i, value.j, state) : _Ax_A3(onEffects, router, cmdMap ? value.i : value.j, state);
+      return cmdMap && subMap ? _Ci_A4(onEffects, router, value.i, value.j, state) : _Az_A3(onEffects, router, cmdMap ? value.i : value.j, state);
     }));
 
-    return router.h = _Cf__95Scheduler_95rawSpawn(_CH__95Scheduler_95andThen_95raw(loop, info.b));
+    return router.h = _Cf__95Scheduler_95rawSpawn(_CI__95Scheduler_95andThen_95raw(loop, info.b));
   };
 
   var _Au__95Platform_95enqueueEffects = function (managers, cmdBag, subBag) {
     var __captured__scope_1_ = __scope_0_main[0] || __get_scope_binding_0_get_95scope_95binding(0);
 
-    _BJ__95Platform_95effectsQueue.push({
+    _BE__95Platform_95effectsQueue.push({
       p: managers,
       q: cmdBag,
       r: subBag
@@ -567,7 +567,7 @@
     if (__captured__scope_1_[2]) return;
     __captured__scope_1_[2] = true;
 
-    for (var fx; fx = _BJ__95Platform_95effectsQueue.shift();) {
+    for (var fx; fx = _BE__95Platform_95effectsQueue.shift();) {
       _Bf__95Platform_95dispatchEffects(fx.p, fx.q, fx.r);
     }
 
@@ -597,9 +597,9 @@
       case 1:
         var home = bag.k;
 
-        var effect = _Dm__95Platform_95toEffect(isCmd, home, taggers, bag.l);
+        var effect = _De__95Platform_95toEffect(isCmd, home, taggers, bag.l);
 
-        effectsDict[home] = _Dn__95Platform_95insert(isCmd, effect, effectsDict[home]);
+        effectsDict[home] = _Dm__95Platform_95insert(isCmd, effect, effectsDict[home]);
         return;
 
       case 2:
@@ -620,7 +620,7 @@
     }
   };
 
-  var _Dm__95Platform_95toEffect = function (isCmd, home, taggers, value) {
+  var _De__95Platform_95toEffect = function (isCmd, home, taggers, value) {
     function applyTaggers(x) {
       for (var temp = taggers; temp; temp = temp.t) {
         x = temp.s(x);
@@ -629,33 +629,33 @@
       return x;
     }
 
-    var map = isCmd ? _BC__95Platform_95effectManagers[home].e : _BC__95Platform_95effectManagers[home].f;
-    return _e_A2(map, applyTaggers, value);
+    var map = isCmd ? _B8__95Platform_95effectManagers[home].e : _B8__95Platform_95effectManagers[home].f;
+    return _Ak_A2(map, applyTaggers, value);
   };
 
-  var _Dn__95Platform_95insert = function (isCmd, newEffect, effects) {
+  var _Dm__95Platform_95insert = function (isCmd, newEffect, effects) {
     effects = effects || {
       i: _T_r3,
       j: _T_r3
     };
-    isCmd ? effects.i = _Av__95List_95Cons(newEffect, effects.i) : effects.j = _Av__95List_95Cons(newEffect, effects.j);
+    isCmd ? effects.i = _Ax__95List_95Cons(newEffect, effects.i) : effects.j = _Ax__95List_95Cons(newEffect, effects.j);
     return effects;
   };
 
   var _Bd__95Platform_95setupOutgoingPort = function (name) {
     var subs = [];
-    var converter = _BC__95Platform_95effectManagers[name].u; // CREATE MANAGER
+    var converter = _B8__95Platform_95effectManagers[name].u; // CREATE MANAGER
 
-    var init = _CI__36elm_36core_36Process_36sleep(0);
+    var init = _CJ__36elm_36core_36Process_36sleep(0);
 
-    _BC__95Platform_95effectManagers[name].b = init;
-    _BC__95Platform_95effectManagers[name].c = _Ce_F3(function (router, cmdList, state) {
+    _B8__95Platform_95effectManagers[name].b = init;
+    _B8__95Platform_95effectManagers[name].c = _Cd_F3(function (router, cmdList, state) {
       for (; cmdList.b; cmdList = cmdList.b) // WHILE_CONS
       {
         // grab a separate reference to subs in case unsubscribe is called
         var currentSubs = subs;
 
-        var value = _B7__95Json_95unwrap(converter(cmdList.a));
+        var value = _BG__95Json_95unwrap(converter(cmdList.a));
 
         for (var i = 0; i < currentSubs.length; i++) {
           currentSubs[i](value);
@@ -686,11 +686,11 @@
     };
   };
 
-  var _E1__95VirtualDom_95appendChild = function (parent, child) {
+  var _E3__95VirtualDom_95appendChild = function (parent, child) {
     parent.appendChild(child);
   };
 
-  var _BP__95VirtualDom_95organizeFacts = function (factList) {
+  var _Av__95VirtualDom_95organizeFacts = function (factList) {
     for (var facts = {}; factList.b; factList = factList.b) // WHILE_CONS
     {
       var entry = factList.a;
@@ -699,31 +699,31 @@
       var value = entry.o;
 
       if (tag === "a2") {
-        key === "className" ? _CV__95VirtualDom_95addClass(facts, key, _B7__95Json_95unwrap(value)) : facts[key] = _B7__95Json_95unwrap(value);
+        key === "className" ? _Bg__95VirtualDom_95addClass(facts, key, _BG__95Json_95unwrap(value)) : facts[key] = _BG__95Json_95unwrap(value);
         continue;
       }
 
       var subFacts = facts[tag] || (facts[tag] = {});
-      tag === "a3" && key === "class" ? _CV__95VirtualDom_95addClass(subFacts, key, value) : subFacts[key] = value;
+      tag === "a3" && key === "class" ? _Bg__95VirtualDom_95addClass(subFacts, key, value) : subFacts[key] = value;
     }
 
     return facts;
   };
 
-  var _CV__95VirtualDom_95addClass = function (object, key, newClass) {
+  var _Bg__95VirtualDom_95addClass = function (object, key, newClass) {
     var classes = object[key];
     object[key] = classes ? classes + " " + newClass : newClass;
   };
 
-  var _D4__95VirtualDom_95render = function (vNode, eventNode) {
+  var _DB__95VirtualDom_95render = function (vNode, eventNode) {
     var tag = vNode.$;
 
     if (tag === 5) {
-      return _D4__95VirtualDom_95render(vNode.k || (vNode.k = vNode.m()), eventNode);
+      return _DB__95VirtualDom_95render(vNode.k || (vNode.k = vNode.m()), eventNode);
     }
 
     if (tag === 0) {
-      return _DZ__95VirtualDom_95doc.createTextNode(vNode.a);
+      return _Df__95Browser_95doc.createTextNode(vNode.a);
     }
 
     if (tag === 4) {
@@ -740,7 +740,7 @@
         p: eventNode
       };
 
-      var domNode = _D4__95VirtualDom_95render(subNode, subEventRoot);
+      var domNode = _DB__95VirtualDom_95render(subNode, subEventRoot);
 
       domNode.elm_event_node_ref = subEventRoot;
       return domNode;
@@ -749,35 +749,35 @@
     if (tag === 3) {
       var domNode = vNode.h(vNode.g);
 
-      _D3__95VirtualDom_95applyFacts(domNode, eventNode, vNode.d);
+      _DA__95VirtualDom_95applyFacts(domNode, eventNode, vNode.d);
 
       return domNode;
     } // at this point `tag` must be 1 or 2
 
 
-    var domNode = vNode.f ? _DZ__95VirtualDom_95doc.createElementNS(vNode.f, vNode.c) : _DZ__95VirtualDom_95doc.createElement(vNode.c);
+    var domNode = vNode.f ? _Df__95Browser_95doc.createElementNS(vNode.f, vNode.c) : _Df__95Browser_95doc.createElement(vNode.c);
 
     if (void 0) {
       domNode.addEventListener("click", (void 0)(domNode));
     }
 
-    _D3__95VirtualDom_95applyFacts(domNode, eventNode, vNode.d);
+    _DA__95VirtualDom_95applyFacts(domNode, eventNode, vNode.d);
 
     for (var kids = vNode.e, i = 0; i < kids.length; i++) {
-      _E1__95VirtualDom_95appendChild(domNode, _D4__95VirtualDom_95render(tag === 1 ? kids[i] : kids[i].b, eventNode));
+      _E3__95VirtualDom_95appendChild(domNode, _DB__95VirtualDom_95render(tag === 1 ? kids[i] : kids[i].b, eventNode));
     }
 
     return domNode;
   };
 
-  var _D3__95VirtualDom_95applyFacts = function (domNode, eventNode, facts) {
+  var _DA__95VirtualDom_95applyFacts = function (domNode, eventNode, facts) {
     for (var key in facts) {
       var value = facts[key];
-      key === "a1" ? _Ds__95VirtualDom_95applyStyles(domNode, value) : key === "a0" ? _Dt__95VirtualDom_95applyEvents(domNode, eventNode, value) : key === "a3" ? _Du__95VirtualDom_95applyAttrs(domNode, value) : key === "a4" ? _Dv__95VirtualDom_95applyAttrsNS(domNode, value) : (key !== "value" && key !== "checked" || domNode[key] !== value) && (domNode[key] = value);
+      key === "a1" ? _Du__95VirtualDom_95applyStyles(domNode, value) : key === "a0" ? _Dv__95VirtualDom_95applyEvents(domNode, eventNode, value) : key === "a3" ? _Dw__95VirtualDom_95applyAttrs(domNode, value) : key === "a4" ? _Dx__95VirtualDom_95applyAttrsNS(domNode, value) : (key !== "value" && key !== "checked" || domNode[key] !== value) && (domNode[key] = value);
     }
   };
 
-  var _Ds__95VirtualDom_95applyStyles = function (domNode, styles) {
+  var _Du__95VirtualDom_95applyStyles = function (domNode, styles) {
     var domNodeStyle = domNode.style;
 
     for (var key in styles) {
@@ -785,14 +785,14 @@
     }
   };
 
-  var _Du__95VirtualDom_95applyAttrs = function (domNode, attrs) {
+  var _Dw__95VirtualDom_95applyAttrs = function (domNode, attrs) {
     for (var key in attrs) {
       var value = attrs[key];
       typeof value !== "undefined" ? domNode.setAttribute(key, value) : domNode.removeAttribute(key);
     }
   };
 
-  var _Dv__95VirtualDom_95applyAttrsNS = function (domNode, nsAttrs) {
+  var _Dx__95VirtualDom_95applyAttrsNS = function (domNode, nsAttrs) {
     for (var key in nsAttrs) {
       var pair = nsAttrs[key];
       var namespace = pair.f;
@@ -801,7 +801,7 @@
     }
   };
 
-  var _Dt__95VirtualDom_95applyEvents = function (domNode, eventNode, events) {
+  var _Dv__95VirtualDom_95applyEvents = function (domNode, eventNode, events) {
     var allCallbacks = domNode.elmFs || (domNode.elmFs = {});
 
     for (var key in events) {
@@ -825,23 +825,23 @@
         domNode.removeEventListener(key, oldCallback);
       }
 
-      oldCallback = _EW__95VirtualDom_95makeCallback(eventNode, newHandler);
+      oldCallback = _Ea__95VirtualDom_95makeCallback(eventNode, newHandler);
       domNode.addEventListener(key, oldCallback, void 0);
       allCallbacks[key] = oldCallback;
     }
   };
 
-  var _EW__95VirtualDom_95makeCallback = function (eventNode, initialHandler) {
+  var _Ea__95VirtualDom_95makeCallback = function (eventNode, initialHandler) {
     function callback(event) {
       var handler = callback.q;
 
-      var result = _BA__95Json_95runHelp(handler.a, event);
+      var result = _BJ__95Json_95runHelp(handler.a, event);
 
       if (!_Aj__36elm_36core_36Result_36isOk(result)) {
         return;
       }
 
-      var tag = _EZ__36elm_36virtual_95dom_36VirtualDom_36toHandlerInt(handler); // 0 = Normal
+      var tag = _Ed__36elm_36virtual_95dom_36VirtualDom_36toHandlerInt(handler); // 0 = Normal
       // 1 = MayStopPropagation
       // 2 = MayPreventDefault
       // 3 = Custom
@@ -876,12 +876,12 @@
   var _h__95VirtualDom_95diff = function (x, y) {
     var patches = [];
 
-    _B0__95VirtualDom_95diffHelp(x, y, patches, 0);
+    _B2__95VirtualDom_95diffHelp(x, y, patches, 0);
 
     return patches;
   };
 
-  var _Bi__95VirtualDom_95pushPatch = function (patches, type, index, data) {
+  var _Bj__95VirtualDom_95pushPatch = function (patches, type, index, data) {
     var patch = {
       $: type,
       r: index,
@@ -893,7 +893,7 @@
     return patch;
   };
 
-  var _B0__95VirtualDom_95diffHelp = function (x, y, patches, index) {
+  var _B2__95VirtualDom_95diffHelp = function (x, y, patches, index) {
     if (x === y) {
       return;
     }
@@ -904,10 +904,10 @@
 
     if (xType !== yType) {
       if (xType === 1 && yType === 2) {
-        y = _Bh__95VirtualDom_95dekey(y);
+        y = _Bi__95VirtualDom_95dekey(y);
         yType = 1;
       } else {
-        _Bi__95VirtualDom_95pushPatch(patches, 0, index, y);
+        _Bj__95VirtualDom_95pushPatch(patches, 0, index, y);
 
         return;
       }
@@ -933,9 +933,9 @@
         y.k = y.m();
         var subPatches = [];
 
-        _B0__95VirtualDom_95diffHelp(x.k, y.k, subPatches, 0);
+        _B2__95VirtualDom_95diffHelp(x.k, y.k, subPatches, 0);
 
-        subPatches.length > 0 && _Bi__95VirtualDom_95pushPatch(patches, 1, index, subPatches);
+        subPatches.length > 0 && _Bj__95VirtualDom_95pushPatch(patches, 1, index, subPatches);
         return;
 
       case 4:
@@ -962,55 +962,55 @@
 
 
         if (nesting && xTaggers.length !== yTaggers.length) {
-          _Bi__95VirtualDom_95pushPatch(patches, 0, index, y);
+          _Bj__95VirtualDom_95pushPatch(patches, 0, index, y);
 
           return;
         } // check if taggers are "the same"
 
 
-        if (nesting ? !_Bj__95VirtualDom_95pairwiseRefEqual(xTaggers, yTaggers) : xTaggers !== yTaggers) {
-          _Bi__95VirtualDom_95pushPatch(patches, 2, index, yTaggers);
+        if (nesting ? !_Bk__95VirtualDom_95pairwiseRefEqual(xTaggers, yTaggers) : xTaggers !== yTaggers) {
+          _Bj__95VirtualDom_95pushPatch(patches, 2, index, yTaggers);
         } // diff everything below the taggers
 
 
-        _B0__95VirtualDom_95diffHelp(xSubNode, ySubNode, patches, index + 1);
+        _B2__95VirtualDom_95diffHelp(xSubNode, ySubNode, patches, index + 1);
 
         return;
 
       case 0:
         if (x.a !== y.a) {
-          _Bi__95VirtualDom_95pushPatch(patches, 3, index, y.a);
+          _Bj__95VirtualDom_95pushPatch(patches, 3, index, y.a);
         }
 
         return;
 
       case 1:
-        _Bk__95VirtualDom_95diffNodes(x, y, patches, index, _Bl__95VirtualDom_95diffKids);
+        _Bl__95VirtualDom_95diffNodes(x, y, patches, index, _Bm__95VirtualDom_95diffKids);
 
         return;
 
       case 2:
-        _Bk__95VirtualDom_95diffNodes(x, y, patches, index, _Bm__95VirtualDom_95diffKeyedKids);
+        _Bl__95VirtualDom_95diffNodes(x, y, patches, index, _Bn__95VirtualDom_95diffKeyedKids);
 
         return;
 
       case 3:
         if (x.h !== y.h) {
-          _Bi__95VirtualDom_95pushPatch(patches, 0, index, y);
+          _Bj__95VirtualDom_95pushPatch(patches, 0, index, y);
 
           return;
         }
 
-        var factsDiff = _Bn__95VirtualDom_95diffFacts(x.d, y.d);
+        var factsDiff = _Bo__95VirtualDom_95diffFacts(x.d, y.d);
 
-        factsDiff && _Bi__95VirtualDom_95pushPatch(patches, 4, index, factsDiff);
+        factsDiff && _Bj__95VirtualDom_95pushPatch(patches, 4, index, factsDiff);
         var patch = y.i(x.g, y.g);
-        patch && _Bi__95VirtualDom_95pushPatch(patches, 5, index, patch);
+        patch && _Bj__95VirtualDom_95pushPatch(patches, 5, index, patch);
         return;
     }
   };
 
-  var _Bj__95VirtualDom_95pairwiseRefEqual = function (as, bs) {
+  var _Bk__95VirtualDom_95pairwiseRefEqual = function (as, bs) {
     for (var i = 0; i < as.length; i++) {
       if (as[i] !== bs[i]) {
         return false;
@@ -1020,27 +1020,27 @@
     return true;
   };
 
-  var _Bk__95VirtualDom_95diffNodes = function (x, y, patches, index, diffKids) {
+  var _Bl__95VirtualDom_95diffNodes = function (x, y, patches, index, diffKids) {
     // Bail if obvious indicators have changed. Implies more serious
     // structural changes such that it's not worth it to diff.
     if (x.c !== y.c || x.f !== y.f) {
-      _Bi__95VirtualDom_95pushPatch(patches, 0, index, y);
+      _Bj__95VirtualDom_95pushPatch(patches, 0, index, y);
 
       return;
     }
 
-    var factsDiff = _Bn__95VirtualDom_95diffFacts(x.d, y.d);
+    var factsDiff = _Bo__95VirtualDom_95diffFacts(x.d, y.d);
 
-    factsDiff && _Bi__95VirtualDom_95pushPatch(patches, 4, index, factsDiff);
+    factsDiff && _Bj__95VirtualDom_95pushPatch(patches, 4, index, factsDiff);
     diffKids(x, y, patches, index);
   };
 
-  var _Bn__95VirtualDom_95diffFacts = function (x, y, category) {
+  var _Bo__95VirtualDom_95diffFacts = function (x, y, category) {
     var diff; // look for changes and removals
 
     for (var xKey in x) {
       if (xKey === "a1" || xKey === "a0" || xKey === "a3" || xKey === "a4") {
-        var subDiff = _Bn__95VirtualDom_95diffFacts(x[xKey], y[xKey] || {}, xKey);
+        var subDiff = _Bo__95VirtualDom_95diffFacts(x[xKey], y[xKey] || {}, xKey);
 
         if (subDiff) {
           diff = diff || {};
@@ -1082,19 +1082,19 @@
     return diff;
   };
 
-  var _Bl__95VirtualDom_95diffKids = function (xParent, yParent, patches, index) {
+  var _Bm__95VirtualDom_95diffKids = function (xParent, yParent, patches, index) {
     var xKids = xParent.e;
     var yKids = yParent.e;
     var xLen = xKids.length;
     var yLen = yKids.length; // FIGURE OUT IF THERE ARE INSERTS OR REMOVALS
 
     if (xLen > yLen) {
-      _Bi__95VirtualDom_95pushPatch(patches, 6, index, {
+      _Bj__95VirtualDom_95pushPatch(patches, 6, index, {
         v: yLen,
         i: xLen - yLen
       });
     } else if (xLen < yLen) {
-      _Bi__95VirtualDom_95pushPatch(patches, 7, index, {
+      _Bj__95VirtualDom_95pushPatch(patches, 7, index, {
         v: xLen,
         e: yKids
       });
@@ -1104,13 +1104,13 @@
     for (var minLen = xLen < yLen ? xLen : yLen, i = 0; i < minLen; i++) {
       var xKid = xKids[i];
 
-      _B0__95VirtualDom_95diffHelp(xKid, yKids[i], patches, ++index);
+      _B2__95VirtualDom_95diffHelp(xKid, yKids[i], patches, ++index);
 
       index += xKid.b || 0;
     }
   };
 
-  var _Bm__95VirtualDom_95diffKeyedKids = function (xParent, yParent, patches, rootIndex) {
+  var _Bn__95VirtualDom_95diffKeyedKids = function (xParent, yParent, patches, rootIndex) {
     var localPatches = [];
     var changes = {}; // Dict String Entry
 
@@ -1138,7 +1138,7 @@
       if (xKey === yKey) {
         index++;
 
-        _B0__95VirtualDom_95diffHelp(xNode, yNode, localPatches, index);
+        _B2__95VirtualDom_95diffHelp(xNode, yNode, localPatches, index);
 
         index += xNode.b || 0;
         xIndex++;
@@ -1166,7 +1166,7 @@
       if (newMatch && oldMatch) {
         index++;
 
-        _B0__95VirtualDom_95diffHelp(xNode, yNextNode, localPatches, index);
+        _B2__95VirtualDom_95diffHelp(xNode, yNextNode, localPatches, index);
 
         _Ck__95VirtualDom_95insertNode(changes, localPatches, xKey, yNode, yIndex, inserts);
 
@@ -1187,7 +1187,7 @@
 
         _Ck__95VirtualDom_95insertNode(changes, localPatches, yKey, yNode, yIndex, inserts);
 
-        _B0__95VirtualDom_95diffHelp(xNode, yNextNode, localPatches, index);
+        _B2__95VirtualDom_95diffHelp(xNode, yNextNode, localPatches, index);
 
         index += xNode.b || 0;
         xIndex += 1;
@@ -1204,7 +1204,7 @@
         index += xNode.b || 0;
         index++;
 
-        _B0__95VirtualDom_95diffHelp(xNextNode, yNode, localPatches, index);
+        _B2__95VirtualDom_95diffHelp(xNextNode, yNode, localPatches, index);
 
         index += xNextNode.b || 0;
         xIndex += 2;
@@ -1223,7 +1223,7 @@
         index += xNode.b || 0;
         index++;
 
-        _B0__95VirtualDom_95diffHelp(xNextNode, yNextNode, localPatches, index);
+        _B2__95VirtualDom_95diffHelp(xNextNode, yNextNode, localPatches, index);
 
         index += xNextNode.b || 0;
         xIndex += 2;
@@ -1256,7 +1256,7 @@
     }
 
     if (localPatches.length > 0 || inserts.length > 0 || endInserts) {
-      _Bi__95VirtualDom_95pushPatch(patches, 8, rootIndex, {
+      _Bj__95VirtualDom_95pushPatch(patches, 8, rootIndex, {
         w: localPatches,
         x: inserts,
         y: endInserts
@@ -1291,7 +1291,7 @@
       entry.c = 2;
       var subPatches = [];
 
-      _B0__95VirtualDom_95diffHelp(entry.z, vnode, subPatches, entry.r);
+      _B2__95VirtualDom_95diffHelp(entry.z, vnode, subPatches, entry.r);
 
       entry.r = yIndex;
       entry.s.s = {
@@ -1309,7 +1309,7 @@
     var entry = changes[key]; // never seen this key before
 
     if (!entry) {
-      var patch = _Bi__95VirtualDom_95pushPatch(localPatches, 9, index, undefined);
+      var patch = _Bj__95VirtualDom_95pushPatch(localPatches, 9, index, undefined);
 
       changes[key] = {
         c: 1,
@@ -1325,9 +1325,9 @@
       entry.c = 2;
       var subPatches = [];
 
-      _B0__95VirtualDom_95diffHelp(vnode, entry.z, subPatches, index);
+      _B2__95VirtualDom_95diffHelp(vnode, entry.z, subPatches, index);
 
-      _Bi__95VirtualDom_95pushPatch(localPatches, 9, index, {
+      _Bj__95VirtualDom_95pushPatch(localPatches, 9, index, {
         w: subPatches,
         A: entry
       });
@@ -1339,11 +1339,11 @@
     _Cl__95VirtualDom_95removeNode(changes, localPatches, key + "_elmW6BL", vnode, index);
   };
 
-  var _B1__95VirtualDom_95addDomNodes = function (domNode, vNode, patches, eventNode) {
-    _Bo__95VirtualDom_95addDomNodesHelp(domNode, vNode, patches, 0, 0, vNode.b, eventNode);
+  var _B3__95VirtualDom_95addDomNodes = function (domNode, vNode, patches, eventNode) {
+    _Bp__95VirtualDom_95addDomNodesHelp(domNode, vNode, patches, 0, 0, vNode.b, eventNode);
   };
 
-  var _Bo__95VirtualDom_95addDomNodesHelp = function (domNode, vNode, patches, i, low, high, eventNode) {
+  var _Bp__95VirtualDom_95addDomNodesHelp = function (domNode, vNode, patches, i, low, high, eventNode) {
     var patch = patches[i];
     var index = patch.r;
 
@@ -1351,14 +1351,14 @@
       var patchType = patch.$;
 
       if (patchType === 1) {
-        _B1__95VirtualDom_95addDomNodes(domNode, vNode.k, patch.s, eventNode);
+        _B3__95VirtualDom_95addDomNodes(domNode, vNode.k, patch.s, eventNode);
       } else if (patchType === 8) {
         patch.t = domNode;
         patch.u = eventNode;
         var subPatches = patch.s.w;
 
         if (subPatches.length > 0) {
-          _Bo__95VirtualDom_95addDomNodesHelp(domNode, vNode, subPatches, 0, low, high, eventNode);
+          _Bp__95VirtualDom_95addDomNodesHelp(domNode, vNode, subPatches, 0, low, high, eventNode);
         }
       } else if (patchType === 9) {
         patch.t = domNode;
@@ -1370,7 +1370,7 @@
           var subPatches = data.w;
 
           if (subPatches.length > 0) {
-            _Bo__95VirtualDom_95addDomNodesHelp(domNode, vNode, subPatches, 0, low, high, eventNode);
+            _Bp__95VirtualDom_95addDomNodesHelp(domNode, vNode, subPatches, 0, low, high, eventNode);
           }
         }
       } else {
@@ -1394,7 +1394,7 @@
         subNode = subNode.k;
       }
 
-      return _Bo__95VirtualDom_95addDomNodesHelp(domNode, subNode, patches, i, low + 1, high, domNode.elm_event_node_ref);
+      return _Bp__95VirtualDom_95addDomNodesHelp(domNode, subNode, patches, i, low + 1, high, domNode.elm_event_node_ref);
     } // tag must be 1 or 2 at this point
 
 
@@ -1407,7 +1407,7 @@
       var nextLow = low + (vKid.b || 0);
 
       if (low <= index && index <= nextLow) {
-        i = _Bo__95VirtualDom_95addDomNodesHelp(childNodes[j], vKid, patches, i, low, nextLow, eventNode);
+        i = _Bp__95VirtualDom_95addDomNodesHelp(childNodes[j], vKid, patches, i, low, nextLow, eventNode);
 
         if (!(patch = patches[i]) || (index = patch.r) > high) {
           return i;
@@ -1425,17 +1425,17 @@
       return rootDomNode;
     }
 
-    _B1__95VirtualDom_95addDomNodes(rootDomNode, oldVirtualNode, patches, eventNode);
+    _B3__95VirtualDom_95addDomNodes(rootDomNode, oldVirtualNode, patches, eventNode);
 
-    return _B9__95VirtualDom_95applyPatchesHelp(rootDomNode, patches);
+    return _BI__95VirtualDom_95applyPatchesHelp(rootDomNode, patches);
   };
 
-  var _B9__95VirtualDom_95applyPatchesHelp = function (rootDomNode, patches) {
+  var _BI__95VirtualDom_95applyPatchesHelp = function (rootDomNode, patches) {
     for (var i = 0; i < patches.length; i++) {
       var patch = patches[i];
       var localDomNode = patch.t;
 
-      var newNode = _Bt__95VirtualDom_95applyPatch(localDomNode, patch);
+      var newNode = _Bz__95VirtualDom_95applyPatch(localDomNode, patch);
 
       if (localDomNode === rootDomNode) {
         rootDomNode = newNode;
@@ -1445,13 +1445,13 @@
     return rootDomNode;
   };
 
-  var _Bt__95VirtualDom_95applyPatch = function (domNode, patch) {
+  var _Bz__95VirtualDom_95applyPatch = function (domNode, patch) {
     switch (patch.$) {
       case 0:
-        return _Cy__95VirtualDom_95applyPatchRedraw(domNode, patch.s, patch.u);
+        return _D5__95VirtualDom_95applyPatchRedraw(domNode, patch.s, patch.u);
 
       case 4:
-        _D3__95VirtualDom_95applyFacts(domNode, patch.u, patch.s);
+        _DA__95VirtualDom_95applyFacts(domNode, patch.u, patch.s);
 
         return domNode;
 
@@ -1460,7 +1460,7 @@
         return domNode;
 
       case 1:
-        return _B9__95VirtualDom_95applyPatchesHelp(domNode, patch.s);
+        return _BI__95VirtualDom_95applyPatchesHelp(domNode, patch.s);
 
       case 2:
         if (domNode.elm_event_node_ref) {
@@ -1490,7 +1490,7 @@
         var theEnd = domNode.childNodes[i];
 
         for (; i < kids.length; i++) {
-          domNode.insertBefore(_D4__95VirtualDom_95render(kids[i], patch.u), theEnd);
+          domNode.insertBefore(_DB__95VirtualDom_95render(kids[i], patch.u), theEnd);
         }
 
         return domNode;
@@ -1509,11 +1509,11 @@
           domNode.parentNode.removeChild(domNode);
         }
 
-        entry.s = _B9__95VirtualDom_95applyPatchesHelp(domNode, data.w);
+        entry.s = _BI__95VirtualDom_95applyPatchesHelp(domNode, data.w);
         return domNode;
 
       case 8:
-        return _D5__95VirtualDom_95applyPatchReorder(domNode, patch);
+        return _DC__95VirtualDom_95applyPatchReorder(domNode, patch);
 
       case 5:
         return patch.s(domNode);
@@ -1525,10 +1525,10 @@
     }
   };
 
-  var _Cy__95VirtualDom_95applyPatchRedraw = function (domNode, vNode, eventNode) {
+  var _D5__95VirtualDom_95applyPatchRedraw = function (domNode, vNode, eventNode) {
     var parentNode = domNode.parentNode;
 
-    var newNode = _D4__95VirtualDom_95render(vNode, eventNode);
+    var newNode = _DB__95VirtualDom_95render(vNode, eventNode);
 
     if (!newNode.elm_event_node_ref) {
       newNode.elm_event_node_ref = domNode.elm_event_node_ref;
@@ -1541,43 +1541,43 @@
     return newNode;
   };
 
-  var _D5__95VirtualDom_95applyPatchReorder = function (domNode, patch) {
+  var _DC__95VirtualDom_95applyPatchReorder = function (domNode, patch) {
     var data = patch.s; // remove end inserts
 
-    var frag = _E2__95VirtualDom_95applyPatchReorderEndInsertsHelp(data.y, patch); // removals
+    var frag = _E4__95VirtualDom_95applyPatchReorderEndInsertsHelp(data.y, patch); // removals
 
 
-    domNode = _B9__95VirtualDom_95applyPatchesHelp(domNode, data.w); // inserts
+    domNode = _BI__95VirtualDom_95applyPatchesHelp(domNode, data.w); // inserts
 
     var inserts = data.x;
 
     for (var i = 0; i < inserts.length; i++) {
       var insert = inserts[i];
       var entry = insert.A;
-      var node = entry.c === 2 ? entry.s : _D4__95VirtualDom_95render(entry.z, patch.u);
+      var node = entry.c === 2 ? entry.s : _DB__95VirtualDom_95render(entry.z, patch.u);
       domNode.insertBefore(node, domNode.childNodes[insert.r]);
     } // add end inserts
 
 
     if (frag) {
-      _E1__95VirtualDom_95appendChild(domNode, frag);
+      _E3__95VirtualDom_95appendChild(domNode, frag);
     }
 
     return domNode;
   };
 
-  var _E2__95VirtualDom_95applyPatchReorderEndInsertsHelp = function (endInserts, patch) {
+  var _E4__95VirtualDom_95applyPatchReorderEndInsertsHelp = function (endInserts, patch) {
     if (!endInserts) {
       return;
     }
 
-    var frag = _DZ__95VirtualDom_95doc.createDocumentFragment();
+    var frag = _Df__95Browser_95doc.createDocumentFragment();
 
     for (var i = 0; i < endInserts.length; i++) {
       var insert = endInserts[i];
       var entry = insert.A;
 
-      _E1__95VirtualDom_95appendChild(frag, entry.c === 2 ? entry.s : _D4__95VirtualDom_95render(entry.z, patch.u));
+      _E3__95VirtualDom_95appendChild(frag, entry.c === 2 ? entry.s : _DB__95VirtualDom_95render(entry.z, patch.u));
     }
 
     return frag;
@@ -1602,7 +1602,7 @@
       var attr = attrs[i];
       var name = attr.name;
       var value = attr.value;
-      attrList = _Av__95List_95Cons(_Aw__95VirtualDom_95attribute_95raw(name, value), attrList);
+      attrList = _Ax__95List_95Cons(_Ay__95VirtualDom_95attribute_95raw(name, value), attrList);
     }
 
     var tag = node.tagName.toLowerCase();
@@ -1610,13 +1610,13 @@
     var kids = node.childNodes;
 
     for (var i = kids.length; i--;) {
-      kidList = _Av__95List_95Cons(_f__95VirtualDom_95virtualize(kids[i]), kidList);
+      kidList = _Ax__95List_95Cons(_f__95VirtualDom_95virtualize(kids[i]), kidList);
     }
 
-    return _Ax_A3(_Ay__95VirtualDom_95node, tag, attrList, kidList);
+    return _Az_A3(_B0__95VirtualDom_95node, tag, attrList, kidList);
   };
 
-  var _Bh__95VirtualDom_95dekey = function (keyedNode) {
+  var _Bi__95VirtualDom_95dekey = function (keyedNode) {
     var keyedKids = keyedNode.e;
     var len = keyedKids.length;
     var kids = new Array(len);
@@ -1640,12 +1640,12 @@
     var state = 0;
 
     function updateIfNeeded() {
-      state = state === 1 ? 0 : (_Az__95Browser_95requestAnimationFrame(updateIfNeeded), draw(model), 1);
+      state = state === 1 ? 0 : (_B1__95Browser_95requestAnimationFrame(updateIfNeeded), draw(model), 1);
     }
 
     return function (nextModel, isSync) {
       model = nextModel;
-      isSync ? (draw(model), state === 2 && (state = 1)) : (state === 0 && _Az__95Browser_95requestAnimationFrame(updateIfNeeded), state = 2);
+      isSync ? (draw(model), state === 2 && (state = 1)) : (state === 0 && _B1__95Browser_95requestAnimationFrame(updateIfNeeded), state = 2);
     };
   };
 
@@ -1655,16 +1655,16 @@
     return n < 0 ? 0 : n ? 2 : 1;
   };
 
-  var _Eg__95List_95map2_95raw = function (f, xs, ys) {
+  var _Ek__95List_95map2_95raw = function (f, xs, ys) {
     for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
     {
-      arr.push(_e_A2(f, xs.a, ys.a));
+      arr.push(_Ak_A2(f, xs.a, ys.a));
     }
 
-    return _CU__95List_95fromArray(arr);
+    return _Ce__95List_95fromArray(arr);
   };
 
-  var _E4__95JsArray_95initialize_95raw = function (size, offset, func) {
+  var _E6__95JsArray_95initialize_95raw = function (size, offset, func) {
     var result = new Array(size);
 
     for (var i = 0; i < size; i++) {
@@ -1683,7 +1683,7 @@
     }
 
     result.length = i;
-    return _Ak__95Utils_95Tuple2(result, ls);
+    return _Al__95Utils_95Tuple2(result, ls);
   };
 
   var _DS__95Basics_95modBy_95raw = function (modulus, x) {
@@ -1691,12 +1691,12 @@
     return modulus === 0 ? _Ag__95Debug_95crash(11) : answer > 0 && modulus < 0 || answer < 0 && modulus > 0 ? answer + modulus : answer;
   };
 
-  var _Dq__95Json_95addField_95raw = function (key, value, object) {
-    object[key] = _B7__95Json_95unwrap(value);
+  var _Ds__95Json_95addField_95raw = function (key, value, object) {
+    object[key] = _BG__95Json_95unwrap(value);
     return object;
   };
 
-  var _Eq__36elm_36core_36Dict_36foldr_95raw = function (func, acc, t) {
+  var _EY__36elm_36core_36Dict_36foldr_95raw = function (func, acc, t) {
     foldr: while (true) {
       if (t.$ === -2) {
         return acc;
@@ -1707,7 +1707,7 @@
         var right = t.e;
 
         var $temp$func = func,
-            $temp$acc = _Ax_A3(func, key, value, _Eq__36elm_36core_36Dict_36foldr_95raw(func, acc, right)),
+            $temp$acc = _Az_A3(func, key, value, _EY__36elm_36core_36Dict_36foldr_95raw(func, acc, right)),
             $temp$t = left;
 
         func = $temp$func;
@@ -1718,7 +1718,7 @@
     }
   };
 
-  var _Am__36elm_36core_36List_36foldl_95raw = function (func, acc, list) {
+  var _An__36elm_36core_36List_36foldl_95raw = function (func, acc, list) {
     foldl: while (true) {
       if (!list.b) {
         return acc;
@@ -1727,7 +1727,7 @@
         var xs = list.b;
 
         var $temp$func = func,
-            $temp$acc = _e_A2(func, x, acc),
+            $temp$acc = _Ak_A2(func, x, acc),
             $temp$list = xs;
 
         func = $temp$func;
@@ -1745,10 +1745,10 @@
       var node = _v0.a;
       var remainingNodes = _v0.b;
 
-      var newAcc = _Av__95List_95Cons(_Fv__36elm_36core_36Array_36SubTree(node), acc);
+      var newAcc = _Ax__95List_95Cons(_Fv__36elm_36core_36Array_36SubTree(node), acc);
 
       if (!remainingNodes.b) {
-        return _C4__36elm_36core_36List_36reverse(newAcc);
+        return _CA__36elm_36core_36List_36reverse(newAcc);
       } else {
         var $temp$nodes = remainingNodes,
             $temp$acc = newAcc;
@@ -1776,15 +1776,15 @@
     }
   };
 
-  var _El__36elm_36core_36Array_36builderToArray_95raw = function (reverseNodeList, builder) {
+  var _Ep__36elm_36core_36Array_36builderToArray_95raw = function (reverseNodeList, builder) {
     if (!builder.l) {
-      return _F9__36elm_36core_36Array_36Array_95elm_95builtin_95raw(_FA__36elm_36core_36Elm_36JsArray_36length(builder.n), 5, _Df__36elm_36core_36Elm_36JsArray_36empty, builder.n);
+      return _F9__36elm_36core_36Array_36Array_95elm_95builtin_95raw(_FA__36elm_36core_36Elm_36JsArray_36length(builder.n), 5, _Dl__36elm_36core_36Elm_36JsArray_36empty, builder.n);
     } else {
       var treeLen = builder.l * 32;
 
-      var depth = _EY__36elm_36core_36Basics_36floor(_FC__36elm_36core_36Basics_36logBase_95raw(32, treeLen - 1));
+      var depth = _Ec__36elm_36core_36Basics_36floor(_FC__36elm_36core_36Basics_36logBase_95raw(32, treeLen - 1));
 
-      var correctNodeList = reverseNodeList ? _C4__36elm_36core_36List_36reverse(builder.o) : builder.o;
+      var correctNodeList = reverseNodeList ? _CA__36elm_36core_36List_36reverse(builder.o) : builder.o;
 
       var tree = _FD__36elm_36core_36Array_36treeFromBuilder_95raw(correctNodeList, builder.l);
 
@@ -1792,21 +1792,21 @@
     }
   };
 
-  var _E5__36elm_36core_36Array_36initializeHelp_95raw = function (fn, fromIndex, len, nodeList, tail) {
+  var _E7__36elm_36core_36Array_36initializeHelp_95raw = function (fn, fromIndex, len, nodeList, tail) {
     initializeHelp: while (true) {
       if (fromIndex < 0) {
-        return _El__36elm_36core_36Array_36builderToArray_95raw(false, {
+        return _Ep__36elm_36core_36Array_36builderToArray_95raw(false, {
           o: nodeList,
           l: len / 32 | 0,
           n: tail
         });
       } else {
-        var leaf = _Ep__36elm_36core_36Array_36Leaf(_E4__95JsArray_95initialize_95raw(32, fromIndex, fn));
+        var leaf = _Eq__36elm_36core_36Array_36Leaf(_E6__95JsArray_95initialize_95raw(32, fromIndex, fn));
 
         var $temp$fn = fn,
             $temp$fromIndex = fromIndex - 32,
             $temp$len = len,
-            $temp$nodeList = _Av__95List_95Cons(leaf, nodeList),
+            $temp$nodeList = _Ax__95List_95Cons(leaf, nodeList),
             $temp$tail = tail;
 
         fn = $temp$fn;
@@ -1819,16 +1819,16 @@
     }
   };
 
-  var _D9__36elm_36core_36Array_36initialize_95raw = function (len, fn) {
+  var _DG__36elm_36core_36Array_36initialize_95raw = function (len, fn) {
     if (len <= 0) {
-      return _Db__36elm_36core_36Array_36empty;
+      return _Dh__36elm_36core_36Array_36empty;
     } else {
       var tailLen = len % 32;
 
-      var tail = _E4__95JsArray_95initialize_95raw(tailLen, len - tailLen, fn);
+      var tail = _E6__95JsArray_95initialize_95raw(tailLen, len - tailLen, fn);
 
       var initialFromIndex = len - tailLen - 32;
-      return _E5__36elm_36core_36Array_36initializeHelp_95raw(fn, initialFromIndex, len, _T_r3, tail);
+      return _E7__36elm_36core_36Array_36initializeHelp_95raw(fn, initialFromIndex, len, _T_r3, tail);
     }
   };
 
@@ -1840,7 +1840,7 @@
     }
   };
 
-  var _EZ__36elm_36virtual_95dom_36VirtualDom_36toHandlerInt = function (handler) {
+  var _Ed__36elm_36virtual_95dom_36VirtualDom_36toHandlerInt = function (handler) {
     switch (handler.$) {
       case 0:
         return 0;
@@ -1856,7 +1856,7 @@
     }
   };
 
-  var _Di__36elm_36core_36List_36foldrHelper_95raw = function (fn, acc, ctr, ls) {
+  var _Da__36elm_36core_36List_36foldrHelper_95raw = function (fn, acc, ctr, ls) {
     if (!ls.b) {
       return acc;
     } else {
@@ -1864,41 +1864,41 @@
       var r1 = ls.b;
 
       if (!r1.b) {
-        return _e_A2(fn, a, acc);
+        return _Ak_A2(fn, a, acc);
       } else {
         var b = r1.a;
         var r2 = r1.b;
 
         if (!r2.b) {
-          return _e_A2(fn, a, _e_A2(fn, b, acc));
+          return _Ak_A2(fn, a, _Ak_A2(fn, b, acc));
         } else {
           var c = r2.a;
           var r3 = r2.b;
 
           if (!r3.b) {
-            return _e_A2(fn, a, _e_A2(fn, b, _e_A2(fn, c, acc)));
+            return _Ak_A2(fn, a, _Ak_A2(fn, b, _Ak_A2(fn, c, acc)));
           } else {
             var d = r3.a;
             var r4 = r3.b;
-            var res = ctr > 500 ? _Am__36elm_36core_36List_36foldl_95raw(fn, acc, _C4__36elm_36core_36List_36reverse(r4)) : _Di__36elm_36core_36List_36foldrHelper_95raw(fn, acc, ctr + 1, r4);
-            return _e_A2(fn, a, _e_A2(fn, b, _e_A2(fn, c, _e_A2(fn, d, res))));
+            var res = ctr > 500 ? _An__36elm_36core_36List_36foldl_95raw(fn, acc, _CA__36elm_36core_36List_36reverse(r4)) : _Da__36elm_36core_36List_36foldrHelper_95raw(fn, acc, ctr + 1, r4);
+            return _Ak_A2(fn, a, _Ak_A2(fn, b, _Ak_A2(fn, c, _Ak_A2(fn, d, res))));
           }
         }
       }
     }
   };
 
-  var _Dj__36elm_36core_36Task_36spawnCmd_95raw = function (router, _v0) {
+  var _Db__36elm_36core_36Task_36spawnCmd_95raw = function (router, _v0) {
     var task = _v0;
-    return _EN__95Scheduler_95spawn(_CH__95Scheduler_95andThen_95raw(_EO__36elm_36core_36Platform_36sendToApp(router), task));
+    return _EN__95Scheduler_95spawn(_CI__95Scheduler_95andThen_95raw(_EO__36elm_36core_36Platform_36sendToApp(router), task));
   };
 
-  var _CB__36elm_36core_36Task_36cmdMap_95raw = function (tagger, _v0) {
+  var _Bw__36elm_36core_36Task_36cmdMap_95raw = function (tagger, _v0) {
     var task = _v0;
-    return _CG__36elm_36core_36Task_36map_95raw(tagger, task);
+    return _CH__36elm_36core_36Task_36map_95raw(tagger, task);
   };
 
-  var _CX__36elm_36core_36List_36any_95raw = function (isOkay, list) {
+  var _CW__36elm_36core_36List_36any_95raw = function (isOkay, list) {
     any: while (true) {
       if (!list.b) {
         return false;
@@ -1930,7 +1930,7 @@
         var right = dict.e;
 
         var $temp$func = func,
-            $temp$acc = _Ax_A3(func, key, value, _DY__36elm_36core_36Dict_36foldl_95raw(func, acc, left)),
+            $temp$acc = _Az_A3(func, key, value, _DY__36elm_36core_36Dict_36foldl_95raw(func, acc, left)),
             $temp$dict = right;
 
         func = $temp$func;
@@ -1941,12 +1941,12 @@
     }
   };
 
-  var _CW__36elm_95explorations_36benchmark_36Benchmark_36Samples_36count = function (_v0) {
+  var _CV__36elm_95explorations_36benchmark_36Benchmark_36Samples_36count = function (_v0) {
     var samples = _v0;
-    return _DY__36elm_36core_36Dict_36foldl_95raw(_Ce_F3((_v1, times, acc) => _Dh__36elm_36core_36List_36length(times) + acc), 0, samples);
+    return _DY__36elm_36core_36Dict_36foldl_95raw(_Cd_F3((_v1, times, acc) => _DZ__36elm_36core_36List_36length(times) + acc), 0, samples);
   };
 
-  var _BO__36elm_95explorations_36benchmark_36Benchmark_36Status_36progress = function (status) {
+  var _BQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36progress = function (status) {
     switch (status.$) {
       case 0:
         return 0;
@@ -1956,7 +1956,7 @@
 
       case 2:
         var samples = status.b;
-        return _CT__36elm_36core_36Basics_36clamp_95raw(0, 1, _CW__36elm_95explorations_36benchmark_36Benchmark_36Samples_36count(samples) / (25 * 5));
+        return _CU__36elm_36core_36Basics_36clamp_95raw(0, 1, _CV__36elm_95explorations_36benchmark_36Benchmark_36Samples_36count(samples) / (25 * 5));
 
       case 3:
         return 1;
@@ -1966,33 +1966,35 @@
     }
   };
 
-  var _Ar__36elm_95explorations_36benchmark_36Benchmark_36done = function (benchmark_) {
+  var _As__36elm_95explorations_36benchmark_36Benchmark_36done = function (benchmark_) {
     switch (benchmark_.$) {
       case 0:
         var status = benchmark_.c;
-        return _BO__36elm_95explorations_36benchmark_36Benchmark_36Status_36progress(status) === 1;
+        return _BQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36progress(status) === 1;
 
       case 1:
         var benchmarks = benchmark_.b;
-        return _BR__36elm_36core_36List_36all_95raw(_BS__36elm_36core_36Basics_36eq(1), _BU__36elm_36core_36List_36map_95raw(_BO__36elm_95explorations_36benchmark_36Benchmark_36Status_36progress, _BU__36elm_36core_36List_36map_95raw(function (_v1) {
+        return _BR__36elm_36core_36List_36all_95raw(_BS__36elm_36core_36Basics_36eq(1), _BU__36elm_36core_36List_36map_95raw(_BQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36progress, _BU__36elm_36core_36List_36map_95raw(function (_v1) {
           var status = _v1.c;
           return status;
         }, benchmarks)));
 
       default:
         var benchmarks = benchmark_.b;
-        return _BR__36elm_36core_36List_36all_95raw(_Ar__36elm_95explorations_36benchmark_36Benchmark_36done, benchmarks);
+        return _BR__36elm_36core_36List_36all_95raw(_As__36elm_95explorations_36benchmark_36Benchmark_36done, benchmarks);
     }
   };
 
   var _Ff__36elm_36core_36Dict_36balance_95raw = function (color, key, value, left, right) {
     if (right.$ === -1 && !right.a) {
+      var _v1 = right.a;
       var rK = right.b;
       var rV = right.c;
       var rLeft = right.d;
       var rRight = right.e;
 
       if (left.$ === -1 && !left.a) {
+        var _v3 = left.a;
         var lK = left.b;
         var lV = left.c;
         var lLeft = left.d;
@@ -2003,9 +2005,11 @@
       }
     } else {
       if (left.$ === -1 && !left.a && left.d.$ === -1 && !left.d.a) {
+        var _v5 = left.a;
         var lK = left.b;
         var lV = left.c;
         var _v6 = left.d;
+        var _v7 = _v6.a;
         var llK = _v6.b;
         var llV = _v6.c;
         var llLeft = _v6.d;
@@ -2047,6 +2051,7 @@
     var _v0 = _FG__36elm_36core_36Dict_36insertHelp_95raw(key, value, dict);
 
     if (_v0.$ === -1 && !_v0.a) {
+      var _v1 = _v0.a;
       var k = _v0.b;
       var v = _v0.c;
       var l = _v0.d;
@@ -2058,7 +2063,7 @@
     }
   };
 
-  var _Dx__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a0 = function (_v0) {
+  var _Dz__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a0 = function (_v0) {
     var precalculated = _v0.a;
     return precalculated;
   };
@@ -2072,31 +2077,31 @@
       var value = dict.c;
       var left = dict.d;
       var right = dict.e;
-      return _FH__36elm_36core_36Dict_36RBNode_95elm_95builtin_95raw(color, key, _e_A2(func, key, value), _Fs__36elm_36core_36Dict_36map_95raw(func, left), _Fs__36elm_36core_36Dict_36map_95raw(func, right));
+      return _FH__36elm_36core_36Dict_36RBNode_95elm_95builtin_95raw(color, key, _Ak_A2(func, key, value), _Fs__36elm_36core_36Dict_36map_95raw(func, left), _Fs__36elm_36core_36Dict_36map_95raw(func, right));
     }
   };
 
   var _FM__36elm_36core_36Result_36map_95raw = function (func, ra) {
     if (!ra.$) {
       var a = ra.a;
-      return _Bw__36elm_36core_36Result_36Ok(func(a));
+      return _C2__36elm_36core_36Result_36Ok(func(a));
     } else {
       var e = ra.a;
-      return _C1__36elm_36core_36Result_36Err(e);
+      return _C7__36elm_36core_36Result_36Err(e);
     }
   };
 
   var _Ft__36elm_36core_36List_36partition_95raw = function (pred, list) {
-    var step = _Cd_F2(function (x, _v0) {
+    var step = _Cc_F2(function (x, _v0) {
       var trues = _v0.a;
       var falses = _v0.b;
-      return pred(x) ? _Ak__95Utils_95Tuple2(_Av__95List_95Cons(x, trues), falses) : _Ak__95Utils_95Tuple2(trues, _Av__95List_95Cons(x, falses));
+      return pred(x) ? _Al__95Utils_95Tuple2(_Ax__95List_95Cons(x, trues), falses) : _Al__95Utils_95Tuple2(trues, _Ax__95List_95Cons(x, falses));
     });
 
-    return _Cc__36elm_36core_36List_36foldr_95raw(step, _Ak__95Utils_95Tuple2(_T_r3, _T_r3), list);
+    return _Cb__36elm_36core_36List_36foldr_95raw(step, _Al__95Utils_95Tuple2(_T_r3, _T_r3), list);
   };
 
-  var _F0__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY_95raw = function (_v0, x) {
+  var _F3__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY_95raw = function (_v0, x) {
     var slope = _v0.aR;
     var intercept = _v0.aL;
     return slope * x + intercept;
@@ -2105,9 +2110,9 @@
   var _G3__36elm_36core_36Result_36fromMaybe_95raw = function (err, maybe) {
     if (!maybe.$) {
       var v = maybe.a;
-      return _Bw__36elm_36core_36Result_36Ok(v);
+      return _C2__36elm_36core_36Result_36Ok(v);
     } else {
-      return _C1__36elm_36core_36Result_36Err(err);
+      return _C7__36elm_36core_36Result_36Err(err);
     }
   };
 
@@ -2126,7 +2131,7 @@
           return _ET__36elm_36core_36Maybe_36Nothing;
         } else {
           var c = mc.a;
-          return _EI__36elm_36core_36Maybe_36Just(_Ax_A3(func, a, b, c));
+          return _EI__36elm_36core_36Maybe_36Just(_Az_A3(func, a, b, c));
         }
       }
     }
@@ -2160,7 +2165,7 @@
         return _ET__36elm_36core_36Maybe_36Nothing;
       } else {
         var b = mb.a;
-        return _EI__36elm_36core_36Maybe_36Just(_e_A2(func, a, b));
+        return _EI__36elm_36core_36Maybe_36Just(_Ak_A2(func, a, b));
       }
     }
   };
@@ -2173,6 +2178,7 @@
         if (!list.b) {
           return list;
         } else {
+          var x = list.a;
           var xs = list.b;
           var $temp$n = n - 1,
               $temp$list = xs;
@@ -2187,17 +2193,18 @@
   var _GF__36elm_36core_36List_36head = function (list) {
     if (list.b) {
       var x = list.a;
+      var xs = list.b;
       return _EI__36elm_36core_36Maybe_36Just(x);
     } else {
       return _ET__36elm_36core_36Maybe_36Nothing;
     }
   };
 
-  var _Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean = function (numbers) {
+  var _Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean = function (numbers) {
     if (!numbers.b) {
-      return _C1__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(1));
+      return _C7__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(1));
     } else {
-      return _Bw__36elm_36core_36Result_36Ok(_Ef__36elm_36core_36List_36sum(numbers) / _Dh__36elm_36core_36List_36length(numbers));
+      return _C2__36elm_36core_36Result_36Ok(_Ej__36elm_36core_36List_36sum(numbers) / _DZ__36elm_36core_36List_36length(numbers));
     }
   };
 
@@ -2214,7 +2221,7 @@
 
           var $temp$n = n - 1,
               $temp$list = xs,
-              $temp$kept = _Av__95List_95Cons(x, kept);
+              $temp$kept = _Ax__95List_95Cons(x, kept);
 
           n = $temp$n;
           list = $temp$list;
@@ -2229,7 +2236,7 @@
     if (n <= 0) {
       return _T_r3;
     } else {
-      var _v0 = _Ak__95Utils_95Tuple2(n, list);
+      var _v0 = _Al__95Utils_95Tuple2(n, list);
 
       _v0$1: while (true) {
         _v0$5: while (true) {
@@ -2292,7 +2299,7 @@
                     var _v10 = _v9.b;
                     var w = _v10.a;
                     var tl = _v10.b;
-                    return ctr > 1000 ? _Av__95List_95Cons(x, _Av__95List_95Cons(y, _Av__95List_95Cons(z, _Av__95List_95Cons(w, _GK__36elm_36core_36List_36takeTailRec_95raw(n - 4, tl))))) : _Av__95List_95Cons(x, _Av__95List_95Cons(y, _Av__95List_95Cons(z, _Av__95List_95Cons(w, _GJ__36elm_36core_36List_36takeFast_95raw(ctr + 1, n - 4, tl)))));
+                    return ctr > 1000 ? _Ax__95List_95Cons(x, _Ax__95List_95Cons(y, _Ax__95List_95Cons(z, _Ax__95List_95Cons(w, _GK__36elm_36core_36List_36takeTailRec_95raw(n - 4, tl))))) : _Ax__95List_95Cons(x, _Ax__95List_95Cons(y, _Ax__95List_95Cons(z, _Ax__95List_95Cons(w, _GJ__36elm_36core_36List_36takeFast_95raw(ctr + 1, n - 4, tl)))));
                   } else {
                     break _v0$5;
                   }
@@ -2331,8 +2338,8 @@
   };
 
   var _G8__36BrianHicks_36elm_95trend_36Trend_36Linear_36percentile_95raw = function (k, xs) {
-    var index = _Dh__36elm_36core_36List_36length(xs) * k;
-    return !(index - _EY__36elm_36core_36Basics_36floor(index)) ? _GF__36elm_36core_36List_36head(_GG__36elm_36core_36List_36drop_95raw(_Fc__36elm_36core_36Basics_36ceiling(index) - 1, xs)) : _GH__36elm_36core_36Result_36toMaybe(_Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(_GI__36elm_36core_36List_36take_95raw(2, _GG__36elm_36core_36List_36drop_95raw(_EY__36elm_36core_36Basics_36floor(index) - 1, xs))));
+    var index = _DZ__36elm_36core_36List_36length(xs) * k;
+    return !(index - _Ec__36elm_36core_36Basics_36floor(index)) ? _GF__36elm_36core_36List_36head(_GG__36elm_36core_36List_36drop_95raw(_Fc__36elm_36core_36Basics_36ceiling(index) - 1, xs)) : _GH__36elm_36core_36Result_36toMaybe(_Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(_GI__36elm_36core_36List_36take_95raw(2, _GG__36elm_36core_36List_36drop_95raw(_Ec__36elm_36core_36Basics_36floor(index) - 1, xs))));
   };
 
   var _G6__36BrianHicks_36elm_95trend_36Trend_36Linear_36theilSenLine_95raw = function (pct, slopes, points) {
@@ -2349,30 +2356,30 @@
 
   var _Fu__36BrianHicks_36elm_95trend_36Trend_36Linear_36robust = function (values) {
     if (!values.b) {
-      return _C1__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
+      return _C7__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
     } else {
       if (!values.b.b) {
-        return _C1__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
+        return _C7__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
       } else {
-        var slopes = _Fz__36elm_36core_36List_36sort(_Am__36elm_36core_36List_36foldl_95raw(_Cd_F2(function (_v1, acc1) {
+        var slopes = _Fz__36elm_36core_36List_36sort(_An__36elm_36core_36List_36foldl_95raw(_Cc_F2(function (_v1, acc1) {
           var x = _v1.a;
           var y = _v1.b;
-          return _Am__36elm_36core_36List_36foldl_95raw(_Cd_F2(function (_v2, acc2) {
+          return _An__36elm_36core_36List_36foldl_95raw(_Cc_F2(function (_v2, acc2) {
             var x1 = _v2.a;
             var y1 = _v2.b;
             var res = (y - y1) / (x - x1);
-            return _Fm__36elm_36core_36Basics_36isNaN(res) ? acc2 : _Av__95List_95Cons(res, acc2);
+            return _Fm__36elm_36core_36Basics_36isNaN(res) ? acc2 : _Ax__95List_95Cons(res, acc2);
           }), acc1, values);
         }), _T_r3, values));
 
-        var finiteSlopes = _G0__36elm_36core_36List_36filter_95raw(_e_A2(_CY__36elm_36core_36Basics_36composeL, _Ca__36elm_36core_36Basics_36not, _G1__36elm_36core_36Basics_36isInfinite), slopes);
+        var finiteSlopes = _G0__36elm_36core_36List_36filter_95raw(_Ak_A2(_CX__36elm_36core_36Basics_36composeL, _CZ__36elm_36core_36Basics_36not, _G1__36elm_36core_36Basics_36isInfinite), slopes);
 
-        return _G3__36elm_36core_36Result_36fromMaybe_95raw(_FY__36BrianHicks_36elm_95trend_36Trend_36Math_36AllZeros, _G4__36elm_36core_36Maybe_36map3_95raw(_Ce_F3((trendLine, lower, upper) => _FN__36BrianHicks_36elm_95trend_36Trend_36Linear_36Trend_95raw(trendLine, _G5__36BrianHicks_36elm_95trend_36Trend_36Linear_36Robust_95raw(lower, upper))), _G6__36BrianHicks_36elm_95trend_36Trend_36Linear_36theilSenLine_95raw(0.5, finiteSlopes, values), _G6__36BrianHicks_36elm_95trend_36Trend_36Linear_36theilSenLine_95raw(0.975, slopes, values), _G6__36BrianHicks_36elm_95trend_36Trend_36Linear_36theilSenLine_95raw(0.025, slopes, values)));
+        return _G3__36elm_36core_36Result_36fromMaybe_95raw(_FY__36BrianHicks_36elm_95trend_36Trend_36Math_36AllZeros, _G4__36elm_36core_36Maybe_36map3_95raw(_Cd_F3((trendLine, lower, upper) => _FN__36BrianHicks_36elm_95trend_36Trend_36Linear_36Trend_95raw(trendLine, _G5__36BrianHicks_36elm_95trend_36Trend_36Linear_36Robust_95raw(lower, upper))), _G6__36BrianHicks_36elm_95trend_36Trend_36Linear_36theilSenLine_95raw(0.5, finiteSlopes, values), _G6__36BrianHicks_36elm_95trend_36Trend_36Linear_36theilSenLine_95raw(0.975, slopes, values), _G6__36BrianHicks_36elm_95trend_36Trend_36Linear_36theilSenLine_95raw(0.025, slopes, values)));
       }
     }
   };
 
-  var _Ed__36elm_36core_36Result_36withDefault_95raw = function (def, result) {
+  var _Eh__36elm_36core_36Result_36withDefault_95raw = function (def, result) {
     if (!result.$) {
       var a = result.a;
       return a;
@@ -2383,31 +2390,31 @@
 
   var _FU__36elm_95explorations_36benchmark_36Benchmark_36Samples_36groups = function (_v0) {
     var samples = _v0;
-    return _Ed__36elm_36core_36Result_36withDefault_95raw(_Ak__95Utils_95Tuple2(samples, _Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty), _FM__36elm_36core_36Result_36map_95raw(_e_A2(_Fq__36elm_36core_36Dict_36foldl, _Ce_F3(function (key, _v1, _v2) {
+    return _Eh__36elm_36core_36Result_36withDefault_95raw(_Al__95Utils_95Tuple2(samples, _Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty), _FM__36elm_36core_36Result_36map_95raw(_Ak_A2(_Fq__36elm_36core_36Dict_36foldl, _Cd_F3(function (key, _v1, _v2) {
       var good = _v1.a;
       var outliers = _v1.b;
       var accGood = _v2.a;
       var accOutliers = _v2.b;
-      return _Ak__95Utils_95Tuple2(_Ew__36elm_36core_36Dict_36insert_95raw(key, good, accGood), _Ew__36elm_36core_36Dict_36insert_95raw(key, outliers, accOutliers));
-    }), _Ak__95Utils_95Tuple2(_Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty, _Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty)), _FM__36elm_36core_36Result_36map_95raw(line => _Fs__36elm_36core_36Dict_36map_95raw(_Cd_F2(function (sampleSize, values) {
-      var predicted = _F0__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY_95raw(line, sampleSize);
+      return _Al__95Utils_95Tuple2(_Ew__36elm_36core_36Dict_36insert_95raw(key, good, accGood), _Ew__36elm_36core_36Dict_36insert_95raw(key, outliers, accOutliers));
+    }), _Al__95Utils_95Tuple2(_Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty, _Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty)), _FM__36elm_36core_36Result_36map_95raw(line => _Fs__36elm_36core_36Dict_36map_95raw(_Cc_F2(function (sampleSize, values) {
+      var predicted = _F3__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY_95raw(line, sampleSize);
 
       var upperBound = predicted * 1.1;
       var lowerBound = predicted / 1.1;
       return _Ft__36elm_36core_36List_36partition_95raw(v => _DM__95Utils_95cmp(lowerBound, v) < 0 && _DM__95Utils_95cmp(v, upperBound) < 0, values);
-    }), samples), _FM__36elm_36core_36Result_36map_95raw(_Dx__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a0, _Fu__36BrianHicks_36elm_95trend_36Trend_36Linear_36robust(_FS__36elm_95explorations_36benchmark_36Benchmark_36Samples_36pointify(samples))))));
+    }), samples), _FM__36elm_36core_36Result_36map_95raw(_Dz__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a0, _Fu__36BrianHicks_36elm_95trend_36Trend_36Linear_36robust(_FS__36elm_95explorations_36benchmark_36Benchmark_36Samples_36pointify(samples))))));
   };
 
   var _FT__36elm_36core_36Tuple_36mapFirst_95raw = function (func, _v0) {
     var x = _v0.a;
     var y = _v0.b;
-    return _Ak__95Utils_95Tuple2(func(x), y);
+    return _Al__95Utils_95Tuple2(func(x), y);
   };
 
   var _FR__36elm_36core_36Tuple_36mapSecond_95raw = function (func, _v0) {
     var x = _v0.a;
     var y = _v0.b;
-    return _Ak__95Utils_95Tuple2(x, func(y));
+    return _Al__95Utils_95Tuple2(x, func(y));
   };
 
   var _Fl__36elm_36core_36Result_36andThen_95raw = function (callback, result) {
@@ -2416,63 +2423,64 @@
       return callback(value);
     } else {
       var msg = result.a;
-      return _C1__36elm_36core_36Result_36Err(msg);
+      return _C7__36elm_36core_36Result_36Err(msg);
     }
   };
 
   var _FO__36elm_36core_36Result_36map2_95raw = function (func, ra, rb) {
     if (ra.$ === 1) {
       var x = ra.a;
-      return _C1__36elm_36core_36Result_36Err(x);
+      return _C7__36elm_36core_36Result_36Err(x);
     } else {
       var a = ra.a;
 
       if (rb.$ === 1) {
         var x = rb.a;
-        return _C1__36elm_36core_36Result_36Err(x);
+        return _C7__36elm_36core_36Result_36Err(x);
       } else {
         var b = rb.a;
-        return _Bw__36elm_36core_36Result_36Ok(_e_A2(func, a, b));
+        return _C2__36elm_36core_36Result_36Ok(_Ak_A2(func, a, b));
       }
     }
   };
 
   var _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev = function (numbers) {
-    var helper = seriesMean => _FM__36elm_36core_36Result_36map_95raw(_Fn__36elm_36core_36Basics_36sqrt, _Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(_BU__36elm_36core_36List_36map_95raw(n => _e_A2(_Eh__36elm_36core_36Basics_36pow, n - seriesMean, 2), numbers)));
+    var helper = seriesMean => _FM__36elm_36core_36Result_36map_95raw(_Fn__36elm_36core_36Basics_36sqrt, _Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(_BU__36elm_36core_36List_36map_95raw(n => _Ak_A2(_El__36elm_36core_36Basics_36pow, n - seriesMean, 2), numbers)));
 
-    return _Fl__36elm_36core_36Result_36andThen_95raw(helper, _Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(numbers));
+    return _Fl__36elm_36core_36Result_36andThen_95raw(helper, _Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(numbers));
   };
 
-  var _Ea__36elm_36core_36List_36unzip = function (pairs) {
+  var _Ee__36elm_36core_36List_36unzip = function (pairs) {
     var step_raw = function (_v0, _v1) {
       var x = _v0.a;
       var y = _v0.b;
       var xs = _v1.a;
       var ys = _v1.b;
-      return _Ak__95Utils_95Tuple2(_Av__95List_95Cons(x, xs), _Av__95List_95Cons(y, ys));
+      return _Al__95Utils_95Tuple2(_Ax__95List_95Cons(x, xs), _Ax__95List_95Cons(y, ys));
     },
-        step = _Cd_F2(step_raw);
+        step = _Cc_F2(step_raw);
 
-    return _Cc__36elm_36core_36List_36foldr_95raw(step, _Ak__95Utils_95Tuple2(_T_r3, _T_r3), pairs);
+    return _Cb__36elm_36core_36List_36foldr_95raw(step, _Al__95Utils_95Tuple2(_T_r3, _T_r3), pairs);
   };
 
   var _FK__36BrianHicks_36elm_95trend_36Trend_36Math_36correlation = function (values) {
     if (!values.b) {
-      return _C1__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
+      return _C7__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
     } else {
       if (!values.b.b) {
-        return _C1__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
+        return _C7__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
       } else {
-        var standardize_raw = (meanResult, stddevResult, series) => _FO__36elm_36core_36Result_36map2_95raw(_Cd_F2((meanValue, stddevValue) => _BU__36elm_36core_36List_36map_95raw(point => (point - meanValue) / stddevValue, series)), meanResult, stddevResult);
+        var standardize_raw = (meanResult, stddevResult, series) => _FO__36elm_36core_36Result_36map2_95raw(_Cc_F2((meanValue, stddevValue) => _BU__36elm_36core_36List_36map_95raw(point => (point - meanValue) / stddevValue, series)), meanResult, stddevResult),
+            standardize = _Cd_F3(standardize_raw);
 
-        var _v1 = _Ea__36elm_36core_36List_36unzip(values);
+        var _v1 = _Ee__36elm_36core_36List_36unzip(values);
 
         var xs = _v1.a;
         var ys = _v1.b;
 
-        var summedProduct = _FM__36elm_36core_36Result_36map_95raw(_Ef__36elm_36core_36List_36sum, _FO__36elm_36core_36Result_36map2_95raw(_Cd_F2((stdX, stdY) => _Eg__95List_95map2_95raw(_Fj__36elm_36core_36Basics_36mul, stdX, stdY)), standardize_raw(_Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(xs), _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev(xs), xs), standardize_raw(_Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(ys), _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev(ys), ys)));
+        var summedProduct = _FM__36elm_36core_36Result_36map_95raw(_Ej__36elm_36core_36List_36sum, _FO__36elm_36core_36Result_36map2_95raw(_Cc_F2((stdX, stdY) => _Ek__95List_95map2_95raw(_Fj__36elm_36core_36Basics_36mul, stdX, stdY)), standardize_raw(_Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(xs), _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev(xs), xs), standardize_raw(_Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(ys), _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev(ys), ys)));
 
-        return _Fl__36elm_36core_36Result_36andThen_95raw(val => _Fm__36elm_36core_36Basics_36isNaN(val) ? _C1__36elm_36core_36Result_36Err(_FY__36BrianHicks_36elm_95trend_36Trend_36Math_36AllZeros) : _Bw__36elm_36core_36Result_36Ok(val), _FM__36elm_36core_36Result_36map_95raw(sum => sum / _Dh__36elm_36core_36List_36length(values), summedProduct));
+        return _Fl__36elm_36core_36Result_36andThen_95raw(val => _Fm__36elm_36core_36Basics_36isNaN(val) ? _C7__36elm_36core_36Result_36Err(_FY__36BrianHicks_36elm_95trend_36Trend_36Math_36AllZeros) : _C2__36elm_36core_36Result_36Ok(val), _FM__36elm_36core_36Result_36map_95raw(sum => sum / _DZ__36elm_36core_36List_36length(values), summedProduct));
       }
     }
   };
@@ -2480,22 +2488,22 @@
   var _FJ__36elm_36core_36Result_36map3_95raw = function (func, ra, rb, rc) {
     if (ra.$ === 1) {
       var x = ra.a;
-      return _C1__36elm_36core_36Result_36Err(x);
+      return _C7__36elm_36core_36Result_36Err(x);
     } else {
       var a = ra.a;
 
       if (rb.$ === 1) {
         var x = rb.a;
-        return _C1__36elm_36core_36Result_36Err(x);
+        return _C7__36elm_36core_36Result_36Err(x);
       } else {
         var b = rb.a;
 
         if (rc.$ === 1) {
           var x = rc.a;
-          return _C1__36elm_36core_36Result_36Err(x);
+          return _C7__36elm_36core_36Result_36Err(x);
         } else {
           var c = rc.a;
-          return _Bw__36elm_36core_36Result_36Ok(_Ax_A3(func, a, b, c));
+          return _C2__36elm_36core_36Result_36Ok(_Az_A3(func, a, b, c));
         }
       }
     }
@@ -2503,19 +2511,19 @@
 
   var _Ey__36BrianHicks_36elm_95trend_36Trend_36Linear_36quick = function (values) {
     if (!values.b) {
-      return _C1__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
+      return _C7__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
     } else {
       if (!values.b.b) {
-        return _C1__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
+        return _C7__36elm_36core_36Result_36Err(_F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues(2));
       } else {
-        var _v1 = _Ea__36elm_36core_36List_36unzip(values);
+        var _v1 = _Ee__36elm_36core_36List_36unzip(values);
 
         var xs = _v1.a;
         var ys = _v1.b;
 
-        var slopeResult = _FJ__36elm_36core_36Result_36map3_95raw(_Ce_F3((correl, stddevY, stddevX) => correl * stddevY / stddevX), _FK__36BrianHicks_36elm_95trend_36Trend_36Math_36correlation(values), _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev(ys), _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev(xs));
+        var slopeResult = _FJ__36elm_36core_36Result_36map3_95raw(_Cd_F3((correl, stddevY, stddevX) => correl * stddevY / stddevX), _FK__36BrianHicks_36elm_95trend_36Trend_36Math_36correlation(values), _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev(ys), _FL__36BrianHicks_36elm_95trend_36Trend_36Math_36stddev(xs));
 
-        var intercept = _FJ__36elm_36core_36Result_36map3_95raw(_Ce_F3((meanY, slope, meanX) => meanY - slope * meanX), _Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(ys), slopeResult, _Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(xs));
+        var intercept = _FJ__36elm_36core_36Result_36map3_95raw(_Cd_F3((meanY, slope, meanX) => meanY - slope * meanX), _Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(ys), slopeResult, _Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(xs));
 
         return _FM__36elm_36core_36Result_36map_95raw(trendLine => _FN__36BrianHicks_36elm_95trend_36Trend_36Linear_36Trend_95raw(trendLine, values), _FO__36elm_36core_36Result_36map2_95raw(_FP__36BrianHicks_36elm_95trend_36Trend_36Linear_36Line, slopeResult, intercept));
       }
@@ -2538,7 +2546,7 @@
     if (list.b) {
       var x = list.a;
       var xs = list.b;
-      return _EI__36elm_36core_36Maybe_36Just(_Am__36elm_36core_36List_36foldl_95raw(_Er__36elm_36core_36Basics_36min, x, xs));
+      return _EI__36elm_36core_36Maybe_36Just(_An__36elm_36core_36List_36foldl_95raw(_Er__36elm_36core_36Basics_36min, x, xs));
     } else {
       return _ET__36elm_36core_36Maybe_36Nothing;
     }
@@ -2549,7 +2557,7 @@
       if (n <= 0) {
         return result;
       } else {
-        var $temp$result = _Av__95List_95Cons(value, result),
+        var $temp$result = _Ax__95List_95Cons(value, result),
             $temp$n = n - 1,
             $temp$value = value;
 
@@ -2575,7 +2583,8 @@
           return rough * magnitude;
         }
       }
-    };
+    },
+        helper = _Cc_F2(helper_raw);
 
     return helper_raw(sampleSize, 1);
   };
@@ -2592,9 +2601,9 @@
   var _DR__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36findSampleSizeWithMinimum_95raw = function (minimumRuntime, operation_) {
     var sampleSize = i => i * 10;
 
-    var resample = _Cd_F2((iteration, total) => _DM__95Utils_95cmp(total, minimumRuntime) < 0 ? _CH__95Scheduler_95andThen_95raw(resample(iteration + 1), _CG__36elm_36core_36Task_36map_95raw(_e_A2(_EA__36elm_36core_36Basics_36composeR, _EC__36elm_36core_36List_36minimum, _ED__36elm_36core_36Maybe_36withDefault(0)), _CP__36elm_36core_36Task_36sequence(_EF__36elm_36core_36List_36repeat_95raw(3, _DV__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36sample_95raw(sampleSize(iteration), operation_))))) : _DG__36elm_36core_36Task_36succeed(sampleSize(iteration)));
+    var resample = _Cc_F2((iteration, total) => _DM__95Utils_95cmp(total, minimumRuntime) < 0 ? _CI__95Scheduler_95andThen_95raw(resample(iteration + 1), _CH__36elm_36core_36Task_36map_95raw(_Ak_A2(_EA__36elm_36core_36Basics_36composeR, _EC__36elm_36core_36List_36minimum, _ED__36elm_36core_36Maybe_36withDefault(0)), _CQ__36elm_36core_36Task_36sequence(_EF__36elm_36core_36List_36repeat_95raw(3, _DV__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36sample_95raw(sampleSize(iteration), operation_))))) : _D2__36elm_36core_36Task_36succeed(sampleSize(iteration)));
 
-    return _CG__36elm_36core_36Task_36map_95raw(_EG__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36standardizeSampleSize, _e_A2(resample, 1, 0));
+    return _CH__36elm_36core_36Task_36map_95raw(_EG__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36standardizeSampleSize, _Ak_A2(resample, 1, 0));
   };
 
   var _Ev__36elm_36core_36Dict_36get_95raw = function (targetKey, dict) {
@@ -2651,14 +2660,17 @@
         var k = dict.b;
         var v = dict.c;
         var _v1 = dict.d;
+        var lClr = _v1.a;
         var lK = _v1.b;
         var lV = _v1.c;
         var lLeft = _v1.d;
         var lRight = _v1.e;
         var _v2 = dict.e;
+        var rClr = _v2.a;
         var rK = _v2.b;
         var rV = _v2.c;
         var rLeft = _v2.d;
+        var _v3 = rLeft.a;
         var rlK = rLeft.b;
         var rlV = rLeft.c;
         var rlL = rLeft.d;
@@ -2670,11 +2682,13 @@
         var k = dict.b;
         var v = dict.c;
         var _v4 = dict.d;
+        var lClr = _v4.a;
         var lK = _v4.b;
         var lV = _v4.c;
         var lLeft = _v4.d;
         var lRight = _v4.e;
         var _v5 = dict.e;
+        var rClr = _v5.a;
         var rK = _v5.b;
         var rV = _v5.c;
         var rLeft = _v5.d;
@@ -2698,15 +2712,18 @@
         var k = dict.b;
         var v = dict.c;
         var _v1 = dict.d;
+        var lClr = _v1.a;
         var lK = _v1.b;
         var lV = _v1.c;
         var _v2 = _v1.d;
+        var _v3 = _v2.a;
         var llK = _v2.b;
         var llV = _v2.c;
         var llLeft = _v2.d;
         var llRight = _v2.e;
         var lRight = _v1.e;
         var _v4 = dict.e;
+        var rClr = _v4.a;
         var rK = _v4.b;
         var rV = _v4.c;
         var rLeft = _v4.d;
@@ -2717,11 +2734,13 @@
         var k = dict.b;
         var v = dict.c;
         var _v5 = dict.d;
+        var lClr = _v5.a;
         var lK = _v5.b;
         var lV = _v5.c;
         var lLeft = _v5.d;
         var lRight = _v5.e;
         var _v6 = dict.e;
+        var rClr = _v6.a;
         var rK = _v6.b;
         var rV = _v6.c;
         var rLeft = _v6.d;
@@ -2740,6 +2759,7 @@
 
   var _Fi__36elm_36core_36Dict_36removeHelpPrepEQGT_95raw = function (targetKey, dict, color, key, value, left, right) {
     if (left.$ === -1 && !left.a) {
+      var _v1 = left.a;
       var lK = left.b;
       var lV = left.c;
       var lLeft = left.d;
@@ -2750,11 +2770,16 @@
         if (right.$ === -1 && right.a === 1) {
           if (right.d.$ === -1) {
             if (right.d.a === 1) {
+              var _v3 = right.a;
+              var _v4 = right.d;
+              var _v5 = _v4.a;
               return _Fy__36elm_36core_36Dict_36moveRedRight(dict);
             } else {
               break _v2$2;
             }
           } else {
+            var _v6 = right.a;
+            var _v7 = right.d;
             return _Fy__36elm_36core_36Dict_36moveRedRight(dict);
           }
         } else {
@@ -2778,6 +2803,7 @@
 
       if (lColor === 1) {
         if (lLeft.$ === -1 && !lLeft.a) {
+          var _v3 = lLeft.a;
           return _FH__36elm_36core_36Dict_36RBNode_95elm_95builtin_95raw(color, key, value, _Fx__36elm_36core_36Dict_36removeMin(left), right);
         } else {
           var _v4 = _Fg__36elm_36core_36Dict_36moveRedLeft(dict);
@@ -2813,9 +2839,11 @@
 
       if (_DM__95Utils_95cmp(targetKey, key) < 0) {
         if (left.$ === -1 && left.a === 1) {
+          var _v4 = left.a;
           var lLeft = left.d;
 
           if (lLeft.$ === -1 && !lLeft.a) {
+            var _v6 = lLeft.a;
             return _FH__36elm_36core_36Dict_36RBNode_95elm_95builtin_95raw(color, key, value, _FI__36elm_36core_36Dict_36removeHelp_95raw(targetKey, left), right);
           } else {
             var _v7 = _Fg__36elm_36core_36Dict_36moveRedLeft(dict);
@@ -2848,7 +2876,7 @@
       var left = dict.d;
       var right = dict.e;
 
-      if (_C8__95Utils_95eq(targetKey, key)) {
+      if (_Bt__95Utils_95eq(targetKey, key)) {
         var _v1 = _Fw__36elm_36core_36Dict_36getMin(right);
 
         if (_v1.$ === -1) {
@@ -2870,6 +2898,7 @@
     var _v0 = _FI__36elm_36core_36Dict_36removeHelp_95raw(key, dict);
 
     if (_v0.$ === -1 && !_v0.a) {
+      var _v1 = _v0.a;
       var k = _v0.b;
       var v = _v0.c;
       var l = _v0.d;
@@ -2903,7 +2932,7 @@
         });
       } else {
         var samples_ = value.a;
-        return _EI__36elm_36core_36Maybe_36Just(_Av__95List_95Cons(sample, samples_));
+        return _EI__36elm_36core_36Maybe_36Just(_Ax__95List_95Cons(sample, samples_));
       }
     }, samplesDict);
   };
@@ -2912,75 +2941,75 @@
     var toCollect = 1000;
     var sampleSize = 10000;
 
-    var helper = soFar => _DM__95Utils_95cmp(soFar, toCollect) > -1 ? _DG__36elm_36core_36Task_36succeed(0) : _CH__95Scheduler_95andThen_95raw(helper, _CG__36elm_36core_36Task_36map_95raw(_E8__36elm_36core_36Basics_36add(soFar), _DV__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36sample_95raw(sampleSize, operation_)));
+    var helper = soFar => _DM__95Utils_95cmp(soFar, toCollect) > -1 ? _D2__36elm_36core_36Task_36succeed(0) : _CI__95Scheduler_95andThen_95raw(helper, _CH__36elm_36core_36Task_36map_95raw(_E8__36elm_36core_36Basics_36add(soFar), _DV__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36sample_95raw(sampleSize, operation_)));
 
     return helper(0);
   };
 
-  var _CM__36elm_95explorations_36benchmark_36Benchmark_36stepLowLevel_95raw = function (operation, status) {
+  var _CN__36elm_95explorations_36benchmark_36Benchmark_36stepLowLevel_95raw = function (operation, status) {
     switch (status.$) {
       case 0:
-        return _DL__95Scheduler_95onError_95raw(_e_A2(_CY__36elm_36core_36Basics_36composeL, _e_A2(_CY__36elm_36core_36Basics_36composeL, _DG__36elm_36core_36Task_36succeed, _DN__36elm_95explorations_36benchmark_36Benchmark_36Status_36Failure), _DO__36elm_95explorations_36benchmark_36Benchmark_36Status_36MeasurementError), _CG__36elm_36core_36Task_36map_95raw(_v1 => _Cr__36elm_95explorations_36benchmark_36Benchmark_36Status_36Unsized, _DP__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36warmup(operation)));
+        return _DL__95Scheduler_95onError_95raw(_Ak_A2(_CX__36elm_36core_36Basics_36composeL, _Ak_A2(_CX__36elm_36core_36Basics_36composeL, _D2__36elm_36core_36Task_36succeed, _DN__36elm_95explorations_36benchmark_36Benchmark_36Status_36Failure), _DO__36elm_95explorations_36benchmark_36Benchmark_36Status_36MeasurementError), _CH__36elm_36core_36Task_36map_95raw(_v1 => _Cr__36elm_95explorations_36benchmark_36Benchmark_36Status_36Unsized, _DP__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36warmup(operation)));
 
       case 1:
-        return _DL__95Scheduler_95onError_95raw(_e_A2(_CY__36elm_36core_36Basics_36composeL, _e_A2(_CY__36elm_36core_36Basics_36composeL, _DG__36elm_36core_36Task_36succeed, _DN__36elm_95explorations_36benchmark_36Benchmark_36Status_36Failure), _DO__36elm_95explorations_36benchmark_36Benchmark_36Status_36MeasurementError), _CG__36elm_36core_36Task_36map_95raw(sampleSize => _DQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36Pending_95raw(sampleSize, _Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty), _DR__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36findSampleSizeWithMinimum_95raw(1, operation)));
+        return _DL__95Scheduler_95onError_95raw(_Ak_A2(_CX__36elm_36core_36Basics_36composeL, _Ak_A2(_CX__36elm_36core_36Basics_36composeL, _D2__36elm_36core_36Task_36succeed, _DN__36elm_95explorations_36benchmark_36Benchmark_36Status_36Failure), _DO__36elm_95explorations_36benchmark_36Benchmark_36Status_36MeasurementError), _CH__36elm_36core_36Task_36map_95raw(sampleSize => _DQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36Pending_95raw(sampleSize, _Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty), _DR__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36findSampleSizeWithMinimum_95raw(1, operation)));
 
       case 2:
         var baseSampleSize = status.a;
         var samples = status.b;
-        var sampleSize = baseSampleSize * (2 * _DS__95Basics_95modBy_95raw(25, _CW__36elm_95explorations_36benchmark_36Benchmark_36Samples_36count(samples)) + 1);
-        return _DL__95Scheduler_95onError_95raw(_e_A2(_CY__36elm_36core_36Basics_36composeL, _e_A2(_CY__36elm_36core_36Basics_36composeL, _DG__36elm_36core_36Task_36succeed, _DN__36elm_95explorations_36benchmark_36Benchmark_36Status_36Failure), _DO__36elm_95explorations_36benchmark_36Benchmark_36Status_36MeasurementError), _CG__36elm_36core_36Task_36map_95raw(function (newSample) {
+        var sampleSize = baseSampleSize * (2 * _DS__95Basics_95modBy_95raw(25, _CV__36elm_95explorations_36benchmark_36Benchmark_36Samples_36count(samples)) + 1);
+        return _DL__95Scheduler_95onError_95raw(_Ak_A2(_CX__36elm_36core_36Basics_36composeL, _Ak_A2(_CX__36elm_36core_36Basics_36composeL, _D2__36elm_36core_36Task_36succeed, _DN__36elm_95explorations_36benchmark_36Benchmark_36Status_36Failure), _DO__36elm_95explorations_36benchmark_36Benchmark_36Status_36MeasurementError), _CH__36elm_36core_36Task_36map_95raw(function (newSample) {
           var newSamples = _DT__36elm_95explorations_36benchmark_36Benchmark_36Samples_36record_95raw(sampleSize, newSample, samples);
 
-          return _DM__95Utils_95cmp(_CW__36elm_95explorations_36benchmark_36Benchmark_36Samples_36count(newSamples), 25 * 5) > -1 ? _DU__36elm_95explorations_36benchmark_36Benchmark_36finalize(newSamples) : _DQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36Pending_95raw(baseSampleSize, newSamples);
+          return _DM__95Utils_95cmp(_CV__36elm_95explorations_36benchmark_36Benchmark_36Samples_36count(newSamples), 25 * 5) > -1 ? _DU__36elm_95explorations_36benchmark_36Benchmark_36finalize(newSamples) : _DQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36Pending_95raw(baseSampleSize, newSamples);
         }, _DV__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36sample_95raw(sampleSize, operation)));
 
       default:
-        return _DG__36elm_36core_36Task_36succeed(status);
+        return _D2__36elm_36core_36Task_36succeed(status);
     }
   };
 
-  var _BN__36elm_95explorations_36benchmark_36Benchmark_36step = function (benchmark_) {
+  var _BP__36elm_95explorations_36benchmark_36Benchmark_36step = function (benchmark_) {
     switch (benchmark_.$) {
       case 0:
         var name = benchmark_.a;
         var inner = benchmark_.b;
         var status = benchmark_.c;
-        return _CG__36elm_36core_36Task_36map_95raw(_e_A2(_CK__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single, name, inner), _CM__36elm_95explorations_36benchmark_36Benchmark_36stepLowLevel_95raw(inner, status));
+        return _CH__36elm_36core_36Task_36map_95raw(_Ak_A2(_CL__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single, name, inner), _CN__36elm_95explorations_36benchmark_36Benchmark_36stepLowLevel_95raw(inner, status));
 
       case 1:
         var name = benchmark_.a;
         var benchmarks = benchmark_.b;
-        return _CG__36elm_36core_36Task_36map_95raw(_CN__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series(name), _CP__36elm_36core_36Task_36sequence(_BU__36elm_36core_36List_36map_95raw(function (_v1) {
+        return _CH__36elm_36core_36Task_36map_95raw(_CO__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series(name), _CQ__36elm_36core_36Task_36sequence(_BU__36elm_36core_36List_36map_95raw(function (_v1) {
           var name_ = _v1.a;
           var inner = _v1.b;
           var status = _v1.c;
-          return _CG__36elm_36core_36Task_36map_95raw(status_ => _CQ__95Utils_95Tuple3(name_, inner, status_), _CM__36elm_95explorations_36benchmark_36Benchmark_36stepLowLevel_95raw(inner, status));
+          return _CH__36elm_36core_36Task_36map_95raw(status_ => _CR__95Utils_95Tuple3(name_, inner, status_), _CN__36elm_95explorations_36benchmark_36Benchmark_36stepLowLevel_95raw(inner, status));
         }, benchmarks)));
 
       default:
         var name = benchmark_.a;
         var benchmarks = benchmark_.b;
-        return _CG__36elm_36core_36Task_36map_95raw(_CR__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Group(name), _CP__36elm_36core_36Task_36sequence(_BU__36elm_36core_36List_36map_95raw(_BN__36elm_95explorations_36benchmark_36Benchmark_36step, benchmarks)));
+        return _CH__36elm_36core_36Task_36map_95raw(_CS__36elm_95explorations_36benchmark_36Benchmark_36describe(name), _CQ__36elm_36core_36Task_36sequence(_BU__36elm_36core_36List_36map_95raw(_BP__36elm_95explorations_36benchmark_36Benchmark_36step, benchmarks)));
     }
   };
 
-  var _E0__36BrianHicks_36elm_95trend_36Trend_36Linear_36goodnessOfFit = function (_v0) {
+  var _E2__36BrianHicks_36elm_95trend_36Trend_36Linear_36goodnessOfFit = function (_v0) {
     var fit = _v0.a;
     var values = _v0.b;
 
-    var _v1 = _Ea__36elm_36core_36List_36unzip(values);
+    var _v1 = _Ee__36elm_36core_36List_36unzip(values);
 
     var xs = _v1.a;
     var ys = _v1.b;
 
-    var predictions = _BU__36elm_36core_36List_36map_95raw(_Eb__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY(fit), xs);
+    var predictions = _BU__36elm_36core_36List_36map_95raw(_Ef__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY(fit), xs);
 
-    var meanY = _Ed__36elm_36core_36Result_36withDefault_95raw(0, _Ee__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(ys));
+    var meanY = _Eh__36elm_36core_36Result_36withDefault_95raw(0, _Ei__36BrianHicks_36elm_95trend_36Trend_36Math_36mean(ys));
 
-    var sumSquareResiduals = _Ef__36elm_36core_36List_36sum(_Eg__95List_95map2_95raw(_Cd_F2((actual, prediction) => _e_A2(_Eh__36elm_36core_36Basics_36pow, actual - prediction, 2)), ys, predictions));
+    var sumSquareResiduals = _Ej__36elm_36core_36List_36sum(_Ek__95List_95map2_95raw(_Cc_F2((actual, prediction) => _Ak_A2(_El__36elm_36core_36Basics_36pow, actual - prediction, 2)), ys, predictions));
 
-    var sumSquareTotal = _Ef__36elm_36core_36List_36sum(_BU__36elm_36core_36List_36map_95raw(y => _e_A2(_Eh__36elm_36core_36Basics_36pow, y - meanY, 2), ys));
+    var sumSquareTotal = _Ej__36elm_36core_36List_36sum(_BU__36elm_36core_36List_36map_95raw(y => _Ak_A2(_El__36elm_36core_36Basics_36pow, y - meanY, 2), ys));
 
     return 1 - sumSquareResiduals / sumSquareTotal;
   };
@@ -2991,47 +3020,55 @@
     return (y - intercept) / slope;
   };
 
-  var _D2__36author_36project_36Benchmark_36Runner_36Json_36encodeStatus = function (status) {
+  var _D9__36author_36project_36Benchmark_36Runner_36Json_36encodeStatus = function (status) {
     switch (status.$) {
       case 0:
-        return _D1__36elm_36json_36Json_36Encode_36object({
+        return _D8__36elm_36json_36Json_36Encode_36object({
           $: 1,
-          a: _Ak__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("cold")),
+          a: _Al__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("cold")),
           b: _T_r3
         });
 
       case 1:
-        return _D1__36elm_36json_36Json_36Encode_36object({
+        return _D8__36elm_36json_36Json_36Encode_36object({
           $: 1,
-          a: _Ak__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("unsized")),
+          a: _Al__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("unsized")),
           b: _T_r3
         });
 
       case 2:
-        return _D1__36elm_36json_36Json_36Encode_36object({
+        var i = status.a;
+        var samples = status.b;
+        return _D8__36elm_36json_36Json_36Encode_36object({
           $: 1,
-          a: _Ak__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("pending")),
-          b: _T_r3
+          a: _Al__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("pending")),
+          b: {
+            $: 1,
+            a: _Al__95Utils_95Tuple2("progress", _Ah__36elm_36json_36Json_36Encode_36string(_BQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36progress(status))),
+            b: _T_r3
+          }
         });
 
       case 3:
-        return _D1__36elm_36json_36Json_36Encode_36object({
+        var error = status.a;
+        return _D8__36elm_36json_36Json_36Encode_36object({
           $: 1,
-          a: _Ak__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("failure")),
+          a: _Al__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("failure")),
           b: _T_r3
         });
 
       default:
+        var samples = status.a;
         var quickTrend = status.b;
-        return _D1__36elm_36json_36Json_36Encode_36object({
+        return _D8__36elm_36json_36Json_36Encode_36object({
           $: 1,
-          a: _Ak__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("success")),
+          a: _Al__95Utils_95Tuple2("status", _Ah__36elm_36json_36Json_36Encode_36string("success")),
           b: {
             $: 1,
-            a: _Ak__95Utils_95Tuple2("runsPerSecond", _Ah__36elm_36json_36Json_36Encode_36string(_Dw__36elm_36core_36Basics_36composeR_95raw(_Dx__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a0, _Dz__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a1, quickTrend))),
+            a: _Al__95Utils_95Tuple2("runsPerSecond", _Ah__36elm_36json_36Json_36Encode_36string(_Dy__36elm_36core_36Basics_36composeR_95raw(_Dz__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a0, _E1__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a1, quickTrend))),
             b: {
               $: 1,
-              a: _Ak__95Utils_95Tuple2("goodnessOfFit", _Ah__36elm_36json_36Json_36Encode_36string(_E0__36BrianHicks_36elm_95trend_36Trend_36Linear_36goodnessOfFit(quickTrend))),
+              a: _Al__95Utils_95Tuple2("goodnessOfFit", _Ah__36elm_36json_36Json_36Encode_36string(_E2__36BrianHicks_36elm_95trend_36Trend_36Linear_36goodnessOfFit(quickTrend))),
               b: _T_r3
             }
           }
@@ -3039,36 +3076,36 @@
     }
   };
 
-  var _Bu__36author_36project_36Benchmark_36Runner_36Json_36encodeResultItem = function (_v0) {
+  var _C0__36author_36project_36Benchmark_36Runner_36Json_36encodeResultItem = function (_v0) {
     var name = _v0.a;
     var status = _v0.b;
-    return _D1__36elm_36json_36Json_36Encode_36object({
+    return _D8__36elm_36json_36Json_36Encode_36object({
       $: 1,
-      a: _Ak__95Utils_95Tuple2("name", _Ah__36elm_36json_36Json_36Encode_36string(name)),
+      a: _Al__95Utils_95Tuple2("name", _Ah__36elm_36json_36Json_36Encode_36string(name)),
       b: {
         $: 1,
-        a: _Ak__95Utils_95Tuple2("status", _D2__36author_36project_36Benchmark_36Runner_36Json_36encodeStatus(status)),
+        a: _Al__95Utils_95Tuple2("status", _D9__36author_36project_36Benchmark_36Runner_36Json_36encodeStatus(status)),
         b: _T_r3
       }
     });
   };
 
-  var _F2__36elm_36core_36List_36append_95raw = function (xs, ys) {
+  var _F5__36elm_36core_36List_36append_95raw = function (xs, ys) {
     if (!ys.b) {
       return xs;
     } else {
-      return _Cc__36elm_36core_36List_36foldr_95raw(_DC__36elm_36core_36List_36cons, ys, xs);
+      return _Cb__36elm_36core_36List_36foldr_95raw(_DI__36elm_36core_36List_36cons, ys, xs);
     }
   };
 
-  var _Da__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup_95raw = function (group, report) {
+  var _Dg__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup_95raw = function (group, report) {
     switch (report.$) {
       case 0:
         var name = report.a;
         var status = report.b;
         return {
           $: 1,
-          a: _Ak__95Utils_95Tuple2(name, status),
+          a: _Al__95Utils_95Tuple2(name, status),
           b: _T_r3
         };
 
@@ -3078,24 +3115,24 @@
         return _BU__36elm_36core_36List_36map_95raw(function (_v1) {
           var tag = _v1.a;
           var val = _v1.b;
-          return _Ak__95Utils_95Tuple2(group + (", " + (name + (", " + tag))), val);
+          return _Al__95Utils_95Tuple2(group + (", " + (name + (", " + tag))), val);
         }, statuses);
 
       default:
         var name = report.a;
         var reports = report.b;
-        return _D6__36elm_36core_36List_36concatMap_95raw(_D7__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup(group + (", " + (name + ", "))), reports);
+        return _DD__36elm_36core_36List_36concatMap_95raw(_DE__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup(group + (", " + (name + ", "))), reports);
     }
   };
 
-  var _Bv__36author_36project_36Benchmark_36Runner_36Json_36flattenReport = function (report) {
+  var _C1__36author_36project_36Benchmark_36Runner_36Json_36flattenReport = function (report) {
     switch (report.$) {
       case 0:
         var name = report.a;
         var status = report.b;
         return {
           $: 1,
-          a: _Ak__95Utils_95Tuple2(name, status),
+          a: _Al__95Utils_95Tuple2(name, status),
           b: _T_r3
         };
 
@@ -3105,45 +3142,45 @@
         return _BU__36elm_36core_36List_36map_95raw(function (_v1) {
           var tag = _v1.a;
           var val = _v1.b;
-          return _Ak__95Utils_95Tuple2(name + (", " + tag), val);
+          return _Al__95Utils_95Tuple2(name + (", " + tag), val);
         }, statuses);
 
       default:
         var name = report.a;
         var reports = report.b;
-        return _D6__36elm_36core_36List_36concatMap_95raw(_D7__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup(name), reports);
+        return _DD__36elm_36core_36List_36concatMap_95raw(_DE__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup(name), reports);
     }
   };
 
-  var _BB__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36fromBenchmark = function (internal) {
+  var _BK__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36fromBenchmark = function (internal) {
     switch (internal.$) {
       case 0:
         var name = internal.a;
         var status = internal.c;
-        return _C7__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Single_95raw(name, status);
+        return _CD__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Single_95raw(name, status);
 
       case 1:
         var name = internal.a;
         var benchmarks = internal.b;
-        return _CD__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Series_95raw(name, _BU__36elm_36core_36List_36map_95raw(function (_v1) {
+        return _CE__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Series_95raw(name, _BU__36elm_36core_36List_36map_95raw(function (_v1) {
           var childName = _v1.a;
           var status = _v1.c;
-          return _Ak__95Utils_95Tuple2(childName, status);
+          return _Al__95Utils_95Tuple2(childName, status);
         }, benchmarks));
 
       default:
         var name = internal.a;
         var benchmarks = internal.b;
-        return _CE__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Group_95raw(name, _BU__36elm_36core_36List_36map_95raw(_BB__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36fromBenchmark, benchmarks));
+        return _CF__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Group_95raw(name, _BU__36elm_36core_36List_36map_95raw(_BK__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36fromBenchmark, benchmarks));
     }
   };
 
   var _c__36author_36project_36Benchmark_36Runner_36Json_36update_95raw = function (sendReport, msg, model) {
     var benchmark = msg;
-    return _Ar__36elm_95explorations_36benchmark_36Benchmark_36done(benchmark) ? _Ak__95Utils_95Tuple2(benchmark, sendReport(_Ae__36author_36project_36Benchmark_36Runner_36Json_36encode(benchmark))) : _Ak__95Utils_95Tuple2(benchmark, _Al__36author_36project_36Benchmark_36Runner_36Json_36next(benchmark));
+    return _As__36elm_95explorations_36benchmark_36Benchmark_36done(benchmark) ? _Al__95Utils_95Tuple2(benchmark, sendReport(_Ae__36author_36project_36Benchmark_36Runner_36Json_36encode(benchmark))) : _Al__95Utils_95Tuple2(benchmark, _Am__36author_36project_36Benchmark_36Runner_36Json_36next(benchmark));
   };
 
-  var _As_ = function (factList, kidList) {
+  var _e__36elm_36html_36Html_36div_95raw = function (factList, kidList) {
     for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
     {
       var kid = kidList.a;
@@ -3155,14 +3192,14 @@
     return {
       $: 1,
       c: "div",
-      d: _BP__95VirtualDom_95organizeFacts(factList),
+      d: _Av__95VirtualDom_95organizeFacts(factList),
       e: kids,
       f: void 0,
       b: descendantsCount
     };
   };
 
-  var _B4__36author_36project_36Main_36addMyType_95raw = function (mine, sum) {
+  var _B6__36author_36project_36Main_36addMyType_95raw = function (mine, sum) {
     switch (mine.$) {
       case 0:
         return sum;
@@ -3180,21 +3217,21 @@
     return value;
   };
 
-  var _Bw__36elm_36core_36Result_36Ok = a => {
+  var _C2__36elm_36core_36Result_36Ok = a => {
     return {
       $: 0,
       a: a
     };
   };
 
-  var _C1__36elm_36core_36Result_36Err = a => {
+  var _C7__36elm_36core_36Result_36Err = a => {
     return {
       $: 1,
       a: a
     };
   };
 
-  var _Av__95List_95Cons = (hd, tl) => {
+  var _Ax__95List_95Cons = (hd, tl) => {
     return {
       $: 1,
       a: hd,
@@ -3202,15 +3239,15 @@
     };
   };
 
-  var _By__95Json_95expecting = (type, value) => {
-    return _C1__36elm_36core_36Result_36Err(_C6__36elm_36json_36Json_36Decode_36Failure_95raw("Expecting " + type, _Ah__36elm_36json_36Json_36Encode_36string(value)));
+  var _C4__95Json_95expecting = (type, value) => {
+    return _C7__36elm_36core_36Result_36Err(_CC__36elm_36json_36Json_36Decode_36Failure_95raw("Expecting " + type, _Ah__36elm_36json_36Json_36Encode_36string(value)));
   };
 
-  var _Bz__95Json_95isArray = value => {
+  var _C5__95Json_95isArray = value => {
     return Array.isArray(value) || typeof FileList !== "undefined" && value instanceof FileList;
   };
 
-  var _C6__36elm_36json_36Json_36Decode_36Failure_95raw = (a, b) => {
+  var _CC__36elm_36json_36Json_36Decode_36Failure_95raw = (a, b) => {
     return {
       $: 3,
       a: a,
@@ -3218,11 +3255,7 @@
     };
   };
 
-  var _e_A2 = (fun, a, b) => {
-    return fun.a === 2 ? fun.f(a, b) : fun(a)(b);
-  };
-
-  var _C3__36elm_36json_36Json_36Decode_36Index_95raw = (a, b) => {
+  var _C9__36elm_36json_36Json_36Decode_36Index_95raw = (a, b) => {
     return {
       $: 1,
       a: a,
@@ -3230,32 +3263,36 @@
     };
   };
 
+  var _Ak_A2 = (fun, a, b) => {
+    return fun.a === 2 ? fun.f(a, b) : fun(a)(b);
+  };
+
   $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_Json_wrap", _$2_Object_46defineProperty(_Ah__36elm_36json_36Json_36Encode_36string, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
+
+  var _Af__95Json_95run_95raw = (decoder, value) => {
+    return _BJ__95Json_95runHelp(decoder, _BG__95Json_95unwrap(value));
+  };
 
   var _T_r3 = $_1_sub();
 
-  var _Af__95Json_95run_95raw = (decoder, value) => {
-    return _BA__95Json_95runHelp(decoder, _B7__95Json_95unwrap(value));
-  };
+  var _Dl__36elm_36core_36Elm_36JsArray_36empty = [];
 
-  var _Df__36elm_36core_36Elm_36JsArray_36empty = [];
-
-  var _Ak__95Utils_95Tuple2 = (a, b) => {
+  var _Al__95Utils_95Tuple2 = (a, b) => {
     return {
       a: a,
       b: b
     };
   };
 
-  var _Db__36elm_36core_36Array_36empty = {
+  var _Dh__36elm_36core_36Array_36empty = {
     $: 0,
     a: 0,
     b: 5,
-    c: _Df__36elm_36core_36Elm_36JsArray_36empty,
-    d: _Df__36elm_36core_36Elm_36JsArray_36empty
+    c: _Dl__36elm_36core_36Elm_36JsArray_36empty,
+    d: _Dl__36elm_36core_36Elm_36JsArray_36empty
   };
 
-  var _B7__95Json_95unwrap = value => {
+  var _BG__95Json_95unwrap = value => {
     return value;
   };
 
@@ -3275,19 +3312,19 @@
 
   $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_JsArray_length", _$2_Object_46defineProperty(_FA__36elm_36core_36Elm_36JsArray_36length, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
 
-  var _C0__95Json_95toElmArray = array => {
-    return _D9__36elm_36core_36Array_36initialize_95raw(array.length, i => array[i]);
+  var _C6__95Json_95toElmArray = array => {
+    return _DG__36elm_36core_36Array_36initialize_95raw(array.length, i => array[i]);
   };
 
   var _BU__36elm_36core_36List_36map_95raw = (f, xs) => {
-    return _Cc__36elm_36core_36List_36foldr_95raw(_Cd_F2((x, acc) => _Av__95List_95Cons(f(x), acc)), _T_r3, xs);
+    return _Cb__36elm_36core_36List_36foldr_95raw(_Cc_F2((x, acc) => _Ax__95List_95Cons(f(x), acc)), _T_r3, xs);
   };
 
-  var _DC__36elm_36core_36List_36cons = a => {
-    return b => _Av__95List_95Cons(a, b);
+  var _DI__36elm_36core_36List_36cons = a => {
+    return b => _Ax__95List_95Cons(a, b);
   };
 
-  var _C2__36elm_36json_36Json_36Decode_36Field_95raw = (a, b) => {
+  var _C8__36elm_36json_36Json_36Decode_36Field_95raw = (a, b) => {
     return {
       $: 0,
       a: a,
@@ -3295,13 +3332,13 @@
     };
   };
 
-  var _C4__36elm_36core_36List_36reverse = list => {
-    return _Am__36elm_36core_36List_36foldl_95raw(_DC__36elm_36core_36List_36cons, _T_r3, list);
+  var _CA__36elm_36core_36List_36reverse = list => {
+    return _An__36elm_36core_36List_36foldl_95raw(_DI__36elm_36core_36List_36cons, _T_r3, list);
   };
 
-  var _EY__36elm_36core_36Basics_36floor = _$4_Math_46floor;
+  var _Ec__36elm_36core_36Basics_36floor = _$4_Math_46floor;
 
-  var _C5__36elm_36json_36Json_36Decode_36OneOf = a => {
+  var _CB__36elm_36json_36Json_36Decode_36OneOf = a => {
     return {
       $: 2,
       a: a
@@ -3309,39 +3346,43 @@
   };
 
   var _BV__36elm_36core_36Task_36onEffects = a => {
-    return b => c => _C9__36elm_36core_36Task_36onEffects_95raw(a, b, c);
+    return b => c => _Bu__36elm_36core_36Task_36onEffects_95raw(a, b, c);
+  };
+
+  var _Bu__36elm_36core_36Task_36onEffects_95raw = (router, commands, state) => {
+    return _CH__36elm_36core_36Task_36map_95raw(_v0 => 0, _CQ__36elm_36core_36Task_36sequence(_BU__36elm_36core_36List_36map_95raw(_D0__36elm_36core_36Task_36spawnCmd(router), commands)));
   };
 
   var _Fb__95Basics_95log = _$5_Math_46log;
+
+  var _BX__36elm_36core_36Task_36onSelfMsg = a => {
+    return b => c => _Bv__36elm_36core_36Task_36onSelfMsg_95raw(a, b, c);
+  };
 
   var _FC__36elm_36core_36Basics_36logBase_95raw = (base, number) => {
     return _Fb__95Basics_95log(number) / _Fb__95Basics_95log(base);
   };
 
-  var _BX__36elm_36core_36Task_36onSelfMsg = a => {
-    return b => c => _CA__36elm_36core_36Task_36onSelfMsg_95raw(a, b, c);
-  };
-
-  var _CH__95Scheduler_95andThen_95raw = (callback, task) => {
-    return {
-      $: 3,
-      b: callback,
-      d: task
-    };
-  };
-
-  var _CG__36elm_36core_36Task_36map_95raw = (func, taskA) => {
-    return _CH__95Scheduler_95andThen_95raw(a => _DG__36elm_36core_36Task_36succeed(func(a)), taskA);
+  var _Bv__36elm_36core_36Task_36onSelfMsg_95raw = (_v0, _v1, _v2) => {
+    return _D2__36elm_36core_36Task_36succeed(0);
   };
 
   var _BZ__36elm_36core_36Task_36cmdMap = a => {
-    return b => _CB__36elm_36core_36Task_36cmdMap_95raw(a, b);
+    return b => _Bw__36elm_36core_36Task_36cmdMap_95raw(a, b);
   };
 
   var _Ab__36elm_36html_36Html_36text = string => {
     return {
       $: 0,
       a: string
+    };
+  };
+
+  var _CI__95Scheduler_95andThen_95raw = (callback, task) => {
+    return {
+      $: 3,
+      b: callback,
+      d: task
     };
   };
 
@@ -3369,33 +3410,30 @@
     });
   };
 
-  var _Ep__36elm_36core_36Array_36Leaf = a => {
-    return {
-      $: 1,
-      a: a
-    };
-  };
-
-  var _BL__36elm_36core_36Basics_36identity = x => {
+  var _BM__36BrianHicks_36elm_95trend_36Trend_36Linear_36Quick = x => {
     return x;
   };
 
-  var _Cc__36elm_36core_36List_36foldr_95raw = (fn, acc, ls) => {
-    return _Di__36elm_36core_36List_36foldrHelper_95raw(fn, acc, 0, ls);
+  var _CH__36elm_36core_36Task_36map_95raw = (func, taskA) => {
+    return _CI__95Scheduler_95andThen_95raw(a => _D2__36elm_36core_36Task_36succeed(func(a)), taskA);
   };
 
-  var _Ax_A3 = (fun, a, b, c) => {
-    return fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
-  };
-
-  var _DG__36elm_36core_36Task_36succeed = value => {
+  var _D2__36elm_36core_36Task_36succeed = value => {
     return {
       $: 0,
       a: value
     };
   };
 
-  var _Aw__95VirtualDom_95attribute_95raw = (key, value) => {
+  var _Az_A3 = (fun, a, b, c) => {
+    return fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
+  };
+
+  var _Bb__95Platform_95outgoingPortMap = a => {
+    return b => _Bx__95Platform_95outgoingPortMap_95raw(a, b);
+  };
+
+  var _Ay__95VirtualDom_95attribute_95raw = (key, value) => {
     return {
       $: "a3",
       n: key,
@@ -3403,62 +3441,65 @@
     };
   };
 
-  var _Bb__95Platform_95outgoingPortMap = a => {
-    return b => _CC__95Platform_95outgoingPortMap_95raw(a, b);
+  var _Cb__36elm_36core_36List_36foldr_95raw = (fn, acc, ls) => {
+    return _Da__36elm_36core_36List_36foldrHelper_95raw(fn, acc, 0, ls);
   };
 
-  var _Ay__95VirtualDom_95node = b => {
-    return _Bg__95VirtualDom_95nodeNS_95raw(void 0, b);
+  var _B0__95VirtualDom_95node = b => {
+    return _Bh__95VirtualDom_95nodeNS_95raw(void 0, b);
   };
 
-  var _Az__95Browser_95requestAnimationFrame = callback => {
+  var _B1__95Browser_95requestAnimationFrame = callback => {
     return setTimeout(callback, 1000 / 60);
   };
 
-  var _CP__36elm_36core_36Task_36sequence = tasks => {
-    return _Cc__36elm_36core_36List_36foldr_95raw(_DW__36elm_36core_36Task_36map2(_DC__36elm_36core_36List_36cons), _DG__36elm_36core_36Task_36succeed(_T_r3), tasks);
+  var _Eq__36elm_36core_36Array_36Leaf = a => {
+    return {
+      $: 1,
+      a: a
+    };
   };
 
-  _DC__36elm_36core_36List_36cons.a = 2;
-
-  var _Cd_F2 = fun => {
-    return _Dk_F(2, fun, a => b => fun(a, b));
+  var _Bx__95Platform_95outgoingPortMap_95raw = (tagger, value) => {
+    return value;
   };
 
-  var _C9__36elm_36core_36Task_36onEffects_95raw = (router, commands, state) => {
-    return _CG__36elm_36core_36Task_36map_95raw(_v0 => 0, _CP__36elm_36core_36Task_36sequence(_BU__36elm_36core_36List_36map_95raw(_DE__36elm_36core_36Task_36spawnCmd(router), commands)));
+  var _CQ__36elm_36core_36Task_36sequence = tasks => {
+    return _Cb__36elm_36core_36List_36foldr_95raw(_DW__36elm_36core_36Task_36map2(_DI__36elm_36core_36List_36cons), _D2__36elm_36core_36Task_36succeed(_T_r3), tasks);
+  };
+
+  _DI__36elm_36core_36List_36cons.a = 2;
+
+  var _Cc_F2 = fun => {
+    return _Dc_F(2, fun, a => b => fun(a, b));
   };
 
   var _DW__36elm_36core_36Task_36map2 = a => {
     return b => c => _Dp__36elm_36core_36Task_36map2_95raw(a, b, c);
   };
 
-  var _Dp__36elm_36core_36Task_36map2_95raw = (func, taskA, taskB) => {
-    return _CH__95Scheduler_95andThen_95raw(a => _CH__95Scheduler_95andThen_95raw(b => _DG__36elm_36core_36Task_36succeed(_e_A2(func, a, b)), taskB), taskA);
-  };
-
   var _BR__36elm_36core_36List_36all_95raw = (isOkay, list) => {
-    return !_CX__36elm_36core_36List_36any_95raw(_e_A2(_CY__36elm_36core_36Basics_36composeL, _Ca__36elm_36core_36Basics_36not, isOkay), list);
+    return !_CW__36elm_36core_36List_36any_95raw(_Ak_A2(_CX__36elm_36core_36Basics_36composeL, _CZ__36elm_36core_36Basics_36not, isOkay), list);
   };
 
   var _BS__36elm_36core_36Basics_36eq = a => {
-    return b => _C8__95Utils_95eq(a, b);
+    return b => _Bt__95Utils_95eq(a, b);
   };
 
-  var _BK__36elm_36core_36Task_36perform_95raw = (toMessage, task) => {
-    return _CF__36elm_36core_36Task_36command(_CG__36elm_36core_36Task_36map_95raw(toMessage, task));
+  var _BL__36elm_36core_36Task_36perform_95raw = (toMessage, task) => {
+    return _CG__36elm_36core_36Task_36command(_CH__36elm_36core_36Task_36map_95raw(toMessage, task));
   };
 
-  var _CA__36elm_36core_36Task_36onSelfMsg_95raw = (_v0, _v1, _v2) => {
-    return _DG__36elm_36core_36Task_36succeed(0);
+  var _Dp__36elm_36core_36Task_36map2_95raw = (func, taskA, taskB) => {
+    return _CI__95Scheduler_95andThen_95raw(a => _CI__95Scheduler_95andThen_95raw(b => _D2__36elm_36core_36Task_36succeed(_Ak_A2(func, a, b)), taskB), taskA);
   };
 
-  var _BM__36author_36project_36Benchmark_36Runner_36Json_36breakForRender = task => {
-    return _CH__95Scheduler_95andThen_95raw(_v0 => task, _CI__36elm_36core_36Process_36sleep(0));
+  var _BO__36author_36project_36Benchmark_36Runner_36Json_36breakForRender = task => {
+    return _CI__95Scheduler_95andThen_95raw(_v0 => task, _CJ__36elm_36core_36Process_36sleep(0));
   };
 
-  var _Bg__95VirtualDom_95nodeNS_95raw = (namespace, tag) => {
-    return _Cd_F2(function (factList, kidList) {
+  var _Bh__95VirtualDom_95nodeNS_95raw = (namespace, tag) => {
+    return _Cc_F2(function (factList, kidList) {
       for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) {
         var kid = kidList.a;
         descendantsCount += kid.b || 0;
@@ -3469,7 +3510,7 @@
       return {
         $: 1,
         c: tag,
-        d: _BP__95VirtualDom_95organizeFacts(factList),
+        d: _Av__95VirtualDom_95organizeFacts(factList),
         e: kids,
         f: namespace,
         b: descendantsCount
@@ -3485,36 +3526,31 @@
     };
   };
 
-  _DC__36elm_36core_36List_36cons.f = _Av__95List_95Cons;
-
-  var _DE__36elm_36core_36Task_36spawnCmd = a => {
-    return b => _Dj__36elm_36core_36Task_36spawnCmd_95raw(a, b);
+  var _D0__36elm_36core_36Task_36spawnCmd = a => {
+    return b => _Db__36elm_36core_36Task_36spawnCmd_95raw(a, b);
   };
 
+  _DI__36elm_36core_36List_36cons.f = _Ax__95List_95Cons;
   var _Fc__36elm_36core_36Basics_36ceiling = _$6_Math_46ceil;
 
   var _FE__36elm_36core_36Basics_36max_95raw = (x, y) => {
     return _DM__95Utils_95cmp(x, y) > 0 ? x : y;
   };
 
-  var _CC__95Platform_95outgoingPortMap_95raw = (tagger, value) => {
-    return value;
-  };
-
   var _EN__95Scheduler_95spawn = task => {
     return _DK__95Scheduler_95binding(function (callback) {
-      callback(_DG__36elm_36core_36Task_36succeed(_Cf__95Scheduler_95rawSpawn(task)));
+      callback(_D2__36elm_36core_36Task_36succeed(_Cf__95Scheduler_95rawSpawn(task)));
     });
   };
 
   var _EO__36elm_36core_36Platform_36sendToApp = a => {
-    return b => _Eo__95Platform_95sendToApp_95raw(a, b);
+    return b => _EX__95Platform_95sendToApp_95raw(a, b);
   };
 
-  var _Eo__95Platform_95sendToApp_95raw = (router, msg) => {
+  var _EX__95Platform_95sendToApp_95raw = (router, msg) => {
     return _DK__95Scheduler_95binding(function (callback) {
       router.g(msg);
-      callback(_DG__36elm_36core_36Task_36succeed(0));
+      callback(_D2__36elm_36core_36Task_36succeed(0));
     });
   };
 
@@ -3525,10 +3561,15 @@
     };
   };
 
-  var _CI__36elm_36core_36Process_36sleep = time => {
+  var _BA__36elm_36core_36Task_36init = {
+    $: 0,
+    a: 0
+  };
+
+  var _CJ__36elm_36core_36Process_36sleep = time => {
     return _DK__95Scheduler_95binding(function (callback) {
       var id = setTimeout(function () {
-        callback(_DG__36elm_36core_36Task_36succeed(0));
+        callback(_D2__36elm_36core_36Task_36succeed(0));
       }, time);
       return function () {
         clearTimeout(id);
@@ -3536,30 +3577,27 @@
     });
   };
 
-  var _BE__36elm_36core_36Task_36init = {
-    $: 0,
-    a: 0
-  };
-  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_Scheduler_succeed", _$2_Object_46defineProperty(_DG__36elm_36core_36Task_36succeed, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
+  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_Scheduler_succeed", _$2_Object_46defineProperty(_D2__36elm_36core_36Task_36succeed, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
   _DW__36elm_36core_36Task_36map2.a = 3;
   _DW__36elm_36core_36Task_36map2.f = _Dp__36elm_36core_36Task_36map2_95raw;
+  var _Dq__95Scheduler_95queue = [];
 
-  var _Ce_F3 = fun => {
-    return _Dk_F(3, fun, a => b => c => fun(a, b, c));
+  var _Cd_F3 = fun => {
+    return _Dc_F(3, fun, a => b => c => fun(a, b, c));
   };
 
-  var _E6__95Scheduler_95queue = [];
   _EO__36elm_36core_36Platform_36sendToApp.a = 2;
+  _EO__36elm_36core_36Platform_36sendToApp.f = _EX__95Platform_95sendToApp_95raw;
 
-  var _CT__36elm_36core_36Basics_36clamp_95raw = (low, high, number) => {
+  var _CU__36elm_36core_36Basics_36clamp_95raw = (low, high, number) => {
     return _DM__95Utils_95cmp(number, low) < 0 ? low : _DM__95Utils_95cmp(number, high) > 0 ? high : number;
   };
 
-  var _CY__36elm_36core_36Basics_36composeL = a => {
-    return b => c => _DB__36elm_36core_36Basics_36composeL_95raw(a, b, c);
+  var _CX__36elm_36core_36Basics_36composeL = a => {
+    return b => c => _Cz__36elm_36core_36Basics_36composeL_95raw(a, b, c);
   };
 
-  var _CF__36elm_36core_36Task_36command = value => {
+  var _CG__36elm_36core_36Task_36command = value => {
     return {
       $: 1,
       k: "Task",
@@ -3568,7 +3606,7 @@
   };
 
   var _Z__36author_36project_36Benchmark_36Runner_36Json_36init_95raw = (benchmark, _v0) => {
-    return _Ak__95Utils_95Tuple2(benchmark, _Al__36author_36project_36Benchmark_36Runner_36Json_36next(benchmark));
+    return _Al__95Utils_95Tuple2(benchmark, _Am__36author_36project_36Benchmark_36Runner_36Json_36next(benchmark));
   };
 
   var _Ch__95Scheduler_95receive = callback => {
@@ -3582,41 +3620,41 @@
     return fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
   };
 
-  var _Ca__36elm_36core_36Basics_36not = bool => {
+  var _CZ__36elm_36core_36Basics_36not = bool => {
     return !bool;
   };
 
-  var _CK__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single = a => {
+  var _CL__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single = a => {
     return b => c => _Co__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single_95raw(a, b, c);
   };
 
-  _EO__36elm_36core_36Platform_36sendToApp.f = _Eo__95Platform_95sendToApp_95raw;
+  _D0__36elm_36core_36Task_36spawnCmd.a = 2;
 
-  var _Al__36author_36project_36Benchmark_36Runner_36Json_36next = benchmark => {
-    return _Ar__36elm_95explorations_36benchmark_36Benchmark_36done(benchmark) ? _B2__36elm_36core_36Platform_36Cmd_36none : _BK__36elm_36core_36Task_36perform_95raw(_BL__36elm_36core_36Basics_36identity, _BM__36author_36project_36Benchmark_36Runner_36Json_36breakForRender(_BN__36elm_95explorations_36benchmark_36Benchmark_36step(benchmark)));
+  var _Am__36author_36project_36Benchmark_36Runner_36Json_36next = benchmark => {
+    return _As__36elm_95explorations_36benchmark_36Benchmark_36done(benchmark) ? _B4__36elm_36core_36Platform_36Cmd_36none : _BL__36elm_36core_36Task_36perform_95raw(_BM__36BrianHicks_36elm_95trend_36Trend_36Linear_36Quick, _BO__36author_36project_36Benchmark_36Runner_36Json_36breakForRender(_BP__36elm_95explorations_36benchmark_36Benchmark_36step(benchmark)));
   };
 
-  var _An__36author_36project_36Main_36addMyType = a => {
-    return b => _B4__36author_36project_36Main_36addMyType_95raw(a, b);
+  var _Ao__36author_36project_36Main_36addMyType = a => {
+    return b => _B6__36author_36project_36Main_36addMyType_95raw(a, b);
   };
 
-  _DE__36elm_36core_36Task_36spawnCmd.a = 2;
+  _D0__36elm_36core_36Task_36spawnCmd.f = _Db__36elm_36core_36Task_36spawnCmd_95raw;
 
   var _Cm__95VirtualDom_95equalEvents = (x, y) => {
-    return x.$ == y.$ && _Do__95Json_95equality(x.a, y.a);
-  };
-
-  _DE__36elm_36core_36Task_36spawnCmd.f = _Dj__36elm_36core_36Task_36spawnCmd_95raw;
-
-  var _DB__36elm_36core_36Basics_36composeL_95raw = (g, f, x) => {
-    return g(f(x));
+    return x.$ == y.$ && _Dn__95Json_95equality(x.a, y.a);
   };
 
   _BV__36elm_36core_36Task_36onEffects.a = 3;
-  _BV__36elm_36core_36Task_36onEffects.f = _C9__36elm_36core_36Task_36onEffects_95raw;
+
+  var _Cz__36elm_36core_36Basics_36composeL_95raw = (g, f, x) => {
+    return g(f(x));
+  };
+
+  _BV__36elm_36core_36Task_36onEffects.f = _Bu__36elm_36core_36Task_36onEffects_95raw;
   _BX__36elm_36core_36Task_36onSelfMsg.a = 3;
-  _BX__36elm_36core_36Task_36onSelfMsg.f = _CA__36elm_36core_36Task_36onSelfMsg_95raw;
+  _BX__36elm_36core_36Task_36onSelfMsg.f = _Bv__36elm_36core_36Task_36onSelfMsg_95raw;
   _BZ__36elm_36core_36Task_36cmdMap.a = 2;
+  _BZ__36elm_36core_36Task_36cmdMap.f = _Bw__36elm_36core_36Task_36cmdMap_95raw;
 
   var _Co__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single_95raw = (a, b, c) => {
     return {
@@ -3627,26 +3665,26 @@
     };
   };
 
-  var _Dh__36elm_36core_36List_36length = xs => {
-    return _Am__36elm_36core_36List_36foldl_95raw(_Cd_F2((_v0, i) => i + 1), 0, xs);
+  var _DZ__36elm_36core_36List_36length = xs => {
+    return _An__36elm_36core_36List_36foldl_95raw(_Cc_F2((_v0, i) => i + 1), 0, xs);
   };
 
-  _BZ__36elm_36core_36Task_36cmdMap.f = _CB__36elm_36core_36Task_36cmdMap_95raw;
-  var _BD_ = {
-    b: _BE__36elm_36core_36Task_36init,
+  var _B9_ = {
+    b: _BA__36elm_36core_36Task_36init,
     c: _BV__36elm_36core_36Task_36onEffects,
     d: _BX__36elm_36core_36Task_36onSelfMsg,
     e: _BZ__36elm_36core_36Task_36cmdMap,
     f: void 0
   };
   _Bb__95Platform_95outgoingPortMap.a = 2;
-  _Bb__95Platform_95outgoingPortMap.f = _CC__95Platform_95outgoingPortMap_95raw;
+  _Bb__95Platform_95outgoingPortMap.f = _Bx__95Platform_95outgoingPortMap_95raw;
+  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "$elm$core$Basics$identity", _$2_Object_46defineProperty(_BM__36BrianHicks_36elm_95trend_36Trend_36Linear_36Quick, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
 
-  var _E7__36elm_36core_36Dict_36toList = dict => {
-    return _Eq__36elm_36core_36Dict_36foldr_95raw(_Ce_F3((key, value, list) => _Av__95List_95Cons(_Ak__95Utils_95Tuple2(key, value), list)), _T_r3, dict);
+  var _Dr__36elm_36core_36Dict_36toList = dict => {
+    return _EY__36elm_36core_36Dict_36foldr_95raw(_Cd_F3((key, value, list) => _Ax__95List_95Cons(_Al__95Utils_95Tuple2(key, value), list)), _T_r3, dict);
   };
 
-  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_Process_sleep", _$2_Object_46defineProperty(_CI__36elm_36core_36Process_36sleep, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
+  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_Process_sleep", _$2_Object_46defineProperty(_CJ__36elm_36core_36Process_36sleep, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
 
   var _DL__95Scheduler_95onError_95raw = (callback, task) => {
     return {
@@ -3670,18 +3708,18 @@
     };
   };
 
-  var _BI_ = {
+  var _BD_ = {
     e: _Bb__95Platform_95outgoingPortMap,
-    u: _BL__36elm_36core_36Basics_36identity,
+    u: _BM__36BrianHicks_36elm_95trend_36Trend_36Linear_36Quick,
     a: _Bd__95Platform_95setupOutgoingPort
   };
-  var _BC__95Platform_95effectManagers = {
-    Task: _BD_,
-    reportResults: _BI_
+  var _B8__95Platform_95effectManagers = {
+    Task: _B9_,
+    reportResults: _BD_
   };
-  var _BJ__95Platform_95effectsQueue = [];
+  var _BE__95Platform_95effectsQueue = [];
   $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_VirtualDom_text", _$2_Object_46defineProperty(_Ab__36elm_36html_36Html_36text, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
-  var _DZ__95VirtualDom_95doc = document;
+  var _Df__95Browser_95doc = document;
 
   var _DQ__36elm_95explorations_36benchmark_36Benchmark_36Status_36Pending_95raw = (a, b) => {
     return {
@@ -3699,26 +3737,26 @@
     return b => _ER__95Basics_95add_95raw(a, b);
   };
 
-  _CY__36elm_36core_36Basics_36composeL.a = 3;
-  _CY__36elm_36core_36Basics_36composeL.f = _DB__36elm_36core_36Basics_36composeL_95raw;
+  _CX__36elm_36core_36Basics_36composeL.a = 3;
+  _CX__36elm_36core_36Basics_36composeL.f = _Cz__36elm_36core_36Basics_36composeL_95raw;
 
   var _ER__95Basics_95add_95raw = (a, b) => {
     return a + b;
   };
 
-  var _CN__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series = a => {
+  var _CO__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series = a => {
     return b => _Cq__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series_95raw(a, b);
   };
 
-  var _Dw__36elm_36core_36Basics_36composeR_95raw = (f, g, x) => {
+  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_Basics_not", _$2_Object_46defineProperty(_CZ__36elm_36core_36Basics_36not, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
+
+  var _Dy__36elm_36core_36Basics_36composeR_95raw = (f, g, x) => {
     return g(f(x));
   };
 
-  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "_Basics_not", _$2_Object_46defineProperty(_Ca__36elm_36core_36Basics_36not, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
-
   var _EM__95Benchmark_95sample_95raw = (n, fn) => {
     return _DK__95Scheduler_95binding(function (callback) {
-      var start = _F3__95Benchmark_95getTimestamp();
+      var start = _F0__95Benchmark_95getTimestamp();
 
       try {
         for (var i = 0; i < n; i++) {
@@ -3726,21 +3764,21 @@
         }
       } catch (error) {
         if (error instanceof RangeError) {
-          callback(_F4__95Scheduler_95fail(_Em__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36StackOverflow));
+          callback(_F1__95Scheduler_95fail(_EV__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36StackOverflow));
         } else {
-          callback(_F4__95Scheduler_95fail(_F5__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36UnknownError(error.message)));
+          callback(_F1__95Scheduler_95fail(_F2__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36UnknownError(error.message)));
         }
 
         return;
       }
 
-      var end = _F3__95Benchmark_95getTimestamp();
+      var end = _F0__95Benchmark_95getTimestamp();
 
-      callback(_DG__36elm_36core_36Task_36succeed(end - start));
+      callback(_D2__36elm_36core_36Task_36succeed(end - start));
     });
   };
 
-  var _CQ__95Utils_95Tuple3 = (a, b, c) => {
+  var _CR__95Utils_95Tuple3 = (a, b, c) => {
     return {
       a: a,
       b: b,
@@ -3748,35 +3786,35 @@
     };
   };
 
-  var _CR__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Group = a => {
+  var _CS__36elm_95explorations_36benchmark_36Benchmark_36describe = a => {
     return b => _Cx__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Group_95raw(a, b);
   };
 
   var _EA__36elm_36core_36Basics_36composeR = a => {
-    return b => c => _Dw__36elm_36core_36Basics_36composeR_95raw(a, b, c);
+    return b => c => _Dy__36elm_36core_36Basics_36composeR_95raw(a, b, c);
   };
 
   _BS__36elm_36core_36Basics_36eq.a = 2;
-  _BS__36elm_36core_36Basics_36eq.f = _C8__95Utils_95eq;
+  _BS__36elm_36core_36Basics_36eq.f = _Bt__95Utils_95eq;
 
   var _EI__36elm_36core_36Maybe_36Just = a => {
     return {
       $: 0,
-      a
+      a: a
     };
   };
 
-  var _B2__36elm_36core_36Platform_36Cmd_36none = {
+  var _B4__36elm_36core_36Platform_36Cmd_36none = {
     $: 2,
     m: _T_r3
   };
-  _CK__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single.a = 3;
+  _CL__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single.a = 3;
 
   var _ED__36elm_36core_36Maybe_36withDefault = a => {
     return b => _ES__36elm_36core_36Maybe_36withDefault_95raw(a, b);
   };
 
-  var _F4__95Scheduler_95fail = error => {
+  var _F1__95Scheduler_95fail = error => {
     return {
       $: 1,
       a: error
@@ -3791,7 +3829,7 @@
     };
   };
 
-  _CK__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single.f = _Co__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single_95raw;
+  _CL__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single.f = _Co__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Single_95raw;
 
   var _EF__36elm_36core_36List_36repeat_95raw = (n, value) => {
     return _Et__36elm_36core_36List_36repeatHelp_95raw(_T_r3, n, value);
@@ -3805,7 +3843,7 @@
     };
   };
 
-  var _F5__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36UnknownError = a => {
+  var _F2__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36UnknownError = a => {
     return {
       $: 1,
       a: a
@@ -3825,23 +3863,23 @@
     return _DM__95Utils_95cmp(x, y) < 0 ? x : y;
   };
 
-  var _Ef__36elm_36core_36List_36sum = numbers => {
-    return _Am__36elm_36core_36List_36foldl_95raw(_E8__36elm_36core_36Basics_36add, 0, numbers);
+  var _F0__95Benchmark_95getTimestamp = _$8_Date_46now;
+
+  var _Ej__36elm_36core_36List_36sum = numbers => {
+    return _An__36elm_36core_36List_36foldl_95raw(_E8__36elm_36core_36Basics_36add, 0, numbers);
   };
 
-  var _F3__95Benchmark_95getTimestamp = _$8_Date_46now;
-
-  var _Em__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36StackOverflow = $_6_sub();
+  var _EV__36elm_95explorations_36benchmark_36Benchmark_36LowLevel_36StackOverflow = $_6_sub();
 
   var _Ct__36elm_95explorations_36benchmark_36Benchmark_36Samples_36empty = $_4_root(-2);
 
   _EA__36elm_36core_36Basics_36composeR.a = 3;
+  _EA__36elm_36core_36Basics_36composeR.f = _Dy__36elm_36core_36Basics_36composeR_95raw;
 
-  var _Eh__36elm_36core_36Basics_36pow = a => {
-    return b => _F1_(a, b);
+  var _El__36elm_36core_36Basics_36pow = a => {
+    return b => _F4_(a, b);
   };
 
-  _EA__36elm_36core_36Basics_36composeR.f = _Dw__36elm_36core_36Basics_36composeR_95raw;
   _Er__36elm_36core_36Basics_36min.a = 2;
 
   var _F8__36BrianHicks_36elm_95trend_36Trend_36Math_36NeedMoreValues = a => {
@@ -3902,13 +3940,13 @@
   _Fj__36elm_36core_36Basics_36mul.a = 2;
   _Fj__36elm_36core_36Basics_36mul.f = _Fp__95Basics_95mul_95raw;
   var _Fn__36elm_36core_36Basics_36sqrt = _$A_Math_46sqrt;
-  var _F1_ = _$B_Math_46pow;
+  var _F4_ = _$B_Math_46pow;
 
   var _Ez__36elm_95explorations_36benchmark_36Benchmark_36Samples_36points = samples => {
     return _FR__36elm_36core_36Tuple_36mapSecond_95raw(_FS__36elm_95explorations_36benchmark_36Benchmark_36Samples_36pointify, _FT__36elm_36core_36Tuple_36mapFirst_95raw(_FS__36elm_95explorations_36benchmark_36Benchmark_36Samples_36pointify, _FU__36elm_95explorations_36benchmark_36Benchmark_36Samples_36groups(samples)));
   };
 
-  _Eh__36elm_36core_36Basics_36pow.a = 2;
+  _El__36elm_36core_36Basics_36pow.a = 2;
 
   var _FN__36BrianHicks_36elm_95trend_36Trend_36Linear_36Trend_95raw = (a, b) => {
     return {
@@ -3929,10 +3967,10 @@
     };
   };
 
-  _Eh__36elm_36core_36Basics_36pow.f = _F1_;
+  _El__36elm_36core_36Basics_36pow.f = _F4_;
 
   var _FS__36elm_95explorations_36benchmark_36Benchmark_36Samples_36pointify = samples => {
-    return _Eq__36elm_36core_36Dict_36foldr_95raw(_Ce_F3((sampleSize, values, acc) => _Fo__95Utils_95ap(_BU__36elm_36core_36List_36map_95raw(b => _Ak__95Utils_95Tuple2(sampleSize, b), values), acc)), _T_r3, samples);
+    return _EY__36elm_36core_36Dict_36foldr_95raw(_Cd_F3((sampleSize, values, acc) => _Fo__95Utils_95ap(_BU__36elm_36core_36List_36map_95raw(b => _Al__95Utils_95Tuple2(sampleSize, b), values), acc)), _T_r3, samples);
   };
 
   var _Fm__36elm_36core_36Basics_36isNaN = _$C_isNaN;
@@ -3948,14 +3986,14 @@
   _FP__36BrianHicks_36elm_95trend_36Trend_36Linear_36Line.f = _Fa__36BrianHicks_36elm_95trend_36Trend_36Linear_36Line_95raw;
   _Fq__36elm_36core_36Dict_36foldl.a = 3;
   _Fq__36elm_36core_36Dict_36foldl.f = _DY__36elm_36core_36Dict_36foldl_95raw;
-  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "$BrianHicks$elm_trend$Trend$Linear$line", _$2_Object_46defineProperty(_Dx__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a0, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
+  $$0_enumerable_58false_44configurable_58true_44writable_58false.value = "$BrianHicks$elm_trend$Trend$Linear$line", _$2_Object_46defineProperty(_Dz__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a0, "name", $$0_enumerable_58false_44configurable_58true_44writable_58false);
 
   var _Fz__36elm_36core_36List_36sort = xs => {
-    return _G7__95List_95sortBy_95raw(_BL__36elm_36core_36Basics_36identity, xs);
+    return _G7__95List_95sortBy_95raw(_BM__36BrianHicks_36elm_95trend_36Trend_36Linear_36Quick, xs);
   };
 
   var _G0__36elm_36core_36List_36filter_95raw = (isGood, list) => {
-    return _Cc__36elm_36core_36List_36foldr_95raw(_Cd_F2((x, xs) => isGood(x) ? _Av__95List_95Cons(x, xs) : xs), _T_r3, list);
+    return _Cb__36elm_36core_36List_36foldr_95raw(_Cc_F2((x, xs) => isGood(x) ? _Ax__95List_95Cons(x, xs) : xs), _T_r3, list);
   };
 
   var _G1__36elm_36core_36Basics_36isInfinite = n => {
@@ -3963,7 +4001,7 @@
   };
 
   var _G7__95List_95sortBy_95raw = (f, xs) => {
-    return _CU__95List_95fromArray(_GE__95List_95toArray(xs).sort((a, b) => _DM__95Utils_95cmp(f(a), f(b))));
+    return _Ce__95List_95fromArray(_GE__95List_95toArray(xs).sort((a, b) => _DM__95Utils_95cmp(f(a), f(b))));
   };
 
   var _G5__36BrianHicks_36elm_95trend_36Trend_36Linear_36Robust_95raw = (a, b) => {
@@ -3985,17 +4023,17 @@
   };
 
   var _GK__36elm_36core_36List_36takeTailRec_95raw = (n, list) => {
-    return _C4__36elm_36core_36List_36reverse(_GL__36elm_36core_36List_36takeReverse_95raw(n, list, _T_r3));
+    return _CA__36elm_36core_36List_36reverse(_GL__36elm_36core_36List_36takeReverse_95raw(n, list, _T_r3));
   };
 
   _GA__36BrianHicks_36elm_95trend_36Trend_36Linear_36percentile.a = 2;
   _GA__36BrianHicks_36elm_95trend_36Trend_36Linear_36percentile.f = _G8__36BrianHicks_36elm_95trend_36Trend_36Linear_36percentile_95raw;
-  _CN__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series.a = 2;
-  _CN__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series.f = _Cq__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series_95raw;
-  _CR__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Group.a = 2;
-  _CR__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Group.f = _Cx__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Group_95raw;
-  _An__36author_36project_36Main_36addMyType.a = 2;
-  _An__36author_36project_36Main_36addMyType.f = _B4__36author_36project_36Main_36addMyType_95raw;
+  _CO__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series.a = 2;
+  _CO__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series.f = _Cq__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Series_95raw;
+  _CS__36elm_95explorations_36benchmark_36Benchmark_36describe.a = 2;
+  _CS__36elm_95explorations_36benchmark_36Benchmark_36describe.f = _Cx__36elm_95explorations_36benchmark_36Benchmark_36Benchmark_36Group_95raw;
+  _Ao__36author_36project_36Main_36addMyType.a = 2;
+  _Ao__36author_36project_36Main_36addMyType.f = _B6__36author_36project_36Main_36addMyType_95raw;
 
   var _l_a = $_1_sub();
 
@@ -4372,7 +4410,7 @@
   var _4c_ = $_2_sub(_u_c, _4e_);
 
   var _a_ = _v0 => {
-    return _Am__36elm_36core_36List_36foldl_95raw(_An__36author_36project_36Main_36addMyType, 0, _j__36author_36project_36Main_36many);
+    return _An__36elm_36core_36List_36foldl_95raw(_Ao__36author_36project_36Main_36addMyType, 0, _j__36author_36project_36Main_36many);
   };
 
   var _4a_ = $_2_sub(_p_b, _4c_);
@@ -4390,7 +4428,7 @@
   };
 
   var _b_ = _v1 => {
-    return _Am__36elm_36core_36List_36foldl_95raw(_Ap__36author_36project_36Main_36updateRecord, {
+    return _An__36elm_36core_36List_36foldl_95raw(_Aq__36author_36project_36Main_36updateRecord, {
       aO: 1,
       bq: 3,
       br: 2
@@ -4405,29 +4443,33 @@
 
   var _4O_ = $_2_sub(_p_b, _4Q_);
 
+  var _3_ = d => {
+    return _9_(_4_, _5_, 0, d);
+  };
+
   var _4M_res = $_2_sub(_l_a, _4O_);
 
   var _C_ = b => {
     return c => _c__36author_36project_36Benchmark_36Runner_36Json_36update_95raw(_d__36author_36project_36Main_36reportResults, b, c);
   };
 
-  var _3_ = d => {
-    return _9_(_4_, _5_, 0, d);
-  };
-
-  var _Ap__36author_36project_36Main_36updateRecord = a => {
-    return b => _B5__36author_36project_36Main_36updateRecord_95raw(a, b);
-  };
-
-  var _4K_ = $_2_sub(_u_c, _4M_res);
-
   var _D__36author_36project_36Benchmark_36Runner_36Json_36view = model => {
-    return _e_A2(_AZ__36elm_36html_36Html_36div, _T_r3, {
+    return _e__36elm_36html_36Html_36div_95raw({
+      $: 1,
+      a: _Aa__95VirtualDom_95style_95raw("white-space", "pre"),
+      b: _T_r3
+    }, {
       $: 1,
       a: _Ab__36elm_36html_36Html_36text(_Ad__95Json_95encode_95raw(4, _Ae__36author_36project_36Benchmark_36Runner_36Json_36encode(model))),
       b: _T_r3
     });
   };
+
+  var _Aq__36author_36project_36Main_36updateRecord = a => {
+    return b => _B7__36author_36project_36Main_36updateRecord_95raw(a, b);
+  };
+
+  var _4K_ = $_2_sub(_u_c, _4M_res);
 
   var _4I_ = $_2_sub(_p_b, _4K_);
 
@@ -4439,26 +4481,30 @@
     };
   };
 
+  var _Aa__95VirtualDom_95style_95raw = (key, value) => {
+    return {
+      $: "a1",
+      n: key,
+      o: value
+    };
+  };
+
   var _4G_ = $_2_sub(_l_a, _4I_);
 
-  var _AZ__36elm_36html_36Html_36div = a => {
-    return b => _As_(a, b);
+  var _Ad__95Json_95encode_95raw = (indentLevel, value) => {
+    return JSON.stringify(_BG__95Json_95unwrap(value), null, indentLevel) + "";
+  };
+
+  var _Ae__36author_36project_36Benchmark_36Runner_36Json_36encode = benchmark => {
+    return _BH__36author_36project_36Benchmark_36Runner_36Json_36encodeReport(_BK__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36fromBenchmark(benchmark));
   };
 
   var _4E_ = $_2_sub(_u_c, _4G_);
 
-  var _Ae__36author_36project_36Benchmark_36Runner_36Json_36encode = benchmark => {
-    return _B8__36author_36project_36Benchmark_36Runner_36Json_36encodeReport(_BB__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36fromBenchmark(benchmark));
-  };
-
   var _4C_ = $_2_sub(_p_b, _4E_);
 
-  var _Ad__95Json_95encode_95raw = (indentLevel, value) => {
-    return JSON.stringify(_B7__95Json_95unwrap(value), null, indentLevel) + "";
-  };
-
-  var _B5__36author_36project_36Main_36updateRecord_95raw = (attr, record) => {
-    return _Bp_(record, {
+  var _B7__36author_36project_36Main_36updateRecord_95raw = (attr, record) => {
+    return _Bq_(record, {
       aO: 87
     });
   };
@@ -4485,16 +4531,14 @@
 
   var _3q_ = $_2_sub(_u_c, _3s_);
 
-  var _B8__36author_36project_36Benchmark_36Runner_36Json_36encodeReport = report => {
-    return _Bs__36elm_36json_36Json_36Encode_36list_95raw(_Bu__36author_36project_36Benchmark_36Runner_36Json_36encodeResultItem, _Bv__36author_36project_36Benchmark_36Runner_36Json_36flattenReport(report));
+  var _BH__36author_36project_36Benchmark_36Runner_36Json_36encodeReport = report => {
+    return _By__36elm_36json_36Json_36Encode_36list_95raw(_C0__36author_36project_36Benchmark_36Runner_36Json_36encodeResultItem, _C1__36author_36project_36Benchmark_36Runner_36Json_36flattenReport(report));
   };
 
   var _3o_ = $_2_sub(_p_b, _3q_);
 
-  var _Bp_ = (oldRecord, updatedFields) => {
-    return { ...oldRecord,
-      ...updatedFields
-    };
+  var _Bq_ = (oldRecord, updatedFields) => {
+    return Object.assign({}, oldRecord, updatedFields);
   };
 
   var _3m_ = $_2_sub(_l_a, _3o_);
@@ -4505,15 +4549,15 @@
 
   var _3g_ = $_2_sub(_l_a, _3i_);
 
-  var _Bs__36elm_36json_36Json_36Encode_36list_95raw = (func, entries) => {
-    return _Ah__36elm_36json_36Json_36Encode_36string(_Am__36elm_36core_36List_36foldl_95raw(_Cz__95Json_95addEntry(func), _D0__95Json_95emptyArray(0), entries));
-  };
-
   var _3e_ = $_2_sub(_u_c, _3g_);
 
   var _3c_ = $_2_sub(_p_b, _3e_);
 
   var _3a_res = $_2_sub(_l_a, _3c_);
+
+  var _By__36elm_36json_36Json_36Encode_36list_95raw = (func, entries) => {
+    return _Ah__36elm_36json_36Json_36Encode_36string(_An__36elm_36core_36List_36foldl_95raw(_D6__95Json_95addEntry(func), _D7__95Json_95emptyArray(0), entries));
+  };
 
   var _3Y_ = $_2_sub(_u_c, _3a_res);
 
@@ -4541,7 +4585,13 @@
 
   var _3A_ = $_2_sub(_u_c, _3C_res);
 
-  var _C7__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Single_95raw = (a, b) => {
+  var _38_ = $_2_sub(_p_b, _3A_);
+
+  var _36_ = $_2_sub(_l_a, _38_);
+
+  var _34_ = $_2_sub(_u_c, _36_);
+
+  var _CD__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Single_95raw = (a, b) => {
     return {
       $: 0,
       a: a,
@@ -4549,13 +4599,7 @@
     };
   };
 
-  var _38_ = $_2_sub(_p_b, _3A_);
-
-  var _36_ = $_2_sub(_l_a, _38_);
-
-  var _34_ = $_2_sub(_u_c, _36_);
-
-  var _CD__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Series_95raw = (a, b) => {
+  var _CE__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Series_95raw = (a, b) => {
     return {
       $: 1,
       a: a,
@@ -4563,7 +4607,7 @@
     };
   };
 
-  var _CE__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Group_95raw = (a, b) => {
+  var _CF__36elm_95explorations_36benchmark_36Benchmark_36Reporting_36Group_95raw = (a, b) => {
     return {
       $: 2,
       a: a,
@@ -4601,46 +4645,46 @@
 
   var _2a_ = $_2_sub(_u_c, _2c_);
 
-  var _Cz__95Json_95addEntry = func => {
-    return _Cd_F2(function (entry, array) {
-      array.push(_B7__95Json_95unwrap(func(entry)));
-      return array;
-    });
-  };
-
-  var _D0__95Json_95emptyArray = () => {
-    return [];
-  };
-
-  var _D1__36elm_36json_36Json_36Encode_36object = pairs => {
-    return _Ah__36elm_36json_36Json_36Encode_36string(_Am__36elm_36core_36List_36foldl_95raw(_Cd_F2(function (_v0, obj) {
-      var k = _v0.a;
-      var v = _v0.b;
-      return _Dq__95Json_95addField_95raw(k, v, obj);
-    }), _Dr__95Json_95emptyObject(0), pairs));
-  };
-
   var _2Y_ = $_2_sub(_p_b, _2a_);
 
   var _2W_ = $_2_sub(_l_a, _2Y_);
 
   var _2U_ = $_2_sub(_u_c, _2W_);
 
+  var _D6__95Json_95addEntry = func => {
+    return _Cc_F2(function (entry, array) {
+      array.push(_BG__95Json_95unwrap(func(entry)));
+      return array;
+    });
+  };
+
+  var _D7__95Json_95emptyArray = () => {
+    return [];
+  };
+
+  var _D8__36elm_36json_36Json_36Encode_36object = pairs => {
+    return _Ah__36elm_36json_36Json_36Encode_36string(_An__36elm_36core_36List_36foldl_95raw(_Cc_F2(function (_v0, obj) {
+      var k = _v0.a;
+      var v = _v0.b;
+      return _Ds__95Json_95addField_95raw(k, v, obj);
+    }), _Dt__95Json_95emptyObject(0), pairs));
+  };
+
   var _2S_ = $_2_sub(_p_b, _2U_);
-
-  var _D6__36elm_36core_36List_36concatMap_95raw = (f, list) => {
-    return _E3__36elm_36core_36List_36concat(_BU__36elm_36core_36List_36map_95raw(f, list));
-  };
-
-  var _D7__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup = a => {
-    return b => _Da__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup_95raw(a, b);
-  };
 
   var _2Q_res = $_2_sub(_l_a, _2S_);
 
   var _2O_ = $_2_sub(_u_c, _2Q_res);
 
   var _2M_ = $_2_sub(_p_b, _2O_);
+
+  var _DD__36elm_36core_36List_36concatMap_95raw = (f, list) => {
+    return _E5__36elm_36core_36List_36concat(_BU__36elm_36core_36List_36map_95raw(f, list));
+  };
+
+  var _DE__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup = a => {
+    return b => _Dg__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup_95raw(a, b);
+  };
 
   var _2K_ = $_2_sub(_l_a, _2M_);
 
@@ -4654,17 +4698,17 @@
 
   var _2A_ = $_2_sub(_p_b, _2C_);
 
-  var _Dr__95Json_95emptyObject = () => {
+  var _28_ = $_2_sub(_l_a, _2A_);
+
+  var _Dt__95Json_95emptyObject = () => {
     return {};
   };
 
-  var _28_ = $_2_sub(_l_a, _2A_);
-
-  var _Dz__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a1 = c => {
-    return _Dw__36elm_36core_36Basics_36composeR_95raw(_EX_, _EY__36elm_36core_36Basics_36floor, c);
-  };
-
   var _26_ = $_2_sub(_u_c, _28_);
+
+  var _E1__36author_36project_36Benchmark_36Runner_36Json_36runsPerSecond_95a1 = c => {
+    return _Dy__36elm_36core_36Basics_36composeR_95raw(_Eb_, _Ec__36elm_36core_36Basics_36floor, c);
+  };
 
   var _24_ = $_2_sub(_p_b, _26_);
 
@@ -4672,11 +4716,11 @@
 
   var _20_ = $_2_sub(_u_c, _22_res);
 
-  var _E3__36elm_36core_36List_36concat = lists => {
-    return _Cc__36elm_36core_36List_36foldr_95raw(_Ej__36elm_36core_36List_36append, _T_r3, lists);
-  };
-
   var _1y_ = $_2_sub(_p_b, _20_);
+
+  var _E5__36elm_36core_36List_36concat = lists => {
+    return _Cb__36elm_36core_36List_36foldr_95raw(_En__36elm_36core_36List_36append, _T_r3, lists);
+  };
 
   var _1w_ = $_2_sub(_l_a, _1y_);
 
@@ -4694,15 +4738,15 @@
 
   var _1i_ = $_2_sub(_u_c, _1k_);
 
-  var _EX_ = a => {
+  var _1g_ = $_2_sub(_p_b, _1i_);
+
+  var _Eb_ = a => {
     return _F7__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictX_95raw(a, 1000);
   };
 
-  var _Eb__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY = a => {
-    return b => _F0__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY_95raw(a, b);
+  var _Ef__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY = a => {
+    return b => _F3__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY_95raw(a, b);
   };
-
-  var _1g_ = $_2_sub(_p_b, _1i_);
 
   var _1e_res = $_2_sub(_l_a, _1g_);
 
@@ -4710,11 +4754,11 @@
 
   var _1a_ = $_2_sub(_p_b, _1c_);
 
-  var _Ej__36elm_36core_36List_36append = a => {
-    return b => _F2__36elm_36core_36List_36append_95raw(a, b);
-  };
-
   var _1Y_ = $_2_sub(_l_a, _1a_);
+
+  var _En__36elm_36core_36List_36append = a => {
+    return b => _F5__36elm_36core_36List_36append_95raw(a, b);
+  };
 
   var _1W_ = $_2_sub(_u_c, _1Y_);
 
@@ -4760,8 +4804,8 @@
 
   var _M__36elm_95explorations_36benchmark_36Benchmark_36Status_36Cold = $_6_sub();
 
-  _Ap__36author_36project_36Main_36updateRecord.a = 2;
-  _Ap__36author_36project_36Main_36updateRecord.f = _B5__36author_36project_36Main_36updateRecord_95raw;
+  _Aq__36author_36project_36Main_36updateRecord.a = 2;
+  _Aq__36author_36project_36Main_36updateRecord.f = _B7__36author_36project_36Main_36updateRecord_95raw;
 
   var _E__36author_36project_36Main_36suite = $_3_sub("Benchmarks", {
     $: 1,
@@ -4787,14 +4831,12 @@
     $: 2,
     m: _T_r3
   };
-  _Eb__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY.a = 2;
-  _Eb__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY.f = _F0__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY_95raw;
-  _Ej__36elm_36core_36List_36append.a = 2;
-  _Ej__36elm_36core_36List_36append.f = _F2__36elm_36core_36List_36append_95raw;
-  _D7__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup.a = 2;
-  _D7__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup.f = _Da__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup_95raw;
-  _AZ__36elm_36html_36Html_36div.a = 2;
-  _AZ__36elm_36html_36Html_36div.f = _As_;
+  _Ef__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY.a = 2;
+  _Ef__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY.f = _F3__36BrianHicks_36elm_95trend_36Trend_36Linear_36predictY_95raw;
+  _En__36elm_36core_36List_36append.a = 2;
+  _En__36elm_36core_36List_36append.f = _F5__36elm_36core_36List_36append_95raw;
+  _DE__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup.a = 2;
+  _DE__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup.f = _Dg__36author_36project_36Benchmark_36Runner_36Json_36flattenReportGroup_95raw;
   var _4_ = {
     bS: _A_,
     b4: _B_,

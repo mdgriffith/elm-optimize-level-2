@@ -32,25 +32,13 @@ test('it can process nested calls of A2 with non identifiers as the first arg ',
       _VirtualDom_map_raw(fn, A2(styled.d9, add, context));
   `;
 
-  const source = ts.createSourceFile(
-    'elm.js',
+  const { actual, expected } = transform(
     initialCode,
-    ts.ScriptTarget.ES2018
+    expectedOutputCode,
+    createFunctionInlineTransformer()
   );
 
-  const printer = ts.createPrinter();
-
-  const [output] = ts.transform(source, [
-    createFunctionInlineTransformer(),
-  ]).transformed;
-
-  const expectedOutput = printer.printFile(
-    ts.createSourceFile('elm.js', expectedOutputCode, ts.ScriptTarget.ES2018)
-  );
-
-  const printedOutput = printer.printFile(output);
-
-  expect(printedOutput).toBe(expectedOutput);
+  expect(actual).toBe(expected);
 });
 
 test('it can process partial application inlining', () => {
@@ -82,6 +70,124 @@ test('it can process partial application inlining', () => {
   var res2 = func_raw(partialFunc2_a0, partialFunc2_a1, 3);
   `;
 
+  const { actual, expected } = transform(
+    initialCode,
+    expectedOutputCode,
+    createFunctionInlineTransformer()
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('it can inline functions that were wrapped by other functions', () => {
+  const initialCode = `
+  var func = F2(function (a, b) {
+      return F2( function (c, d) {  a + b + c + d});
+  });
+  
+  var fullyApplied = A2(func, 1, 2);
+  
+  var res = A2(fullyApplied, 3, 4);
+  `;
+
+  const expectedOutputCode = `
+  var func_raw = function (a, b) {
+    return F2(function (c, d) {  a + b + c + d});
+  }, func = F2(func_raw);
+  
+  var fullyApplied = func_raw(1, 2), fullyApplied_raw = fullyApplied.f;
+  
+  var res = fullyApplied_raw(3, 4);
+  `;
+
+  const { actual, expected } = transform(
+    initialCode,
+    expectedOutputCode,
+    createFunctionInlineTransformer()
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('it can inline functions that were wrapped by other functions even if they are defined separately', () => {
+  const initialCode = `
+  var raw = function (a, b) {
+      return F2( function (c, d) {  a + b + c + d});
+  }
+
+  var func = F2(raw);
+  
+  var fullyApplied = A2(func, 1, 2);
+  
+  var res = A2(fullyApplied, 3, 4);
+  `;
+
+  const expectedOutputCode = `
+    var raw = function (a, b) {
+      return F2( function (c, d) {  a + b + c + d});
+    }
+
+    var func = F2(raw);
+  
+    var fullyApplied = raw(1, 2),
+     fullyApplied_raw = fullyApplied.f;
+  
+    var res = fullyApplied_raw(3, 4);
+  `;
+
+  const { actual, expected } = transform(
+    initialCode,
+    expectedOutputCode,
+    createFunctionInlineTransformer()
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('it can inline functions that were wrapped by other functions even if they are partially applied', () => {
+  const initialCode = `
+ 
+  var func = F2(function (a, b) {
+      return F2( function (c, d) {  a + b + c + d});
+  });
+ 
+  var partiallyApplied = func(1);
+  var fullyApplied = partiallyApplied(2);
+  
+  var res = A2(fullyApplied, 3, 4);
+  `;
+
+  const expectedOutputCode = `
+  var func_raw = function (a, b) {
+    return F2(function (c, d) {  a + b + c + d});
+  }, func = F2(func_raw);
+
+  var partiallyApplied_a0 = 1,
+    partiallyApplied = func(partiallyApplied_a0);
+  
+  var fullyApplied = func_raw(partiallyApplied_a0, 2),
+     fullyApplied_raw = fullyApplied.f;
+  
+  var res = fullyApplied_raw(3, 4);
+  `;
+
+  const { actual, expected } = transform(
+    initialCode,
+    expectedOutputCode,
+    createFunctionInlineTransformer()
+  );
+
+  expect(actual).toBe(expected);
+});
+
+function transform(
+  initialCode: string,
+  expectedCode: string,
+  transformer: ts.TransformerFactory<ts.SourceFile>
+): {
+  actual: string;
+  expected: string;
+} {
   const source = ts.createSourceFile(
     'elm.js',
     initialCode,
@@ -90,15 +196,16 @@ test('it can process partial application inlining', () => {
 
   const printer = ts.createPrinter();
 
-  const [output] = ts.transform(source, [
-    createFunctionInlineTransformer(),
-  ]).transformed;
+  const [output] = ts.transform(source, [transformer]).transformed;
 
   const expectedOutput = printer.printFile(
-    ts.createSourceFile('elm.js', expectedOutputCode, ts.ScriptTarget.ES2018)
+    ts.createSourceFile('elm.js', expectedCode, ts.ScriptTarget.ES2018)
   );
 
   const printedOutput = printer.printFile(output);
 
-  expect(printedOutput).toBe(expectedOutput);
-});
+  return {
+    actual: printedOutput,
+    expected: expectedOutput,
+  };
+}
