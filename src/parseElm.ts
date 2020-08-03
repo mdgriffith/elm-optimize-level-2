@@ -51,6 +51,8 @@ const just: ElmVariant = {
 };
 const maybe = [nothing, just];
 
+export const primitives = listVariants.concat(maybe);
+
 export const parseElm = ({
   author,
   project,
@@ -59,12 +61,9 @@ export const parseElm = ({
   author: string;
   project: string;
   source: string;
-}): { [id: string]: ElmVariant[] } => {
+}): ElmVariant[] => {
   const tree = elmParser.parse(source);
-  const found: { [id: string]: ElmVariant[] } = {
-    List: listVariants,
-    Maybe: maybe,
-  };
+  const found: ElmVariant[] = [];
 
   /*
       A quick reference for using treesitter.
@@ -110,7 +109,8 @@ export const parseElm = ({
         for (let variant of child.namedChildren) {
           switch (variant.type) {
             case 'upper_case_identifier': {
-              name = variant.text;
+              name = moduleName + '.' + variant.text;
+
               break;
             }
             case 'union_variant': {
@@ -121,6 +121,7 @@ export const parseElm = ({
                 switch (detail.type) {
                   case 'upper_case_identifier': {
                     foundVariantName = detail.text;
+
                     break;
                   }
 
@@ -155,27 +156,14 @@ export const parseElm = ({
                 '$' +
                 foundVariantName;
 
-              if (name in found) {
-                found[name].push({
-                  typeName: name,
-                  name: foundVariantName,
-                  jsName: jsName,
-                  index: index,
-                  slots: slots,
-                  totalTypeSlotCount: totalTypeSlotCount,
-                });
-              } else {
-                found[name] = [
-                  {
-                    typeName: name,
-                    name: foundVariantName,
-                    index: index,
-                    jsName: jsName,
-                    slots: slots,
-                    totalTypeSlotCount: totalTypeSlotCount,
-                  },
-                ];
-              }
+              found.push({
+                typeName: name,
+                name: foundVariantName,
+                jsName: jsName,
+                index: index,
+                slots: slots,
+                totalTypeSlotCount: totalTypeSlotCount,
+              });
 
               index = index + 1;
               break;
@@ -186,8 +174,10 @@ export const parseElm = ({
           }
         }
 
-        for (let variant of found[name]) {
-          variant.totalTypeSlotCount = totalTypeSlotCount;
+        for (let variant of found) {
+          if (variant.typeName == name) {
+            variant.totalTypeSlotCount = totalTypeSlotCount;
+          }
         }
         break;
       }
@@ -196,11 +186,12 @@ export const parseElm = ({
       }
     }
   }
+
   return found;
 };
 
-export const parseDir = (dir: string): { [id: string]: ElmVariant[] } => {
-  let variants: { [id: string]: ElmVariant[] } = {};
+export const parseDir = (dir: string): ElmVariant[] => {
+  let variants: ElmVariant[] = [];
   const files = fs.readdirSync(dir);
 
   files.forEach(function(author) {
@@ -214,12 +205,11 @@ export const parseDir = (dir: string): { [id: string]: ElmVariant[] } => {
             project
           );
 
-          variants = Object.assign(variants, vars);
+          variants = variants.concat(vars);
         }
       });
     }
   });
-
   return variants;
 };
 
@@ -227,8 +217,8 @@ const parseElmFilesInDirectory = (
   dir: string,
   author: string,
   project: string
-): { [id: string]: ElmVariant[] } => {
-  let variants: { [id: string]: ElmVariant[] } = {};
+): ElmVariant[] => {
+  let variants: ElmVariant[] = [];
 
   let files = walkSync(dir, []);
 
@@ -241,7 +231,7 @@ const parseElmFilesInDirectory = (
         source: source,
       });
 
-      variants = Object.assign(variants, results);
+      variants = variants.concat(results);
     }
   }
 

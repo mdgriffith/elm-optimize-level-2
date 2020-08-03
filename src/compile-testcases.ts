@@ -1,7 +1,7 @@
 import { compileSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 import * as path from 'path';
-import { parseElm, parseDir } from './parseElm';
+import { parseElm, parseDir, primitives } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './experiments/variantShapes';
 import { Mode, Transforms, ObjectUpdate } from './types';
@@ -42,26 +42,26 @@ export const compileAndTransform = async (
   });
 
   const pathInOutput = (p: string) => path.join(dir, 'output', p);
-
+  console.log('lets try this again');
   const elmSource = fs.readFileSync(path.join(dir, file), 'utf8');
   let parsedVariants = parseElm({
     author: 'author',
     project: 'project',
     source: elmSource,
-  });
+  }).concat(primitives);
 
-  Object.assign(parsedVariants, parseDir('elm-packages'));
-
+  let parsed = parseDir('elm-packages');
+  parsedVariants = parsedVariants.concat(parsed);
   const source = ts.createSourceFile(
     'elm.js',
     fs.readFileSync(pathInOutput('elm.opt.js'), 'utf-8'),
     ts.ScriptTarget.ES2018
   );
 
-  const replacements = Object.values(parsedVariants).flat();
+  // const replacements = Object.values(parsedVariants).flat();
 
   const normalizeVariantShapes = createCustomTypesTransformer(
-    replacements,
+    parsedVariants,
     Mode.Prod
   );
 

@@ -19,32 +19,38 @@ const defaultOptions = {
 };
 
 async function go() {
-  const report = await Reporting.run([
-    // Use `runWithBreakdown` if you want the breakdown
-    // const report = await Reporting.runWithBreakdown([
+  // const report = await Reporting.run([
+  // Use `runWithBreakdown` if you want the breakdown
+  const report = await Reporting.runWithBreakdown([
     // { name: 'simple',
     //   dir: 'testcases/simple',
     //   elmFile: 'main',
     //   options: defaultOptions,
     // },
-    {
-      name: 'bench',
-      dir: 'testcases/bench',
-      elmFile: 'Main.elm',
-      options: defaultOptions,
-    },
-    {
-      name: 'html',
-      dir: 'testcases/html',
-      elmFile: 'Main.elm',
-      options: defaultOptions,
-    },
     // {
-    //   name: 'elm-markdown',
-    //   dir: 'testcases/elm-markdown',
-    //   elmFile: 'Run.elm',
+    //   name: 'bench',
+    //   dir: 'testcases/bench',
+    //   elmFile: 'Main.elm',
     //   options: defaultOptions,
     // },
+    // {
+    //   name: 'html',
+    //   dir: 'testcases/html',
+    //   elmFile: 'Main.elm',
+    //   options: defaultOptions,
+    // },
+    // {
+    //   name: 'elm-ui',
+    //   dir: 'testcases/elm-ui',
+    //   elmFile: 'Main.elm',
+    //   options: defaultOptions,
+    // },
+    {
+      name: 'elm-markdown',
+      dir: 'testcases/elm-markdown',
+      elmFile: 'Run.elm',
+      options: defaultOptions,
+    },
     // This one takes forever
     // {
     //   name: 'elm-obj-file',
