@@ -1,7 +1,7 @@
-mkdir testcases/elm-obj-file
-mkdir testcases/elm-obj-file/output
-cp testcases/bench/standard.html testcases/elm-obj-file/standard.html
-cp testcases/bench/transformed.html testcases/elm-obj-file/transformed.html
-cp testcases/bench/elm.json testcases/elm-obj-file/elm.json
+mkdir testcases/elm-ui-2
+mkdir testcases/elm-ui-2/output
+cp testcases/bench/standard.html testcases/elm-ui-2/standard.html
+cp testcases/bench/transformed.html testcases/elm-ui-2/transformed.html
+cp testcases/bench/elm.json testcases/elm-ui-2/elm.json
 
-git submodule add https://github.com/w0rm/elm-obj-file testcases/elm-obj-file/repo
+git submodule add --branch 2.0 https://github.com/mdgriffith/elm-ui testcases/elm-ui-2/repo
