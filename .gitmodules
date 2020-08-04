@@ -4,3 +4,7 @@
 [submodule "testcases/elm-obj-file/repo"]
 	path = testcases/elm-obj-file/repo
 	url = https://github.com/w0rm/elm-obj-file
+[submodule "testcases/elm-ui-2/repo"]
+	path = testcases/elm-ui-2/repo
+	url = https://github.com/mdgriffith/elm-ui
+	branch = 2.0
