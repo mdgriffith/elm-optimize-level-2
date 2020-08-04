@@ -16,6 +16,7 @@ import {
 import { prepackFileSync } from 'prepack';
 import * as Terser from 'terser';
 import { execSync } from 'child_process';
+import { inlineEquality } from './experiments/inlineEquality';
 
 import {
   createReplaceUtilsUpdateWithObjectSpread,
@@ -42,7 +43,7 @@ export const compileAndTransform = async (
   });
 
   const pathInOutput = (p: string) => path.join(dir, 'output', p);
-  console.log('lets try this again');
+
   const elmSource = fs.readFileSync(path.join(dir, file), 'utf8');
   let parsedVariants = parseElm({
     author: 'author',
@@ -58,8 +59,6 @@ export const compileAndTransform = async (
     ts.ScriptTarget.ES2018
   );
 
-  // const replacements = Object.values(parsedVariants).flat();
-
   const normalizeVariantShapes = createCustomTypesTransformer(
     parsedVariants,
     Mode.Prod
@@ -71,6 +70,7 @@ export const compileAndTransform = async (
       options.inlineFunctions,
       createFunctionInlineTransformer(reportInlineTransformResult),
     ],
+    [options.inlineEquality, inlineEquality()],
     [
       options.listLiterals,
       createInlineListFromArrayTransformer(

@@ -204,6 +204,7 @@ const emptyOpts: Transforms = {
   prepack: false,
   variantShapes: false,
   inlineFunctions: false,
+  inlineEquality: false,
   listLiterals: false,
   arrowFns: false,
   objectUpdate: null,
@@ -230,6 +231,11 @@ const breakdown = function(
       include: options.listLiterals,
       name: 'inline list literal construction',
       options: Object.assign({}, emptyOpts, { listLiterals: true }),
+    },
+    {
+      include: options.inlineEquality,
+      name: 'inline equality',
+      options: Object.assign({}, emptyOpts, { inlineEquality: true }),
     },
     {
       include: options.arrowFns,
