@@ -53,6 +53,60 @@ export const createReplaceUtilsUpdateWithObjectSpread = (
     return ts.visitNode(sourceFile, visitor);
   };
 };
+const OBJECT_UPDATE = '_Utils_update';
+
+export const inlineObjectAssign = (): ts.TransformerFactory<ts.SourceFile> => context => {
+  return sourceFile => {
+    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      // detects function f(..){..}
+      if (ts.isCallExpression(node)) {
+        if (
+          ts.isIdentifier(node.expression) &&
+          node.expression.text === OBJECT_UPDATE
+        ) {
+          return ts.createCall(
+            ts.createIdentifier('Object.assign'),
+            undefined,
+            [ts.createObjectLiteral(), node.arguments[0], node.arguments[1]]
+          );
+        }
+      }
+
+      return ts.visitEachChild(node, visitor, context);
+    };
+    return ts.visitNode(sourceFile, visitor);
+  };
+};
+
+export const inlineObjectSpread = (): ts.TransformerFactory<ts.SourceFile> => context => {
+  return sourceFile => {
+    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      // detects function f(..){..}
+      if (ts.isCallExpression(node)) {
+        if (
+          ts.isIdentifier(node.expression) &&
+          node.expression.text === OBJECT_UPDATE
+        ) {
+          let props: any[] = [];
+          node.arguments[1].forEachChild(child => {
+            if (ts.isPropertyAssignment(child)) {
+              props.push(
+                ts.createPropertyAssignment(child.name, child.initializer)
+              );
+            }
+          });
+
+          return ts.createObjectLiteral(
+            [ts.createSpreadAssignment(node.arguments[0])].concat(props)
+          );
+        }
+      }
+
+      return ts.visitEachChild(node, visitor, context);
+    };
+    return ts.visitNode(sourceFile, visitor);
+  };
+};
 
 export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.SourceFile> = context => {
   return sourceFile => {
