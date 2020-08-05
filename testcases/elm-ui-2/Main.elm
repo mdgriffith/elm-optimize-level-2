@@ -30,7 +30,7 @@ suite =
     describe "Elm UI"
         [ benchmark "create a 4 level nested Elm UI tree" <|
             \_ ->
-                layout []
+                embed []
                     (column [] (List.map (viewLevels 4) three))
         ]
 
