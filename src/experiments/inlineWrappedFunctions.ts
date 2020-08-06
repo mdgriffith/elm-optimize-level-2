@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import { matchElmSource } from './patterns';
 
 /*
 
@@ -75,24 +76,28 @@ function reportInlinining(split: FuncSplit, { inlined }: InlineContext) {
   }
 }
 
+export const createInlineContext = (): InlineContext => ({
+  functionsThatWrapFunctions: new Map(),
+  splits: new Map(),
+  partialApplications: new Map(),
+  inlined: {
+    fromAlias: 0,
+    fromRawFunc: 0,
+    fromWrapper: 0,
+    partialApplications: 0,
+  },
+});
+
 export const createFunctionInlineTransformer = (
   reportResult?: (res: InlineContext) => void
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
-    const inlineContext: InlineContext = {
-      functionsThatWrapFunctions: new Map(),
-      splits: new Map(),
-      partialApplications: new Map(),
-      inlined: {
-        fromAlias: 0,
-        fromRawFunc: 0,
-        fromWrapper: 0,
-        partialApplications: 0,
-      },
-    };
+    const inlineContext: InlineContext = createInlineContext();
 
-    const splitter = createSplitterVisitor(inlineContext, context);
-    const splittedNode = ts.visitNode(sourceFile, splitter);
+    // todo hack to only inline top level functions
+    const { topScope } = matchElmSource(sourceFile)!;
+    const splitter = createSplitterVisitor(inlineContext, topScope, context);
+    const splittedNode = ts.visitFunctionBody(sourceFile, splitter);
 
     const inliner = createInlinerVisitor(inlineContext, context);
     const result = ts.visitNode(splittedNode, inliner);
@@ -108,12 +113,21 @@ export const createFunctionInlineTransformer = (
 
 const createSplitterVisitor = (
   { splits, partialApplications, functionsThatWrapFunctions }: InlineContext,
+  topScope: ts.Block,
   context: ts.TransformationContext
 ) => {
   const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+    const bla = node;
+    if (bla) {
+      console.log('$$$', bla, node);
+    }
+    if (bla && ts.isBlock(bla)) {
+      console.log('$$$', bla, node);
+    }
     // detects "var a"
     if (
       ts.isVariableDeclaration(node) &&
+      // todo this is basically a hack to only be able to inline top level functions
       ts.isIdentifier(node.name) &&
       node.initializer
     ) {
@@ -176,13 +190,12 @@ const createSplitterVisitor = (
                 }
               }
 
-              // and it is a function
-              // detects "var a = F123( function (a) {return a})"
-              // or "var a = F123( a => a)"
-              if (
-                ts.isArrowFunction(maybeFuncExpression) ||
-                ts.isFunctionExpression(maybeFuncExpression)
-              ) {
+              // it can be either a function expression:
+              // "var a = F123( function (a) {return a})"
+              // "var a = F123( a => a)"
+              // something like
+              // var a = F2(Math.pow)
+              if (true) {
                 // TODO typecheck?
                 const rawLambdaName = deriveRawLambdaName(originalName);
 
@@ -207,12 +220,21 @@ const createSplitterVisitor = (
                   ])
                 );
 
-                const maybeWrapper = checkIfFunctionReturnsWrappedFunction(
-                  maybeFuncExpression
-                );
+                // if it is a function expression check if we need an unwrapped version of it
+                if (
+                  ts.isArrowFunction(maybeFuncExpression) ||
+                  ts.isFunctionExpression(maybeFuncExpression)
+                ) {
+                  const maybeWrapper = checkIfFunctionReturnsWrappedFunction(
+                    maybeFuncExpression
+                  );
 
-                if (maybeWrapper) {
-                  functionsThatWrapFunctions.set(node.name.text, maybeWrapper);
+                  if (maybeWrapper) {
+                    functionsThatWrapFunctions.set(
+                      node.name.text,
+                      maybeWrapper
+                    );
+                  }
                 }
 
                 return [lambdaDeclaration, newDeclaration];

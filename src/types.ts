@@ -17,6 +17,7 @@ export type Transforms = {
   variantShapes: boolean;
   inlineEquality: boolean;
   inlineFunctions: boolean;
+  passUnwrappedFunctions: boolean;
   listLiterals: boolean;
   arrowFns: boolean;
   objectUpdate: ObjectUpdate | null;

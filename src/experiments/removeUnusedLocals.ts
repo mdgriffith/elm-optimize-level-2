@@ -1,15 +1,8 @@
 import ts from 'typescript';
-
+import { createProgramFromSource } from './createTSprogram';
 export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
-    const printer = ts.createPrinter();
-    const sourceCopy = ts.createSourceFile(
-      'elm.js',
-      printer.printFile(sourceFile),
-      ts.ScriptTarget.ES2018
-    );
-
-    let unused = collectUnusedVariables(sourceCopy);
+    let unused = collectUnusedVariables(sourceFile);
 
     console.log('found unused:', unused.length);
 
@@ -54,7 +47,7 @@ export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.So
     };
 
     // TODO make this code pretty
-    let result = ts.visitNode(sourceCopy, visitor);
+    let result = ts.visitNode(sourceFile, visitor);
     unused = collectUnusedVariables(result);
 
     while (unused.length > 0) {
@@ -67,57 +60,10 @@ export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.So
   };
 };
 
-const defaultCompilerHost = ts.createCompilerHost({});
-
-const cache = new Map<string, ts.SourceFile | undefined>();
-function serveLibFile(
-  name: string,
-  languageVersion: ts.ScriptTarget
-): ts.SourceFile | undefined {
-  const cached = cache.get(name);
-  if (cached) return cached;
-
-  const val = defaultCompilerHost.getSourceFile(name, languageVersion);
-  cache.set(name, val);
-  return val;
-}
-
 function collectUnusedVariables(
   sourceFile: ts.SourceFile
 ): readonly ts.Diagnostic[] {
-  const customCompilerHost: ts.CompilerHost = {
-    getSourceFile: (name, languageVersion) => {
-      // console.log(`getSourceFile ${name}`);
-
-      if (name === 'elm.js') {
-        return sourceFile;
-      } else {
-        return serveLibFile(name, languageVersion);
-      }
-    },
-    writeFile: () => {},
-    getDefaultLibFileName: () =>
-      'node_modules/typescript/lib/lib.es2018.full.d.ts',
-    useCaseSensitiveFileNames: () => false,
-    getCanonicalFileName: filename => filename,
-    getCurrentDirectory: () => '',
-    getNewLine: () => '\n',
-    getDirectories: () => [],
-    fileExists: () => true,
-    readFile: () => '',
-  };
-
-  const program = ts.createProgram(
-    ['elm.js'],
-    {
-      allowJs: true,
-      noUnusedLocals: true,
-      checkJs: true,
-      outDir: 'yo',
-    },
-    customCompilerHost
-  );
-
+  const [program] = createProgramFromSource(sourceFile);
   const res = ts.getPreEmitDiagnostics(program);
   return res.filter(d => d.reportsUnnecessary);
 }
