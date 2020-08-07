@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { matchElmSource } from './patterns';
+// import { matchElmSource } from './patterns';
 
 /*
 
@@ -95,9 +95,9 @@ export const createFunctionInlineTransformer = (
     const inlineContext: InlineContext = createInlineContext();
 
     // todo hack to only inline top level functions
-    const { topScope } = matchElmSource(sourceFile)!;
-    const splitter = createSplitterVisitor(inlineContext, topScope, context);
-    const splittedNode = ts.visitFunctionBody(sourceFile, splitter);
+    // const { topScope } = matchElmSource(sourceFile)!;
+    const splitter = createSplitterVisitor(inlineContext, context);
+    const splittedNode = ts.visitNode(sourceFile, splitter);
 
     const inliner = createInlinerVisitor(inlineContext, context);
     const result = ts.visitNode(splittedNode, inliner);
@@ -111,25 +111,33 @@ export const createFunctionInlineTransformer = (
   };
 };
 
+const isTopLevelScope = (path: ts.Node[]) => {
+  const funcExpCount = path.reduce(
+    (c, n) => (ts.isFunctionExpression(n) ? c + 1 : c),
+    0
+  );
+  const funcDeclCount = path.reduce(
+    (c, n) => (ts.isFunctionDeclaration(n) ? c + 1 : c),
+    0
+  );
+  // meaning top level scope function body
+  return funcExpCount === 1 && funcDeclCount === 0;
+};
+
 const createSplitterVisitor = (
   { splits, partialApplications, functionsThatWrapFunctions }: InlineContext,
-  topScope: ts.Block,
   context: ts.TransformationContext
 ) => {
-  const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
-    const bla = node;
-    if (bla) {
-      console.log('$$$', bla, node);
-    }
-    if (bla && ts.isBlock(bla)) {
-      console.log('$$$', bla, node);
-    }
+  const visitor = (path: ts.Node[]) => (
+    node: ts.Node
+  ): ts.VisitResult<ts.Node> => {
     // detects "var a"
     if (
       ts.isVariableDeclaration(node) &&
       // todo this is basically a hack to only be able to inline top level functions
       ts.isIdentifier(node.name) &&
-      node.initializer
+      node.initializer &&
+      isTopLevelScope(path)
     ) {
       // detects an alias to existing split
       if (ts.isIdentifier(node.initializer)) {
@@ -363,10 +371,10 @@ const createSplitterVisitor = (
       }
     }
 
-    return ts.visitEachChild(node, visitor, context);
+    return ts.visitEachChild(node, visitor(path.concat(node)), context);
   };
 
-  return visitor;
+  return visitor([]);
 };
 
 const createInlinerVisitor = (

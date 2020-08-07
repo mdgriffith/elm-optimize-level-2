@@ -7,7 +7,7 @@ import { InlineContext } from './inlineWrappedFunctions';
 const deriveNewFuncName = (funcName: string) => funcName + '_unwrapped';
 
 type WrappedUsage = {
-  arity: number;
+  arity: number; // expected arity of the function being unwrapped inside
   funcDeclaration: ts.VariableDeclaration;
   funcName: string;
   parameterName: string;
@@ -116,11 +116,18 @@ export const createPassUnwrappedFunctionsTransformer = (
                   f => f.funcName === calledFuncIdentifier.text
                 );
 
-                // todo, check if the unwrapped version matches arity and stuff
                 if (!existingUnwrappedFunc) {
                   // todo we need to bail out but let's fail for now
                   throw new Error(
                     `${calledFuncIdentifier.text} doesn't have an unwrapped version`
+                  );
+                }
+
+                // we need to make sure that arity matches
+                if (existingUnwrappedFunc.arity !== funcToModify.arity) {
+                  // todo we need to bail out but let's fail for now
+                  throw new Error(
+                    `${calledFuncIdentifier.text} doesn't match expected arity of a passed function with expected arity of the parent function`
                   );
                 }
 
@@ -202,10 +209,9 @@ export const createPassUnwrappedFunctionsTransformer = (
                       ),
                   ]
                 );
-              }
-              // comment out for now because it is too complex
-              else if (ts.isIdentifier(funcParameter)) {
+              } else if (ts.isIdentifier(funcParameter)) {
                 const existingSplit = getCtx()?.splits.get(funcParameter.text);
+                // if (funcParameter.text)
                 if (
                   existingSplit &&
                   existingSplit.arity === funcToUnwrap.arity

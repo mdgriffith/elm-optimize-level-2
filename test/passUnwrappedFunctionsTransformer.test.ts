@@ -1,6 +1,6 @@
 import { transformCode } from './inlineWrappedFunctions.test';
 import { createPassUnwrappedFunctionsTransformer } from '../src/experiments/passUnwrappedFunctions';
-// import { createInlineContext } from '../src/experiments/inlineWrappedFunctions';
+import { createInlineContext } from '../src/experiments/inlineWrappedFunctions';
 
 test('it can unwrap lambdas in place ', () => {
   const initialCode = `
@@ -133,38 +133,38 @@ test('it properly replaces names in recursion and all uses of the passed functio
 });
 
 // commented out for now
-// test('it can pass raw functions if there is one registered', () => {
-//   const initialCode = `
-//     var f = function(func, a, b) {
-//         return A2(func, a, b)
-//     };
+test('it can pass raw functions if there is one registered', () => {
+  const initialCode = `
+    var f = function(func, a, b) {
+        return A2(func, a, b)
+    };
 
-//     f(wrappedFunc, 1, 2);
-// `;
+    f(wrappedFunc, 1, 2);
+`;
 
-//   const expectedOutputCode = `
-//     var f = function(func, a, b) {
-//         return A2(func, a, b)
-//     }, f_unwrapped = function(func, a, b) {
-//         return func(a, b)
-//     };
+  const expectedOutputCode = `
+    var f = function(func, a, b) {
+        return A2(func, a, b)
+    }, f_unwrapped = function(func, a, b) {
+        return func(a, b)
+    };
 
-//     f_unwrapped(wrappedFunc_raw, 1, 2);
-//   `;
+    f_unwrapped(wrappedFunc_raw, 1, 2);
+  `;
 
-//   const inlineContext = createInlineContext();
+  const inlineContext = createInlineContext();
 
-//   inlineContext.splits.set('wrappedFunc', {
-//     arity: 2,
-//     rawLambdaName: 'wrappedFunc_raw',
-//     type: 'raw_func',
-//   });
+  inlineContext.splits.set('wrappedFunc', {
+    arity: 2,
+    rawLambdaName: 'wrappedFunc_raw',
+    type: 'raw_func',
+  });
 
-//   const { actual, expected } = transformCode(
-//     initialCode,
-//     expectedOutputCode,
-//     createPassUnwrappedFunctionsTransformer(() => inlineContext)
-//   );
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createPassUnwrappedFunctionsTransformer(() => inlineContext)
+  );
 
-//   expect(actual).toBe(expected);
-// });
+  expect(actual).toBe(expected);
+});

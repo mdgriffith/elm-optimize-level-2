@@ -65,13 +65,13 @@ export const compileAndTransform = async (
     Mode.Prod
   );
 
-  // let inlineCtx: InlineContext | undefined;
+  let inlineCtx: InlineContext | undefined;
   const transformations = removeDisabled([
     [options.variantShapes, normalizeVariantShapes],
     [
       options.inlineFunctions,
       createFunctionInlineTransformer(ctx => {
-        // inlineCtx = ctx;
+        inlineCtx = ctx;
         reportInlineTransformResult(ctx);
       }),
     ],
@@ -84,7 +84,7 @@ export const compileAndTransform = async (
     ],
     [
       options.passUnwrappedFunctions,
-      createPassUnwrappedFunctionsTransformer(() => undefined),
+      createPassUnwrappedFunctionsTransformer(() => inlineCtx),
     ],
     includeObjectUpdate(options.objectUpdate),
     [options.arrowFns, convertFunctionExpressionsToArrowFuncs],
