@@ -27,4 +27,6 @@ export enum ObjectUpdate {
   UseSpreadForUpdateAndOriginalRecord = 'for_both',
   UseSpreadOnlyToMakeACopy = 'for_copy',
   UseAssign = 'use_assign',
+  InlineAssign = 'inline_assign',
+  InlineSpread = 'inline_spread',
 }

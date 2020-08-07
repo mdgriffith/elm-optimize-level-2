@@ -22,12 +22,29 @@ const _Utils_update = (oldRecord, updatedFields) => (Object.assign({}, oldRecord
 }
 `;
 
+export const objectUpdate = (
+  kind: ObjectUpdate
+): ts.TransformerFactory<ts.SourceFile> => {
+  switch (kind) {
+    case ObjectUpdate.UseSpreadForUpdateAndOriginalRecord:
+      return createReplaceUtilsUpdateWithObjectSpread(kind);
+    case ObjectUpdate.UseSpreadOnlyToMakeACopy:
+      return createReplaceUtilsUpdateWithObjectSpread(kind);
+    case ObjectUpdate.UseAssign:
+      return createReplaceUtilsUpdateWithObjectSpread(kind);
+    case ObjectUpdate.InlineAssign:
+      return inlineObjectAssign();
+    case ObjectUpdate.InlineSpread:
+      return inlineObjectSpread();
+  }
+};
+
 const extractBody = (sourceText: string): ts.Node => {
   const source = ts.createSourceFile('bla', sourceText, ts.ScriptTarget.ES2018);
   return source.statements[0];
 };
 
-export const createReplaceUtilsUpdateWithObjectSpread = (
+const createReplaceUtilsUpdateWithObjectSpread = (
   kind: ObjectUpdate
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
@@ -55,7 +72,7 @@ export const createReplaceUtilsUpdateWithObjectSpread = (
 };
 const OBJECT_UPDATE = '_Utils_update';
 
-export const inlineObjectAssign = (): ts.TransformerFactory<ts.SourceFile> => context => {
+const inlineObjectAssign = (): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // detects function f(..){..}
@@ -78,7 +95,7 @@ export const inlineObjectAssign = (): ts.TransformerFactory<ts.SourceFile> => co
   };
 };
 
-export const inlineObjectSpread = (): ts.TransformerFactory<ts.SourceFile> => context => {
+const inlineObjectSpread = (): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // detects function f(..){..}
