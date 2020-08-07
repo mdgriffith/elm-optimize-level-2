@@ -23,6 +23,7 @@ import {
   convertFunctionExpressionsToArrowFuncs,
 } from './experiments/modernizeJS';
 import { createRemoveUnusedLocalsTransform } from './experiments/removeUnusedLocals';
+import { createPassUnwrappedFunctionsTransformer } from './experiments/passUnwrappedFunctions';
 
 export const compileAndTransform = async (
   dir: string,
@@ -64,11 +65,15 @@ export const compileAndTransform = async (
     Mode.Prod
   );
 
+  let inlineCtx: InlineContext | undefined;
   const transformations = removeDisabled([
     [options.variantShapes, normalizeVariantShapes],
     [
       options.inlineFunctions,
-      createFunctionInlineTransformer(reportInlineTransformResult),
+      createFunctionInlineTransformer(ctx => {
+        inlineCtx = ctx;
+        reportInlineTransformResult(ctx);
+      }),
     ],
     [options.inlineEquality, inlineEquality()],
     [
@@ -76,6 +81,10 @@ export const compileAndTransform = async (
       createInlineListFromArrayTransformer(
         InlineMode.UsingLiteralObjects(Mode.Prod)
       ),
+    ],
+    [
+      options.passUnwrappedFunctions,
+      createPassUnwrappedFunctionsTransformer(() => inlineCtx),
     ],
     includeObjectUpdate(options.objectUpdate),
     [options.arrowFns, convertFunctionExpressionsToArrowFuncs],
@@ -207,5 +216,6 @@ function reportInlineTransformResult(ctx: InlineContext) {
   console.log(
     `functionInlineTransformer: splitCount=${splits.size}, partialApplicationCount=${partialApplications.size}`,
     inlined
+    // splits
   );
 }

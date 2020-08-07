@@ -206,6 +206,7 @@ const emptyOpts: Transforms = {
   inlineFunctions: false,
   inlineEquality: false,
   listLiterals: false,
+  passUnwrappedFunctions: false,
   arrowFns: false,
   objectUpdate: null,
   unusedValues: false,

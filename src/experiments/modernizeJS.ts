@@ -39,7 +39,7 @@ export const objectUpdate = (
   }
 };
 
-const extractBody = (sourceText: string): ts.Node => {
+export const extractAstFromCode = (sourceText: string): ts.Node => {
   const source = ts.createSourceFile('bla', sourceText, ts.ScriptTarget.ES2018);
   return source.statements[0];
 };
@@ -56,11 +56,11 @@ const createReplaceUtilsUpdateWithObjectSpread = (
       ) {
         switch (kind) {
           case ObjectUpdate.UseSpreadForUpdateAndOriginalRecord:
-            return extractBody(spreadForBoth);
+            return extractAstFromCode(spreadForBoth);
           case ObjectUpdate.UseSpreadOnlyToMakeACopy:
-            return extractBody(copyWithSpread);
+            return extractAstFromCode(copyWithSpread);
           case ObjectUpdate.UseAssign:
-            return extractBody(assign);
+            return extractAstFromCode(assign);
         }
       }
 
