@@ -62,6 +62,13 @@ updateSingleRecord record =
     { record | one = 87 }
 
 
+updateSingleRecordManually record =
+    { one = 87
+    , two = record.two
+    , three = record.three
+    }
+
+
 suite : Benchmark
 suite =
     describe "Benchmarks"
@@ -75,9 +82,27 @@ suite =
                     , three = 3
                     }
                     many
+        , benchmark "300 single record updates" <|
+            \_ ->
+                List.map
+                    (\_ ->
+                        updateRecord
+                            { one = 1
+                            , two = 2
+                            , three = 3
+                            }
+                    )
+                    many
         , benchmark "Update single record" <|
             \_ ->
                 updateSingleRecord
+                    { one = 1
+                    , two = 2
+                    , three = 3
+                    }
+        , benchmark "Update single record, manually" <|
+            \_ ->
+                updateSingleRecordManually
                     { one = 1
                     , two = 2
                     , three = 3
