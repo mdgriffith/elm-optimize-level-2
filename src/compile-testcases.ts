@@ -19,7 +19,7 @@ import { execSync } from 'child_process';
 import { inlineEquality } from './experiments/inlineEquality';
 
 import {
-  createReplaceUtilsUpdateWithObjectSpread,
+  objectUpdate,
   convertFunctionExpressionsToArrowFuncs,
 } from './experiments/modernizeJS';
 import { createRemoveUnusedLocalsTransform } from './experiments/removeUnusedLocals';
@@ -128,9 +128,9 @@ export const compileAndTransform = async (
   return {};
 };
 
-function includeObjectUpdate(objectUpdate: ObjectUpdate | null): any {
-  if (objectUpdate != null) {
-    return [true, createReplaceUtilsUpdateWithObjectSpread(objectUpdate)];
+function includeObjectUpdate(kind: ObjectUpdate | null): any {
+  if (kind != null) {
+    return [true, objectUpdate(kind)];
   } else {
     return [];
   }
