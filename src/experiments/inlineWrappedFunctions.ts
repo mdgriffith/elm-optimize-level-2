@@ -1,4 +1,5 @@
 import ts from 'typescript';
+// import { matchElmSource } from './patterns';
 
 /*
 
@@ -75,22 +76,26 @@ function reportInlinining(split: FuncSplit, { inlined }: InlineContext) {
   }
 }
 
+export const createInlineContext = (): InlineContext => ({
+  functionsThatWrapFunctions: new Map(),
+  splits: new Map(),
+  partialApplications: new Map(),
+  inlined: {
+    fromAlias: 0,
+    fromRawFunc: 0,
+    fromWrapper: 0,
+    partialApplications: 0,
+  },
+});
+
 export const createFunctionInlineTransformer = (
   reportResult?: (res: InlineContext) => void
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
-    const inlineContext: InlineContext = {
-      functionsThatWrapFunctions: new Map(),
-      splits: new Map(),
-      partialApplications: new Map(),
-      inlined: {
-        fromAlias: 0,
-        fromRawFunc: 0,
-        fromWrapper: 0,
-        partialApplications: 0,
-      },
-    };
+    const inlineContext: InlineContext = createInlineContext();
 
+    // todo hack to only inline top level functions
+    // const { topScope } = matchElmSource(sourceFile)!;
     const splitter = createSplitterVisitor(inlineContext, context);
     const splittedNode = ts.visitNode(sourceFile, splitter);
 
@@ -106,16 +111,33 @@ export const createFunctionInlineTransformer = (
   };
 };
 
+const isTopLevelScope = (path: ts.Node[]) => {
+  const funcExpCount = path.reduce(
+    (c, n) => (ts.isFunctionExpression(n) ? c + 1 : c),
+    0
+  );
+  const funcDeclCount = path.reduce(
+    (c, n) => (ts.isFunctionDeclaration(n) ? c + 1 : c),
+    0
+  );
+  // meaning top level scope function body
+  return funcExpCount === 1 && funcDeclCount === 0;
+};
+
 const createSplitterVisitor = (
   { splits, partialApplications, functionsThatWrapFunctions }: InlineContext,
   context: ts.TransformationContext
 ) => {
-  const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+  const visitor = (path: ts.Node[]) => (
+    node: ts.Node
+  ): ts.VisitResult<ts.Node> => {
     // detects "var a"
     if (
       ts.isVariableDeclaration(node) &&
+      // todo this is basically a hack to only be able to inline top level functions
       ts.isIdentifier(node.name) &&
-      node.initializer
+      node.initializer &&
+      isTopLevelScope(path)
     ) {
       // detects an alias to existing split
       if (ts.isIdentifier(node.initializer)) {
@@ -176,13 +198,12 @@ const createSplitterVisitor = (
                 }
               }
 
-              // and it is a function
-              // detects "var a = F123( function (a) {return a})"
-              // or "var a = F123( a => a)"
-              if (
-                ts.isArrowFunction(maybeFuncExpression) ||
-                ts.isFunctionExpression(maybeFuncExpression)
-              ) {
+              // it can be either a function expression:
+              // "var a = F123( function (a) {return a})"
+              // "var a = F123( a => a)"
+              // something like
+              // var a = F2(Math.pow)
+              if (true) {
                 // TODO typecheck?
                 const rawLambdaName = deriveRawLambdaName(originalName);
 
@@ -207,12 +228,21 @@ const createSplitterVisitor = (
                   ])
                 );
 
-                const maybeWrapper = checkIfFunctionReturnsWrappedFunction(
-                  maybeFuncExpression
-                );
+                // if it is a function expression check if we need an unwrapped version of it
+                if (
+                  ts.isArrowFunction(maybeFuncExpression) ||
+                  ts.isFunctionExpression(maybeFuncExpression)
+                ) {
+                  const maybeWrapper = checkIfFunctionReturnsWrappedFunction(
+                    maybeFuncExpression
+                  );
 
-                if (maybeWrapper) {
-                  functionsThatWrapFunctions.set(node.name.text, maybeWrapper);
+                  if (maybeWrapper) {
+                    functionsThatWrapFunctions.set(
+                      node.name.text,
+                      maybeWrapper
+                    );
+                  }
                 }
 
                 return [lambdaDeclaration, newDeclaration];
@@ -341,10 +371,10 @@ const createSplitterVisitor = (
       }
     }
 
-    return ts.visitEachChild(node, visitor, context);
+    return ts.visitEachChild(node, visitor(path.concat(node)), context);
   };
 
-  return visitor;
+  return visitor([]);
 };
 
 const createInlinerVisitor = (

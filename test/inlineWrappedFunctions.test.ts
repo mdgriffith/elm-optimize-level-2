@@ -32,7 +32,7 @@ test('it can process nested calls of A2 with non identifiers as the first arg ',
       _VirtualDom_map_raw(fn, A2(styled.d9, add, context));
   `;
 
-  const { actual, expected } = transform(
+  const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
     createFunctionInlineTransformer()
@@ -70,7 +70,7 @@ test('it can process partial application inlining', () => {
   var res2 = func_raw(partialFunc2_a0, partialFunc2_a1, 3);
   `;
 
-  const { actual, expected } = transform(
+  const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
     createFunctionInlineTransformer()
@@ -100,7 +100,7 @@ test('it can inline functions that were wrapped by other functions', () => {
   var res = fullyApplied_raw(3, 4);
   `;
 
-  const { actual, expected } = transform(
+  const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
     createFunctionInlineTransformer()
@@ -135,7 +135,7 @@ test('it can inline functions that were wrapped by other functions even if they 
     var res = fullyApplied_raw(3, 4);
   `;
 
-  const { actual, expected } = transform(
+  const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
     createFunctionInlineTransformer()
@@ -171,7 +171,7 @@ test('it can inline functions that were wrapped by other functions even if they 
   var res = fullyApplied_raw(3, 4);
   `;
 
-  const { actual, expected } = transform(
+  const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
     createFunctionInlineTransformer()
@@ -180,7 +180,28 @@ test('it can inline functions that were wrapped by other functions even if they 
   expect(actual).toBe(expected);
 });
 
-function transform(
+test('it can inline functions declared not via an identifier or lambda', () => {
+  const initialCode = `
+  var pow = F2(Math.pow);
+
+  var res = A2(pow, 2, 3);
+  `;
+
+  const expectedOutputCode = `
+  var pow_raw = Math.pow,  pow = F2(pow_raw);
+  
+  var res = pow_raw(2, 3);
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createFunctionInlineTransformer()
+  );
+
+  expect(actual).toBe(expected);
+});
+export function transformCode(
   initialCode: string,
   expectedCode: string,
   transformer: ts.TransformerFactory<ts.SourceFile>

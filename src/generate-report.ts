@@ -5,30 +5,32 @@ Compiles all the test cases and runs them via webdriver to summarize the results
 
 */
 
-import { ObjectUpdate } from './types';
+import { ObjectUpdate, Transforms } from './types';
 import * as Reporting from './reporting';
 
-const defaultOptions = {
+const defaultOptions: Transforms = {
   prepack: true,
   variantShapes: true,
   inlineEquality: true,
   inlineFunctions: true,
   listLiterals: true,
+  passUnwrappedFunctions: true,
   arrowFns: true,
   objectUpdate: null,
-  unusedValues: false,
+  unusedValues: true,
 };
 
-const inlineEquality = {
-  prepack: false,
-  variantShapes: false,
-  inlineEquality: true,
-  inlineFunctions: false,
-  listLiterals: false,
-  arrowFns: false,
-  objectUpdate: null,
-  unusedValues: false,
-};
+// const defaultOptions: Transforms = {
+//   prepack: false,
+//   variantShapes: false,
+//   inlineEquality: false,
+//   inlineFunctions: true,
+//   passUnwrappedFunctions: true,
+//   listLiterals: false,
+//   arrowFns: false,
+//   objectUpdate: null,
+//   unusedValues: false,
+// };
 async function go() {
   const report = await Reporting.run([
     // Use `runWithBreakdown` if you want the breakdown
