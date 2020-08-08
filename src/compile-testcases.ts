@@ -27,23 +27,35 @@ import { createPassUnwrappedFunctionsTransformer } from './experiments/passUnwra
 import { replaceVDomNode } from './experiments/correctVirtualDom';
 import { inlineNumberToString } from './experiments/inlineNumberToString';
 
+
+type Options = {
+  compile: boolean,
+  minify: boolean,
+  gzip: boolean
+}
+
 export const compileAndTransform = async (
   dir: string,
   file: string,
-  options: Transforms
+  options: Options,
+  transforms: Transforms
 ): Promise<{}> => {
   // Compile examples in `testcases/*` folder as js
   // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
-  compileSync([file], {
-    output: 'output/elm.js',
-    cwd: dir,
-  });
 
-  compileSync([file], {
-    output: 'output/elm.opt.js',
-    cwd: dir,
-    optimize: true,
-  });
+  if (options.compile) {
+    compileSync([file], {
+      output: 'output/elm.js',
+      cwd: dir,
+    });
+
+    compileSync([file], {
+      output: 'output/elm.opt.js',
+      cwd: dir,
+      optimize: true,
+    });
+  }
+
 
   const pathInOutput = (p: string) => path.join(dir, 'output', p);
 
@@ -68,38 +80,38 @@ export const compileAndTransform = async (
   );
 
   // We have to ensure that this transformation takes place before everything else
-  if (options.replaceVDomNode) {
+  if (transforms.replaceVDomNode) {
     const results = ts.transform(source, [replaceVDomNode()]);
     source = results.transformed[0];
   }
 
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
-    // [options.replaceVDomNode, replaceVDomNode()],
+    // [transforms.replaceVDomNode, replaceVDomNode()],
 
-    [options.variantShapes, normalizeVariantShapes],
+    [transforms.variantShapes, normalizeVariantShapes],
     [
-      options.inlineFunctions,
+      transforms.inlineFunctions,
       createFunctionInlineTransformer(ctx => {
         inlineCtx = ctx;
         reportInlineTransformResult(ctx);
       }),
     ],
-    [options.inlineEquality, inlineEquality()],
-    [options.inlineNumberToString, inlineNumberToString()],
+    [transforms.inlineEquality, inlineEquality()],
+    [transforms.inlineNumberToString, inlineNumberToString()],
     [
-      options.listLiterals,
+      transforms.listLiterals,
       createInlineListFromArrayTransformer(
         InlineMode.UsingLiteralObjects(Mode.Prod)
       ),
     ],
     [
-      options.passUnwrappedFunctions,
+      transforms.passUnwrappedFunctions,
       createPassUnwrappedFunctionsTransformer(() => inlineCtx),
     ],
-    includeObjectUpdate(options.objectUpdate),
-    [options.arrowFns, convertFunctionExpressionsToArrowFuncs],
-    [options.unusedValues, createRemoveUnusedLocalsTransform()],
+    includeObjectUpdate(transforms.objectUpdate),
+    [transforms.arrowFns, convertFunctionExpressionsToArrowFuncs],
+    [transforms.unusedValues, createRemoveUnusedLocalsTransform()],
   ]);
 
   const {
@@ -123,7 +135,7 @@ export const compileAndTransform = async (
   fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
 
   // Prepack, minify, and gzip
-  if (options.prepack) {
+  if (transforms.prepack) {
     const { code } = prepackFileSync([pathInOutput('elm.opt.transformed.js')], {
       debugNames: true,
       inlineExpressions: true,
@@ -131,20 +143,28 @@ export const compileAndTransform = async (
     });
 
     fs.writeFileSync(pathInOutput('elm.opt.prepack.js'), code);
-    await minify(
-      pathInOutput('elm.opt.prepack.js'),
-      pathInOutput('elm.opt.prepack.min.js')
-    );
-    gzip(pathInOutput('elm.opt.prepack.min.js'));
+    if (options.minify) {
+      await minify(
+        pathInOutput('elm.opt.prepack.js'),
+        pathInOutput('elm.opt.prepack.min.js')
+      );
+    }
+    if (options.gzip) {
+      gzip(pathInOutput('elm.opt.prepack.min.js'));
+    }
   }
 
-  await minify(pathInOutput('elm.opt.js'), pathInOutput('elm.opt.min.js'));
-  gzip(pathInOutput('elm.opt.min.js'));
-  await minify(
-    pathInOutput('elm.opt.transformed.js'),
-    pathInOutput('elm.opt.transformed.min.js')
-  );
-  gzip(pathInOutput('elm.opt.transformed.min.js'));
+  if (options.minify) {
+    await minify(pathInOutput('elm.opt.js'), pathInOutput('elm.opt.min.js'));
+    await minify(
+      pathInOutput('elm.opt.transformed.js'),
+      pathInOutput('elm.opt.transformed.min.js')
+    );
+  }
+  if (options.gzip) {
+    gzip(pathInOutput('elm.opt.min.js'));
+    gzip(pathInOutput('elm.opt.transformed.min.js'));
+  }
 
   return {};
 };

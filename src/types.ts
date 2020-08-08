@@ -12,6 +12,15 @@ export interface ElmVariant {
   totalTypeSlotCount: number;
 }
 
+export type RunTestcaseOptions = {
+  compile: boolean,
+  gzip: boolean,
+  minify: boolean,
+  assetSizes: boolean,
+  runBenchmark: BrowserOptions[],
+  transforms: Transforms
+}
+
 export type Transforms = {
   prepack: boolean;
   replaceVDomNode: boolean;
@@ -32,4 +41,19 @@ export enum ObjectUpdate {
   UseAssign = 'use_assign',
   InlineAssign = 'inline_assign',
   InlineSpread = 'inline_spread',
+}
+
+
+
+export type BrowserOptions = {
+  browser: Browser,
+  headless: boolean
+}
+
+export enum Browser {
+  Chrome = 'chrome',
+  Firefox = 'firefox',
+  Safari = 'safari',
+  IE = 'ie',
+  Edge = 'edge'
 }

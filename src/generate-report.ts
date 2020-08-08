@@ -5,7 +5,7 @@ Compiles all the test cases and runs them via webdriver to summarize the results
 
 */
 
-import { ObjectUpdate, Transforms } from './types';
+import { ObjectUpdate, Transforms, Browser } from './types';
 import * as Reporting from './reporting';
 
 const defaultOptions: Transforms = {
@@ -36,44 +36,57 @@ const test: Transforms = {
   unusedValues: false,
 };
 
+const options = {
+  compile: true,
+  gzip: false,
+  minify: false,
+  assetSizes: false,
+  runBenchmark: [{
+    browser: Browser.Chrome,
+    headless: false
+  }],
+  transforms: defaultOptions
+}
+
+
 async function go() {
-  const report = await Reporting.run([
+
+  const report = await Reporting.run(options, [
     // Use `runWithBreakdown` if you want the breakdown
     // const report = await Reporting.runWithBreakdown([
     // { name: 'simple',
     //   dir: 'testcases/simple',
     //   elmFile: 'main',
-    //   options: defaultOptions,
+    //   
     // },
     // {
     //   name: 'bench',
     //   dir: 'testcases/bench',
     //   elmFile: 'Main.elm',
-    //   options: defaultOptions,
+    //   
     // },
     // {
     //   name: 'html',
     //   dir: 'testcases/html',
     //   elmFile: 'Main.elm',
-    //   options: defaultOptions,
+    //   
     // },
     // {
     //   name: 'elm-ui',
     //   dir: 'testcases/elm-ui',
     //   elmFile: 'Main.elm',
-    //   options: defaultOptions,
+    //   
     // },
     {
       name: 'elm-ui-2',
       dir: 'testcases/elm-ui-2',
       elmFile: 'Main.elm',
-      options: defaultOptions,
     },
     // {
     //   name: 'elm-markdown',
     //   dir: 'testcases/elm-markdown',
     //   elmFile: 'Run.elm',
-    //   options: defaultOptions,
+    //   
     // },
     // {
     //   name: 'elm-markdown',
@@ -86,7 +99,7 @@ async function go() {
     //   name: 'elm-obj-file',
     //   dir: 'testcases/elm-obj-file',
     //   elmFile: 'Run.elm',
-    //   options: defaultOptions,
+    //   
     // },
   ]);
 
