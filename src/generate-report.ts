@@ -10,27 +10,32 @@ import * as Reporting from './reporting';
 
 const defaultOptions: Transforms = {
   prepack: true,
+  replaceVDomNode: true,
   variantShapes: true,
+  inlineNumberToString: true,
   inlineEquality: true,
   inlineFunctions: true,
   listLiterals: true,
   passUnwrappedFunctions: true,
   arrowFns: true,
-  objectUpdate: null,
-  unusedValues: true,
+  objectUpdate: ObjectUpdate.InlineSpread,
+  unusedValues: false,
 };
 
-// const defaultOptions: Transforms = {
-//   prepack: false,
-//   variantShapes: false,
-//   inlineEquality: false,
-//   inlineFunctions: true,
-//   passUnwrappedFunctions: true,
-//   listLiterals: false,
-//   arrowFns: false,
-//   objectUpdate: null,
-//   unusedValues: false,
-// };
+const test: Transforms = {
+  prepack: false,
+  replaceVDomNode: true,
+  variantShapes: false,
+  inlineNumberToString: true,
+  inlineEquality: false,
+  inlineFunctions: false,
+  listLiterals: false,
+  passUnwrappedFunctions: false,
+  arrowFns: false,
+  objectUpdate: null,
+  unusedValues: false,
+};
+
 async function go() {
   const report = await Reporting.run([
     // Use `runWithBreakdown` if you want the breakdown
@@ -40,30 +45,36 @@ async function go() {
     //   elmFile: 'main',
     //   options: defaultOptions,
     // },
+    // {
+    //   name: 'bench',
+    //   dir: 'testcases/bench',
+    //   elmFile: 'Main.elm',
+    //   options: defaultOptions,
+    // },
+    // {
+    //   name: 'html',
+    //   dir: 'testcases/html',
+    //   elmFile: 'Main.elm',
+    //   options: defaultOptions,
+    // },
+    // {
+    //   name: 'elm-ui',
+    //   dir: 'testcases/elm-ui',
+    //   elmFile: 'Main.elm',
+    //   options: defaultOptions,
+    // },
     {
-      name: 'bench',
-      dir: 'testcases/bench',
+      name: 'elm-ui-2',
+      dir: 'testcases/elm-ui-2',
       elmFile: 'Main.elm',
       options: defaultOptions,
     },
-    {
-      name: 'html',
-      dir: 'testcases/html',
-      elmFile: 'Main.elm',
-      options: defaultOptions,
-    },
-    {
-      name: 'elm-ui',
-      dir: 'testcases/elm-ui',
-      elmFile: 'Main.elm',
-      options: defaultOptions,
-    },
-    {
-      name: 'elm-markdown',
-      dir: 'testcases/elm-markdown',
-      elmFile: 'Run.elm',
-      options: defaultOptions,
-    },
+    // {
+    //   name: 'elm-markdown',
+    //   dir: 'testcases/elm-markdown',
+    //   elmFile: 'Run.elm',
+    //   options: defaultOptions,
+    // },
     // {
     //   name: 'elm-markdown',
     //   dir: 'testcases/elm-markdown',

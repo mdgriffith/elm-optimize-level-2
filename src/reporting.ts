@@ -202,7 +202,9 @@ export const run = async function(runnable: Testcase[]) {
 
 const emptyOpts: Transforms = {
   prepack: false,
+  replaceVDomNode: false,
   variantShapes: false,
+  inlineNumberToString: false,
   inlineFunctions: false,
   inlineEquality: false,
   listLiterals: false,

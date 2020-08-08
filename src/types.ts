@@ -16,6 +16,7 @@ export type Transforms = {
   prepack: boolean;
   replaceVDomNode: boolean;
   variantShapes: boolean;
+  inlineNumberToString: boolean;
   inlineEquality: boolean;
   inlineFunctions: boolean;
   passUnwrappedFunctions: boolean;

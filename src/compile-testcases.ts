@@ -25,6 +25,7 @@ import {
 import { createRemoveUnusedLocalsTransform } from './experiments/removeUnusedLocals';
 import { createPassUnwrappedFunctionsTransformer } from './experiments/passUnwrappedFunctions';
 import { replaceVDomNode } from './experiments/correctVirtualDom';
+import { inlineNumberToString } from './experiments/inlineNumberToString';
 
 export const compileAndTransform = async (
   dir: string,
@@ -75,6 +76,7 @@ export const compileAndTransform = async (
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
     // [options.replaceVDomNode, replaceVDomNode()],
+
     [options.variantShapes, normalizeVariantShapes],
     [
       options.inlineFunctions,
@@ -84,6 +86,7 @@ export const compileAndTransform = async (
       }),
     ],
     [options.inlineEquality, inlineEquality()],
+    [options.inlineNumberToString, inlineNumberToString()],
     [
       options.listLiterals,
       createInlineListFromArrayTransformer(
@@ -119,6 +122,7 @@ export const compileAndTransform = async (
 
   fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
 
+  // Prepack, minify, and gzip
   if (options.prepack) {
     const { code } = prepackFileSync([pathInOutput('elm.opt.transformed.js')], {
       debugNames: true,
