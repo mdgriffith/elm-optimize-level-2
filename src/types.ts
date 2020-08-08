@@ -14,6 +14,7 @@ export interface ElmVariant {
 
 export type Transforms = {
   prepack: boolean;
+  replaceVDomNode: boolean;
   variantShapes: boolean;
   inlineEquality: boolean;
   inlineFunctions: boolean;

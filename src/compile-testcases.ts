@@ -24,6 +24,7 @@ import {
 } from './experiments/modernizeJS';
 import { createRemoveUnusedLocalsTransform } from './experiments/removeUnusedLocals';
 import { createPassUnwrappedFunctionsTransformer } from './experiments/passUnwrappedFunctions';
+import { replaceVDomNode } from './experiments/correctVirtualDom';
 
 export const compileAndTransform = async (
   dir: string,
@@ -54,7 +55,7 @@ export const compileAndTransform = async (
 
   let parsed = parseDir('elm-packages');
   parsedVariants = parsedVariants.concat(parsed);
-  const source = ts.createSourceFile(
+  let source = ts.createSourceFile(
     'elm.js',
     fs.readFileSync(pathInOutput('elm.opt.js'), 'utf-8'),
     ts.ScriptTarget.ES2018
@@ -65,8 +66,15 @@ export const compileAndTransform = async (
     Mode.Prod
   );
 
+  // We have to ensure that this transformation takes place before everything else
+  if (options.replaceVDomNode) {
+    const results = ts.transform(source, [replaceVDomNode()]);
+    source = results.transformed[0];
+  }
+
   let inlineCtx: InlineContext | undefined;
-  const transformations = removeDisabled([
+  const transformations: any[] = removeDisabled([
+    // [options.replaceVDomNode, replaceVDomNode()],
     [options.variantShapes, normalizeVariantShapes],
     [
       options.inlineFunctions,
@@ -152,6 +160,7 @@ function removeDisabled(list: any[]) {
       newList.push(item[1]);
     }
   });
+
   return newList;
 }
 
