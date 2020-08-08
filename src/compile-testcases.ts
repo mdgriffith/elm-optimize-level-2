@@ -3,29 +3,29 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { parseElm, parseDir, primitives } from './parseElm';
 import ts from 'typescript';
-import { createCustomTypesTransformer } from './experiments/variantShapes';
+import { createCustomTypesTransformer } from './transforms/variantShapes';
 import { Mode, Transforms, ObjectUpdate } from './types';
 import {
   createFunctionInlineTransformer,
   InlineContext,
-} from './experiments/inlineWrappedFunctions';
+} from './transforms/inlineWrappedFunctions';
 import {
   InlineMode,
   createInlineListFromArrayTransformer,
-} from './experiments/inlineListFromArray';
+} from './transforms/inlineListFromArray';
 import { prepackFileSync } from 'prepack';
 import * as Terser from 'terser';
 import { execSync } from 'child_process';
-import { inlineEquality } from './experiments/inlineEquality';
+import { inlineEquality } from './transforms/inlineEquality';
 
 import {
   objectUpdate,
   convertFunctionExpressionsToArrowFuncs,
-} from './experiments/modernizeJS';
-import { createRemoveUnusedLocalsTransform } from './experiments/removeUnusedLocals';
-import { createPassUnwrappedFunctionsTransformer } from './experiments/passUnwrappedFunctions';
-import { replaceVDomNode } from './experiments/correctVirtualDom';
-import { inlineNumberToString } from './experiments/inlineNumberToString';
+} from './transforms/modernizeJS';
+import { createRemoveUnusedLocalsTransform } from './transforms/removeUnusedLocals';
+import { createPassUnwrappedFunctionsTransformer } from './transforms/passUnwrappedFunctions';
+import { replaceVDomNode } from './transforms/correctVirtualDom';
+import { inlineNumberToString } from './transforms/inlineNumberToString';
 
 
 type Options = {

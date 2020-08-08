@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { ObjectUpdate } from './../types';
+import { ObjectUpdate } from '../types';
 
 const copyWithSpread = `
 const _Utils_update = (oldRecord, updatedFields) => {
