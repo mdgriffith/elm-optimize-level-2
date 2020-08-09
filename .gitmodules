@@ -8,3 +8,6 @@
 	path = testcases/elm-ui-2/repo
 	url = https://github.com/mdgriffith/elm-ui
 	branch = 2.0
+[submodule "testcases/elm-animator/repo"]
+	path = testcases/elm-animator/repo
+	url = https://github.com/mdgriffith/elm-animator
