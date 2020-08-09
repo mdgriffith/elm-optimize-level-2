@@ -153,4 +153,10 @@ suite =
         , benchmark "Dict.insert" <|
             \_ ->
                 Dict.insert "eight" (Two "Two" "two") dict
+        , benchmark "Dict.toList" <|
+            \_ ->
+                Dict.toList dict
+        , benchmark "Dict.size" <|
+            \_ ->
+                Dict.size dict
         ]
