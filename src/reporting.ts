@@ -1,7 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Compile from './compile-testcases';
-import { Browser, Transforms, ObjectUpdate, RunTestcaseOptions } from './types';
+import {
+  Browser,
+  Transforms,
+  ObjectUpdate,
+  RunTestcaseOptions,
+  InlineLists,
+} from './types';
 import * as Visit from './visit';
 
 export interface Stat {
@@ -12,11 +18,11 @@ export interface Stat {
 // Asset Sizes
 export const assetSizeStats = (dir: string): Stat[] => {
   let stats: Stat[] = [];
-  fs.readdir(dir, function (err, files) {
+  fs.readdir(dir, function(err, files) {
     if (err) {
       console.log('Error getting directory information.');
     } else {
-      files.forEach(function (file) {
+      files.forEach(function(file) {
         const stat = fs.statSync(path.join(dir, file));
         stats.push({
           name: path.basename(file),
@@ -47,12 +53,12 @@ export const markdown = (report: Results): string => {
     report.assets[key].forEach((item: Stat) => {
       buffer.push(
         '    ' +
-        item.name.padEnd(40, ' ') +
-        '' +
-        humanizeNumber(
-          roundToDecimal(1, item.bytes / Math.pow(2, 10))
-        ).padStart(10, ' ') +
-        'kb'
+          item.name.padEnd(40, ' ') +
+          '' +
+          humanizeNumber(
+            roundToDecimal(1, item.bytes / Math.pow(2, 10))
+          ).padStart(10, ' ') +
+          'kb'
       );
     });
     buffer.push('');
@@ -173,7 +179,10 @@ type Testcase = {
 };
 
 // Run a list of testcases
-export const run = async function (options: RunTestcaseOptions, runnable: Testcase[]) {
+export const run = async function(
+  options: RunTestcaseOptions,
+  runnable: Testcase[]
+) {
   let results: any[] = [];
   let assets: any = {};
 
@@ -184,7 +193,7 @@ export const run = async function (options: RunTestcaseOptions, runnable: Testca
       {
         compile: options.compile,
         minify: options.minify,
-        gzip: options.gzip
+        gzip: options.gzip,
       },
       options.transforms
     );
@@ -194,25 +203,24 @@ export const run = async function (options: RunTestcaseOptions, runnable: Testca
 
     for (let browser of options.runBenchmark) {
       results.push(
-        await Visit.benchmark(browser, null, path.join(instance.dir, 'standard.html'))
+        await Visit.benchmark(
+          browser,
+          null,
+          path.join(instance.dir, 'standard.html')
+        )
       );
       results.push(
-        await Visit.benchmark(browser,
+        await Visit.benchmark(
+          browser,
           'transformed',
           path.join(instance.dir, 'transformed.html')
         )
       );
     }
-
   }
 
   return { assets: assets, benchmarks: reformat(results) };
 };
-
-
-
-
-
 
 const emptyOpts: Transforms = {
   prepack: false,
@@ -221,14 +229,14 @@ const emptyOpts: Transforms = {
   inlineNumberToString: false,
   inlineFunctions: false,
   inlineEquality: false,
-  listLiterals: false,
+  listLiterals: null,
   passUnwrappedFunctions: false,
   arrowFns: false,
   objectUpdate: null,
   unusedValues: false,
 };
 
-const breakdown = function (
+const breakdown = function(
   options: Transforms
 ): { name: string; options: Transforms }[] {
   let transforms: { name: string; options: Transforms }[] = [];
@@ -245,9 +253,18 @@ const breakdown = function (
       options: Object.assign({}, emptyOpts, { inlineFunctions: true }),
     },
     {
-      include: options.listLiterals,
-      name: 'inline list literal construction',
-      options: Object.assign({}, emptyOpts, { listLiterals: true }),
+      include: options.listLiterals == InlineLists.AsObjects,
+      name: 'inline list literals as Objects',
+      options: Object.assign({}, emptyOpts, {
+        listLiterals: options.listLiterals,
+      }),
+    },
+    {
+      include: options.listLiterals == InlineLists.AsCons,
+      name: 'inline list literals as Cons',
+      options: Object.assign({}, emptyOpts, {
+        listLiterals: options.listLiterals,
+      }),
     },
     {
       include: options.inlineEquality,
@@ -292,14 +309,17 @@ const breakdown = function (
 // Run a list of test cases
 // But we'll run each transformation individually to see what the breakdown is.
 // We'll also run a final case with all the requested transformations
-export const runWithBreakdown = async function (options: RunTestcaseOptions, runnable: Testcase[]) {
+export const runWithBreakdown = async function(
+  options: RunTestcaseOptions,
+  runnable: Testcase[]
+) {
   let results: any[] = [];
   let assets: any = {};
 
   const opts = {
     browser: Browser.Chrome,
-    headless: false
-  }
+    headless: false,
+  };
 
   for (let instance of runnable) {
     await Compile.compileAndTransform(
@@ -308,7 +328,7 @@ export const runWithBreakdown = async function (options: RunTestcaseOptions, run
       {
         compile: options.compile,
         minify: options.minify,
-        gzip: options.gzip
+        gzip: options.gzip,
       },
       options.transforms
     );
@@ -316,10 +336,15 @@ export const runWithBreakdown = async function (options: RunTestcaseOptions, run
 
     for (let browser of options.runBenchmark) {
       results.push(
-        await Visit.benchmark(browser, null, path.join(instance.dir, 'standard.html'))
+        await Visit.benchmark(
+          browser,
+          null,
+          path.join(instance.dir, 'standard.html')
+        )
       );
       results.push(
-        await Visit.benchmark(browser,
+        await Visit.benchmark(
+          browser,
           'transformed',
           path.join(instance.dir, 'transformed.html')
         )
@@ -330,14 +355,13 @@ export const runWithBreakdown = async function (options: RunTestcaseOptions, run
     for (let i in steps) {
       console.log('running', steps[i]);
 
-
       await Compile.compileAndTransform(
         instance.dir,
         instance.elmFile,
         {
           compile: false,
           minify: false,
-          gzip: false
+          gzip: false,
         },
         steps[i].options
       );
@@ -346,7 +370,8 @@ export const runWithBreakdown = async function (options: RunTestcaseOptions, run
 
       for (let browser of options.runBenchmark) {
         results.push(
-          await Visit.benchmark(browser,
+          await Visit.benchmark(
+            browser,
             steps[i].name,
             path.join(instance.dir, 'transformed.html')
           )

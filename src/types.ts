@@ -13,13 +13,13 @@ export interface ElmVariant {
 }
 
 export type RunTestcaseOptions = {
-  compile: boolean,
-  gzip: boolean,
-  minify: boolean,
-  assetSizes: boolean,
-  runBenchmark: BrowserOptions[],
-  transforms: Transforms
-}
+  compile: boolean;
+  gzip: boolean;
+  minify: boolean;
+  assetSizes: boolean;
+  runBenchmark: BrowserOptions[];
+  transforms: Transforms;
+};
 
 export type Transforms = {
   prepack: boolean;
@@ -29,11 +29,16 @@ export type Transforms = {
   inlineEquality: boolean;
   inlineFunctions: boolean;
   passUnwrappedFunctions: boolean;
-  listLiterals: boolean;
+  listLiterals: InlineLists | null;
   arrowFns: boolean;
   objectUpdate: ObjectUpdate | null;
   unusedValues: boolean;
 };
+
+export enum InlineLists {
+  AsObjects = 'list_as_objs',
+  AsCons = 'list_as_cons',
+}
 
 export enum ObjectUpdate {
   UseSpreadForUpdateAndOriginalRecord = 'for_both',
@@ -43,17 +48,15 @@ export enum ObjectUpdate {
   InlineSpread = 'inline_spread',
 }
 
-
-
 export type BrowserOptions = {
-  browser: Browser,
-  headless: boolean
-}
+  browser: Browser;
+  headless: boolean;
+};
 
 export enum Browser {
   Chrome = 'chrome',
   Firefox = 'firefox',
   Safari = 'safari',
   IE = 'ie',
-  Edge = 'edge'
+  Edge = 'edge',
 }

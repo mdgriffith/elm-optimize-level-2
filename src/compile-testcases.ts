@@ -4,7 +4,7 @@ import * as path from 'path';
 import { parseElm, parseDir, primitives } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './transforms/variantShapes';
-import { Mode, Transforms, ObjectUpdate } from './types';
+import { Mode, Transforms, ObjectUpdate, InlineLists } from './types';
 import {
   createFunctionInlineTransformer,
   InlineContext,
@@ -27,12 +27,11 @@ import { createPassUnwrappedFunctionsTransformer } from './transforms/passUnwrap
 import { replaceVDomNode } from './transforms/correctVirtualDom';
 import { inlineNumberToString } from './transforms/inlineNumberToString';
 
-
 type Options = {
-  compile: boolean,
-  minify: boolean,
-  gzip: boolean
-}
+  compile: boolean;
+  minify: boolean;
+  gzip: boolean;
+};
 
 export const compileAndTransform = async (
   dir: string,
@@ -55,7 +54,6 @@ export const compileAndTransform = async (
       optimize: true,
     });
   }
-
 
   const pathInOutput = (p: string) => path.join(dir, 'output', p);
 
@@ -100,10 +98,14 @@ export const compileAndTransform = async (
     [transforms.inlineEquality, inlineEquality()],
     [transforms.inlineNumberToString, inlineNumberToString()],
     [
-      transforms.listLiterals,
+      transforms.listLiterals == InlineLists.AsObjects,
       createInlineListFromArrayTransformer(
         InlineMode.UsingLiteralObjects(Mode.Prod)
       ),
+    ],
+    [
+      transforms.listLiterals == InlineLists.AsCons,
+      createInlineListFromArrayTransformer(InlineMode.UsingConsFunc),
     ],
     [
       transforms.passUnwrappedFunctions,
