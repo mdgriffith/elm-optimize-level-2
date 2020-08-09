@@ -87,6 +87,23 @@ dict =
     Dict.fromList dictList
 
 
+listLiteral _ =
+    let
+        x =
+            [ Zero
+            , One 5
+            , Two "Two" "two"
+            , Zero
+            , One 5
+            , Two "Two" "two"
+            , Zero
+            , One 5
+            , Two "Two" "two"
+            ]
+    in
+    x
+
+
 suite : Benchmark
 suite =
     describe "Basics"
@@ -126,17 +143,7 @@ suite =
                     , three = 3
                     }
         , benchmark "Return list literal" <|
-            \_ ->
-                [ Zero
-                , One 5
-                , Two "Two" "two"
-                , Zero
-                , One 5
-                , Two "Two" "two"
-                , Zero
-                , One 5
-                , Two "Two" "two"
-                ]
+            listLiteral
         , benchmark "Dict.fromList" <|
             \_ ->
                 Dict.fromList dictList
