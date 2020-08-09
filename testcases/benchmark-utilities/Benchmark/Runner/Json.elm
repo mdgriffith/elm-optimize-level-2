@@ -100,37 +100,67 @@ encodeReport report =
         |> Encode.list encodeResultItem
 
 
-flattenReport : Benchmark.Reporting.Report -> List ( String, Benchmark.Status.Status )
+type alias Item =
+    { name : String
+    , tags : List String
+    , status : Benchmark.Status.Status
+    }
+
+
+flattenReport : Benchmark.Reporting.Report -> List Item
 flattenReport report =
     case report of
         Benchmark.Reporting.Single name status ->
-            [ ( name, status ) ]
+            [ { name = name
+              , tags = []
+              , status = status
+              }
+            ]
 
         Benchmark.Reporting.Series name statuses ->
-            List.map (\( tag, val ) -> ( name ++ ", " ++ tag, val )) statuses
+            List.map
+                (\( tag, status ) ->
+                    { name = name
+                    , tags = [ tag ]
+                    , status = status
+                    }
+                )
+                statuses
 
         Benchmark.Reporting.Group name reports ->
-            List.concatMap (flattenReportGroup name) reports
+            List.concatMap (flattenReportGroup [ name ]) reports
 
 
-flattenReportGroup : String -> Benchmark.Reporting.Report -> List ( String, Benchmark.Status.Status )
-flattenReportGroup group report =
+flattenReportGroup : List String -> Benchmark.Reporting.Report -> List Item
+flattenReportGroup groups report =
     case report of
         Benchmark.Reporting.Single name status ->
-            [ ( name, status ) ]
+            [ { name = name
+              , tags = groups
+              , status = status
+              }
+            ]
 
         Benchmark.Reporting.Series name statuses ->
-            List.map (\( tag, val ) -> ( group ++ ", " ++ name ++ ", " ++ tag, val )) statuses
+            List.map
+                (\( tag, status ) ->
+                    { name = name
+                    , tags = groups ++ [ tag ]
+                    , status = status
+                    }
+                )
+                statuses
 
         Benchmark.Reporting.Group name reports ->
-            List.concatMap (flattenReportGroup (group ++ ", " ++ name ++ ", ")) reports
+            List.concatMap (flattenReportGroup (groups ++ [ name ])) reports
 
 
-encodeResultItem : ( String, Benchmark.Status.Status ) -> Encode.Value
-encodeResultItem ( name, status ) =
+encodeResultItem : Item -> Encode.Value
+encodeResultItem item =
     Encode.object
-        [ ( "name", Encode.string name )
-        , ( "status", encodeStatus status )
+        [ ( "name", Encode.string item.name )
+        , ( "tags", Encode.list Encode.string item.tags )
+        , ( "status", encodeStatus item.status )
         ]
 
 
