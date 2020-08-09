@@ -69,6 +69,7 @@ export const markdown = (report: Results): string => {
   for (let key in report.benchmarks) {
     buffer.push('## ' + key);
     buffer.push('');
+
     let base: number | null = null;
     report.benchmarks[key].forEach((item: any) => {
       if (item.status.status == 'success') {
@@ -150,6 +151,7 @@ export function reformat(results: any): any {
       const newItem = {
         browser: item.browser,
         tag: item.tag,
+        benchTags: result.tags,
         status: result.status,
       };
       if (result.name in reformed) {
