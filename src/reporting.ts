@@ -66,38 +66,149 @@ export const markdown = (report: Results): string => {
   buffer.push('');
 
   // List benchmarks
-  for (let key in report.benchmarks) {
-    buffer.push('## ' + key);
+  for (let project in report.benchmarks) {
+    buffer.push('## ' + project);
     buffer.push('');
+    for (let benchKey in report.benchmarks[project]) {
+      let bench = report.benchmarks[project][benchKey];
+      let base: number | null = null;
 
-    let base: number | null = null;
-    report.benchmarks[key].forEach((item: any) => {
-      if (item.status.status == 'success') {
-        let tag = '';
-        let delta: string = '';
-        if (item.tag != null) {
-          tag = ', ' + item.tag;
-        }
-        if (base == null) {
-          base = item.status.runsPerSecond;
+      buffer.push('-> ' + benchKey);
+      bench.forEach((item: any) => {
+        if (item.status.status == 'success') {
+          let tag = '';
+          let delta: string = '';
+          if (item.tag != null) {
+            tag = ', ' + item.tag;
+          }
+          if (base == null) {
+            base = item.status.runsPerSecond;
+          } else {
+            let percentChange = (item.status.runsPerSecond / base) * 100;
+            delta = ' (' + Math.round(percentChange) + '%)';
+          }
+
+          const goodness =
+            '(' + Math.round(item.status.goodnessOfFit * 100) + '%*)';
+
+          const label = '   ' + item.browser + tag + goodness;
+          const datapoint =
+            humanizeNumber(item.status.runsPerSecond).padStart(10, ' ') +
+            ' runs/sec ' +
+            delta;
+          buffer.push(label.padEnd(40, ' ') + datapoint);
         } else {
-          let percentChange = (item.status.runsPerSecond / base) * 100;
-          delta = ' (' + Math.round(percentChange) + '%)';
+          console.log('FAILURE', item);
         }
+      });
+      buffer.push('');
+      buffer.push('');
+    }
 
-        const goodness =
-          '(' + Math.round(item.status.goodnessOfFit * 100) + '%*)';
+    buffer.push('');
+    buffer.push('');
+  }
+  buffer.push('');
+  buffer.push('');
+  return buffer.join('\n');
+};
 
-        const label = '   ' + item.browser + tag + goodness;
-        const datapoint =
-          humanizeNumber(item.status.runsPerSecond).padStart(10, ' ') +
-          ' runs/sec ' +
-          delta;
-        buffer.push(label.padEnd(40, ' ') + datapoint);
-      } else {
-        console.log('FAILURE', item);
-      }
+export const markdownTable = (report: Results): string => {
+  let buffer: string[] = [];
+
+  buffer.push('# Benchmark results');
+  buffer.push('');
+
+  // List asset sizes
+  for (let key in report.assets) {
+    buffer.push('## ' + key + ' asset overview');
+    buffer.push('');
+    report.assets[key].forEach((item: Stat) => {
+      buffer.push(
+        '    ' +
+          item.name.padEnd(40, ' ') +
+          '' +
+          humanizeNumber(
+            roundToDecimal(1, item.bytes / Math.pow(2, 10))
+          ).padStart(10, ' ') +
+          'kb'
+      );
     });
+    buffer.push('');
+  }
+  buffer.push('');
+
+  // List benchmarks
+  for (let project in report.benchmarks) {
+    buffer.push('## ' + project);
+    buffer.push('');
+    buffer.push(
+      '|' +
+        [
+          'Name'.padEnd(40, ' '),
+          'Transformtions'.padEnd(30, ' '),
+          'Browser'.padEnd(10, ' '),
+          'Ops/Second'.padEnd(14, ' '),
+          '% Change'.padEnd(8, ' '),
+        ].join('|') +
+        '|'
+    );
+    buffer.push(
+      '|' +
+        [
+          ''.padEnd(40, '-'),
+          ''.padEnd(30, '-'),
+          ''.padEnd(10, '-'),
+          ''.padEnd(14, '-'),
+          ''.padEnd(8, '-'),
+        ].join('|') +
+        '|'
+    );
+
+    for (let benchKey in report.benchmarks[project]) {
+      let bench = report.benchmarks[project][benchKey];
+      let base: number | null = null;
+
+      // buffer.push('-> ' + benchKey);
+      bench.forEach((item: any) => {
+        if (item.status.status == 'success') {
+          let line: [string] = [benchKey.padEnd(40, ' ')];
+          let tag = '';
+          let delta: string = '';
+          if (item.tag != null) {
+            tag = item.tag;
+          }
+          if (base == null) {
+            base = item.status.runsPerSecond;
+          } else {
+            let percentChange = (item.status.runsPerSecond / base) * 100;
+            delta = ' (' + Math.round(percentChange) + '%)';
+          }
+
+          const goodness =
+            '(' + Math.round(item.status.goodnessOfFit * 100) + '%*)';
+
+          // const label = '   ' + item.browser + tag + goodness;
+          // const datapoint =
+          //   humanizeNumber(item.status.runsPerSecond).padStart(10, ' ') +
+          //   ' runs/sec ' +
+          //   delta;
+          // buffer.push(label.padEnd(40, ' ') + datapoint);
+          line.push(tag.padEnd(30, ' '));
+          line.push(item.browser.padEnd(10, ' '));
+          line.push(
+            humanizeNumber(item.status.runsPerSecond).padStart(14, ' ')
+          );
+          line.push(delta.padStart(8, ' '));
+          buffer.push('| ' + line.join('|') + ' |');
+        } else {
+          console.log('FAILURE', item);
+        }
+      });
+      // buffer.push('');
+      // buffer.push('');
+    }
+
     buffer.push('');
     buffer.push('');
   }
@@ -108,10 +219,12 @@ export const markdown = (report: Results): string => {
 
 /*
   Current shape
-      { browser: 'chrome
+      { name: 'Core benchmarks'
+      , browser: 'chrome
       , tag: 'transformed'
       , results:  [
           name: 'sum 1000 entities in a list',
+          tags: ['Basics'],
           status: {
               goodnessOfFit: 0.9924404521135742,
               runsPerSecond: 72127,
@@ -120,6 +233,7 @@ export const markdown = (report: Results): string => {
           }
           {
           name: '1000 record updates',
+          tags: ['Basics'],
           status: {
               goodnessOfFit: 0.9955251757469299,
               runsPerSecond: 2433,
@@ -130,23 +244,29 @@ export const markdown = (report: Results): string => {
   
   
   NewShape
-      { test: 'sum 1000 entities in a list'
-      , results: 
-          [ { browser: 'chrome'
-            , tag: 'transformed'
-            , status: {
-                  goodnessOfFit: 0.9955251757469299,
-                  runsPerSecond: 2433,
-                  status: 'success'
-                }
-            }
-          ]
+      { 'Elm Core':
+        [ {'sum 1000 entities in a list': 
+            [ { browser: 'chrome'
+              , tag: 'transformed'
+              , benchTags: ['Basics' ]
+              , status: {
+                    goodnessOfFit: 0.9955251757469299,
+                    runsPerSecond: 2433,
+                    status: 'success'
+                  }
+              }
+            ]
+          }
+        ]
       }
+  
   
   */
 export function reformat(results: any): any {
+  let project: string = 'Unknown';
   let reformed: any = {};
   results.forEach((item: any) => {
+    project = item.name;
     item.results.forEach((result: any) => {
       const newItem = {
         browser: item.browser,
@@ -154,10 +274,15 @@ export function reformat(results: any): any {
         benchTags: result.tags,
         status: result.status,
       };
-      if (result.name in reformed) {
-        reformed[result.name].push(newItem);
+      if (project in reformed) {
+        if (result.name in reformed[project]) {
+          reformed[project][result.name].push(newItem);
+        } else {
+          reformed[project][result.name] = [newItem];
+        }
       } else {
-        reformed[result.name] = [newItem];
+        reformed[project] = {};
+        reformed[project][result.name] = [newItem];
       }
     });
   });
@@ -207,6 +332,7 @@ export const run = async function(
       results.push(
         await Visit.benchmark(
           browser,
+          instance.name,
           null,
           path.join(instance.dir, 'standard.html')
         )
@@ -214,6 +340,7 @@ export const run = async function(
       results.push(
         await Visit.benchmark(
           browser,
+          instance.name,
           'transformed',
           path.join(instance.dir, 'transformed.html')
         )
@@ -340,6 +467,7 @@ export const runWithBreakdown = async function(
       results.push(
         await Visit.benchmark(
           browser,
+          instance.name,
           null,
           path.join(instance.dir, 'standard.html')
         )
@@ -347,6 +475,7 @@ export const runWithBreakdown = async function(
       results.push(
         await Visit.benchmark(
           browser,
+          instance.name,
           'transformed',
           path.join(instance.dir, 'transformed.html')
         )
@@ -374,6 +503,7 @@ export const runWithBreakdown = async function(
         results.push(
           await Visit.benchmark(
             browser,
+            instance.name,
             steps[i].name,
             path.join(instance.dir, 'transformed.html')
           )
