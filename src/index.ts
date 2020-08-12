@@ -1,110 +1,88 @@
-import ts from 'typescript';
+// tslint:disable-next-line no-require-imports no-var-requires
+import program from 'commander';
+import * as path from 'path';
+import { compileAndTransform } from './compile-testcases';
+import { ObjectUpdate, Transforms, InlineLists } from './types';
+const { version } = require('../package.json');
 
-const filename = 'test.js';
-const code = `
-(function (){
-  function f () {}
-  const f2 = () => 1;
-  const test = 1 + 2;
-  console.log(test);
-})()
-`;
-// (function() {
-//   function f() {}
-//   const f2 = () => 1;
-//   const test: number = 1 + 2;
-// })();
-
-const sourceFile = ts.createSourceFile(filename, code, ts.ScriptTarget.Latest);
-
-const defaultCompilerHost = ts.createCompilerHost({});
-
-const customCompilerHost: ts.CompilerHost = {
-  getSourceFile: (name, languageVersion) => {
-    console.log(`getSourceFile ${name}`);
-
-    if (name === filename) {
-      return sourceFile;
-    } else {
-      return defaultCompilerHost.getSourceFile(name, languageVersion);
-    }
-  },
-  writeFile: () => {},
-  getDefaultLibFileName: () =>
-    'node_modules/typescript/lib/lib.es2018.full.d.ts',
-  useCaseSensitiveFileNames: () => false,
-  getCanonicalFileName: filename => filename,
-  getCurrentDirectory: () => '',
-  getNewLine: () => '\n',
-  getDirectories: () => [],
-  fileExists: () => true,
-  readFile: () => '',
+const defaultOptions: Transforms = {
+  replaceVDomNode: false,
+  variantShapes: true,
+  inlineNumberToString: true,
+  inlineEquality: true,
+  inlineFunctions: true,
+  listLiterals: InlineLists.AsObjects,
+  passUnwrappedFunctions: true,
+  arrowFns: false,
+  objectUpdate: ObjectUpdate.InlineSpread,
+  unusedValues: false, // do we want this by default?
 };
 
-const program = ts.createProgram(
-  [filename],
-  { allowJs: true, noUnusedLocals: true, outDir: 'yo', checkJs: true },
-  customCompilerHost
-);
+program
+  .version(version)
+  .usage('[options] <src/Main.elm>')
+  .option(
+    '-e --exclude-transforms <excludedTransforms>',
+    'names of transforms that should be excluded (comma delimited). ' +
+      'Names of available transforms:' +
+      Object.keys(defaultOptions)
+        .map(name => `'${name}'`)
+        .join(', '),
+    v => v.split(','),
+    []
+  )
+  .option(
+    '-m --modernize',
+    'transform into a more modern JS to save size (es2018)',
+    false
+  )
+  .parse(process.argv);
 
-const diagnostics = ts.getPreEmitDiagnostics(program);
+type CLIOptions = {
+  modernize: boolean;
+  excludeTransforms: string[];
+};
 
-for (const diagnostic of diagnostics) {
-  const message = diagnostic.messageText;
-  const file = diagnostic.file;
-  const filename = file!.fileName;
-
-  const lineAndChar = file!.getLineAndCharacterOfPosition(diagnostic!.start!);
-
-  const line = lineAndChar.line + 1;
-  const character = lineAndChar.character + 1;
-
-  console.log(message);
-  console.log(
-    `(${filename}:${line}:${character}), pos = (${
-      diagnostic?.start
-    },${(diagnostic?.start || 0) + (diagnostic?.length || 0)})`
-  );
-}
-
-console.log('--------A--------------');
-const typeChecker = program.getTypeChecker();
-
-function recursivelyPrintVariableDeclarations(
-  node: ts.Node,
-  sourceFile: ts.SourceFile
-) {
-  if (ts.isVariableDeclaration(node)) {
-    const nodeText = node.getText(sourceFile);
-    const type = typeChecker.getTypeAtLocation(node);
-    const typeName = typeChecker.typeToString(type, node);
-
-    console.log(nodeText);
-    console.log(`(${typeName})`);
+async function run(filePath: string | undefined, options: CLIOptions) {
+  if (!filePath || !filePath.endsWith('.elm')) {
+    console.error('Please provide a path to an Elm file.');
+    program.outputHelp();
+    return;
   }
 
-  node.forEachChild(child =>
-    recursivelyPrintVariableDeclarations(child, sourceFile)
+  const { excludeTransforms, modernize } = options;
+  excludeTransforms;
+  modernize;
+
+  const dirname = path.dirname(filePath);
+  const fileName = path.basename(filePath);
+
+  const withExcluded: Transforms = Object.fromEntries(
+    Object.entries(defaultOptions).map(([name, val]) =>
+      excludeTransforms.includes(name) ? [name, false] : [name, val]
+    )
+  ) as any;
+
+  const withCorrections = {
+    ...withExcluded,
+    arrowFns: modernize && withExcluded.arrowFns,
+    objectUpdate: modernize && withExcluded.objectUpdate,
+    passUnwrappedFunctions:
+      withExcluded.inlineFunctions && withExcluded.passUnwrappedFunctions,
+  };
+
+  await compileAndTransform(
+    dirname,
+    fileName,
+    {
+      compile: true,
+      gzip: false,
+      minify: false,
+    },
+    withCorrections
   );
+
+  // console.log({ filePath, options });
 }
 
-recursivelyPrintVariableDeclarations(sourceFile, sourceFile);
-
-console.log('--------B--------------');
-function printRecursiveFrom(
-  node: ts.Node,
-  indentLevel: number,
-  sourceFile: ts.SourceFile
-) {
-  const indentation = '-'.repeat(indentLevel);
-  const syntaxKind = ts.SyntaxKind[node.kind];
-  const nodeText = node.getText(sourceFile);
-  console.log(`${indentation}${syntaxKind}: ${nodeText}`);
-  console.log(`pos: (${node.pos}, ${node.end})`);
-
-  node.forEachChild(child =>
-    printRecursiveFrom(child, indentLevel + 1, sourceFile)
-  );
-}
-
-printRecursiveFrom(sourceFile, 0, sourceFile);
+run(program.args[0], program.opts() as any).catch(e => console.error(e));

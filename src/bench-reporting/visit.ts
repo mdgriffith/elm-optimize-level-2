@@ -2,7 +2,7 @@ import * as Webdriver from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
 import * as firefox from 'selenium-webdriver/firefox';
 import * as Path from 'path';
-import { Browser, BrowserOptions } from './types';
+import { BrowserOptions } from '../types';
 
 export const benchmark = async (
   options: BrowserOptions,

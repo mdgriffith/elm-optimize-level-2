@@ -1,4 +1,7 @@
-declare module 'node-elm-compiler';
+declare module 'node-elm-compiler' {
+  export function compileSync(files: string[], options: object): void;
+}
+
 declare module 'tree-sitter-elm';
 
 declare module 'prepack' {

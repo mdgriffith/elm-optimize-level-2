@@ -5,12 +5,11 @@ Compiles all the test cases and runs them via webdriver to summarize the results
 
 */
 
-import { ObjectUpdate, Transforms, Browser, InlineLists } from './types';
+import { ObjectUpdate, Transforms, Browser, InlineLists } from '../types';
 import * as Reporting from './reporting';
 import * as fs from 'fs';
 
 const defaultOptions: Transforms = {
-  prepack: true,
   replaceVDomNode: false,
   variantShapes: true,
   inlineNumberToString: true,
@@ -24,7 +23,6 @@ const defaultOptions: Transforms = {
 };
 
 const test: Transforms = {
-  prepack: false,
   replaceVDomNode: false,
   variantShapes: false,
   inlineNumberToString: false,

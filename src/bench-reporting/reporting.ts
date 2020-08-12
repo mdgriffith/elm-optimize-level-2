@@ -1,13 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Compile from './compile-testcases';
-import {
-  Browser,
-  Transforms,
-  ObjectUpdate,
-  RunTestcaseOptions,
-  InlineLists,
-} from './types';
+import * as Compile from '../compile-testcases';
+import { Transforms, RunTestcaseOptions, InlineLists } from '../types';
 import * as Visit from './visit';
 
 export interface Stat {
@@ -352,7 +346,6 @@ export const run = async function(
 };
 
 const emptyOpts: Transforms = {
-  prepack: false,
   replaceVDomNode: false,
   variantShapes: false,
   inlineNumberToString: false,
@@ -445,10 +438,10 @@ export const runWithBreakdown = async function(
   let results: any[] = [];
   let assets: any = {};
 
-  const opts = {
-    browser: Browser.Chrome,
-    headless: false,
-  };
+  // const opts = {
+  //   browser: Browser.Chrome,
+  //   headless: false,
+  // };
 
   for (let instance of runnable) {
     await Compile.compileAndTransform(
