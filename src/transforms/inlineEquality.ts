@@ -17,19 +17,7 @@ Current plan:
     x replace with `===` if one of the values is a number literal
     x replace if there's a number literal within a math expression
 
-
-
-
-
-
 A few manual overrides to see if they affect performance
-
-
-
-
-
-
-
 
 */
 
@@ -83,21 +71,24 @@ const overrideIdentifiers: string[] = [
 function inferIsPrimitive(node: any): boolean {
   let kind = ts.SyntaxKind[node.kind];
   if (kind == 'Identifier') {
-    if (ts.isIdentifier(node)) {
-      if (overrideIdentifiers.includes(node.text)) {
-        return true;
-      }
-    }
+    // Disabled the manual override for now
+    // if (ts.isIdentifier(node)) {
+    //   if (overrideIdentifiers.includes(node.text)) {
+    //     return true;
+    //   }
+    // }
     return false;
   } else if (kind == 'PrefixUnaryExpression') {
     let isPrim = false;
     node.forEachChild((child: any) => {
-      if (ts.TypeFlags[child.kind] == 'Number') {
+      if (ts.TypeFlags[child.kind] === 'Number') {
         isPrim = true;
       }
     });
     return isPrim;
-  } else if (ts.TypeFlags[node.kind] == 'Number') {
+  } else if (ts.TypeFlags[node.kind] === 'Number') {
+    return true;
+  } else if (ts.TypeFlags[node.kind] === 'String') {
     return true;
   } else if (kind == 'PropertyAccessExpression') {
     return false;
