@@ -2,13 +2,16 @@ import * as Webdriver from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
 import * as firefox from 'selenium-webdriver/firefox';
 import * as Path from 'path';
-import { Browser, BrowserOptions } from './types'
+import { BrowserOptions } from '../types';
 
-export const benchmark = async (options: BrowserOptions, tag: string | null, file: string) => {
-
+export const benchmark = async (
+  options: BrowserOptions,
+  name: string,
+  tag: string | null,
+  file: string
+) => {
   const firefoxOptions = new firefox.Options();
   const chromeOptions = new chrome.Options();
-
 
   if (options.headless) {
     firefoxOptions.headless();
@@ -31,5 +34,5 @@ export const benchmark = async (options: BrowserOptions, tag: string | null, fil
   } finally {
     await driver.quit();
   }
-  return { tag: tag, browser: 'chrome', results: result };
+  return { name: name, tag: tag, browser: 'chrome', results: result };
 };

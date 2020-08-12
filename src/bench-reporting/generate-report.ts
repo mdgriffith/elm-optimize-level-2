@@ -5,17 +5,17 @@ Compiles all the test cases and runs them via webdriver to summarize the results
 
 */
 
-import { ObjectUpdate, Transforms, Browser } from './types';
+import { ObjectUpdate, Transforms, Browser, InlineLists } from '../types';
 import * as Reporting from './reporting';
+import * as fs from 'fs';
 
 const defaultOptions: Transforms = {
-  prepack: true,
-  replaceVDomNode: true,
+  replaceVDomNode: false,
   variantShapes: true,
   inlineNumberToString: true,
   inlineEquality: true,
   inlineFunctions: true,
-  listLiterals: true,
+  listLiterals: null,
   passUnwrappedFunctions: true,
   arrowFns: true,
   objectUpdate: ObjectUpdate.InlineSpread,
@@ -23,13 +23,12 @@ const defaultOptions: Transforms = {
 };
 
 const test: Transforms = {
-  prepack: false,
-  replaceVDomNode: true,
+  replaceVDomNode: false,
   variantShapes: false,
-  inlineNumberToString: true,
+  inlineNumberToString: false,
   inlineEquality: false,
   inlineFunctions: false,
-  listLiterals: false,
+  listLiterals: InlineLists.AsObjects,
   passUnwrappedFunctions: false,
   arrowFns: false,
   objectUpdate: null,
@@ -41,53 +40,54 @@ const options = {
   gzip: false,
   minify: false,
   assetSizes: false,
-  runBenchmark: [{
-    browser: Browser.Chrome,
-    headless: false
-  }],
-  transforms: defaultOptions
-}
-
+  runBenchmark: [
+    {
+      browser: Browser.Chrome,
+      headless: false,
+    },
+  ],
+  transforms: defaultOptions,
+};
 
 async function go() {
-
   const report = await Reporting.run(options, [
     // Use `runWithBreakdown` if you want the breakdown
     // const report = await Reporting.runWithBreakdown([
     // { name: 'simple',
     //   dir: 'testcases/simple',
     //   elmFile: 'main',
-    //   
-    // },
-    // {
-    //   name: 'bench',
-    //   dir: 'testcases/bench',
-    //   elmFile: 'Main.elm',
-    //   
-    // },
-    // {
-    //   name: 'html',
-    //   dir: 'testcases/html',
-    //   elmFile: 'Main.elm',
-    //   
-    // },
-    // {
-    //   name: 'elm-ui',
-    //   dir: 'testcases/elm-ui',
-    //   elmFile: 'Main.elm',
-    //   
+    //
     // },
     {
-      name: 'elm-ui-2',
-      dir: 'testcases/elm-ui-2',
+      name: 'Elm Core',
+      dir: 'testcases/bench',
+      elmFile: 'Main.elm',
+    },
+    {
+      name: 'Html',
+      dir: 'testcases/html',
+      elmFile: 'Main.elm',
+    },
+    {
+      name: 'Elm UI',
+      dir: 'testcases/elm-ui',
       elmFile: 'Main.elm',
     },
     // {
-    //   name: 'elm-markdown',
-    //   dir: 'testcases/elm-markdown',
-    //   elmFile: 'Run.elm',
-    //   
+    //   name: 'elm-ui-2',
+    //   dir: 'testcases/elm-ui-2',
+    //   elmFile: 'Main.elm',
     // },
+    // {
+    //   name: 'elm-animator',
+    //   dir: 'testcases/elm-animator',
+    //   elmFile: 'Run.elm',
+    // },
+    {
+      name: 'Elm Markdown',
+      dir: 'testcases/elm-markdown',
+      elmFile: 'Run.elm',
+    },
     // {
     //   name: 'elm-markdown',
     //   dir: 'testcases/elm-markdown',
@@ -99,11 +99,12 @@ async function go() {
     //   name: 'elm-obj-file',
     //   dir: 'testcases/elm-obj-file',
     //   elmFile: 'Run.elm',
-    //   
+    //
     // },
   ]);
-
-  console.log(Reporting.markdown(await report));
+  const result = await report;
+  console.log(Reporting.markdown(result));
+  fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
 }
 
 go();
