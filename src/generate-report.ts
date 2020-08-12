@@ -7,6 +7,7 @@ Compiles all the test cases and runs them via webdriver to summarize the results
 
 import { ObjectUpdate, Transforms, Browser, InlineLists } from './types';
 import * as Reporting from './reporting';
+import * as fs from 'fs';
 
 const defaultOptions: Transforms = {
   prepack: true,
@@ -60,22 +61,20 @@ async function go() {
     //
     // },
     {
-      name: 'bench',
+      name: 'Elm Core',
       dir: 'testcases/bench',
       elmFile: 'Main.elm',
     },
-    // {
-    //   name: 'html',
-    //   dir: 'testcases/html',
-    //   elmFile: 'Main.elm',
-    //
-    // },
-    // {
-    //   name: 'elm-ui',
-    //   dir: 'testcases/elm-ui',
-    //   elmFile: 'Main.elm',
-    //
-    // },
+    {
+      name: 'Html',
+      dir: 'testcases/html',
+      elmFile: 'Main.elm',
+    },
+    {
+      name: 'Elm UI',
+      dir: 'testcases/elm-ui',
+      elmFile: 'Main.elm',
+    },
     // {
     //   name: 'elm-ui-2',
     //   dir: 'testcases/elm-ui-2',
@@ -86,12 +85,11 @@ async function go() {
     //   dir: 'testcases/elm-animator',
     //   elmFile: 'Run.elm',
     // },
-    // {
-    //   name: 'elm-markdown',
-    //   dir: 'testcases/elm-markdown',
-    //   elmFile: 'Run.elm',
-    //
-    // },
+    {
+      name: 'Elm Markdown',
+      dir: 'testcases/elm-markdown',
+      elmFile: 'Run.elm',
+    },
     // {
     //   name: 'elm-markdown',
     //   dir: 'testcases/elm-markdown',
@@ -106,8 +104,9 @@ async function go() {
     //
     // },
   ]);
-
-  console.log(Reporting.markdown(await report));
+  const result = await report;
+  console.log(Reporting.markdown(result));
+  fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
 }
 
 go();
