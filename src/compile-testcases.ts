@@ -4,7 +4,7 @@ import * as path from 'path';
 import { parseElm, parseDir, primitives } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './transforms/variantShapes';
-import { Mode, Transforms, ObjectUpdate, InlineLists } from './types';
+import { Mode, Transforms, InlineLists } from './types';
 import {
   createFunctionInlineTransformer,
   InlineContext,
@@ -13,7 +13,7 @@ import {
   InlineMode,
   createInlineListFromArrayTransformer,
 } from './transforms/inlineListFromArray';
-import { prepackFileSync } from 'prepack';
+// import { prepackFileSync } from 'prepack';
 import * as Terser from 'terser';
 import { execSync } from 'child_process';
 import { inlineEquality } from './transforms/inlineEquality';
@@ -27,7 +27,7 @@ import { createPassUnwrappedFunctionsTransformer } from './transforms/passUnwrap
 import { replaceVDomNode } from './transforms/correctVirtualDom';
 import { inlineNumberToString } from './transforms/inlineNumberToString';
 
-type Options = {
+export type Options = {
   compile: boolean;
   minify: boolean;
   gzip: boolean;
@@ -111,14 +111,16 @@ export const compileAndTransform = async (
       transforms.passUnwrappedFunctions,
       createPassUnwrappedFunctionsTransformer(() => inlineCtx),
     ],
-    includeObjectUpdate(transforms.objectUpdate),
+    [
+      !!transforms.objectUpdate,
+      transforms.objectUpdate && objectUpdate(transforms.objectUpdate),
+    ],
     [transforms.arrowFns, convertFunctionExpressionsToArrowFuncs],
     [transforms.unusedValues, createRemoveUnusedLocalsTransform()],
   ]);
 
   const {
     transformed: [result],
-    diagnostics,
   } = ts.transform(source, transformations);
 
   const printer = ts.createPrinter();
@@ -137,24 +139,25 @@ export const compileAndTransform = async (
   fs.writeFileSync(pathInOutput('elm.opt.js'), printer.printFile(initialJs));
 
   // Prepack, minify, and gzip
-  if (transforms.prepack) {
-    const { code } = prepackFileSync([pathInOutput('elm.opt.transformed.js')], {
-      debugNames: true,
-      inlineExpressions: true,
-      maxStackDepth: 1200, // that didn't help
-    });
+  // if (false) {
+  //   // if (transforms.prepack) {
+  //   const { code } = prepackFileSync([pathInOutput('elm.opt.transformed.js')], {
+  //     debugNames: true,
+  //     inlineExpressions: true,
+  //     maxStackDepth: 1200, // that didn't help
+  //   });
 
-    fs.writeFileSync(pathInOutput('elm.opt.prepack.js'), code);
-    if (options.minify) {
-      await minify(
-        pathInOutput('elm.opt.prepack.js'),
-        pathInOutput('elm.opt.prepack.min.js')
-      );
-    }
-    if (options.gzip) {
-      gzip(pathInOutput('elm.opt.prepack.min.js'));
-    }
-  }
+  //   fs.writeFileSync(pathInOutput('elm.opt.prepack.js'), code);
+  //   if (options.minify) {
+  //     await minify(
+  //       pathInOutput('elm.opt.prepack.js'),
+  //       pathInOutput('elm.opt.prepack.min.js')
+  //     );
+  //   }
+  //   if (options.gzip) {
+  //     gzip(pathInOutput('elm.opt.prepack.min.js'));
+  //   }
+  // }
 
   if (options.minify) {
     await minify(pathInOutput('elm.opt.js'), pathInOutput('elm.opt.min.js'));
@@ -171,19 +174,11 @@ export const compileAndTransform = async (
   return {};
 };
 
-function includeObjectUpdate(kind: ObjectUpdate | null): any {
-  if (kind != null) {
-    return [true, objectUpdate(kind)];
-  } else {
-    return [];
-  }
-}
-
-function removeDisabled(list: any[]) {
-  let newList: any[] = [];
-  list.forEach(item => {
-    if (item != 0 && item[0]) {
-      newList.push(item[1]);
+function removeDisabled<T>(list: [null | boolean | undefined, T][]): T[] {
+  let newList: T[] = [];
+  list.forEach(([cond, val]) => {
+    if (![null, false, undefined].includes(cond)) {
+      newList.push(val);
     }
   });
 
@@ -249,7 +244,7 @@ function reportInlineTransformResult(ctx: InlineContext) {
   const { splits, partialApplications, inlined } = ctx;
 
   console.log(
-    `functionInlineTransformer: splitCount=${splits.size}, partialApplicationCount=${partialApplications.size}`,
+    `functionInlineTransformer: splitCount=${splits.size}, partialApplicationCount=${partialApplications.size}, inlined=`,
     inlined
     // splits
   );

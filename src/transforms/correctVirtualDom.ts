@@ -92,9 +92,11 @@ function replaceVDomWithNSInline(node: ts.Node): ts.Node | undefined {
     ts.isIdentifier(node.expression) &&
     node.expression.text === 'A3'
   ) {
+    const [firstArg] = node.arguments;
+
     if (
-      ts.isIdentifier(node.arguments[0]) &&
-      node.arguments[0].text === '$elm$virtual_dom$VirtualDom$node'
+      ts.isIdentifier(firstArg) &&
+      firstArg.text === '$elm$virtual_dom$VirtualDom$node'
     ) {
       return ts.createCall(ts.createIdentifier('A4'), undefined, [
         ts.createIdentifier('_VirtualDom_nodeNS'),
@@ -117,52 +119,54 @@ function replaceVDomWithNSInline(node: ts.Node): ts.Node | undefined {
 //    };
 // with
 //   var $elm$virtual_dom$VirtualDom$node = _VirtualDom_nodeNS(undefined, "div");
-function replaceAPIVDomNodeWithF3A4(node: ts.Node): ts.Node | undefined {
-  if (
-    ts.isVariableDeclaration(node) &&
-    ts.isIdentifier(node.name) &&
-    node.name.text == '$elm$virtual_dom$VirtualDom$node' &&
-    node.initializer &&
-    ts.isFunctionExpression(node.initializer)
-  ) {
-    let newCall = ts.createCall(ts.createIdentifier('A4'), undefined, [
-      ts.createIdentifier('_VirtualDom_nodeNS'),
-      ts.createIdentifier('undefined'),
-      ts.createCall(ts.createIdentifier('_VirtualDom_noScript'), undefined, [
-        ts.createIdentifier('tag'),
-      ]),
-      ts.createIdentifier('attrs'),
-      ts.createIdentifier('kids'),
-    ]);
+// function replaceAPIVDomNodeWithF3A4(node: ts.Node): ts.Node | undefined {
+//   if (
+//     ts.isVariableDeclaration(node) &&
+//     ts.isIdentifier(node.name) &&
+//     node.name.text == '$elm$virtual_dom$VirtualDom$node' &&
+//     node.initializer &&
+//     ts.isFunctionExpression(node.initializer)
+//   ) {
+//     let newCall = ts.createCall(ts.createIdentifier('A4'), undefined, [
+//       ts.createIdentifier('_VirtualDom_nodeNS'),
+//       ts.createIdentifier('undefined'),
+//       ts.createCall(ts.createIdentifier('_VirtualDom_noScript'), undefined, [
+//         ts.createIdentifier('tag'),
+//       ]),
+//       ts.createIdentifier('attrs'),
+//       ts.createIdentifier('kids'),
+//     ]);
 
-    let newFn = ts.createCall(ts.createIdentifier('F3'), undefined, [
-      ts.createFunctionExpression(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        [param('tag'), param('attrs'), param('kids')],
-        undefined,
-        ts.createBlock([ts.createReturn(newCall)])
-      ),
-    ]);
+//     let newFn = ts.createCall(ts.createIdentifier('F3'), undefined, [
+//       ts.createFunctionExpression(
+//         undefined,
+//         undefined,
+//         undefined,
+//         undefined,
+//         [param('tag'), param('attrs'), param('kids')],
+//         undefined,
+//         ts.createBlock([ts.createReturn(newCall)])
+//       ),
+//     ]);
 
-    return ts.createVariableDeclaration(
-      '$elm$virtual_dom$VirtualDom$node',
-      undefined,
-      newFn
-    );
-  }
-}
+//     return ts.createVariableDeclaration(
+//       '$elm$virtual_dom$VirtualDom$node',
+//       undefined,
+//       newFn
+//     );
+//   }
 
-function param(name: string) {
-  return ts.createParameter(
-    undefined,
-    undefined,
-    undefined,
-    ts.createIdentifier(name),
-    undefined,
-    undefined,
-    undefined
-  );
-}
+//   return undefined;
+// }
+
+// function param(name: string) {
+//   return ts.createParameter(
+//     undefined,
+//     undefined,
+//     undefined,
+//     ts.createIdentifier(name),
+//     undefined,
+//     undefined,
+//     undefined
+//   );
+// }

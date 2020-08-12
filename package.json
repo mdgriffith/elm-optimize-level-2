@@ -10,15 +10,13 @@
   "engines": {
     "node": ">=10"
   },
+  "bin": {
+    "elm-optimize": "./dist/index.js"
+  },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "run": "ts-node src/index.ts",
-    "testcases": "ts-node -T src/compile-testcases.ts",
-    "report": "ts-node -T src/generate-report.ts"
+    "prepublish": "tsc -p tsconfig.json",
+    "run": "ts-node -T src/index.ts testcases/bench/Main.elm --modernize",
+    "report": "ts-node -T src/bench-reporting/generate-report.ts"
   },
   "peerDependencies": {},
   "husky": {
@@ -34,6 +32,7 @@
   "author": "",
   "module": "dist/lib.esm.js",
   "devDependencies": {
+    "@types/commander": "^2.12.2",
     "chromedriver": "^84.0.1",
     "husky": "^4.2.5",
     "node-elm-compiler": "^5.0.4",
@@ -41,12 +40,12 @@
     "selenium-webdriver": "^4.0.0-alpha.7",
     "terser": "^5.0.0",
     "ts-node": "^8.10.2",
-    "tsdx": "^0.13.2",
     "tslib": "^2.0.0",
     "typescript": "^3.9.7",
     "uglify-js": "^3.10.0"
   },
   "dependencies": {
+    "commander": "^6.0.0",
     "tree-sitter": "^0.16.1",
     "tree-sitter-elm": "^2.7.9",
     "ts-union": "^2.2.1"

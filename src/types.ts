@@ -22,16 +22,15 @@ export type RunTestcaseOptions = {
 };
 
 export type Transforms = {
-  prepack: boolean;
   replaceVDomNode: boolean;
   variantShapes: boolean;
   inlineNumberToString: boolean;
   inlineEquality: boolean;
   inlineFunctions: boolean;
   passUnwrappedFunctions: boolean;
-  listLiterals: InlineLists | null;
+  listLiterals: InlineLists | null | false;
   arrowFns: boolean;
-  objectUpdate: ObjectUpdate | null;
+  objectUpdate: ObjectUpdate | null | false;
   unusedValues: boolean;
 };
 

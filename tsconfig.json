@@ -1,13 +1,13 @@
 {
-  "include": ["src", "types"],
   "compilerOptions": {
     "target": "es2018",
     "module": "CommonJS",
-    "lib": ["dom", "esnext"],
-    "importHelpers": true,
+    "lib": ["es6", "esnext"],
+    "importHelpers": false,
     "declaration": true,
     "sourceMap": true,
     "rootDir": "./src",
+    "outDir": "dist",
     "strict": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
@@ -16,10 +16,14 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "baseUrl": "./",
-    "paths": {
-      "*": ["src/*", "node_modules/*"]
-    },
-    "jsx": "react",
     "esModuleInterop": true
-  }
+  },
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "src/bench-reporting",
+    "__tests__",
+    "**/__tests__",
+    "src/__tests__"
+  ]
 }
