@@ -107,27 +107,8 @@ listLiteral _ =
 suite : Benchmark
 suite =
     describe "Basics"
-        [ benchmark "sum 300 entities in a list" <|
+        [ benchmark "sum 300 list of custom types" <|
             \_ -> List.foldl addMyType 0 many
-        , benchmark "300 record updates" <|
-            \_ ->
-                List.foldl updateRecord
-                    { one = 1
-                    , two = 2
-                    , three = 3
-                    }
-                    many
-        , benchmark "300 single record updates" <|
-            \_ ->
-                List.map
-                    (\_ ->
-                        updateRecord
-                            { one = 1
-                            , two = 2
-                            , three = 3
-                            }
-                    )
-                    many
         , benchmark "Update single record" <|
             \_ ->
                 updateSingleRecord
@@ -142,7 +123,7 @@ suite =
                     , two = 2
                     , three = 3
                     }
-        , benchmark "Return list literal" <|
+        , benchmark "Return list literal"
             listLiteral
         , benchmark "Dict.fromList" <|
             \_ ->
