@@ -1,6 +1,3 @@
-[submodule "testcases/elm-markdown/repo"]
-	path = testcases/elm-markdown/repo
-	url = https://github.com/dillonkearns/elm-markdown
 [submodule "testcases/elm-obj-file/repo"]
 	path = testcases/elm-obj-file/repo
 	url = https://github.com/w0rm/elm-obj-file
@@ -8,6 +5,3 @@
 	path = testcases/elm-ui-2/repo
 	url = https://github.com/mdgriffith/elm-ui
 	branch = 2.0
-[submodule "testcases/elm-animator/repo"]
-	path = testcases/elm-animator/repo
-	url = https://github.com/mdgriffith/elm-animator
