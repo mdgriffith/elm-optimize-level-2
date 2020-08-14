@@ -45,19 +45,19 @@ const options = {
       browser: Browser.Chrome,
       headless: false,
     },
+    {
+      browser: Browser.Firefox,
+      headless: false,
+    },
   ],
   transforms: defaultOptions,
 };
 
 async function go() {
-  const report = await Reporting.run(options, [
-    // Use `runWithBreakdown` if you want the breakdown
-    // const report = await Reporting.runWithBreakdown([
-    // { name: 'simple',
-    //   dir: 'testcases/simple',
-    //   elmFile: 'main',
-    //
-    // },
+  // const report = await Reporting.run(options, [
+  // Use `runWithBreakdown` if you want the breakdown
+  // const report = await Reporting.runWithKnockout(options, [
+  const report = await Reporting.runWithBreakdown(options, [
     {
       name: 'Elm Core',
       dir: 'testcases/bench',
@@ -73,11 +73,11 @@ async function go() {
       dir: 'testcases/elm-ui',
       elmFile: 'Main.elm',
     },
-    // {
-    //   name: 'elm-ui-2',
-    //   dir: 'testcases/elm-ui-2',
-    //   elmFile: 'Main.elm',
-    // },
+    {
+      name: 'Elm UI 2',
+      dir: 'testcases/elm-ui-2',
+      elmFile: 'Main.elm',
+    },
     // {
     //   name: 'elm-animator',
     //   dir: 'testcases/elm-animator',
@@ -88,12 +88,6 @@ async function go() {
       dir: 'testcases/elm-markdown',
       elmFile: 'Run.elm',
     },
-    // {
-    //   name: 'elm-markdown',
-    //   dir: 'testcases/elm-markdown',
-    //   elmFile: 'Run.elm',
-    //   options: inlineEquality,
-    // },
     // This one takes forever
     // {
     //   name: 'elm-obj-file',

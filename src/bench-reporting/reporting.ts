@@ -12,11 +12,11 @@ export interface Stat {
 // Asset Sizes
 export const assetSizeStats = (dir: string): Stat[] => {
   let stats: Stat[] = [];
-  fs.readdir(dir, function(err, files) {
+  fs.readdir(dir, function (err, files) {
     if (err) {
       console.log('Error getting directory information.');
     } else {
-      files.forEach(function(file) {
+      files.forEach(function (file) {
         const stat = fs.statSync(path.join(dir, file));
         stats.push({
           name: path.basename(file),
@@ -35,6 +35,8 @@ type Results = {
 
 // Render results as markdown
 export const markdown = (report: Results): string => {
+
+
   let buffer: string[] = [];
 
   buffer.push('# Benchmark results');
@@ -47,12 +49,12 @@ export const markdown = (report: Results): string => {
     report.assets[key].forEach((item: Stat) => {
       buffer.push(
         '    ' +
-          item.name.padEnd(40, ' ') +
-          '' +
-          humanizeNumber(
-            roundToDecimal(1, item.bytes / Math.pow(2, 10))
-          ).padStart(10, ' ') +
-          'kb'
+        item.name.padEnd(40, ' ') +
+        '' +
+        humanizeNumber(
+          roundToDecimal(1, item.bytes / Math.pow(2, 10))
+        ).padStart(10, ' ') +
+        'kb'
       );
     });
     buffer.push('');
@@ -66,6 +68,7 @@ export const markdown = (report: Results): string => {
     for (let benchKey in report.benchmarks[project]) {
       let bench = report.benchmarks[project][benchKey];
       let base: number | null = null;
+      let browser: string | null = null;
 
       buffer.push('-> ' + benchKey);
       bench.forEach((item: any) => {
@@ -77,6 +80,10 @@ export const markdown = (report: Results): string => {
           }
           if (base == null) {
             base = item.status.runsPerSecond;
+            browser = item.browser;
+          } else if (browser != item.browser) {
+            base = item.status.runsPerSecond;
+            browser = item.browser;
           } else {
             let percentChange = (item.status.runsPerSecond / base) * 100;
             delta = ' (' + Math.round(percentChange) + '%)';
@@ -120,12 +127,12 @@ export const markdownTable = (report: Results): string => {
     report.assets[key].forEach((item: Stat) => {
       buffer.push(
         '    ' +
-          item.name.padEnd(40, ' ') +
-          '' +
-          humanizeNumber(
-            roundToDecimal(1, item.bytes / Math.pow(2, 10))
-          ).padStart(10, ' ') +
-          'kb'
+        item.name.padEnd(40, ' ') +
+        '' +
+        humanizeNumber(
+          roundToDecimal(1, item.bytes / Math.pow(2, 10))
+        ).padStart(10, ' ') +
+        'kb'
       );
     });
     buffer.push('');
@@ -138,56 +145,56 @@ export const markdownTable = (report: Results): string => {
     buffer.push('');
     buffer.push(
       '|' +
-        [
-          'Name'.padEnd(40, ' '),
-          'Transformtions'.padEnd(30, ' '),
-          'Browser'.padEnd(10, ' '),
-          'Ops/Second'.padEnd(14, ' '),
-          '% Change'.padEnd(8, ' '),
-        ].join('|') +
-        '|'
+      [
+        'Name'.padEnd(40, ' '),
+        'Transformtions'.padEnd(30, ' '),
+        'Browser'.padEnd(10, ' '),
+        'Ops/Second'.padEnd(14, ' '),
+        '% Change'.padEnd(8, ' '),
+      ].join('|') +
+      '|'
     );
     buffer.push(
       '|' +
-        [
-          ''.padEnd(40, '-'),
-          ''.padEnd(30, '-'),
-          ''.padEnd(10, '-'),
-          ''.padEnd(14, '-'),
-          ''.padEnd(8, '-'),
-        ].join('|') +
-        '|'
+      [
+        ''.padEnd(40, '-'),
+        ''.padEnd(30, '-'),
+        ''.padEnd(10, '-'),
+        ''.padEnd(14, '-'),
+        ''.padEnd(8, '-'),
+      ].join('|') +
+      '|'
     );
 
     for (let benchKey in report.benchmarks[project]) {
       let bench = report.benchmarks[project][benchKey];
       let base: number | null = null;
+      let browser: string | null = null;
 
-      // buffer.push('-> ' + benchKey);
       bench.forEach((item: any) => {
         if (item.status.status == 'success') {
-          let line: [string] = [benchKey.padEnd(40, ' ')];
-          let tag = '';
           let delta: string = '';
-          if (item.tag != null) {
-            tag = item.tag;
-          }
           if (base == null) {
             base = item.status.runsPerSecond;
+            browser = item.browser;
+          } else if (browser != item.browser) {
+            base = item.status.runsPerSecond;
+            browser = item.browser;
           } else {
             let percentChange = (item.status.runsPerSecond / base) * 100;
             delta = ' (' + Math.round(percentChange) + '%)';
           }
 
+
+          let tag = '';
+          if (item.tag != null) {
+            tag = item.tag;
+          }
+
           const goodness =
             '(' + Math.round(item.status.goodnessOfFit * 100) + '%*)';
 
-          // const label = '   ' + item.browser + tag + goodness;
-          // const datapoint =
-          //   humanizeNumber(item.status.runsPerSecond).padStart(10, ' ') +
-          //   ' runs/sec ' +
-          //   delta;
-          // buffer.push(label.padEnd(40, ' ') + datapoint);
+          let line: [string] = [benchKey.padEnd(40, ' ')];
           line.push(tag.padEnd(30, ' '));
           line.push(item.browser.padEnd(10, ' '));
           line.push(
@@ -279,8 +286,34 @@ export function reformat(results: any): any {
         reformed[project][result.name] = [newItem];
       }
     });
+
+
+    for (const [key, value] of Object.entries(reformed[project])) {
+      reformed[project][key].sort(sortResults)
+    }
+
   });
   return reformed;
+}
+
+function sortResults(a, b) {
+
+  if (a.browser == b.browser) {
+    if (a.tag == null) {
+      return -1
+    } else if (b.tag == null) {
+      return 1
+    } else if (a.tag == 'final') {
+      return -1
+    } else if (b.tag == 'final') {
+      return 1
+    } else {
+      return (a.tag > b.tag) ? 1 : -1
+    }
+  } else {
+    return (a.browser < b.browser) ? 1 : -1
+
+  }
 }
 
 // adds commas to the number so its easier to read.
@@ -300,7 +333,7 @@ type Testcase = {
 };
 
 // Run a list of testcases
-export const run = async function(
+export const run = async function (
   options: RunTestcaseOptions,
   runnable: Testcase[]
 ) {
@@ -335,7 +368,7 @@ export const run = async function(
         await Visit.benchmark(
           browser,
           instance.name,
-          'transformed',
+          'final',
           path.join(instance.dir, 'transformed.html')
         )
       );
@@ -358,7 +391,7 @@ const emptyOpts: Transforms = {
   unusedValues: false,
 };
 
-const breakdown = function(
+const breakdown = function (
   options: Transforms
 ): { name: string; options: Transforms }[] {
   let transforms: { name: string; options: Transforms }[] = [];
@@ -370,9 +403,19 @@ const breakdown = function(
       options: Object.assign({}, emptyOpts, { variantShapes: true }),
     },
     {
+      include: options.replaceVDomNode,
+      name: 'virtualDom corrections',
+      options: Object.assign({}, emptyOpts, { replaceVDomNode: true }),
+    },
+    {
       include: options.inlineFunctions,
       name: 'inline functions',
       options: Object.assign({}, emptyOpts, { inlineFunctions: true }),
+    },
+    {
+      include: options.passUnwrappedFunctions,
+      name: 'pass unwrapped functions',
+      options: Object.assign({}, emptyOpts, { passUnwrappedFunctions: true }),
     },
     {
       include: options.listLiterals == InlineLists.AsObjects,
@@ -431,17 +474,12 @@ const breakdown = function(
 // Run a list of test cases
 // But we'll run each transformation individually to see what the breakdown is.
 // We'll also run a final case with all the requested transformations
-export const runWithBreakdown = async function(
+export const runWithBreakdown = async function (
   options: RunTestcaseOptions,
   runnable: Testcase[]
 ) {
   let results: any[] = [];
   let assets: any = {};
-
-  // const opts = {
-  //   browser: Browser.Chrome,
-  //   headless: false,
-  // };
 
   for (let instance of runnable) {
     await Compile.compileAndTransform(
@@ -469,7 +507,7 @@ export const runWithBreakdown = async function(
         await Visit.benchmark(
           browser,
           instance.name,
-          'transformed',
+          'final',
           path.join(instance.dir, 'transformed.html')
         )
       );
@@ -477,8 +515,6 @@ export const runWithBreakdown = async function(
 
     let steps = breakdown(options.transforms);
     for (let i in steps) {
-      console.log('running', steps[i]);
-
       await Compile.compileAndTransform(
         instance.dir,
         instance.elmFile,
@@ -506,4 +542,154 @@ export const runWithBreakdown = async function(
   }
 
   return { assets: assets, benchmarks: reformat(results) };
+};
+
+
+
+
+// Run a list of test cases
+// But we'll knock out each transformation individually to see if that has an effect
+// We'll also run a final case with all the requested transformations
+export const runWithKnockout = async function (
+  options: RunTestcaseOptions,
+  runnable: Testcase[]
+) {
+  let results: any[] = [];
+  let assets: any = {};
+
+  for (let instance of runnable) {
+    await Compile.compileAndTransform(
+      instance.dir,
+      instance.elmFile,
+      {
+        compile: options.compile,
+        minify: options.minify,
+        gzip: options.gzip,
+      },
+      options.transforms
+    );
+    assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+
+    for (let browser of options.runBenchmark) {
+      results.push(
+        await Visit.benchmark(
+          browser,
+          instance.name,
+          null,
+          path.join(instance.dir, 'standard.html')
+        )
+      );
+      results.push(
+        await Visit.benchmark(
+          browser,
+          instance.name,
+          'final',
+          path.join(instance.dir, 'transformed.html')
+        )
+      );
+    }
+
+    let steps = knockout(options.transforms);
+    for (let i in steps) {
+      await Compile.compileAndTransform(
+        instance.dir,
+        instance.elmFile,
+        {
+          compile: false,
+          minify: false,
+          gzip: false,
+        },
+        steps[i].options
+      );
+      // TODO: figure out how to capture asset sizes for the breakdown
+      // assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+
+      for (let browser of options.runBenchmark) {
+        results.push(
+          await Visit.benchmark(
+            browser,
+            instance.name,
+            steps[i].name,
+            path.join(instance.dir, 'transformed.html')
+          )
+        );
+      }
+    }
+  }
+
+  return { assets: assets, benchmarks: reformat(results) };
+};
+
+
+const knockout = function (
+  options: Transforms
+): { name: string; options: Transforms }[] {
+  let transforms: { name: string; options: Transforms }[] = [];
+
+  let full: { name: string; include: boolean; options: Transforms }[] = [
+    {
+      include: options.variantShapes,
+      name: 'without variant shapes',
+      options: Object.assign({}, options, { variantShapes: false }),
+    },
+    {
+      include: options.replaceVDomNode,
+      name: 'without virtualDom corrections',
+      options: Object.assign({}, options, { replaceVDomNode: false }),
+    },
+    {
+      include: options.inlineFunctions,
+      name: 'without inline functions',
+      options: Object.assign({}, options, { inlineFunctions: false }),
+    },
+    {
+      include: options.passUnwrappedFunctions,
+      name: 'without passing unwrapped functions',
+      options: Object.assign({}, options, { passUnwrappedFunctions: false }),
+    },
+    {
+      include: options.listLiterals != null,
+      name: 'without inline list literals',
+      options: Object.assign({}, options, {
+        listLiterals: null,
+      }),
+    },
+    {
+      include: options.inlineEquality,
+      name: 'without inline equality',
+      options: Object.assign({}, options, { inlineEquality: false }),
+    },
+    {
+      include: options.inlineNumberToString,
+      name: 'without inline number-to-string',
+      options: Object.assign({}, options, { inlineNumberToString: false }),
+    },
+    {
+      include: options.arrowFns,
+      name: 'without arrowize functions',
+      options: Object.assign({}, options, { arrowFns: false }),
+    },
+    {
+      include: options.objectUpdate != null,
+      name: 'without object update',
+      options: Object.assign({}, options, {
+        objectUpdate: null,
+      }),
+    },
+    {
+      include: options.unusedValues,
+      name: 'without thorough removal of unused values',
+      options: Object.assign({}, options, {
+        unusedValues: false,
+      }),
+    },
+  ];
+
+  for (let i in full) {
+    if (full[i].include) {
+      transforms.push(full[i]);
+    }
+  }
+
+  return transforms;
 };

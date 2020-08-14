@@ -19,7 +19,7 @@ export const benchmark = async (
   }
 
   let driver = await new Webdriver.Builder()
-    .forBrowser(options.browser, 'latest')
+    .forBrowser(options.browser)
     .setChromeOptions(chromeOptions)
     .setFirefoxOptions(firefoxOptions)
     .build();
@@ -34,5 +34,5 @@ export const benchmark = async (
   } finally {
     await driver.quit();
   }
-  return { name: name, tag: tag, browser: 'chrome', results: result };
+  return { name: name, tag: tag, browser: options.browser, results: result };
 };

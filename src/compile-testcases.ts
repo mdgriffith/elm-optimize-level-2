@@ -85,7 +85,6 @@ export const compileAndTransform = async (
 
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
-    // [transforms.replaceVDomNode, replaceVDomNode()],
 
     [transforms.variantShapes, normalizeVariantShapes],
     [
