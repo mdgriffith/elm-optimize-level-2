@@ -135,3 +135,14 @@ This check is significant for parsing, though also other checks as well.
 
 
 
+Before
+
+```
+String$fromFloat(val)
+```
+
+After:
+
+```
+val + ""
+```
