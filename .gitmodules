@@ -8,3 +8,6 @@
 [submodule "testcases/elm-animator/repo"]
 	path = testcases/elm-animator/repo
 	url = https://github.com/mdgriffith/elm-animator
+[submodule "testcases/elm-markdown/repo"]
+	path = testcases/elm-markdown/repo
+	url = https://github.com/dillonkearns/elm-markdown
