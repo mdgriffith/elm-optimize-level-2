@@ -34,6 +34,7 @@
   "devDependencies": {
     "@types/commander": "^2.12.2",
     "chromedriver": "^84.0.1",
+    "geckodriver": "^1.20.0",
     "husky": "^4.2.5",
     "node-elm-compiler": "^5.0.4",
     "prepack": "^0.2.54",
