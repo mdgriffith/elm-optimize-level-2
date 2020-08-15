@@ -98,9 +98,7 @@ function reportInlineTransformResult(ctx: InlineContext) {
 
 
 
-export const createFunctionInlineTransformer = (logOverview: boolean
-
-): ts.TransformerFactory<ts.SourceFile> => context => {
+export const createFunctionInlineTransformer = (logOverview: boolean): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const inlineContext: InlineContext = createInlineContext();
 

@@ -32,6 +32,7 @@
   "author": "",
   "module": "dist/lib.esm.js",
   "devDependencies": {
+    "@gfx/zopfli": "^1.0.15",
     "@types/commander": "^2.12.2",
     "chalk": "^4.1.0",
     "chromedriver": "^84.0.1",

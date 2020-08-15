@@ -14,6 +14,8 @@ import * as fs from 'fs';
 import { prepackFileSync } from 'prepack';
 import * as Terser from 'terser';
 import { execSync } from 'child_process';
+import * as Compress from "@gfx/zopfli";
+import { resolveModuleName } from 'typescript';
 
 
 export function prepack(input: string): string {
@@ -75,9 +77,21 @@ export async function minify(inputFilename: string, outputFilename: string) {
         console.log('Error mangling with Terser');
     }
 }
-export async function gzip(file: string) {
+export async function gzip(file: string, output: string) {
     // --keep = keep the original file
     // --force = overwrite the exisign gzip file if it's there
-    execSync('gzip --keep --force ' + file);
+    // execSync('gzip --keep --force ' + file);
+    const fileContents = fs.readFileSync(file, 'utf8');
+    const promise = Compress.gzipAsync(fileContents, {})
+        .then(
+            (compressed) => {
+                fs.writeFileSync(
+                    output,
+                    compressed
+                );
+            }
+        );
+
+    await promise;
 }
 

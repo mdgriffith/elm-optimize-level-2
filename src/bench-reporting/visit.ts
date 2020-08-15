@@ -29,8 +29,8 @@ export const benchmark = async (
   // https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_WebDriver.html
   let result = [];
   try {
-    const tagStr: string = tag == null ? '' : ", " + tag;
-    console.log(name + tagStr + chalk.green(" -> ") + chalk.yellow(options.browser))
+    const label: string = tag == null ? name : name + ", " + tag;
+    console.log(label.padEnd(20, ' ') + chalk.green(" -> ") + chalk.yellow(options.browser))
     await driver.get('file://' + Path.resolve(file));
     await driver.wait(Webdriver.until.titleIs('done'), 480000);
     result = await driver.executeScript('return window.results;');

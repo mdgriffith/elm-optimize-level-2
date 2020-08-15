@@ -37,28 +37,28 @@ const test: Transforms = {
 
 const options = {
   compile: true,
-  gzip: false,
-  minify: false,
+  gzip: true,
+  minify: true,
   verbose: true,
-  assetSizes: false,
+  assetSizes: true,
   runBenchmark: [
     {
       browser: Browser.Chrome,
-      headless: false,
+      headless: true,
     },
     {
       browser: Browser.Firefox,
-      headless: false,
+      headless: true,
     },
   ],
   transforms: defaultOptions,
 };
 
 async function go() {
-  // const report = await Reporting.run(options, [
-  // Use `runWithBreakdown` if you want the breakdown
-  // const report = await Reporting.runWithKnockout(options, [
-  const report = await Reporting.runWithBreakdown(options, [
+  const report = await Reporting.run(options, [
+    // Use `runWithBreakdown` if you want the breakdown
+    // const report = await Reporting.runWithKnockout(options, [
+    // const report = await Reporting.runWithBreakdown(options, [
     // {
     //   name: 'Elm Core',
     //   dir: 'testcases/bench',
