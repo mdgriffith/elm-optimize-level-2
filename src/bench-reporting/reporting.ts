@@ -13,20 +13,17 @@ export interface Stat {
 
 // Asset Sizes
 export const assetSizeStats = (dir: string): Stat[] => {
-  let stats: Stat[] = [];
-  fs.readdir(dir, function (err, files) {
-    if (err) {
-      console.log('Error getting directory information.');
-    } else {
-      files.forEach(function (file) {
-        const stat = fs.statSync(path.join(dir, file));
-        stats.push({
-          name: path.basename(file),
-          bytes: stat.size,
-        });
-      });
-    }
-  });
+  const stats: Stat[] = [];
+  const files = fs.readdirSync(dir);
+
+  for (let i in files) {
+    const file = files[i];
+    const stat = fs.statSync(path.join(dir, file));
+    stats.push({
+      name: path.basename(file),
+      bytes: stat.size,
+    });
+  }
   return stats;
 };
 
@@ -605,7 +602,23 @@ export const runWithBreakdown = async function (
         stdio: ['pipe', 'ignore', 'pipe']
       }
     });
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.js'),
+      source
+    );
 
+    const final = await Transform.transform(
+      instance.dir,
+      source,
+      path.join(instance.dir, instance.elmFile),
+      options.verbose,
+      options.transforms
+    )
+
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+      final
+    );
 
 
     for (let browser of options.runBenchmark) {
@@ -642,8 +655,14 @@ export const runWithBreakdown = async function (
         intermediate
       );
 
-      // TODO: figure out how to capture asset sizes for the breakdown
-      // assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+      const dashedLabel = steps[i].name.replace(unallowedChars, '-');
+
+      if (options.minify) {
+        await Post.minify(path.join(instance.dir, 'output', 'elm.opt.transformed.js'), path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js`))
+      }
+      if (options.minify && options.gzip) {
+        await Post.gzip(path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js`), path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js.gz`))
+      }
 
       for (let browser of options.runBenchmark) {
         results.push(
@@ -656,17 +675,8 @@ export const runWithBreakdown = async function (
         );
       }
     }
-    fs.writeFileSync(
-      path.join(instance.dir, 'output', 'elm.opt.js'),
-      source
-    );
-    const final = await Transform.transform(
-      instance.dir,
-      source,
-      path.join(instance.dir, instance.elmFile),
-      options.verbose,
-      options.transforms
-    )
+
+
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       final
@@ -680,7 +690,9 @@ export const runWithBreakdown = async function (
       await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.min.js'), path.join(instance.dir, 'output', 'elm.opt.min.js.gz'))
       await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'), path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz'))
     }
-    assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+    if (options.assetSizes) {
+      assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+    }
 
 
   }
@@ -689,7 +701,7 @@ export const runWithBreakdown = async function (
 };
 
 
-
+const unallowedChars = /[^A-Za-z0-9]/g;
 
 // Run a list of test cases
 // But we'll knock out each transformation individually to see if that has an effect
@@ -713,7 +725,23 @@ export const runWithKnockout = async function (
       }
     });
 
-    assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.js'),
+      source
+    );
+
+    const final = await Transform.transform(
+      instance.dir,
+      source,
+      path.join(instance.dir, instance.elmFile),
+      options.verbose,
+      options.transforms
+    )
+
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+      final
+    );
 
     for (let browser of options.runBenchmark) {
       results.push(
@@ -747,8 +775,15 @@ export const runWithKnockout = async function (
         path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
         intermediate
       );
-      // TODO: figure out how to capture asset sizes for the breakdown
-      // assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+
+      const dashedLabel = steps[i].name.replace(unallowedChars, '-');
+
+      if (options.minify) {
+        await Post.minify(path.join(instance.dir, 'output', 'elm.opt.transformed.js'), path.join(instance.dir, 'output', `elm.opt.minus-${dashedLabel}.min.js`))
+      }
+      if (options.minify && options.gzip) {
+        await Post.gzip(path.join(instance.dir, 'output', `elm.opt.minus-${dashedLabel}.min.js`), path.join(instance.dir, 'output', `elm.opt.minus-${dashedLabel}.min.js.gz`))
+      }
 
       for (let browser of options.runBenchmark) {
         results.push(
@@ -762,17 +797,6 @@ export const runWithKnockout = async function (
       }
     }
 
-    const final = await Transform.transform(
-      instance.dir,
-      source,
-      path.join(instance.dir, instance.elmFile),
-      options.verbose,
-      options.transforms
-    )
-    fs.writeFileSync(
-      path.join(instance.dir, 'output', 'elm.opt.js'),
-      source
-    );
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       final
@@ -785,6 +809,9 @@ export const runWithKnockout = async function (
       await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.min.js'), path.join(instance.dir, 'output', 'elm.opt.min.js.gz'))
       await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'), path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz'))
     }
+
+    assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
+
 
   }
 
