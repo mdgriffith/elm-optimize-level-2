@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Compile from '../compile';
 import { Transforms, RunTestcaseOptions, InlineLists } from '../types';
 import * as Visit from './visit';
-
+import chalk from 'chalk';
+import * as Transform from '../transform';
+import { compileToStringSync } from 'node-elm-compiler';
 export interface Stat {
   name: string;
   bytes: number;
@@ -33,9 +34,95 @@ type Results = {
   benchmarks: any;
 };
 
+
+
+// Render results as markdown
+export const terminal = (report: Results): string => {
+
+  let buffer: string[] = [];
+
+  // List asset sizes
+  for (let key in report.assets) {
+    buffer.push(chalk.green(key + ' asset overview'));
+    buffer.push('');
+    report.assets[key].forEach((item: Stat) => {
+      buffer.push(
+        '    ' +
+        item.name.padEnd(40, ' ') +
+        '' +
+        humanizeNumber(
+          roundToDecimal(1, item.bytes / Math.pow(2, 10))
+        ).padStart(10, ' ') +
+        'kb'
+      );
+    });
+    buffer.push('');
+  }
+  buffer.push('');
+
+  // List benchmarks
+  for (let project in report.benchmarks) {
+    buffer.push(chalk.green(project));
+    buffer.push('');
+    for (let benchKey in report.benchmarks[project]) {
+      let bench = report.benchmarks[project][benchKey];
+      let base: number | null = null;
+      let browser: string | null = null;
+
+      buffer.push(chalk.cyan(benchKey));
+      bench.forEach((item: any) => {
+        if (item.status.status == 'success') {
+          let tag = '';
+          let delta: string = '';
+          if (item.tag != null) {
+            tag = ', ' + item.tag;
+          }
+          if (base == null) {
+            base = item.status.runsPerSecond;
+            browser = item.browser;
+          } else if (browser != item.browser) {
+            base = item.status.runsPerSecond;
+            browser = item.browser;
+          } else {
+            let percentChange = (item.status.runsPerSecond / base) * 100;
+            if (percentChange > 105) {
+              delta = ' (' + chalk.green(Math.round(percentChange)) + '%)';
+            } else if (percentChange < 97) {
+              delta = ' (' + chalk.red(Math.round(percentChange)) + '%)';
+            } else {
+              delta = ' (' + Math.round(percentChange) + '%)';
+            }
+
+          }
+
+          const goodness =
+            chalk.grey('(' + Math.round(item.status.goodnessOfFit * 100) + '%*)');
+
+          const label = '   ' + item.browser + tag + goodness;
+          const datapoint =
+            chalk.yellow(humanizeNumber(item.status.runsPerSecond).padStart(10, ' ')) +
+            ' runs/sec ' +
+            delta;
+          buffer.push(label.padEnd(60, ' ') + datapoint);
+        } else {
+          console.log('FAILURE', item);
+        }
+      });
+      buffer.push('');
+      buffer.push('');
+    }
+
+    buffer.push('');
+    buffer.push('');
+  }
+  buffer.push('');
+  buffer.push('');
+  return buffer.join('\n');
+};
+
+
 // Render results as markdown
 export const markdown = (report: Results): string => {
-
 
   let buffer: string[] = [];
 
@@ -341,16 +428,33 @@ export const run = async function (
   let assets: any = {};
 
   for (let instance of runnable) {
-    await Compile.compileAndTransform(
-      instance.dir,
-      instance.elmFile,
+    const source: string = compileToStringSync([instance.elmFile], {
+      output: 'output/elm.opt.js',
+      cwd: instance.dir,
+      optimize: true,
+      processOpts:
+      // ignore stdout
       {
-        compile: options.compile,
-        minify: options.minify,
-        gzip: options.gzip,
-      },
+        stdio: ['pipe', 'ignore', 'pipe']
+      }
+    });
+
+    const transformed = await Transform.transform(
+      instance.dir,
+      source,
+      path.join(instance.dir, instance.elmFile),
+      false,
       options.transforms
+    )
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.js'),
+      source
     );
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+      transformed
+    );
+
     if (options.assetSizes) {
       assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
     }
@@ -482,16 +586,33 @@ export const runWithBreakdown = async function (
   let assets: any = {};
 
   for (let instance of runnable) {
-    await Compile.compileAndTransform(
-      instance.dir,
-      instance.elmFile,
+    const source: string = compileToStringSync([instance.elmFile], {
+      output: 'output/elm.opt.js',
+      cwd: instance.dir,
+      optimize: true,
+      processOpts:
+      // ignore stdout
       {
-        compile: options.compile,
-        minify: options.minify,
-        gzip: options.gzip,
-      },
+        stdio: ['pipe', 'ignore', 'pipe']
+      }
+    });
+
+    const final = await Transform.transform(
+      instance.dir,
+      source,
+      path.join(instance.dir, instance.elmFile),
+      false,
       options.transforms
+    )
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.js'),
+      source
     );
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+      final
+    );
+
     assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
 
     for (let browser of options.runBenchmark) {
@@ -515,16 +636,19 @@ export const runWithBreakdown = async function (
 
     let steps = breakdown(options.transforms);
     for (let i in steps) {
-      await Compile.compileAndTransform(
+
+      const intermediate = await Transform.transform(
         instance.dir,
-        instance.elmFile,
-        {
-          compile: false,
-          minify: false,
-          gzip: false,
-        },
+        source,
+        path.join(instance.dir, instance.elmFile),
+        false,
         steps[i].options
+      )
+      fs.writeFileSync(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        intermediate
       );
+
       // TODO: figure out how to capture asset sizes for the breakdown
       // assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
 
@@ -558,15 +682,31 @@ export const runWithKnockout = async function (
   let assets: any = {};
 
   for (let instance of runnable) {
-    await Compile.compileAndTransform(
-      instance.dir,
-      instance.elmFile,
+    const source: string = compileToStringSync([instance.elmFile], {
+      output: 'output/elm.opt.js',
+      cwd: instance.dir,
+      optimize: true,
+      processOpts:
+      // ignore stdout
       {
-        compile: options.compile,
-        minify: options.minify,
-        gzip: options.gzip,
-      },
+        stdio: ['pipe', 'ignore', 'pipe']
+      }
+    });
+
+    const final = await Transform.transform(
+      instance.dir,
+      source,
+      path.join(instance.dir, instance.elmFile),
+      false,
       options.transforms
+    )
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.js'),
+      source
+    );
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+      final
     );
     assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
 
@@ -591,15 +731,16 @@ export const runWithKnockout = async function (
 
     let steps = knockout(options.transforms);
     for (let i in steps) {
-      await Compile.compileAndTransform(
+      const intermediate = await Transform.transform(
         instance.dir,
-        instance.elmFile,
-        {
-          compile: false,
-          minify: false,
-          gzip: false,
-        },
+        source,
+        path.join(instance.dir, instance.elmFile),
+        false,
         steps[i].options
+      )
+      fs.writeFileSync(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        intermediate
       );
       // TODO: figure out how to capture asset sizes for the breakdown
       // assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));

@@ -88,8 +88,18 @@ export const createInlineContext = (): InlineContext => ({
   },
 });
 
-export const createFunctionInlineTransformer = (
-  reportResult?: (res: InlineContext) => void
+function reportInlineTransformResult(ctx: InlineContext) {
+  const { splits, partialApplications, inlined } = ctx;
+
+  console.log(`inlining function calls
+    inlined    ${inlined.fromRawFunc}
+`);
+}
+
+
+
+export const createFunctionInlineTransformer = (logOverview: boolean
+
 ): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {
     const inlineContext: InlineContext = createInlineContext();
@@ -102,9 +112,8 @@ export const createFunctionInlineTransformer = (
     const inliner = createInlinerVisitor(inlineContext, context);
     const result = ts.visitNode(splittedNode, inliner);
 
-    if (reportResult) {
-      reportResult(inlineContext);
-      // console.log(inlineContext);
+    if (logOverview) {
+      reportInlineTransformResult(inlineContext);
     }
 
     return result;
@@ -337,8 +346,8 @@ const createSplitterVisitor = (
               (partialApplication &&
                 partialApplication.funcReturnsWrapper &&
                 partialApplication.appliedArgs.length +
-                  appliedArgsNodes.length ===
-                  partialApplication.split.arity)
+                appliedArgsNodes.length ===
+                partialApplication.split.arity)
             ) {
               const rawFunName = deriveRawLambdaName(node.name.text);
 
@@ -421,7 +430,7 @@ const createInlinerVisitor = (
             if (
               partialApplication &&
               partialApplication.appliedArgs.length + arity ===
-                partialApplication.split.arity
+              partialApplication.split.arity
             ) {
               inlineContext.inlined.partialApplications += 1;
 
@@ -445,7 +454,7 @@ const createInlinerVisitor = (
             partialApplication &&
             node.arguments.length === 1 &&
             partialApplication.appliedArgs.length ===
-              partialApplication.split.arity - 1
+            partialApplication.split.arity - 1
           ) {
             inlineContext.inlined.partialApplications += 1;
 

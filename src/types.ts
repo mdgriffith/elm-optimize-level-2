@@ -16,6 +16,7 @@ export type RunTestcaseOptions = {
   compile: boolean;
   gzip: boolean;
   minify: boolean;
+  verbose: boolean;
   assetSizes: boolean;
   runBenchmark: BrowserOptions[];
   transforms: Transforms;

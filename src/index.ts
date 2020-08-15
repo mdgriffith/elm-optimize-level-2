@@ -1,8 +1,10 @@
 // tslint:disable-next-line no-require-imports no-var-requires
 import program from 'commander';
 import * as path from 'path';
-import { compileAndTransform } from './compile-testcases';
+import * as Transform from './transform';
 import { ObjectUpdate, Transforms, InlineLists } from './types';
+import { compileToStringSync } from 'node-elm-compiler';
+import * as fs from 'fs';
 const { version } = require('../package.json');
 
 const defaultOptions: Transforms = {
@@ -24,10 +26,10 @@ program
   .option(
     '-e --exclude-transforms <excludedTransforms>',
     'names of transforms that should be excluded (comma delimited). ' +
-      'Names of available transforms:' +
-      Object.keys(defaultOptions)
-        .map(name => `'${name}'`)
-        .join(', '),
+    'Names of available transforms:' +
+    Object.keys(defaultOptions)
+      .map(name => `'${name}'`)
+      .join(', '),
     v => v.split(','),
     []
   )
@@ -35,6 +37,11 @@ program
     '-m --modernize',
     'transform into a more modern JS to save size (es2018)',
     false
+  )
+  .option(
+    '--output',
+    'The desired name of the javascript file to create.',
+    'elm.js'
   )
   .parse(process.argv);
 
@@ -71,18 +78,30 @@ async function run(filePath: string | undefined, options: CLIOptions) {
       withExcluded.inlineFunctions && withExcluded.passUnwrappedFunctions,
   };
 
-  await compileAndTransform(
+
+  const source: string = compileToStringSync([fileName], {
+    output: 'output/elm.opt.js',
+    cwd: dirname,
+    optimize: true,
+    processOpts:
+    // ignore stdout
+    {
+      stdio: ['pipe', 'ignore', 'pipe']
+    }
+  });
+  const transformed = await Transform.transform(
     dirname,
     fileName,
-    {
-      compile: true,
-      gzip: false,
-      minify: false,
-    },
+    source,
+    false,
     withCorrections
+  )
+
+  fs.writeFileSync(
+    program.output,
+    source
   );
 
-  // console.log({ filePath, options });
 }
 
 run(program.args[0], program.opts() as any).catch(e => console.error(e));
