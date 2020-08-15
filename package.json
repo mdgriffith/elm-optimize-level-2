@@ -16,7 +16,7 @@
   "scripts": {
     "prepublish": "tsc -p tsconfig.json",
     "run": "ts-node -T src/index.ts testcases/bench/Main.elm --modernize",
-    "report": "ts-node -T src/bench-reporting/generate-report.ts"
+    "report": "ts-node -T src/bench-reporting/run.ts"
   },
   "peerDependencies": {},
   "husky": {
@@ -33,6 +33,7 @@
   "module": "dist/lib.esm.js",
   "devDependencies": {
     "@types/commander": "^2.12.2",
+    "chalk": "^4.1.0",
     "chromedriver": "^84.0.1",
     "geckodriver": "^1.20.0",
     "husky": "^4.2.5",
