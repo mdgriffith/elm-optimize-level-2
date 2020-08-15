@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Compile from '../compile-testcases';
+import * as Compile from '../compile';
 import { Transforms, RunTestcaseOptions, InlineLists } from '../types';
 import * as Visit from './visit';
 
