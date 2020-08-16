@@ -1,37 +1,108 @@
 # Elm Optimize
 
-This project is meant to explore different optimizations that are specific to elm-generated code.
+**Note, Experimental** - *This project is just starting.  While we currently believe every adjustment to the resulting javascript should be safe and make things explicitly faster, it's hard to be 100% certain until we have a large number of projects using it successfully.  So, beware!*
 
-I'd like to avoid aspects that can handled by [terser](https://terser.org/), [uglify](https://github.com/mishoo/UglifyJS) or [prepack](https://github.com/facebook/prepack) just because it seems like this is a huge area and there's already a ton of work done.  We should focus on things specific to Elm, and possibly make it easier for these tools to be even more effective.
+*And let us know how it goes.* :smiley: 
 
-The first focus is to implement transformations that were [explored by Robin in this dev.to post](https://dev.to/skinney/improving-elm-s-compiler-output-5e1h)
+Elm is fast.
 
-## Needed work
-- [ ] - Set up a basic test example (e.g. fold through a list of maybe Ints and sum them).
-- [ ] - Set up complation pipeline
-    - We want to be able to compare different JS outputs to get a handle of who does what transformation.  So let's set up a pipeline that will generate multiple `js` files in a folder at different stages of the pipeline (e.g. `elm.js`, `elm.optimized.js`, `elm.optimized.prepack.js`.  This will allow us to `diff` stages and ultimately compare how our tool can potentially allow other tools to function more effectively.
+Can we make it faster?
 
+[Turns out, yes!](#Benchmarks) :rocket:
 
-**Choose AST tool**
-We need some tool(s) that will allow us to do the following:
-1. Parse Elm code and extract information such as a type definition (i.e. what are all the variant names and their structures).
-2. Parse JS code and transform bits of the AST.
+Elm Optimize is a project for exploring different optimizations that are specific to elm-generated javascript.
 
-**Options**
-  - [SWC](https://swc-project.github.io/docs/usage-plugin)
-      - In Rust, plugin in typescript
-  - [Codemod](https://github.com/facebook/codemod)
-  - [Treesitter](https://tree-sitter.github.io/tree-sitter/)
-      - Rust
-      - Grammars for parsing both [JS](https://github.com/tree-sitter/tree-sitter-javascript) and [Elm](https://github.com/Razzeee/tree-sitter-elm/)
+There are two parts to this.
+
+1. Explore different javascript representations for Elm code.  This means gathering data on what a given representation would mean on realworld projects, and across browsers.  
+
+2. A tool you can use *right now* to compile elm using the adjustments that have given us the most speed!
 
 
-**Opimization exploration**
-- [ ] 1. Parse Elm code and prepare a summary that matches custom type variant names to their type definition
-- [ ] 2. Fill out variant constructors with nulls so that the shapes of the objects are the same. (See V8 fast properties reference.  Is there some way to check how V8 is implementing a specific object?)  
-- [ ] 3. Transform `A2(author$project$Main$add, 1, 2)` to `author$project$Main$add.f(1, 2)` when appropriate
+## Installation and Usage
+
+```
+npm install -g elm-optimize
+```
+
+Then you can use `elm-optimize` just as you would `elm-make --optimize`.
+
+```
+elm-optimize Main.elm
+```
+will generate an `elm.js` file. 
+
+The only configurable option is what to name the generated js file.
+```
+elm-optimize Main.elm --output app.js
+```
+**Note** elm-optimize only generates a js file, it doesn't support generating HTML.
+
+**Another Note** Before deploying your app, you should also minify it and gzip it. `elm-optimize` does not do that for you. [Check out this doc for a recommended setup.](minification.md)
 
 
-## References
-1. [V8 Fast Properties](https://v8.dev/blog/fast-properties)
+## Exploration
 
+This is also a science project :bowtie:
+
+The goal is to quantify different transformations that can be done to the JS output of the Elm compiler and what their effect would be.
+
+To get started, [here's a current overview of all the JS transformations we explored](transformations.md) and a summary of their effect.  Not all of them are included in the CLI tool because not all of them turned out to be beneficial.
+
+A few are listed there as either incomplete or not attempted.  That's future work!
+
+
+## Benchmarks
+
+In an effort to quantify these transformations, we've put together a number of benchmarks, including some from exisiting Elm packages such as `dillonkearns/elm-markdown`, `w0rm/elm-obj-file`, and `mdgriffith/elm-ui`.
+
+Our goal is to have benchmarks that track performance on code where performance is meaningful.
+
+[Here's the most recent, comprehensive run of the benchmarks.](results/current.md)
+
+Though here are a few highlights:
+
+*Note* keep in mind that these numbers have *all the caveats* that benchmarks usually have.
+
+
+## Html
+
+|Name                                     |Transformtions                |Browser   |Ops/Second    |% Change |
+|-----------------------------------------|------------------------------|----------|--------------|---------|
+| create a 4 level nested html tree       |baseline                      |firefox   |        19,878|         |
+| create a 4 level nested html tree       |optimized                     |firefox   |        24,878|  (125%) |
+| create a 4 level nested html tree       |baseline                      |chrome    |        43,689|         |
+| create a 4 level nested html tree       |optimized                     |chrome    |       113,266|  (259%) |
+
+
+
+
+## Elm Markdown
+
+|Name                                     |Transformtions                |Browser   |Ops/Second    |% Change |
+|-----------------------------------------|------------------------------|----------|--------------|---------|
+| dillonkearns/elm-markdown               |baseline                      |firefox   |         1,226|         |
+| dillonkearns/elm-markdown               |optimized                     |firefox   |         2,497|  (204%) |
+| dillonkearns/elm-markdown               |baseline                      |chrome    |         3,116|         |
+| dillonkearns/elm-markdown               |optimized                     |chrome    |         5,099|  (164%) |
+
+
+
+
+## Contributing
+
+*For this project, contributions always start with communication before code!*
+
+That being said, there are a few areas that might be opportunities for contribution.
+
+**First and formost** is to try `elm-optimize` on any current Elm project you have.
+
+We'd love to hear your results whether they be success, no effect, or caused a regression.
+
+If your project saw an explicit improvement or performance regression, [leave a comment on this issue](https://github.com/mdgriffith/elm-optimize/issues/15).
+
+For more serious issues, feel free to file a separate issue.
+
+**Secondly**, if you believe there are public benchmarks that we could track that are *not essentially covered* by our current benchmarks, let us know!  We want the benchmarking suite to be as comprehensive as possible, though we have to weigh that against having a million benchmarks that essentially test the same thing.
+
+**Thirdly**, if you believe there are additional JS transformations that would be interesting to explore, or would like to try improving existing transformations in some way, get in touch!

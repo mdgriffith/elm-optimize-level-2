@@ -23,3 +23,6 @@ https://github.com/madou/typescript-transformer-handbook
 
 typescript wiki
 https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
+
+
+https://v8.dev/blog/fast-properties

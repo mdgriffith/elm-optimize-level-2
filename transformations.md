@@ -1,10 +1,12 @@
-# Overview of Possible Transformations
+# Overview of Transformations
 
 This is an overview of the transformations for `elm-optimize`.
 
+Not all of them made the cut, but seeing that a transformation is not as effective as initially thought is really good information.
+
 We got a huge head start because of [Robin's article](https://dev.to/skinney/improving-elm-s-compiler-output-5e1h).
 
-I tried to summarize the impact of each transformation, though 
+Each transformation also has a rough summary of impact.
 
 
 # Applying Functions Directly
