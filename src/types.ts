@@ -29,9 +29,9 @@ export type Transforms = {
   inlineEquality: boolean;
   inlineFunctions: boolean;
   passUnwrappedFunctions: boolean;
-  listLiterals: InlineLists | null | false;
+  listLiterals: InlineLists | false;
   arrowFns: boolean;
-  objectUpdate: ObjectUpdate | null | false;
+  objectUpdate: ObjectUpdate | false;
   unusedValues: boolean;
 };
 

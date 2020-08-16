@@ -494,10 +494,10 @@ const emptyOpts: Transforms = {
   inlineNumberToString: false,
   inlineFunctions: false,
   inlineEquality: false,
-  listLiterals: null,
+  listLiterals: false,
   passUnwrappedFunctions: false,
   arrowFns: false,
-  objectUpdate: null,
+  objectUpdate: false,
   unusedValues: false,
 };
 
@@ -557,7 +557,7 @@ const breakdown = function (
       options: Object.assign({}, emptyOpts, { arrowFns: true }),
     },
     {
-      include: options.objectUpdate != null,
+      include: options.objectUpdate != false,
       name: 'object update',
       options: Object.assign({}, emptyOpts, {
         objectUpdate: options.objectUpdate,
@@ -846,10 +846,10 @@ const knockout = function (
       options: Object.assign({}, options, { passUnwrappedFunctions: false }),
     },
     {
-      include: options.listLiterals != null,
+      include: options.listLiterals != false,
       name: 'without inline list literals',
       options: Object.assign({}, options, {
-        listLiterals: null,
+        listLiterals: false,
       }),
     },
     {
@@ -868,10 +868,10 @@ const knockout = function (
       options: Object.assign({}, options, { arrowFns: false }),
     },
     {
-      include: options.objectUpdate != null,
+      include: options.objectUpdate != false,
       name: 'without object update',
       options: Object.assign({}, options, {
-        objectUpdate: null,
+        objectUpdate: false,
       }),
     },
     {

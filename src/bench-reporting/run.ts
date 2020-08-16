@@ -15,10 +15,10 @@ const defaultOptions: Transforms = {
   inlineNumberToString: true,
   inlineEquality: true,
   inlineFunctions: true,
-  listLiterals: null,
+  listLiterals: false,
   passUnwrappedFunctions: true,
-  arrowFns: true,
-  objectUpdate: ObjectUpdate.InlineSpread,
+  arrowFns: false,
+  objectUpdate: false,
   unusedValues: false,
 };
 
@@ -55,20 +55,20 @@ const options = {
 };
 
 async function go() {
-  const report = await Reporting.run(options, [
-    // Use `runWithBreakdown` if you want the breakdown
-    // const report = await Reporting.runWithKnockout(options, [
+  // const report = await Reporting.run(options, [
+  // Use `runWithBreakdown` if you want the breakdown
+  const report = await Reporting.runWithKnockout(options, [
     // const report = await Reporting.runWithBreakdown(options, [
     // {
     //   name: 'Elm Core',
     //   dir: 'testcases/bench',
     //   elmFile: 'Main.elm',
     // },
-    {
-      name: 'Html',
-      dir: 'testcases/html',
-      elmFile: 'Main.elm',
-    },
+    // {
+    //   name: 'Html',
+    //   dir: 'testcases/html',
+    //   elmFile: 'Main.elm',
+    // },
     // {
     //   name: 'Elm UI',
     //   dir: 'testcases/elm-ui',
@@ -84,20 +84,20 @@ async function go() {
     //   dir: 'testcases/elm-animator',
     //   elmFile: 'Run.elm',
     // },
-    // {
-    //   name: 'Elm Markdown',
-    //   dir: 'testcases/elm-markdown',
-    //   elmFile: 'Run.elm',
-    // },
-    // This one takes forever
+    {
+      name: 'Elm Markdown',
+      dir: 'testcases/elm-markdown',
+      elmFile: 'Run.elm',
+    },
+    // // // This one takes forever
     // {
     //   name: 'elm-obj-file',
     //   dir: 'testcases/elm-obj-file',
     //   elmFile: 'Run.elm',
-    //
     // },
   ]);
   const result = await report;
+
   console.log(Reporting.terminal(result));
   fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
 }
