@@ -65,8 +65,37 @@ We generate two definitions for a function, but in most cases a function is eith
 
 If a function is always called with the full number of arguments, the minifier can eliminate our wrapped version (`F2(MyFunction_fn)`) and *also* eliminate the `A2` call, which is explicitly smaller than before.
 
+# Direct call of Lambdas
+
+Similar to the above, but focused on lambdas.
+
+Let's say we have some elm code that produces the following js.
+
+```js
+var f = function(func, a, b) {
+    return A2(func, a, b)
+};
+
+f(F2(function (a,b) {return a + b;}), 1, 2);
+```
+
+we can transform it to 
+```js
+var f = function(func, a, b) {
+    return A2(func, a, b)
+}, f_unwrapped = function(func, a, b) {
+    return func(a, b)
+};
+
+f_unwrapped(function (a,b) {return a + b;}, 1, 2);
+```
+
+
+
 
 # Passing in Unwrappable Functions to Higher Order Functions
+
+**Future Work**
 
 Higher order functions like `List.map` have a hard time taking advantage of the direct function calls because we don't know the arity of the function within the `List.map` call.
 
@@ -147,6 +176,10 @@ There may be a nice trade off here of using `InlineMode.UsingConsFunc`, but only
 
 ## Results Summary
 
+- Not included in the elm-optimize tool because it was hard to find a benchmark that reported numbers to justify it.
+- Though maybe we just need to be better at benchmarking it
+
+
 
 # Object Update
 
@@ -221,7 +254,7 @@ Object.assign({}, old, newFields)
   - Gave a `366%` boost in chrome!
   - And caused firefox to reduce performance by 50% :sweat_smile:
 
-Simply creating a new record and copying each field manually is significantly faster than using any for of update.(~2.5x in chrome, and ~10x in firefox).  You can do this directly in elm.
+Simply creating a new record and copying each field manually is significantly faster than and of these transformations.(~9x in chrome, and ~6.5x in firefox).  You can do this directly in elm.
 
 ```
 updateSingleRecordManually record =
@@ -231,9 +264,9 @@ updateSingleRecordManually record =
     }
 ```
 
-It's may be worth exploring automating this transformation.  There's a question of how much this affects asset size on larger projects.
+It's worth exploring automating this transformation, though of course there's a question of how much this affects asset size on larger projects.
 
-However, it's hard to explore without knowing the actual shape of the records being updated.
+However, it's hard to explore further without knowing the actual shape of the records being updated.
 
 
 
@@ -251,7 +284,15 @@ Right now `elm-optimize` will infer if something is a primitive if a literal is 
 
 ## Results Summary
 
-This check is significant for parsing, though also other checks as well.
+- Included in `elm-optimize` tool.
+- Looks to have the most impact on code that does a lot of equality comparisons, like parsing.
+
+The `_Utils_eq` function is very likely deoptimized because it can take *any* two values and either do a reference check, or do structural equality, which we also know takes a while.
+
+So, my guess is the benefit here is from avoiding the call to a deoptimized function completely.
+
+Chrome doesn't really see a speedup here though, so it's likely smart enough to do that already.
+
 
 
 # Inline String.fromFloat/Int
@@ -270,6 +311,10 @@ val + ""
 ```
 
 ## Results Summary
+
+- Not included in the tool
+
+This hasn't shown any measureable benefit.  Likel because this is a very simple function that always takes a single number and returns a string that the JS runtime is optimizing it as much as possible already.
 
 
 
@@ -291,7 +336,7 @@ This was done for asset size.
 
 ## Results Summary
 
-- Not include in the `elm-optimize` tool
+- Not included in the `elm-optimize` tool
 - There does seem to be a slight asset size reduction.
 - The inline-functions transformation has a larger shrinking impact on asset size.
 - Comes with the caveat that the [code will not work on IE](https://caniuse.com/#feat=arrow-functions)
@@ -299,4 +344,11 @@ This was done for asset size.
 We didn't include this in the first version of the tool because the effect seems to be so modest and carries the risk of breaking things on IE.
 
 We would have to add something like a `--modernize` or `--no-ie` flag to the tool, and I really like this tool having no configurability.
+
+
+# Hoisting Constants
+
+**Future Work**
+
+This transformation hasn't been attempted yet, but the idea is that if a constant is detected in a let statement, it can be declared moved to top-level instead of recalculated every function run.
 
