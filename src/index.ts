@@ -97,10 +97,12 @@ async function run(filePath: string | undefined, options: CLIOptions) {
     defaultOptions
   )
 
-  fs.writeFileSync(
-    program.output,
-    transformed
-  );
+  fs.writeFileSync(program.output, transformed);
+  console.log("Success!");
+  console.log("")
+  console.log(`   ${fileName} ---> ${program.output}`)
+  console.log("")
+
 
 }
 
