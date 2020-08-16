@@ -12,7 +12,7 @@ import * as fs from 'fs';
 const defaultOptions: Transforms = {
   replaceVDomNode: false,
   variantShapes: true,
-  inlineNumberToString: true,
+  inlineNumberToString: false,
   inlineEquality: true,
   inlineFunctions: true,
   listLiterals: false,
@@ -55,15 +55,15 @@ const options = {
 };
 
 async function go() {
-  // const report = await Reporting.run(options, [
-  // Use `runWithBreakdown` if you want the breakdown
-  const report = await Reporting.runWithKnockout(options, [
+  const report = await Reporting.run(options, [
+    // Use `runWithBreakdown` if you want the breakdown
+    // const report = await Reporting.runWithKnockout(options, [
     // const report = await Reporting.runWithBreakdown(options, [
-    // {
-    //   name: 'Elm Core',
-    //   dir: 'testcases/bench',
-    //   elmFile: 'Main.elm',
-    // },
+    {
+      name: 'Elm Core',
+      dir: 'testcases/core',
+      elmFile: 'Main.elm',
+    },
     // {
     //   name: 'Html',
     //   dir: 'testcases/html',
@@ -84,11 +84,11 @@ async function go() {
     //   dir: 'testcases/elm-animator',
     //   elmFile: 'Run.elm',
     // },
-    {
-      name: 'Elm Markdown',
-      dir: 'testcases/elm-markdown',
-      elmFile: 'Run.elm',
-    },
+    // {
+    //   name: 'Elm Markdown',
+    //   dir: 'testcases/elm-markdown',
+    //   elmFile: 'Run.elm',
+    // },
     // // // This one takes forever
     // {
     //   name: 'elm-obj-file',

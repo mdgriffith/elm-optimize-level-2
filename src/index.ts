@@ -10,7 +10,7 @@ const { version } = require('../package.json');
 const defaultOptions: Transforms = {
   replaceVDomNode: false,
   variantShapes: true,
-  inlineNumberToString: true,
+  inlineNumberToString: false,
   inlineEquality: true,
   inlineFunctions: true,
   listLiterals: false,
