@@ -54,6 +54,8 @@ A few are listed there as either incomplete or not attempted.  That's future wor
 
 ## Benchmarks
 
+**Note** — *These results are really exciting! However, it's not totally obvious that your project will see similar gains.  Performance is a tricky beast!  If you do see significant speedups in your project, [leave a comment here on this issue](https://github.com/mdgriffith/elm-optimize/issues/15), we love to see realworld cases.*
+
 In an effort to quantify these transformations, we've put together a number of benchmarks, including some from exisiting Elm packages such as `dillonkearns/elm-markdown`, `w0rm/elm-obj-file`, and `mdgriffith/elm-ui`.
 
 Our goal is to have benchmarks that track performance on code where performance is meaningful.
@@ -89,6 +91,14 @@ Though here are a few highlights:
 | dillonkearns/elm-markdown               |optimized                     |chrome    |         5,099|  (164%) |
 
 
+
+## Running Benchmarks Locally
+
+1. Clone this repo
+2. Run `npm install`
+3. Run `npm run report` and a simple benchmark will hopefully run and print results to the terminal.
+
+**Note** you can control which benchmark runs with which transformation by adjusting `src/benchmarks/run.ts`.
 
 
 ## Contributing

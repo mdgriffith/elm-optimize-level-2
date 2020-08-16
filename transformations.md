@@ -11,12 +11,12 @@ Each transformation also has a rough summary of impact.
 
 # Applying Functions Directly
 
-Elm wraps functions in an object that tracks how many arguments the function takes.
+Elm wraps functions in an object that tracks how many arguments the function takes(also known as 'arity').
 
-This is so that functions can be partially applied, meaning you can apply a few arguments and get a new function that has those arguments 'built in'
+This is so that functions can be partially applied, meaning you can apply a few arguments and get a new function that has those arguments "built in".
 
 
-The most significant speedups we've seen is in finding places where we can skip the wrapper and call the actual function directly.
+The most significant speedups we've seen is in finding places where we can skip the wrapper and call the actual function directly.  This happens when you call a function with exactly the number of arguments it needs.
 
 
 In order to do this, we need to adjust function declarations so that the original function can be called either in the standrd 'wrapped' way, or directly.
@@ -33,9 +33,9 @@ var MyFunction = F2(function (tag, value) {
 after
 
 ```js
-var MyFunction_fn = F2(function (tag, value) {
+var MyFunction_fn = function (tag, value) {
         return value;
-}), MyFunction = F2(MyFunction_raw);
+}, MyFunction = F2(MyFunction_fn);
 ```
 
 
@@ -51,10 +51,28 @@ after
 MyFunction_fn(one two)
 ```
 
+## Results Summary
+
+- Included in `elm-optimize` tool**
+- Potentially large positive effect on speed
+- Likley small but positive effect on asset size
+
+This has lead to dramatic speedups in some cases, especially when a large number of smaller functions are called and the overhead of calling twice as many functions is significant.
+
+As well, it has a really interesting characteristic in that it makes the initial size of the generated JS **larger**, but usually results in a **smaller** minified asset size.
+
+We generate two definitions for a function, but in most cases a function is either always partially applied, or always called with the full number of arguments.
+
+If a function is always called with the full number of arguments, the minifier can eliminate our wrapped version (`F2(MyFunction_fn)`) and *also* eliminate the `A2` call, which is explicitly smaller than before.
 
 
 # Passing in Unwrappable Functions to Higher Order Functions
 
+Higher order functions like `List.map` have a hard time taking advantage of the direct function calls because we don't know the arity of the function within the `List.map` call.
+
+However, we can figure it out.
+
+If `List.map` is called with a function that we know has an arity
 
 
 
@@ -88,6 +106,16 @@ var elm$core$Maybe$Nothing = { $: 1, a: null };
 
 This does require information from the Elm code itself, which we're currently getting through `elm-tree-sitter`.
 
+
+## Results Summary
+
+- Included
+- Has an effect in certain circumstances in browsers using V8(Chrome and Edge).  Nothing observable otherwise.
+  - Most prominently observed in the `Elm Core - sum 300 list of custom types` benchmark.  Otherwise I didn't notice it.
+- No noticable effect on asset size.
+
+
+
 # Inlining literal list constructors
 
 Before
@@ -117,6 +145,97 @@ Also of note, becaue `_List_fromArray` is used for lists of *anything*, that it'
 There may be a nice trade off here of using `InlineMode.UsingConsFunc`, but only inlining at most 20 elements or something, and then using `List_fromArray` after that.
 
 
+## Results Summary
+
+
+# Object Update
+
+When updating a record in elm via `{ record | field = new }`, elm runs the following function:
+
+```javascript
+function _Utils_update(oldRecord, updatedFields) {
+    var newRecord = {};
+    for (var key in oldRecord) {
+        newRecord[key] = oldRecord[key];
+    }
+    for (var key in updatedFields) {
+        newRecord[key] = updatedFields[key];
+    }
+    return newRecord;
+}
+
+```
+
+We tried a few different variations in order to see if we could speed this up.
+
+The trick here is that we need to copy the entire record so that it has a new reference.
+
+So, we can't just do `record.field = new` in the js.
+
+All of these tricks rely on either the spread operator or `Object.assign`, both of which are not supported in IE.
+
+
+## Replacing the implementation of `_Util_update`:
+
+Spread operator
+
+```javascript 
+const _Utils_update = (oldRecord, updatedFields) => {
+    var newRecord = {...oldRecord};
+    
+    for (var key in updatedFields) {
+        newRecord[key] = updatedFields[key];
+    }
+    return newRecord;
+}
+```
+
+Spread for both
+
+```javascript
+const _Utils_update = (oldRecord, updatedFields) => ({...oldRecord, ...updatedFields});
+```
+
+Use Object.assign
+```javascript
+const _Utils_update = (oldRecord, updatedFields) => (Object.assign({}, oldRecord, updatedFields));
+```
+
+## Inline the call altogether
+
+At the call site, replace
+
+```
+_Utils_update(old, newFields)
+```
+with
+```
+Object.assign({}, old, newFields)
+```
+
+## Result Summary
+
+- Not included in elm-optimize tool
+- Again, all of these tricks rely on either the spread operator or `Object.assign`, both of which are not supported in IE.
+- The most promising approach was inlining the call completely with `Object.assign`.
+  - Gave a `366%` boost in chrome!
+  - And caused firefox to reduce performance by 50% :sweat_smile:
+
+Simply creating a new record and copying each field manually is significantly faster than using any for of update.(~2.5x in chrome, and ~10x in firefox).  You can do this directly in elm.
+
+```
+updateSingleRecordManually record =
+    { one = 87
+    , two = record.two
+    , three = record.three
+    }
+```
+
+It's may be worth exploring automating this transformation.  There's a question of how much this affects asset size on larger projects.
+
+However, it's hard to explore without knowing the actual shape of the records being updated.
+
+
 
 # Inline Equality
 
@@ -128,13 +247,14 @@ If Elm's `==` is applied to any primitive such as:
 
 Then we can inline the definition directly as `===`.
 
-Right now elm-optimize will infer if something is a primitive if a literal is used.
+Right now `elm-optimize` will infer if something is a primitive if a literal is used.
+
+## Results Summary
 
 This check is significant for parsing, though also other checks as well.
 
 
 # Inline String.fromFloat/Int
-
 
 
 Before
@@ -148,3 +268,35 @@ After:
 ```
 val + ""
 ```
+
+## Results Summary
+
+
+
+
+# Arrowizing Functions
+
+Before
+
+```
+var x = function(x){}
+```
+After
+```
+var x = (x) => {}
+```
+
+This was done for asset size.
+
+
+## Results Summary
+
+- Not include in the `elm-optimize` tool
+- There does seem to be a slight asset size reduction.
+- The inline-functions transformation has a larger shrinking impact on asset size.
+- Comes with the caveat that the [code will not work on IE](https://caniuse.com/#feat=arrow-functions)
+
+We didn't include this in the first version of the tool because the effect seems to be so modest and carries the risk of breaking things on IE.
+
+We would have to add something like a `--modernize` or `--no-ie` flag to the tool, and I really like this tool having no configurability.
+
