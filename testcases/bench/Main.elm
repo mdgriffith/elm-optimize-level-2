@@ -7,6 +7,7 @@ import Benchmark.Runner exposing (BenchmarkProgram, program)
 import Benchmark.Runner.Json
 import Dict
 import Html
+import Json.Decode
 import Json.Encode
 
 
@@ -127,6 +128,7 @@ suite =
             listLiteral
         , dictBenchmarks
         , functionCalling
+        , jsonEncoding
         ]
 
 
@@ -154,7 +156,39 @@ dictBenchmarks =
         ]
 
 
+jsonEncoding =
+    describe "JSON Encoding"
+        [ benchmark "Encode string" <|
+            \_ ->
+                Json.Encode.encode 4 <|
+                    Json.Encode.string "A Json encoded string"
+        , benchmark "Encode Object" <|
+            \_ ->
+                Json.Encode.encode 4 <|
+                    Json.Encode.object
+                        [ ( "one", Json.Encode.string "A Json encoded string" )
+                        , ( "two", Json.Encode.int 56 )
+                        , ( "three", Json.Encode.float 62.5 )
+                        ]
+        ]
 
+
+
+-- jsonDecoding =
+--     describe "JSON Decoding"
+--         [ benchmark "Decode string" <|
+--             \_ ->
+--                 Json.Encode.encode 4 <|
+--                     Json.Encode.string "A Json encoded string"
+--         , benchmark "Decode Object" <|
+--             \_ ->
+--                 Json.Encode.encode 4 <|
+--                     Json.Encode.object
+--                         [ ( "one", Json.Encode.string "A Json encoded string" )
+--                         , ( "two", Json.Encode.int 56 )
+--                         , ( "three", Json.Encode.float 62.5 )
+--                         ]
+--         ]
 {- Function calling -}
 
 
@@ -190,7 +224,7 @@ functionCalling =
         -- Normally we shouldnt consider this, but for lib internals, why not?
         -- records are twice as fast!
         -- my guess is because they skip the wrapping of functions that elm does for currying.
-        [ benchmark "Function with record arg" <|
+        [ benchmark "Calling a function with a 6 record arg" <|
             \_ ->
                 functionWithRecord
                     { one = one
@@ -200,7 +234,7 @@ functionCalling =
                     , five = five
                     , six = six
                     }
-        , benchmark "Function with positional" <|
+        , benchmark "Calling a function with 6 argsl" <|
             \_ ->
                 functionWithArgs one two three four five six
         ]
