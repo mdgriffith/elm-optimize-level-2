@@ -39,7 +39,11 @@ export const transform = async (
 ): Promise<string> => {
     // Compile examples in `testcases/*` folder as js
     // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
-
+    let source = ts.createSourceFile(
+        'elm.js',
+        jsSource,
+        ts.ScriptTarget.ES2018
+    );
 
     const elmSource = fs.readFileSync(elmfile, 'utf8');
     let parsedVariants = parseElm({
@@ -48,13 +52,12 @@ export const transform = async (
         source: elmSource,
     }).concat(primitives);
 
-    let parsed = parseDir('elm-packages');
-    parsedVariants = parsedVariants.concat(parsed);
-    let source = ts.createSourceFile(
-        'elm.js',
-        jsSource,
-        ts.ScriptTarget.ES2018
-    );
+
+    parsedVariants = parsedVariants.concat(parseDir('elm-packages')).concat(parseDir(dir));
+
+    // we dont care about types that have no slots on any variants
+    parsedVariants = parsedVariants.filter((variant) => { return variant.totalTypeSlotCount != 0 });
+
 
     const normalizeVariantShapes = createCustomTypesTransformer(
         parsedVariants,
