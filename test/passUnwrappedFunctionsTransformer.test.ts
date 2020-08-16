@@ -1,6 +1,6 @@
 import { transformCode } from './inlineWrappedFunctions.test';
-import { createPassUnwrappedFunctionsTransformer } from '../src/experiments/passUnwrappedFunctions';
-import { createInlineContext } from '../src/experiments/inlineWrappedFunctions';
+import { createPassUnwrappedFunctionsTransformer } from '../src/transforms/passUnwrappedFunctions';
+import { createInlineContext } from '../src/transforms/inlineWrappedFunctions';
 
 test('it can unwrap lambdas in place ', () => {
   const initialCode = `

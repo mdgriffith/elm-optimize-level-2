@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { createRemoveUnusedLocalsTransform } from '../src/experiments/removeUnusedLocals';
+import { createRemoveUnusedLocalsTransform } from '../src/transforms/removeUnusedLocals';
 
 test('it can process nested calls of A2 with non identifiers as the first arg ', () => {
   const initialCode = `

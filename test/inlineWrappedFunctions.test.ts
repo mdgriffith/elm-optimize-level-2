@@ -1,6 +1,6 @@
 import ts from 'typescript';
 
-import { createFunctionInlineTransformer } from '../src/experiments/inlineWrappedFunctions';
+import { createFunctionInlineTransformer } from '../src/transforms/inlineWrappedFunctions';
 
 test('it can process nested calls of A2 with non identifiers as the first arg ', () => {
   const initialCode = `
