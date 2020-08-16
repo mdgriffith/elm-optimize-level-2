@@ -36,9 +36,9 @@ The only configurable option is what to name the generated js file.
 ```
 elm-optimize Main.elm --output app.js
 ```
-**Note** elm-optimize only generates a js file, it doesn't support generating HTML.
+**Note** — elm-optimize only generates a js file, it doesn't support generating HTML.
 
-**Another Note** Before deploying your app, you should also minify it and gzip it. `elm-optimize` does not do that for you. [Check out this doc for a recommended setup.](minification.md)
+**Another Note** — Before deploying your app, you should also minify it and gzip it. `elm-optimize` does not do that for you. [Check out this doc for a recommended setup.](minification.md)
 
 
 ## Exploration
@@ -58,11 +58,13 @@ In an effort to quantify these transformations, we've put together a number of b
 
 Our goal is to have benchmarks that track performance on code where performance is meaningful.
 
-[Here's the most recent, comprehensive run of the benchmarks.](results/current.md)
+[Here's the most recent, comprehensive run of the benchmarks.](data/current.md)
 
 Though here are a few highlights:
 
-*Note* keep in mind that these numbers have *all the caveats* that benchmarks usually have.
+**Note** — keep in mind that these numbers have *all the caveats* that benchmarks usually have.  You may not see similar numbers depending on your machine, your browser, subtle differences in your code, etc.
+
+**Another Note** — From what we've seen, given that you're [minifying and gzipping your JS](minification.md), these transformations should either have no effect on asset size, or may even make your app slightly smaller.  
 
 
 ## Html
