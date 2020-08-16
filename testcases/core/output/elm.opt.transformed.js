@@ -5,22 +5,126 @@
         wrapper.f = fun;
         return wrapper;
     }
-    var F2 = (fun) => F(2, fun, (a) => (b) => fun(a, b));
-    var F3 = (fun) => F(3, fun, (a) => (b) => (c) => fun(a, b, c));
-    var F4 = (fun) => F(4, fun, (a) => (b) => (c) => (d) => fun(a, b, c, d));
-    var F5 = (fun) => F(5, fun, (a) => (b) => (c) => (d) => (e) => fun(a, b, c, d, e));
-    var F6 = (fun) => F(6, fun, (a) => (b) => (c) => (d) => (e) => (f) => fun(a, b, c, d, e, f));
-    var F7 = (fun) => F(7, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => fun(a, b, c, d, e, f, g));
-    var F8 = (fun) => F(8, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => (h) => fun(a, b, c, d, e, f, g, h));
-    var F9 = (fun) => F(9, fun, (a) => (b) => (c) => (d) => (e) => (f) => (g) => (h) => (i) => fun(a, b, c, d, e, f, g, h, i));
-    var A2 = (fun, a, b) => fun.a === 2 ? fun.f(a, b) : fun(a)(b);
-    var A3 = (fun, a, b, c) => fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
-    var A4 = (fun, a, b, c, d) => fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
-    var A5 = (fun, a, b, c, d, e) => fun.a === 5 ? fun.f(a, b, c, d, e) : fun(a)(b)(c)(d)(e);
-    var A6 = (fun, a, b, c, d, e, f) => fun.a === 6 ? fun.f(a, b, c, d, e, f) : fun(a)(b)(c)(d)(e)(f);
-    var A7 = (fun, a, b, c, d, e, f, g) => fun.a === 7 ? fun.f(a, b, c, d, e, f, g) : fun(a)(b)(c)(d)(e)(f)(g);
-    var A8 = (fun, a, b, c, d, e, f, g, h) => fun.a === 8 ? fun.f(a, b, c, d, e, f, g, h) : fun(a)(b)(c)(d)(e)(f)(g)(h);
-    var A9 = (fun, a, b, c, d, e, f, g, h, i) => fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
+    function F2(fun) {
+        return F(2, fun, function (a) { return function (b) { return fun(a, b); }; });
+    }
+    function F3(fun) {
+        return F(3, fun, function (a) {
+            return function (b) { return function (c) { return fun(a, b, c); }; };
+        });
+    }
+    function F4(fun) {
+        return F(4, fun, function (a) {
+            return function (b) {
+                return function (c) {
+                    return function (d) { return fun(a, b, c, d); };
+                };
+            };
+        });
+    }
+    function F5(fun) {
+        return F(5, fun, function (a) {
+            return function (b) {
+                return function (c) {
+                    return function (d) { return function (e) { return fun(a, b, c, d, e); }; };
+                };
+            };
+        });
+    }
+    function F6(fun) {
+        return F(6, fun, function (a) {
+            return function (b) {
+                return function (c) {
+                    return function (d) {
+                        return function (e) {
+                            return function (f) {
+                                return fun(a, b, c, d, e, f);
+                            };
+                        };
+                    };
+                };
+            };
+        });
+    }
+    function F7(fun) {
+        return F(7, fun, function (a) {
+            return function (b) {
+                return function (c) {
+                    return function (d) {
+                        return function (e) {
+                            return function (f) {
+                                return function (g) { return fun(a, b, c, d, e, f, g); };
+                            };
+                        };
+                    };
+                };
+            };
+        });
+    }
+    function F8(fun) {
+        return F(8, fun, function (a) {
+            return function (b) {
+                return function (c) {
+                    return function (d) {
+                        return function (e) {
+                            return function (f) {
+                                return function (g) {
+                                    return function (h) {
+                                        return fun(a, b, c, d, e, f, g, h);
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        });
+    }
+    function F9(fun) {
+        return F(9, fun, function (a) {
+            return function (b) {
+                return function (c) {
+                    return function (d) {
+                        return function (e) {
+                            return function (f) {
+                                return function (g) {
+                                    return function (h) {
+                                        return function (i) {
+                                            return fun(a, b, c, d, e, f, g, h, i);
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        });
+    }
+    function A2(fun, a, b) {
+        return fun.a === 2 ? fun.f(a, b) : fun(a)(b);
+    }
+    function A3(fun, a, b, c) {
+        return fun.a === 3 ? fun.f(a, b, c) : fun(a)(b)(c);
+    }
+    function A4(fun, a, b, c, d) {
+        return fun.a === 4 ? fun.f(a, b, c, d) : fun(a)(b)(c)(d);
+    }
+    function A5(fun, a, b, c, d, e) {
+        return fun.a === 5 ? fun.f(a, b, c, d, e) : fun(a)(b)(c)(d)(e);
+    }
+    function A6(fun, a, b, c, d, e, f) {
+        return fun.a === 6 ? fun.f(a, b, c, d, e, f) : fun(a)(b)(c)(d)(e)(f);
+    }
+    function A7(fun, a, b, c, d, e, f, g) {
+        return fun.a === 7 ? fun.f(a, b, c, d, e, f, g) : fun(a)(b)(c)(d)(e)(f)(g);
+    }
+    function A8(fun, a, b, c, d, e, f, g, h) {
+        return fun.a === 8 ? fun.f(a, b, c, d, e, f, g, h) : fun(a)(b)(c)(d)(e)(f)(g)(h);
+    }
+    function A9(fun, a, b, c, d, e, f, g, h, i) {
+        return fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
+    }
     // EQUALITY
     function _Utils_eq(x, y) {
         for (var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack); isEqual && (pair = stack.pop()); isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)) { }
@@ -63,8 +167,8 @@
         }
         return true;
     }
-    var _Utils_equal = F2(_Utils_eq);
-    var _Utils_notEqual_raw = (a, b) => !_Utils_eq(a, b), _Utils_notEqual = F2(_Utils_notEqual_raw);
+    var _Utils_equal_raw = _Utils_eq, _Utils_equal = F2(_Utils_equal_raw);
+    var _Utils_notEqual_raw = function (a, b) { return !_Utils_eq(a, b); }, _Utils_notEqual = F2(_Utils_notEqual_raw);
     // COMPARISONS
     // Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
     // the particular integer values assigned to LT, EQ, and GT.
@@ -97,10 +201,10 @@
         for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) { } // WHILE_CONSES
         return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
     }
-    var _Utils_lt_raw = (a, b) => _Utils_cmp(a, b) < 0, _Utils_lt = F2(_Utils_lt_raw);
-    var _Utils_le_raw = (a, b) => _Utils_cmp(a, b) < 1, _Utils_le = F2(_Utils_le_raw);
-    var _Utils_gt_raw = (a, b) => _Utils_cmp(a, b) > 0, _Utils_gt = F2(_Utils_gt_raw);
-    var _Utils_ge_raw = (a, b) => _Utils_cmp(a, b) >= 0, _Utils_ge = F2(_Utils_ge_raw);
+    var _Utils_lt_raw = function (a, b) { return _Utils_cmp(a, b) < 0; }, _Utils_lt = F2(_Utils_lt_raw);
+    var _Utils_le_raw = function (a, b) { return _Utils_cmp(a, b) < 1; }, _Utils_le = F2(_Utils_le_raw);
+    var _Utils_gt_raw = function (a, b) { return _Utils_cmp(a, b) > 0; }, _Utils_gt = F2(_Utils_gt_raw);
+    var _Utils_ge_raw = function (a, b) { return _Utils_cmp(a, b) >= 0; }, _Utils_ge = F2(_Utils_ge_raw);
     var _Utils_compare_raw = function (x, y) {
         var n = _Utils_cmp(x, y);
         return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
@@ -108,15 +212,25 @@
     // COMMON VALUES
     var _Utils_Tuple0 = 0;
     var _Utils_Tuple0_UNUSED = { $: "#0" };
-    var _Utils_Tuple2 = (a, b) => ({ a: a, b: b });
-    var _Utils_Tuple2_UNUSED = (a, b) => ({ $: "#2", a: a, b: b });
-    var _Utils_Tuple3 = (a, b, c) => ({ a: a, b: b, c: c });
-    var _Utils_Tuple3_UNUSED = (a, b, c) => ({ $: "#3", a: a, b: b, c: c });
-    var _Utils_chr = (c) => c;
-    var _Utils_chr_UNUSED = (c) => new String(c);
-    const _Utils_update = (oldRecord, updatedFields) => (Object.assign({}, oldRecord, updatedFields));
+    function _Utils_Tuple2(a, b) { return { a: a, b: b }; }
+    function _Utils_Tuple2_UNUSED(a, b) { return { $: "#2", a: a, b: b }; }
+    function _Utils_Tuple3(a, b, c) { return { a: a, b: b, c: c }; }
+    function _Utils_Tuple3_UNUSED(a, b, c) { return { $: "#3", a: a, b: b, c: c }; }
+    function _Utils_chr(c) { return c; }
+    function _Utils_chr_UNUSED(c) { return new String(c); }
+    // RECORDS
+    function _Utils_update(oldRecord, updatedFields) {
+        var newRecord = {};
+        for (var key in oldRecord) {
+            newRecord[key] = oldRecord[key];
+        }
+        for (var key in updatedFields) {
+            newRecord[key] = updatedFields[key];
+        }
+        return newRecord;
+    }
     // APPEND
-    var _Utils_append = F2(_Utils_ap);
+    var _Utils_append_raw = _Utils_ap, _Utils_append = F2(_Utils_append_raw);
     function _Utils_ap(xs, ys) {
         // append Strings
         if (typeof xs === "string") {
@@ -136,9 +250,9 @@
     }
     var _List_Nil = { $: 0, a: null, b: null };
     var _List_Nil_UNUSED = { $: "[]" };
-    var _List_Cons = (hd, tl) => ({ $: 1, a: hd, b: tl });
-    var _List_Cons_UNUSED = (hd, tl) => ({ $: "::", a: hd, b: tl });
-    var _List_cons = F2(_List_Cons);
+    function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
+    function _List_Cons_UNUSED(hd, tl) { return { $: "::", a: hd, b: tl }; }
+    var _List_cons_raw = _List_Cons, _List_cons = F2(_List_cons_raw);
     function _List_fromArray(arr) {
         var out = _List_Nil;
         for (var i = arr.length; i--;) {
@@ -159,11 +273,23 @@
             arr.push(A2(f, xs.a, ys.a));
         }
         return _List_fromArray(arr);
+    }, _List_map2_raw_unwrapped = function (f, xs, ys) {
+        for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
+         {
+            arr.push(f(xs.a, ys.a));
+        }
+        return _List_fromArray(arr);
     }, _List_map2 = F3(_List_map2_raw);
     var _List_map3_raw = function (f, xs, ys, zs) {
         for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
          {
             arr.push(A3(f, xs.a, ys.a, zs.a));
+        }
+        return _List_fromArray(arr);
+    }, _List_map3_raw_unwrapped = function (f, xs, ys, zs) {
+        for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+         {
+            arr.push(f(xs.a, ys.a, zs.a));
         }
         return _List_fromArray(arr);
     }, _List_map3 = F4(_List_map3_raw);
@@ -173,6 +299,12 @@
             arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
         }
         return _List_fromArray(arr);
+    }, _List_map4_raw_unwrapped = function (f, ws, xs, ys, zs) {
+        for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+         {
+            arr.push(f(ws.a, xs.a, ys.a, zs.a));
+        }
+        return _List_fromArray(arr);
     }, _List_map4 = F5(_List_map4_raw);
     var _List_map5_raw = function (f, vs, ws, xs, ys, zs) {
         for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
@@ -180,15 +312,36 @@
             arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
         }
         return _List_fromArray(arr);
+    }, _List_map5_raw_unwrapped = function (f, vs, ws, xs, ys, zs) {
+        for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+         {
+            arr.push(f(vs.a, ws.a, xs.a, ys.a, zs.a));
+        }
+        return _List_fromArray(arr);
     }, _List_map5 = F6(_List_map5_raw);
-    var _List_sortBy_raw = (f, xs) => _List_fromArray(_List_toArray(xs).sort((a, b) => _Utils_cmp(f(a), f(b)))), _List_sortBy = F2(_List_sortBy_raw);
-    var _List_sortWith_raw = (f, xs) => _List_fromArray(_List_toArray(xs).sort(function (a, b) {
-        var ord = A2(f, a, b);
-        return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
-    })), _List_sortWith = F2(_List_sortWith_raw);
+    var _List_sortBy_raw = function (f, xs) {
+        return _List_fromArray(_List_toArray(xs).sort(function (a, b) {
+            return _Utils_cmp(f(a), f(b));
+        }));
+    }, _List_sortBy = F2(_List_sortBy_raw);
+    var _List_sortWith_raw = function (f, xs) {
+        return _List_fromArray(_List_toArray(xs).sort(function (a, b) {
+            var ord = A2(f, a, b);
+            return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
+        }));
+    }, _List_sortWith_raw_unwrapped = function (f, xs) {
+        return _List_fromArray(_List_toArray(xs).sort(function (a, b) {
+            var ord = f(a, b);
+            return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
+        }));
+    }, _List_sortWith = F2(_List_sortWith_raw);
     var _JsArray_empty = [];
-    var _JsArray_singleton = (value) => [value];
-    var _JsArray_length = (array) => array.length;
+    function _JsArray_singleton(value) {
+        return [value];
+    }
+    function _JsArray_length(array) {
+        return array.length;
+    }
     var _JsArray_initialize_raw = function (size, offset, func) {
         var result = new Array(size);
         for (var i = 0; i < size; i++) {
@@ -205,7 +358,9 @@
         result.length = i;
         return _Utils_Tuple2(result, ls);
     }, _JsArray_initializeFromList = F2(_JsArray_initializeFromList_raw);
-    var _JsArray_unsafeGet_raw = (index, array) => array[index], _JsArray_unsafeGet = F2(_JsArray_unsafeGet_raw);
+    var _JsArray_unsafeGet_raw = function (index, array) {
+        return array[index];
+    }, _JsArray_unsafeGet = F2(_JsArray_unsafeGet_raw);
     var _JsArray_unsafeSet_raw = function (index, value, array) {
         var length = array.length;
         var result = new Array(length);
@@ -230,10 +385,21 @@
             acc = A2(func, array[i], acc);
         }
         return acc;
+    }, _JsArray_foldl_raw_unwrapped = function (func, acc, array) {
+        var length = array.length;
+        for (var i = 0; i < length; i++) {
+            acc = func(array[i], acc);
+        }
+        return acc;
     }, _JsArray_foldl = F3(_JsArray_foldl_raw);
     var _JsArray_foldr_raw = function (func, acc, array) {
         for (var i = array.length - 1; i >= 0; i--) {
             acc = A2(func, array[i], acc);
+        }
+        return acc;
+    }, _JsArray_foldr_raw_unwrapped = function (func, acc, array) {
+        for (var i = array.length - 1; i >= 0; i--) {
+            acc = func(array[i], acc);
         }
         return acc;
     }, _JsArray_foldr = F3(_JsArray_foldr_raw);
@@ -252,8 +418,17 @@
             result[i] = A2(func, offset + i, array[i]);
         }
         return result;
+    }, _JsArray_indexedMap_raw_unwrapped = function (func, offset, array) {
+        var length = array.length;
+        var result = new Array(length);
+        for (var i = 0; i < length; i++) {
+            result[i] = func(offset + i, array[i]);
+        }
+        return result;
     }, _JsArray_indexedMap = F3(_JsArray_indexedMap_raw);
-    var _JsArray_slice_raw = (from, to, array) => array.slice(from, to), _JsArray_slice = F3(_JsArray_slice_raw);
+    var _JsArray_slice_raw = function (from, to, array) {
+        return array.slice(from, to);
+    }, _JsArray_slice = F3(_JsArray_slice_raw);
     var _JsArray_appendN_raw = function (n, dest, source) {
         var destLen = dest.length;
         var itemsToCopy = n - destLen;
@@ -271,19 +446,31 @@
         return result;
     }, _JsArray_appendN = F3(_JsArray_appendN_raw);
     // LOG
-    var _Debug_log_raw = (tag, value) => value, _Debug_log = F2(_Debug_log_raw);
+    var _Debug_log_raw = function (tag, value) {
+        return value;
+    }, _Debug_log = F2(_Debug_log_raw);
     var _Debug_log_UNUSED_raw = function (tag, value) {
         console.log(tag + ": " + _Debug_toString(value));
         return value;
     }, _Debug_log_UNUSED = F2(_Debug_log_UNUSED_raw);
-    var _Debug_todo = (moduleName, region) => function (message) {
-        _Debug_crash(8, moduleName, region, message);
-    };
-    var _Debug_todoCase = (moduleName, region, value) => function (message) {
-        _Debug_crash(9, moduleName, region, value, message);
-    };
-    var _Debug_toString = (value) => "<internals>";
-    var _Debug_toString_UNUSED = (value) => _Debug_toAnsiString(false, value);
+    // TODOS
+    function _Debug_todo(moduleName, region) {
+        return function (message) {
+            _Debug_crash(8, moduleName, region, message);
+        };
+    }
+    function _Debug_todoCase(moduleName, region, value) {
+        return function (message) {
+            _Debug_crash(9, moduleName, region, value, message);
+        };
+    }
+    // TO STRING
+    function _Debug_toString(value) {
+        return "<internals>";
+    }
+    function _Debug_toString_UNUSED(value) {
+        return _Debug_toAnsiString(false, value);
+    }
     function _Debug_toAnsiString(ansi, value) {
         if (typeof value === "function") {
             return _Debug_internalColor(ansi, "<function>");
@@ -383,13 +570,27 @@
             return s.replace(/\"/g, "\\\"");
         }
     }
-    var _Debug_ctorColor = (ansi, string) => ansi ? "\u001B[96m" + string + "\u001B[0m" : string;
-    var _Debug_numberColor = (ansi, string) => ansi ? "\u001B[95m" + string + "\u001B[0m" : string;
-    var _Debug_stringColor = (ansi, string) => ansi ? "\u001B[93m" + string + "\u001B[0m" : string;
-    var _Debug_charColor = (ansi, string) => ansi ? "\u001B[92m" + string + "\u001B[0m" : string;
-    var _Debug_fadeColor = (ansi, string) => ansi ? "\u001B[37m" + string + "\u001B[0m" : string;
-    var _Debug_internalColor = (ansi, string) => ansi ? "\u001B[36m" + string + "\u001B[0m" : string;
-    var _Debug_toHexDigit = (n) => String.fromCharCode(n < 10 ? 48 + n : 55 + n);
+    function _Debug_ctorColor(ansi, string) {
+        return ansi ? "\u001B[96m" + string + "\u001B[0m" : string;
+    }
+    function _Debug_numberColor(ansi, string) {
+        return ansi ? "\u001B[95m" + string + "\u001B[0m" : string;
+    }
+    function _Debug_stringColor(ansi, string) {
+        return ansi ? "\u001B[93m" + string + "\u001B[0m" : string;
+    }
+    function _Debug_charColor(ansi, string) {
+        return ansi ? "\u001B[92m" + string + "\u001B[0m" : string;
+    }
+    function _Debug_fadeColor(ansi, string) {
+        return ansi ? "\u001B[37m" + string + "\u001B[0m" : string;
+    }
+    function _Debug_internalColor(ansi, string) {
+        return ansi ? "\u001B[36m" + string + "\u001B[0m" : string;
+    }
+    function _Debug_toHexDigit(n) {
+        return String.fromCharCode(n < 10 ? 48 + n : 55 + n);
+    }
     // CRASH
     function _Debug_crash(identifier) {
         throw new Error("https://github.com/elm/core/blob/1.0.0/hints/" + identifier + ".md");
@@ -436,19 +637,19 @@
         }
     }
     function _Debug_regionToString(region) {
-        if (region.aT.aq === region.a_.aq) {
-            return "on line " + region.aT.aq;
+        if (region.aX.au === region.a2.au) {
+            return "on line " + region.aX.au;
         }
-        return "on lines " + region.aT.aq + " through " + region.a_.aq;
+        return "on lines " + region.aX.au + " through " + region.a2.au;
     }
     // MATH
-    var _Basics_add_raw = (a, b) => a + b, _Basics_add = F2(_Basics_add_raw);
-    var _Basics_sub_raw = (a, b) => a - b, _Basics_sub = F2(_Basics_sub_raw);
-    var _Basics_mul_raw = (a, b) => a * b, _Basics_mul = F2(_Basics_mul_raw);
-    var _Basics_fdiv_raw = (a, b) => a / b, _Basics_fdiv = F2(_Basics_fdiv_raw);
-    var _Basics_idiv_raw = (a, b) => (a / b) | 0, _Basics_idiv = F2(_Basics_idiv_raw);
-    var _Basics_pow = F2(Math.pow);
-    var _Basics_remainderBy_raw = (b, a) => a % b, _Basics_remainderBy = F2(_Basics_remainderBy_raw);
+    var _Basics_add_raw = function (a, b) { return a + b; }, _Basics_add = F2(_Basics_add_raw);
+    var _Basics_sub_raw = function (a, b) { return a - b; }, _Basics_sub = F2(_Basics_sub_raw);
+    var _Basics_mul_raw = function (a, b) { return a * b; }, _Basics_mul = F2(_Basics_mul_raw);
+    var _Basics_fdiv_raw = function (a, b) { return a / b; }, _Basics_fdiv = F2(_Basics_fdiv_raw);
+    var _Basics_idiv_raw = function (a, b) { return (a / b) | 0; }, _Basics_idiv = F2(_Basics_idiv_raw);
+    var _Basics_pow_raw = Math.pow, _Basics_pow = F2(_Basics_pow_raw);
+    var _Basics_remainderBy_raw = function (b, a) { return a % b; }, _Basics_remainderBy = F2(_Basics_remainderBy_raw);
     // https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
     var _Basics_modBy_raw = function (modulus, x) {
         var answer = x % modulus;
@@ -468,21 +669,25 @@
     var _Basics_acos = Math.acos;
     var _Basics_asin = Math.asin;
     var _Basics_atan = Math.atan;
-    var _Basics_atan2 = F2(Math.atan2);
-    var _Basics_toFloat = (x) => x;
-    var _Basics_truncate = (n) => n | 0;
-    var _Basics_isInfinite = (n) => n === Infinity || n === -Infinity;
+    var _Basics_atan2_raw = Math.atan2, _Basics_atan2 = F2(_Basics_atan2_raw);
+    // MORE MATH
+    function _Basics_toFloat(x) { return x; }
+    function _Basics_truncate(n) { return n | 0; }
+    function _Basics_isInfinite(n) { return n === Infinity || n === -Infinity; }
     var _Basics_ceiling = Math.ceil;
     var _Basics_floor = Math.floor;
     var _Basics_round = Math.round;
     var _Basics_sqrt = Math.sqrt;
     var _Basics_log = Math.log;
     var _Basics_isNaN = isNaN;
-    var _Basics_not = (bool) => !bool;
-    var _Basics_and_raw = (a, b) => a && b, _Basics_and = F2(_Basics_and_raw);
-    var _Basics_or_raw = (a, b) => a || b, _Basics_or = F2(_Basics_or_raw);
-    var _Basics_xor_raw = (a, b) => a !== b, _Basics_xor = F2(_Basics_xor_raw);
-    var _String_cons_raw = (chr, str) => chr + str, _String_cons = F2(_String_cons_raw);
+    // BOOLEANS
+    function _Basics_not(bool) { return !bool; }
+    var _Basics_and_raw = function (a, b) { return a && b; }, _Basics_and = F2(_Basics_and_raw);
+    var _Basics_or_raw = function (a, b) { return a || b; }, _Basics_or = F2(_Basics_or_raw);
+    var _Basics_xor_raw = function (a, b) { return a !== b; }, _Basics_xor = F2(_Basics_xor_raw);
+    var _String_cons_raw = function (chr, str) {
+        return chr + str;
+    }, _String_cons = F2(_String_cons_raw);
     function _String_uncons(string) {
         var word = string.charCodeAt(0);
         return !isNaN(word)
@@ -491,8 +696,12 @@
                 : _Utils_Tuple2(_Utils_chr(string[0]), string.slice(1)))
             : $elm$core$Maybe$Nothing;
     }
-    var _String_append_raw = (a, b) => a + b, _String_append = F2(_String_append_raw);
-    var _String_length = (str) => str.length;
+    var _String_append_raw = function (a, b) {
+        return a + b;
+    }, _String_append = F2(_String_append_raw);
+    function _String_length(str) {
+        return str.length;
+    }
     var _String_map_raw = function (func, string) {
         var len = string.length;
         var array = new Array(len);
@@ -560,6 +769,20 @@
             state = A2(func, _Utils_chr(char), state);
         }
         return state;
+    }, _String_foldl_raw_unwrapped = function (func, state, string) {
+        var len = string.length;
+        var i = 0;
+        while (i < len) {
+            var char = string[i];
+            var word = string.charCodeAt(i);
+            i++;
+            if (55296 <= word && word <= 56319) {
+                char += string[i];
+                i++;
+            }
+            state = func(_Utils_chr(char), state);
+        }
+        return state;
     }, _String_foldl = F3(_String_foldl_raw);
     var _String_foldr_raw = function (func, state, string) {
         var i = string.length;
@@ -573,17 +796,49 @@
             state = A2(func, _Utils_chr(char), state);
         }
         return state;
+    }, _String_foldr_raw_unwrapped = function (func, state, string) {
+        var i = string.length;
+        while (i--) {
+            var char = string[i];
+            var word = string.charCodeAt(i);
+            if (56320 <= word && word <= 57343) {
+                i--;
+                char = string[i] + char;
+            }
+            state = func(_Utils_chr(char), state);
+        }
+        return state;
     }, _String_foldr = F3(_String_foldr_raw);
-    var _String_split_raw = (sep, str) => str.split(sep), _String_split = F2(_String_split_raw);
-    var _String_join_raw = (sep, strs) => strs.join(sep), _String_join = F2(_String_join_raw);
-    var _String_slice_raw = (start, end, str) => str.slice(start, end), _String_slice = F3(_String_slice_raw);
-    var _String_trim = (str) => str.trim();
-    var _String_trimLeft = (str) => str.replace(/^\s+/, "");
-    var _String_trimRight = (str) => str.replace(/\s+$/, "");
-    var _String_words = (str) => _List_fromArray(str.trim().split(/\s+/g));
-    var _String_lines = (str) => _List_fromArray(str.split(/\r\n|\r|\n/g));
-    var _String_toUpper = (str) => str.toUpperCase();
-    var _String_toLower = (str) => str.toLowerCase();
+    var _String_split_raw = function (sep, str) {
+        return str.split(sep);
+    }, _String_split = F2(_String_split_raw);
+    var _String_join_raw = function (sep, strs) {
+        return strs.join(sep);
+    }, _String_join = F2(_String_join_raw);
+    var _String_slice_raw = function (start, end, str) {
+        return str.slice(start, end);
+    }, _String_slice = F3(_String_slice_raw);
+    function _String_trim(str) {
+        return str.trim();
+    }
+    function _String_trimLeft(str) {
+        return str.replace(/^\s+/, "");
+    }
+    function _String_trimRight(str) {
+        return str.replace(/\s+$/, "");
+    }
+    function _String_words(str) {
+        return _List_fromArray(str.trim().split(/\s+/g));
+    }
+    function _String_lines(str) {
+        return _List_fromArray(str.split(/\r\n|\r|\n/g));
+    }
+    function _String_toUpper(str) {
+        return str.toUpperCase();
+    }
+    function _String_toLower(str) {
+        return str.toLowerCase();
+    }
     var _String_any_raw = function (isGood, string) {
         var i = string.length;
         while (i--) {
@@ -614,10 +869,16 @@
         }
         return true;
     }, _String_all = F2(_String_all_raw);
-    var _String_contains_raw = (sub, str) => str.indexOf(sub) > -1, _String_contains = F2(_String_contains_raw);
-    var _String_startsWith_raw = (sub, str) => str.indexOf(sub) === 0, _String_startsWith = F2(_String_startsWith_raw);
-    var _String_endsWith_raw = (sub, str) => str.length >= sub.length &&
-        str.lastIndexOf(sub) === str.length - sub.length, _String_endsWith = F2(_String_endsWith_raw);
+    var _String_contains_raw = function (sub, str) {
+        return str.indexOf(sub) > -1;
+    }, _String_contains = F2(_String_contains_raw);
+    var _String_startsWith_raw = function (sub, str) {
+        return str.indexOf(sub) === 0;
+    }, _String_startsWith = F2(_String_startsWith_raw);
+    var _String_endsWith_raw = function (sub, str) {
+        return str.length >= sub.length &&
+            str.lastIndexOf(sub) === str.length - sub.length;
+    }, _String_endsWith = F2(_String_endsWith_raw);
     var _String_indexes_raw = function (sub, str) {
         var subLen = sub.length;
         if (subLen < 1) {
@@ -631,7 +892,10 @@
         }
         return _List_fromArray(is);
     }, _String_indexes = F2(_String_indexes_raw);
-    var _String_fromNumber = (number) => number + "";
+    // TO STRING
+    function _String_fromNumber(number) {
+        return number + "";
+    }
     // INT CONVERSIONS
     function _String_toInt(str) {
         var total = 0;
@@ -658,7 +922,9 @@
         // faster isNaN check
         return n === n ? $elm$core$Maybe$Just(n) : $elm$core$Maybe$Nothing;
     }
-    var _String_fromList = (chars) => _List_toArray(chars).join("");
+    function _String_fromList(chars) {
+        return _List_toArray(chars).join("");
+    }
     function _Char_toCode(char) {
         var code = char.charCodeAt(0);
         if (55296 <= code && code <= 56319) {
@@ -666,88 +932,149 @@
         }
         return code;
     }
-    var _Char_fromCode = (code) => _Utils_chr((code < 0 || 1114111 < code)
-        ? "\uFFFD"
-        :
-            (code <= 65535)
-                ? String.fromCharCode(code)
-                :
-                    (code -= 65536,
-                        String.fromCharCode(Math.floor(code / 1024) + 55296, code % 1024 + 56320)));
-    var _Char_toUpper = (char) => _Utils_chr(char.toUpperCase());
-    var _Char_toLower = (char) => _Utils_chr(char.toLowerCase());
-    var _Char_toLocaleUpper = (char) => _Utils_chr(char.toLocaleUpperCase());
-    var _Char_toLocaleLower = (char) => _Utils_chr(char.toLocaleLowerCase());
-    var _Json_succeed = (msg) => ({
-        $: 0,
-        a: msg
+    function _Char_fromCode(code) {
+        return _Utils_chr((code < 0 || 1114111 < code)
+            ? "\uFFFD"
+            :
+                (code <= 65535)
+                    ? String.fromCharCode(code)
+                    :
+                        (code -= 65536,
+                            String.fromCharCode(Math.floor(code / 1024) + 55296, code % 1024 + 56320)));
+    }
+    function _Char_toUpper(char) {
+        return _Utils_chr(char.toUpperCase());
+    }
+    function _Char_toLower(char) {
+        return _Utils_chr(char.toLowerCase());
+    }
+    function _Char_toLocaleUpper(char) {
+        return _Utils_chr(char.toLocaleUpperCase());
+    }
+    function _Char_toLocaleLower(char) {
+        return _Utils_chr(char.toLocaleLowerCase());
+    }
+    /**_UNUSED/
+    function _Json_errorToString(error)
+    {
+        return $elm$json$Json$Decode$errorToString(error);
+    }
+    //*/
+    // CORE DECODERS
+    function _Json_succeed(msg) {
+        return {
+            $: 0,
+            a: msg
+        };
+    }
+    function _Json_fail(msg) {
+        return {
+            $: 1,
+            a: msg
+        };
+    }
+    function _Json_decodePrim(decoder) {
+        return { $: 2, b: decoder };
+    }
+    var _Json_decodeInt = _Json_decodePrim(function (value) {
+        return (typeof value !== "number")
+            ? _Json_expecting("an INT", value)
+            :
+                (-2147483647 < value && value < 2147483647 && (value | 0) === value)
+                    ? $elm$core$Result$Ok(value)
+                    :
+                        (isFinite(value) && !(value % 1))
+                            ? $elm$core$Result$Ok(value)
+                            : _Json_expecting("an INT", value);
     });
-    var _Json_fail = (msg) => ({
-        $: 1,
-        a: msg
+    var _Json_decodeBool = _Json_decodePrim(function (value) {
+        return (typeof value === "boolean")
+            ? $elm$core$Result$Ok(value)
+            : _Json_expecting("a BOOL", value);
     });
-    var _Json_decodePrim = (decoder) => ({ $: 2, b: decoder });
-    var _Json_decodeInt = _Json_decodePrim((value) => (typeof value !== "number")
-        ? _Json_expecting("an INT", value)
-        :
-            (-2147483647 < value && value < 2147483647 && (value | 0) === value)
-                ? $elm$core$Result$Ok(value)
-                :
-                    (isFinite(value) && !(value % 1))
-                        ? $elm$core$Result$Ok(value)
-                        : _Json_expecting("an INT", value));
-    var _Json_decodeBool = _Json_decodePrim((value) => (typeof value === "boolean")
-        ? $elm$core$Result$Ok(value)
-        : _Json_expecting("a BOOL", value));
-    var _Json_decodeFloat = _Json_decodePrim((value) => (typeof value === "number")
-        ? $elm$core$Result$Ok(value)
-        : _Json_expecting("a FLOAT", value));
-    var _Json_decodeValue = _Json_decodePrim((value) => $elm$core$Result$Ok(_Json_wrap(value)));
-    var _Json_decodeString = _Json_decodePrim((value) => (typeof value === "string")
-        ? $elm$core$Result$Ok(value)
-        : (value instanceof String)
-            ? $elm$core$Result$Ok(value + "")
-            : _Json_expecting("a STRING", value));
-    var _Json_decodeList = (decoder) => ({ $: 3, b: decoder });
-    var _Json_decodeArray = (decoder) => ({ $: 4, b: decoder });
-    var _Json_decodeNull = (value) => ({ $: 5, c: value });
-    var _Json_decodeField_raw = (field, decoder) => ({
-        $: 6,
-        d: field,
-        b: decoder
-    }), _Json_decodeField = F2(_Json_decodeField_raw);
-    var _Json_decodeIndex_raw = (index, decoder) => ({
-        $: 7,
-        e: index,
-        b: decoder
-    }), _Json_decodeIndex = F2(_Json_decodeIndex_raw);
-    var _Json_decodeKeyValuePairs = (decoder) => ({
-        $: 8,
-        b: decoder
+    var _Json_decodeFloat = _Json_decodePrim(function (value) {
+        return (typeof value === "number")
+            ? $elm$core$Result$Ok(value)
+            : _Json_expecting("a FLOAT", value);
     });
-    var _Json_mapMany = (f, decoders) => ({
-        $: 9,
-        f: f,
-        g: decoders
+    var _Json_decodeValue = _Json_decodePrim(function (value) {
+        return $elm$core$Result$Ok(_Json_wrap(value));
     });
-    var _Json_andThen_raw = (callback, decoder) => ({
-        $: 10,
-        b: decoder,
-        h: callback
-    }), _Json_andThen = F2(_Json_andThen_raw);
-    var _Json_oneOf = (decoders) => ({
-        $: 11,
-        g: decoders
+    var _Json_decodeString = _Json_decodePrim(function (value) {
+        return (typeof value === "string")
+            ? $elm$core$Result$Ok(value)
+            : (value instanceof String)
+                ? $elm$core$Result$Ok(value + "")
+                : _Json_expecting("a STRING", value);
     });
+    function _Json_decodeList(decoder) { return { $: 3, b: decoder }; }
+    function _Json_decodeArray(decoder) { return { $: 4, b: decoder }; }
+    function _Json_decodeNull(value) { return { $: 5, c: value }; }
+    var _Json_decodeField_raw = function (field, decoder) {
+        return {
+            $: 6,
+            d: field,
+            b: decoder
+        };
+    }, _Json_decodeField = F2(_Json_decodeField_raw);
+    var _Json_decodeIndex_raw = function (index, decoder) {
+        return {
+            $: 7,
+            e: index,
+            b: decoder
+        };
+    }, _Json_decodeIndex = F2(_Json_decodeIndex_raw);
+    function _Json_decodeKeyValuePairs(decoder) {
+        return {
+            $: 8,
+            b: decoder
+        };
+    }
+    function _Json_mapMany(f, decoders) {
+        return {
+            $: 9,
+            f: f,
+            g: decoders
+        };
+    }
+    var _Json_andThen_raw = function (callback, decoder) {
+        return {
+            $: 10,
+            b: decoder,
+            h: callback
+        };
+    }, _Json_andThen = F2(_Json_andThen_raw);
+    function _Json_oneOf(decoders) {
+        return {
+            $: 11,
+            g: decoders
+        };
+    }
     // DECODING OBJECTS
-    var _Json_map1_raw = (f, d1) => _Json_mapMany(f, [d1]), _Json_map1 = F2(_Json_map1_raw);
-    var _Json_map2_raw = (f, d1, d2) => _Json_mapMany(f, [d1, d2]), _Json_map2 = F3(_Json_map2_raw);
-    var _Json_map3_raw = (f, d1, d2, d3) => _Json_mapMany(f, [d1, d2, d3]), _Json_map3 = F4(_Json_map3_raw);
-    var _Json_map4_raw = (f, d1, d2, d3, d4) => _Json_mapMany(f, [d1, d2, d3, d4]), _Json_map4 = F5(_Json_map4_raw);
-    var _Json_map5_raw = (f, d1, d2, d3, d4, d5) => _Json_mapMany(f, [d1, d2, d3, d4, d5]), _Json_map5 = F6(_Json_map5_raw);
-    var _Json_map6_raw = (f, d1, d2, d3, d4, d5, d6) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6]), _Json_map6 = F7(_Json_map6_raw);
-    var _Json_map7_raw = (f, d1, d2, d3, d4, d5, d6, d7) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7]), _Json_map7 = F8(_Json_map7_raw);
-    var _Json_map8_raw = (f, d1, d2, d3, d4, d5, d6, d7, d8) => _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7, d8]), _Json_map8 = F9(_Json_map8_raw);
+    var _Json_map1_raw = function (f, d1) {
+        return _Json_mapMany(f, [d1]);
+    }, _Json_map1 = F2(_Json_map1_raw);
+    var _Json_map2_raw = function (f, d1, d2) {
+        return _Json_mapMany(f, [d1, d2]);
+    }, _Json_map2 = F3(_Json_map2_raw);
+    var _Json_map3_raw = function (f, d1, d2, d3) {
+        return _Json_mapMany(f, [d1, d2, d3]);
+    }, _Json_map3 = F4(_Json_map3_raw);
+    var _Json_map4_raw = function (f, d1, d2, d3, d4) {
+        return _Json_mapMany(f, [d1, d2, d3, d4]);
+    }, _Json_map4 = F5(_Json_map4_raw);
+    var _Json_map5_raw = function (f, d1, d2, d3, d4, d5) {
+        return _Json_mapMany(f, [d1, d2, d3, d4, d5]);
+    }, _Json_map5 = F6(_Json_map5_raw);
+    var _Json_map6_raw = function (f, d1, d2, d3, d4, d5, d6) {
+        return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6]);
+    }, _Json_map6 = F7(_Json_map6_raw);
+    var _Json_map7_raw = function (f, d1, d2, d3, d4, d5, d6, d7) {
+        return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7]);
+    }, _Json_map7 = F8(_Json_map7_raw);
+    var _Json_map8_raw = function (f, d1, d2, d3, d4, d5, d6, d7, d8) {
+        return _Json_mapMany(f, [d1, d2, d3, d4, d5, d6, d7, d8]);
+    }, _Json_map8 = F9(_Json_map8_raw);
     // DECODE
     var _Json_runOnString_raw = function (decoder, string) {
         try {
@@ -758,7 +1085,9 @@
             return $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("This is not valid JSON! " + e.message, _Json_wrap(string)));
         }
     }, _Json_runOnString = F2(_Json_runOnString_raw);
-    var _Json_run_raw = (decoder, value) => _Json_runHelp(decoder, _Json_unwrap(value)), _Json_run = F2(_Json_run_raw);
+    var _Json_run_raw = function (decoder, value) {
+        return _Json_runHelp(decoder, _Json_unwrap(value));
+    }, _Json_run = F2(_Json_run_raw);
     function _Json_runHelp(decoder, value) {
         switch (decoder.$) {
             case 2:
@@ -855,9 +1184,15 @@
         }
         return $elm$core$Result$Ok(toElmValue(array));
     }
-    var _Json_isArray = (value) => Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
-    var _Json_toElmArray = (array) => $elm$core$Array$initialize_raw(array.length, (i) => array[i]);
-    var _Json_expecting = (type, value) => $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
+    function _Json_isArray(value) {
+        return Array.isArray(value) || (typeof FileList !== "undefined" && value instanceof FileList);
+    }
+    function _Json_toElmArray(array) {
+        return $elm$core$Array$initialize_raw(array.length, function (i) { return array[i]; });
+    }
+    function _Json_expecting(type, value) {
+        return $elm$core$Result$Err($elm$json$Json$Decode$Failure_raw("Expecting " + type, _Json_wrap(value)));
+    }
     // EQUALITY
     function _Json_equality(x, y) {
         if (x === y) {
@@ -903,49 +1238,66 @@
         return true;
     }
     // ENCODE
-    var _Json_encode_raw = (indentLevel, value) => JSON.stringify(_Json_unwrap(value), null, indentLevel) + "", _Json_encode = F2(_Json_encode_raw);
-    var _Json_wrap_UNUSED = (value) => ({ $: 0, a: value });
-    var _Json_unwrap_UNUSED = (value) => value.a;
-    var _Json_wrap = (value) => value;
-    var _Json_unwrap = (value) => value;
-    var _Json_emptyArray = () => [];
-    var _Json_emptyObject = () => ({});
+    var _Json_encode_raw = function (indentLevel, value) {
+        return JSON.stringify(_Json_unwrap(value), null, indentLevel) + "";
+    }, _Json_encode = F2(_Json_encode_raw);
+    function _Json_wrap_UNUSED(value) { return { $: 0, a: value }; }
+    function _Json_unwrap_UNUSED(value) { return value.a; }
+    function _Json_wrap(value) { return value; }
+    function _Json_unwrap(value) { return value; }
+    function _Json_emptyArray() { return []; }
+    function _Json_emptyObject() { return {}; }
     var _Json_addField_raw = function (key, value, object) {
         object[key] = _Json_unwrap(value);
         return object;
     }, _Json_addField = F3(_Json_addField_raw);
-    var _Json_addEntry = (func) => F2(function (entry, array) {
-        array.push(_Json_unwrap(func(entry)));
-        return array;
-    });
+    function _Json_addEntry(func) {
+        return F2(function (entry, array) {
+            array.push(_Json_unwrap(func(entry)));
+            return array;
+        });
+    }
     var _Json_encodeNull = _Json_wrap(null);
-    var _Scheduler_succeed = (value) => ({
-        $: 0,
-        a: value
-    });
-    var _Scheduler_fail = (error) => ({
-        $: 1,
-        a: error
-    });
-    var _Scheduler_binding = (callback) => ({
-        $: 2,
-        b: callback,
-        c: null
-    });
-    var _Scheduler_andThen_raw = (callback, task) => ({
-        $: 3,
-        b: callback,
-        d: task
-    }), _Scheduler_andThen = F2(_Scheduler_andThen_raw);
-    var _Scheduler_onError_raw = (callback, task) => ({
-        $: 4,
-        b: callback,
-        d: task
-    }), _Scheduler_onError = F2(_Scheduler_onError_raw);
-    var _Scheduler_receive = (callback) => ({
-        $: 5,
-        b: callback
-    });
+    // TASKS
+    function _Scheduler_succeed(value) {
+        return {
+            $: 0,
+            a: value
+        };
+    }
+    function _Scheduler_fail(error) {
+        return {
+            $: 1,
+            a: error
+        };
+    }
+    function _Scheduler_binding(callback) {
+        return {
+            $: 2,
+            b: callback,
+            c: null
+        };
+    }
+    var _Scheduler_andThen_raw = function (callback, task) {
+        return {
+            $: 3,
+            b: callback,
+            d: task
+        };
+    }, _Scheduler_andThen = F2(_Scheduler_andThen_raw);
+    var _Scheduler_onError_raw = function (callback, task) {
+        return {
+            $: 4,
+            b: callback,
+            d: task
+        };
+    }, _Scheduler_onError = F2(_Scheduler_onError_raw);
+    function _Scheduler_receive(callback) {
+        return {
+            $: 5,
+            b: callback
+        };
+    }
     // PROCESSES
     var _Scheduler_guid = 0;
     function _Scheduler_rawSpawn(task) {
@@ -959,25 +1311,31 @@
         _Scheduler_enqueue(proc);
         return proc;
     }
-    var _Scheduler_spawn = (task) => _Scheduler_binding(function (callback) {
-        callback(_Scheduler_succeed(_Scheduler_rawSpawn(task)));
-    });
+    function _Scheduler_spawn(task) {
+        return _Scheduler_binding(function (callback) {
+            callback(_Scheduler_succeed(_Scheduler_rawSpawn(task)));
+        });
+    }
     function _Scheduler_rawSend(proc, msg) {
         proc.h.push(msg);
         _Scheduler_enqueue(proc);
     }
-    var _Scheduler_send_raw = (proc, msg) => _Scheduler_binding(function (callback) {
-        _Scheduler_rawSend(proc, msg);
-        callback(_Scheduler_succeed(_Utils_Tuple0));
-    }), _Scheduler_send = F2(_Scheduler_send_raw);
-    var _Scheduler_kill = (proc) => _Scheduler_binding(function (callback) {
-        var task = proc.f;
-        if (task.$ === 2 && task.c) {
-            task.c();
-        }
-        proc.f = null;
-        callback(_Scheduler_succeed(_Utils_Tuple0));
-    });
+    var _Scheduler_send_raw = function (proc, msg) {
+        return _Scheduler_binding(function (callback) {
+            _Scheduler_rawSend(proc, msg);
+            callback(_Scheduler_succeed(_Utils_Tuple0));
+        });
+    }, _Scheduler_send = F2(_Scheduler_send_raw);
+    function _Scheduler_kill(proc) {
+        return _Scheduler_binding(function (callback) {
+            var task = proc.f;
+            if (task.$ === 2 && task.c) {
+                task.c();
+            }
+            proc.f = null;
+            callback(_Scheduler_succeed(_Utils_Tuple0));
+        });
+    }
     /* STEP PROCESSES
     
     type alias Process =
@@ -1039,14 +1397,18 @@
             }
         }
     }
-    var _Process_sleep = (time) => _Scheduler_binding(function (callback) {
-        var id = setTimeout(function () {
-            callback(_Scheduler_succeed(_Utils_Tuple0));
-        }, time);
-        return function () { clearTimeout(id); };
-    });
+    function _Process_sleep(time) {
+        return _Scheduler_binding(function (callback) {
+            var id = setTimeout(function () {
+                callback(_Scheduler_succeed(_Utils_Tuple0));
+            }, time);
+            return function () { clearTimeout(id); };
+        });
+    }
     // PROGRAMS
-    var _Platform_worker_raw = (impl, flagDecoder, debugMetadata, args) => _Platform_initialize(flagDecoder, args, impl.bS, impl.b6, impl.b4, () => function () { }), _Platform_worker = F4(_Platform_worker_raw);
+    var _Platform_worker_raw = function (impl, flagDecoder, debugMetadata, args) {
+        return _Platform_initialize(flagDecoder, args, impl.bX, impl.ca, impl.b8, function () { return function () { }; });
+    }, _Platform_worker = F4(_Platform_worker_raw);
     // INITIALIZE A PROGRAM
     function _Platform_initialize(flagDecoder, args, init, update, subscriptions, stepperBuilder) {
         var result = _Json_run_raw(flagDecoder, _Json_wrap(args ? args["flags"] : undefined));
@@ -1088,13 +1450,15 @@
         }
         return ports;
     }
-    var _Platform_createManager = (init, onEffects, onSelfMsg, cmdMap, subMap) => ({
-        b: init,
-        c: onEffects,
-        d: onSelfMsg,
-        e: cmdMap,
-        f: subMap
-    });
+    function _Platform_createManager(init, onEffects, onSelfMsg, cmdMap, subMap) {
+        return {
+            b: init,
+            c: onEffects,
+            d: onSelfMsg,
+            e: cmdMap,
+            f: subMap
+        };
+    }
     function _Platform_instantiateManager(info, sendToApp) {
         var router = {
             g: sendToApp,
@@ -1104,40 +1468,55 @@
         var onSelfMsg = info.d;
         var cmdMap = info.e;
         var subMap = info.f;
-        var loop = (state) => _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
-            var value = msg.a;
-            if (msg.$ === 0) {
-                return A3(onSelfMsg, router, value, state);
-            }
-            return cmdMap && subMap
-                ? A4(onEffects, router, value.i, value.j, state)
-                : A3(onEffects, router, cmdMap ? value.i : value.j, state);
-        }));
+        function loop(state) {
+            return _Scheduler_andThen_raw(loop, _Scheduler_receive(function (msg) {
+                var value = msg.a;
+                if (msg.$ === 0) {
+                    return A3(onSelfMsg, router, value, state);
+                }
+                return cmdMap && subMap
+                    ? A4(onEffects, router, value.i, value.j, state)
+                    : A3(onEffects, router, cmdMap ? value.i : value.j, state);
+            }));
+        }
         return router.h = _Scheduler_rawSpawn(_Scheduler_andThen_raw(loop, info.b));
     }
     // ROUTING
-    var _Platform_sendToApp_raw = (router, msg) => _Scheduler_binding(function (callback) {
-        router.g(msg);
-        callback(_Scheduler_succeed(_Utils_Tuple0));
-    }), _Platform_sendToApp = F2(_Platform_sendToApp_raw);
-    var _Platform_sendToSelf_raw = (router, msg) => _Scheduler_send_raw(router.h, {
-        $: 0,
-        a: msg
-    }), _Platform_sendToSelf = F2(_Platform_sendToSelf_raw);
-    var _Platform_leaf = (home) => (value) => ({
-        $: 1,
-        k: home,
-        l: value
-    });
-    var _Platform_batch = (list) => ({
-        $: 2,
-        m: list
-    });
-    var _Platform_map_raw = (tagger, bag) => ({
-        $: 3,
-        n: tagger,
-        o: bag
-    }), _Platform_map = F2(_Platform_map_raw);
+    var _Platform_sendToApp_raw = function (router, msg) {
+        return _Scheduler_binding(function (callback) {
+            router.g(msg);
+            callback(_Scheduler_succeed(_Utils_Tuple0));
+        });
+    }, _Platform_sendToApp = F2(_Platform_sendToApp_raw);
+    var _Platform_sendToSelf_raw = function (router, msg) {
+        return _Scheduler_send_raw(router.h, {
+            $: 0,
+            a: msg
+        });
+    }, _Platform_sendToSelf = F2(_Platform_sendToSelf_raw);
+    // BAGS
+    function _Platform_leaf(home) {
+        return function (value) {
+            return {
+                $: 1,
+                k: home,
+                l: value
+            };
+        };
+    }
+    function _Platform_batch(list) {
+        return {
+            $: 2,
+            m: list
+        };
+    }
+    var _Platform_map_raw = function (tagger, bag) {
+        return {
+            $: 3,
+            n: tagger,
+            o: bag
+        };
+    }, _Platform_map = F2(_Platform_map_raw);
     // PIPE BAGS INTO EFFECT MANAGERS
     //
     // Effects must be queued!
@@ -1244,7 +1623,7 @@
         };
         return _Platform_leaf(name);
     }
-    var _Platform_outgoingPortMap_raw = (tagger, value) => value, _Platform_outgoingPortMap = F2(_Platform_outgoingPortMap_raw);
+    var _Platform_outgoingPortMap_raw = function (tagger, value) { return value; }, _Platform_outgoingPortMap = F2(_Platform_outgoingPortMap_raw);
     function _Platform_setupOutgoingPort(name) {
         var subs = [];
         var converter = _Platform_effectManagers[name].u;
@@ -1291,7 +1670,11 @@
         };
         return _Platform_leaf(name);
     }
-    var _Platform_incomingPortMap_raw = (tagger, finalTagger) => (value) => tagger(finalTagger(value)), _Platform_incomingPortMap = F2(_Platform_incomingPortMap_raw);
+    var _Platform_incomingPortMap_raw = function (tagger, finalTagger) {
+        return function (value) {
+            return tagger(finalTagger(value));
+        };
+    }, _Platform_incomingPortMap = F2(_Platform_incomingPortMap_raw);
     function _Platform_setupIncomingPort(name, sendToApp) {
         var subs = _List_Nil;
         var converter = _Platform_effectManagers[name].u;
@@ -1364,116 +1747,218 @@
         node.parentNode.replaceChild(_VirtualDom_render(virtualNode, function () { }), node);
         return {};
     }, _VirtualDom_init = F4(_VirtualDom_init_raw);
-    var _VirtualDom_text = (string) => ({
-        $: 0,
-        a: string
-    });
-    // NODE
-    var _VirtualDom_nodeNS_raw = (namespace, tag) => F2(function (factList, kidList) {
-        for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
-         {
-            var kid = kidList.a;
-            descendantsCount += (kid.b || 0);
-            kids.push(kid);
-        }
-        descendantsCount += kids.length;
+    // TEXT
+    function _VirtualDom_text(string) {
         return {
-            $: 1,
-            c: tag,
-            d: _VirtualDom_organizeFacts(factList),
-            e: kids,
-            f: namespace,
-            b: descendantsCount
+            $: 0,
+            a: string
         };
-    }), _VirtualDom_nodeNS = F2(_VirtualDom_nodeNS_raw);
+    }
+    // NODE
+    var _VirtualDom_nodeNS_raw = function (namespace, tag) {
+        return F2(function (factList, kidList) {
+            for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
+             {
+                var kid = kidList.a;
+                descendantsCount += (kid.b || 0);
+                kids.push(kid);
+            }
+            descendantsCount += kids.length;
+            return {
+                $: 1,
+                c: tag,
+                d: _VirtualDom_organizeFacts(factList),
+                e: kids,
+                f: namespace,
+                b: descendantsCount
+            };
+        });
+    }, _VirtualDom_nodeNS = F2(_VirtualDom_nodeNS_raw);
     var _VirtualDom_node_a0 = undefined, _VirtualDom_node = _VirtualDom_nodeNS(_VirtualDom_node_a0);
     // KEYED NODE
-    var _VirtualDom_keyedNodeNS_raw = (namespace, tag) => F2(function (factList, kidList) {
-        for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
-         {
-            var kid = kidList.a;
-            descendantsCount += (kid.b.b || 0);
-            kids.push(kid);
-        }
-        descendantsCount += kids.length;
-        return {
-            $: 2,
-            c: tag,
-            d: _VirtualDom_organizeFacts(factList),
-            e: kids,
-            f: namespace,
-            b: descendantsCount
-        };
-    }), _VirtualDom_keyedNodeNS = F2(_VirtualDom_keyedNodeNS_raw);
+    var _VirtualDom_keyedNodeNS_raw = function (namespace, tag) {
+        return F2(function (factList, kidList) {
+            for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
+             {
+                var kid = kidList.a;
+                descendantsCount += (kid.b.b || 0);
+                kids.push(kid);
+            }
+            descendantsCount += kids.length;
+            return {
+                $: 2,
+                c: tag,
+                d: _VirtualDom_organizeFacts(factList),
+                e: kids,
+                f: namespace,
+                b: descendantsCount
+            };
+        });
+    }, _VirtualDom_keyedNodeNS = F2(_VirtualDom_keyedNodeNS_raw);
     var _VirtualDom_keyedNode_a0 = undefined, _VirtualDom_keyedNode = _VirtualDom_keyedNodeNS(_VirtualDom_keyedNode_a0);
-    var _VirtualDom_custom = (factList, model, render, diff) => ({
-        $: 3,
-        d: _VirtualDom_organizeFacts(factList),
-        g: model,
-        h: render,
-        i: diff
-    });
+    // CUSTOM
+    function _VirtualDom_custom(factList, model, render, diff) {
+        return {
+            $: 3,
+            d: _VirtualDom_organizeFacts(factList),
+            g: model,
+            h: render,
+            i: diff
+        };
+    }
     // MAP
-    var _VirtualDom_map_raw = (tagger, node) => ({
-        $: 4,
-        j: tagger,
-        k: node,
-        b: 1 + (node.b || 0)
-    }), _VirtualDom_map = F2(_VirtualDom_map_raw);
-    var _VirtualDom_thunk = (refs, thunk) => ({
-        $: 5,
-        l: refs,
-        m: thunk,
-        k: undefined
-    });
-    var _VirtualDom_lazy_raw = (func, a) => _VirtualDom_thunk([func, a], () => func(a)), _VirtualDom_lazy = F2(_VirtualDom_lazy_raw);
-    var _VirtualDom_lazy2_raw = (func, a, b) => _VirtualDom_thunk([func, a, b], () => A2(func, a, b)), _VirtualDom_lazy2 = F3(_VirtualDom_lazy2_raw);
-    var _VirtualDom_lazy3_raw = (func, a, b, c) => _VirtualDom_thunk([func, a, b, c], () => A3(func, a, b, c)), _VirtualDom_lazy3 = F4(_VirtualDom_lazy3_raw);
-    var _VirtualDom_lazy4_raw = (func, a, b, c, d) => _VirtualDom_thunk([func, a, b, c, d], () => A4(func, a, b, c, d)), _VirtualDom_lazy4 = F5(_VirtualDom_lazy4_raw);
-    var _VirtualDom_lazy5_raw = (func, a, b, c, d, e) => _VirtualDom_thunk([func, a, b, c, d, e], () => A5(func, a, b, c, d, e)), _VirtualDom_lazy5 = F6(_VirtualDom_lazy5_raw);
-    var _VirtualDom_lazy6_raw = (func, a, b, c, d, e, f) => _VirtualDom_thunk([func, a, b, c, d, e, f], () => A6(func, a, b, c, d, e, f)), _VirtualDom_lazy6 = F7(_VirtualDom_lazy6_raw);
-    var _VirtualDom_lazy7_raw = (func, a, b, c, d, e, f, g) => _VirtualDom_thunk([func, a, b, c, d, e, f, g], () => A7(func, a, b, c, d, e, f, g)), _VirtualDom_lazy7 = F8(_VirtualDom_lazy7_raw);
-    var _VirtualDom_lazy8_raw = (func, a, b, c, d, e, f, g, h) => _VirtualDom_thunk([func, a, b, c, d, e, f, g, h], () => A8(func, a, b, c, d, e, f, g, h)), _VirtualDom_lazy8 = F9(_VirtualDom_lazy8_raw);
+    var _VirtualDom_map_raw = function (tagger, node) {
+        return {
+            $: 4,
+            j: tagger,
+            k: node,
+            b: 1 + (node.b || 0)
+        };
+    }, _VirtualDom_map = F2(_VirtualDom_map_raw);
+    // LAZY
+    function _VirtualDom_thunk(refs, thunk) {
+        return {
+            $: 5,
+            l: refs,
+            m: thunk,
+            k: undefined
+        };
+    }
+    var _VirtualDom_lazy_raw = function (func, a) {
+        return _VirtualDom_thunk([func, a], function () {
+            return func(a);
+        });
+    }, _VirtualDom_lazy = F2(_VirtualDom_lazy_raw);
+    var _VirtualDom_lazy2_raw = function (func, a, b) {
+        return _VirtualDom_thunk([func, a, b], function () {
+            return A2(func, a, b);
+        });
+    }, _VirtualDom_lazy2_raw_unwrapped = function (func, a, b) {
+        return _VirtualDom_thunk([func, a, b], function () {
+            return func(a, b);
+        });
+    }, _VirtualDom_lazy2 = F3(_VirtualDom_lazy2_raw);
+    var _VirtualDom_lazy3_raw = function (func, a, b, c) {
+        return _VirtualDom_thunk([func, a, b, c], function () {
+            return A3(func, a, b, c);
+        });
+    }, _VirtualDom_lazy3_raw_unwrapped = function (func, a, b, c) {
+        return _VirtualDom_thunk([func, a, b, c], function () {
+            return func(a, b, c);
+        });
+    }, _VirtualDom_lazy3 = F4(_VirtualDom_lazy3_raw);
+    var _VirtualDom_lazy4_raw = function (func, a, b, c, d) {
+        return _VirtualDom_thunk([func, a, b, c, d], function () {
+            return A4(func, a, b, c, d);
+        });
+    }, _VirtualDom_lazy4_raw_unwrapped = function (func, a, b, c, d) {
+        return _VirtualDom_thunk([func, a, b, c, d], function () {
+            return func(a, b, c, d);
+        });
+    }, _VirtualDom_lazy4 = F5(_VirtualDom_lazy4_raw);
+    var _VirtualDom_lazy5_raw = function (func, a, b, c, d, e) {
+        return _VirtualDom_thunk([func, a, b, c, d, e], function () {
+            return A5(func, a, b, c, d, e);
+        });
+    }, _VirtualDom_lazy5_raw_unwrapped = function (func, a, b, c, d, e) {
+        return _VirtualDom_thunk([func, a, b, c, d, e], function () {
+            return func(a, b, c, d, e);
+        });
+    }, _VirtualDom_lazy5 = F6(_VirtualDom_lazy5_raw);
+    var _VirtualDom_lazy6_raw = function (func, a, b, c, d, e, f) {
+        return _VirtualDom_thunk([func, a, b, c, d, e, f], function () {
+            return A6(func, a, b, c, d, e, f);
+        });
+    }, _VirtualDom_lazy6_raw_unwrapped = function (func, a, b, c, d, e, f) {
+        return _VirtualDom_thunk([func, a, b, c, d, e, f], function () {
+            return func(a, b, c, d, e, f);
+        });
+    }, _VirtualDom_lazy6 = F7(_VirtualDom_lazy6_raw);
+    var _VirtualDom_lazy7_raw = function (func, a, b, c, d, e, f, g) {
+        return _VirtualDom_thunk([func, a, b, c, d, e, f, g], function () {
+            return A7(func, a, b, c, d, e, f, g);
+        });
+    }, _VirtualDom_lazy7_raw_unwrapped = function (func, a, b, c, d, e, f, g) {
+        return _VirtualDom_thunk([func, a, b, c, d, e, f, g], function () {
+            return func(a, b, c, d, e, f, g);
+        });
+    }, _VirtualDom_lazy7 = F8(_VirtualDom_lazy7_raw);
+    var _VirtualDom_lazy8_raw = function (func, a, b, c, d, e, f, g, h) {
+        return _VirtualDom_thunk([func, a, b, c, d, e, f, g, h], function () {
+            return A8(func, a, b, c, d, e, f, g, h);
+        });
+    }, _VirtualDom_lazy8_raw_unwrapped = function (func, a, b, c, d, e, f, g, h) {
+        return _VirtualDom_thunk([func, a, b, c, d, e, f, g, h], function () {
+            return func(a, b, c, d, e, f, g, h);
+        });
+    }, _VirtualDom_lazy8 = F9(_VirtualDom_lazy8_raw);
     // FACTS
-    var _VirtualDom_on_raw = (key, handler) => ({
-        $: "a0",
-        n: key,
-        o: handler
-    }), _VirtualDom_on = F2(_VirtualDom_on_raw);
-    var _VirtualDom_style_raw = (key, value) => ({
-        $: "a1",
-        n: key,
-        o: value
-    }), _VirtualDom_style = F2(_VirtualDom_style_raw);
-    var _VirtualDom_property_raw = (key, value) => ({
-        $: "a2",
-        n: key,
-        o: value
-    }), _VirtualDom_property = F2(_VirtualDom_property_raw);
-    var _VirtualDom_attribute_raw = (key, value) => ({
-        $: "a3",
-        n: key,
-        o: value
-    }), _VirtualDom_attribute = F2(_VirtualDom_attribute_raw);
-    var _VirtualDom_attributeNS_raw = (namespace, key, value) => ({
-        $: "a4",
-        n: key,
-        o: { f: namespace, o: value }
-    }), _VirtualDom_attributeNS = F3(_VirtualDom_attributeNS_raw);
-    var _VirtualDom_noScript = (tag) => tag == "script" ? "p" : tag;
-    var _VirtualDom_noOnOrFormAction = (key) => /^(on|formAction$)/i.test(key) ? "data-" + key : key;
-    var _VirtualDom_noInnerHtmlOrFormAction = (key) => key == "innerHTML" || key == "formAction" ? "data-" + key : key;
-    var _VirtualDom_noJavaScriptUri = (value) => /^javascript:/i.test(value.replace(/\s/g, "")) ? "" : value;
-    var _VirtualDom_noJavaScriptUri_UNUSED = (value) => /^javascript:/i.test(value.replace(/\s/g, ""))
-        ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
-        : value;
-    var _VirtualDom_noJavaScriptOrHtmlUri = (value) => /^\s*(javascript:|data:text\/html)/i.test(value) ? "" : value;
-    var _VirtualDom_noJavaScriptOrHtmlUri_UNUSED = (value) => /^\s*(javascript:|data:text\/html)/i.test(value)
-        ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
-        : value;
+    var _VirtualDom_on_raw = function (key, handler) {
+        return {
+            $: "a0",
+            n: key,
+            o: handler
+        };
+    }, _VirtualDom_on = F2(_VirtualDom_on_raw);
+    var _VirtualDom_style_raw = function (key, value) {
+        return {
+            $: "a1",
+            n: key,
+            o: value
+        };
+    }, _VirtualDom_style = F2(_VirtualDom_style_raw);
+    var _VirtualDom_property_raw = function (key, value) {
+        return {
+            $: "a2",
+            n: key,
+            o: value
+        };
+    }, _VirtualDom_property = F2(_VirtualDom_property_raw);
+    var _VirtualDom_attribute_raw = function (key, value) {
+        return {
+            $: "a3",
+            n: key,
+            o: value
+        };
+    }, _VirtualDom_attribute = F2(_VirtualDom_attribute_raw);
+    var _VirtualDom_attributeNS_raw = function (namespace, key, value) {
+        return {
+            $: "a4",
+            n: key,
+            o: { f: namespace, o: value }
+        };
+    }, _VirtualDom_attributeNS = F3(_VirtualDom_attributeNS_raw);
+    // XSS ATTACK VECTOR CHECKS
+    function _VirtualDom_noScript(tag) {
+        return tag == "script" ? "p" : tag;
+    }
+    function _VirtualDom_noOnOrFormAction(key) {
+        return /^(on|formAction$)/i.test(key) ? "data-" + key : key;
+    }
+    function _VirtualDom_noInnerHtmlOrFormAction(key) {
+        return key == "innerHTML" || key == "formAction" ? "data-" + key : key;
+    }
+    function _VirtualDom_noJavaScriptUri(value) {
+        return /^javascript:/i.test(value.replace(/\s/g, "")) ? "" : value;
+    }
+    function _VirtualDom_noJavaScriptUri_UNUSED(value) {
+        return /^javascript:/i.test(value.replace(/\s/g, ""))
+            ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
+            : value;
+    }
+    function _VirtualDom_noJavaScriptOrHtmlUri(value) {
+        return /^\s*(javascript:|data:text\/html)/i.test(value) ? "" : value;
+    }
+    function _VirtualDom_noJavaScriptOrHtmlUri_UNUSED(value) {
+        return /^\s*(javascript:|data:text\/html)/i.test(value)
+            ? "javascript:alert(\"This is an XSS vector. Please use ports or web components instead.\")"
+            : value;
+    }
     // MAP FACTS
-    var _VirtualDom_mapAttribute_raw = (func, attr) => (attr.$ === "a0")
-        ? _VirtualDom_on_raw(attr.n, _VirtualDom_mapHandler(func, attr.o)) : attr, _VirtualDom_mapAttribute = F2(_VirtualDom_mapAttribute_raw);
+    var _VirtualDom_mapAttribute_raw = function (func, attr) {
+        return (attr.$ === "a0")
+            ? _VirtualDom_on_raw(attr.n, _VirtualDom_mapHandler(func, attr.o)) : attr;
+    }, _VirtualDom_mapAttribute = F2(_VirtualDom_mapAttribute_raw);
     function _VirtualDom_mapHandler(func, handler) {
         var tag = $elm$virtual_dom$VirtualDom$toHandlerInt(handler);
         // 0 = Normal
@@ -1488,12 +1973,16 @@
                 : _VirtualDom_mapEventRecord, $elm$json$Json$Decode$succeed(func), handler.a)
         };
     }
-    var _VirtualDom_mapEventTuple_raw = (func, tuple) => _Utils_Tuple2(func(tuple.a), tuple.b), _VirtualDom_mapEventTuple = F2(_VirtualDom_mapEventTuple_raw);
-    var _VirtualDom_mapEventRecord_raw = (func, record) => ({
-        L: func(record.L),
-        aU: record.aU,
-        aP: record.aP
-    }), _VirtualDom_mapEventRecord = F2(_VirtualDom_mapEventRecord_raw);
+    var _VirtualDom_mapEventTuple_raw = function (func, tuple) {
+        return _Utils_Tuple2(func(tuple.a), tuple.b);
+    }, _VirtualDom_mapEventTuple = F2(_VirtualDom_mapEventTuple_raw);
+    var _VirtualDom_mapEventRecord_raw = function (func, record) {
+        return {
+            L: func(record.L),
+            aY: record.aY,
+            aT: record.aT
+        };
+    }, _VirtualDom_mapEventRecord = F2(_VirtualDom_mapEventRecord_raw);
     // ORGANIZE FACTS
     function _VirtualDom_organizeFacts(factList) {
         for (var facts = {}; factList.b; factList = factList.b) // WHILE_CONS
@@ -1654,9 +2143,9 @@
             // 3 = Custom
             var value = result.a;
             var message = !tag ? value : tag < 3 ? value.a : value.L;
-            var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aU;
+            var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aY;
             var currentEventNode = (stopPropagation && event.stopPropagation(),
-                (tag == 2 ? value.b : tag == 3 && value.aP) && event.preventDefault(),
+                (tag == 2 ? value.b : tag == 3 && value.aT) && event.preventDefault(),
                 eventNode);
             var tagger;
             var i;
@@ -1676,7 +2165,9 @@
         callback.q = initialHandler;
         return callback;
     }
-    var _VirtualDom_equalEvents = (x, y) => x.$ == y.$ && _Json_equality(x.a, y.a);
+    function _VirtualDom_equalEvents(x, y) {
+        return x.$ == y.$ && _Json_equality(x.a, y.a);
+    }
     // DIFF
     // TODO: Should we do patches like in iOS?
     //
@@ -2307,48 +2798,52 @@
     }
     // ELEMENT
     var _Debugger_element;
-    var _Browser_element = _Debugger_element || F4((impl, flagDecoder, debugMetadata, args) => _Platform_initialize(flagDecoder, args, impl.bS, impl.b6, impl.b4, function (sendToApp, initialModel) {
-        var view = impl.b8;
-        /**/
-        var domNode = args["node"];
-        //*/
-        /**_UNUSED/
-        var domNode = args && args['node'] ? args['node'] : _Debug_crash(0);
-        //*/
-        var currNode = _VirtualDom_virtualize(domNode);
-        return _Browser_makeAnimator(initialModel, function (model) {
-            var nextNode = view(model);
-            var patches = _VirtualDom_diff(currNode, nextNode);
-            domNode = _VirtualDom_applyPatches(domNode, currNode, patches, sendToApp);
-            currNode = nextNode;
+    var _Browser_element = _Debugger_element || F4(function (impl, flagDecoder, debugMetadata, args) {
+        return _Platform_initialize(flagDecoder, args, impl.bX, impl.ca, impl.b8, function (sendToApp, initialModel) {
+            var view = impl.cc;
+            /**/
+            var domNode = args["node"];
+            //*/
+            /**_UNUSED/
+            var domNode = args && args['node'] ? args['node'] : _Debug_crash(0);
+            //*/
+            var currNode = _VirtualDom_virtualize(domNode);
+            return _Browser_makeAnimator(initialModel, function (model) {
+                var nextNode = view(model);
+                var patches = _VirtualDom_diff(currNode, nextNode);
+                domNode = _VirtualDom_applyPatches(domNode, currNode, patches, sendToApp);
+                currNode = nextNode;
+            });
         });
-    }));
+    });
     // DOCUMENT
     var _Debugger_document;
-    var _Browser_document = _Debugger_document || F4((impl, flagDecoder, debugMetadata, args) => _Platform_initialize(flagDecoder, args, impl.bS, impl.b6, impl.b4, function (sendToApp, initialModel) {
-        var divertHrefToApp = impl.aQ && impl.aQ(sendToApp);
-        var view = impl.b8;
-        var title = _VirtualDom_doc.title;
-        var bodyNode = _VirtualDom_doc.body;
-        var currNode = _VirtualDom_virtualize(bodyNode);
-        return _Browser_makeAnimator(initialModel, function (model) {
-            _VirtualDom_divertHrefToApp = divertHrefToApp;
-            var doc = view(model);
-            var nextNode = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "body")(_List_Nil)(doc.bA);
-            var patches = _VirtualDom_diff(currNode, nextNode);
-            bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
-            currNode = nextNode;
-            _VirtualDom_divertHrefToApp = 0;
-            (title !== doc.b5) && (_VirtualDom_doc.title = title = doc.b5);
+    var _Browser_document = _Debugger_document || F4(function (impl, flagDecoder, debugMetadata, args) {
+        return _Platform_initialize(flagDecoder, args, impl.bX, impl.ca, impl.b8, function (sendToApp, initialModel) {
+            var divertHrefToApp = impl.aU && impl.aU(sendToApp);
+            var view = impl.cc;
+            var title = _VirtualDom_doc.title;
+            var bodyNode = _VirtualDom_doc.body;
+            var currNode = _VirtualDom_virtualize(bodyNode);
+            return _Browser_makeAnimator(initialModel, function (model) {
+                _VirtualDom_divertHrefToApp = divertHrefToApp;
+                var doc = view(model);
+                var nextNode = _VirtualDom_nodeNS_raw(_VirtualDom_node_a0, "body")(_List_Nil)(doc.bF);
+                var patches = _VirtualDom_diff(currNode, nextNode);
+                bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
+                currNode = nextNode;
+                _VirtualDom_divertHrefToApp = 0;
+                (title !== doc.b9) && (_VirtualDom_doc.title = title = doc.b9);
+            });
         });
-    }));
+    });
     // ANIMATION
     var _Browser_cancelAnimationFrame = typeof cancelAnimationFrame !== "undefined"
         ? cancelAnimationFrame
         : function (id) { clearTimeout(id); };
     var _Browser_requestAnimationFrame = typeof requestAnimationFrame !== "undefined"
         ? requestAnimationFrame
-        : (callback) => setTimeout(callback, 1000 / 60);
+        : function (callback) { return setTimeout(callback, 1000 / 60); };
     function _Browser_makeAnimator(model, draw) {
         draw(model);
         var state = 0;
@@ -2368,11 +2863,11 @@
     }
     // APPLICATION
     function _Browser_application(impl) {
-        var onUrlChange = impl.b_;
-        var onUrlRequest = impl.b$;
+        var onUrlChange = impl.b2;
+        var onUrlRequest = impl.b3;
         var key = function () { key.a(onUrlChange(_Browser_getUrl())); };
         return _Browser_document({
-            aQ: function (sendToApp) {
+            aU: function (sendToApp) {
                 key.a = sendToApp;
                 _Browser_window.addEventListener("popstate", key);
                 _Browser_window.navigator.userAgent.indexOf("Trident") < 0 || _Browser_window.addEventListener("hashchange", key);
@@ -2383,182 +2878,234 @@
                         var curr = _Browser_getUrl();
                         var next = $elm$url$Url$fromString(href).a;
                         sendToApp(onUrlRequest((next
-                            && curr.bg === next.bg
-                            && curr.a2 === next.a2
-                            && curr.bb.a === next.bb.a)
+                            && curr.bm === next.bm
+                            && curr.a8 === next.a8
+                            && curr.bh.a === next.bh.a)
                             ? $elm$browser$Browser$Internal(next)
                             : $elm$browser$Browser$External(href)));
                     }
                 });
             },
-            bS: (flags) => A3(impl.bS, flags, _Browser_getUrl(), key),
-            b8: impl.b8,
-            b6: impl.b6,
-            b4: impl.b4
+            bX: function (flags) {
+                return A3(impl.bX, flags, _Browser_getUrl(), key);
+            },
+            cc: impl.cc,
+            ca: impl.ca,
+            b8: impl.b8
         });
     }
-    var _Browser_getUrl = () => $elm$url$Url$fromString(_VirtualDom_doc.location.href).a || _Debug_crash(1);
-    var _Browser_go_raw = (key, n) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-        n && history.go(n);
-        key();
-    })), _Browser_go = F2(_Browser_go_raw);
-    var _Browser_pushUrl_raw = (key, url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-        history.pushState({}, "", url);
-        key();
-    })), _Browser_pushUrl = F2(_Browser_pushUrl_raw);
-    var _Browser_replaceUrl_raw = (key, url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
-        history.replaceState({}, "", url);
-        key();
-    })), _Browser_replaceUrl = F2(_Browser_replaceUrl_raw);
+    function _Browser_getUrl() {
+        return $elm$url$Url$fromString(_VirtualDom_doc.location.href).a || _Debug_crash(1);
+    }
+    var _Browser_go_raw = function (key, n) {
+        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
+            n && history.go(n);
+            key();
+        }));
+    }, _Browser_go = F2(_Browser_go_raw);
+    var _Browser_pushUrl_raw = function (key, url) {
+        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
+            history.pushState({}, "", url);
+            key();
+        }));
+    }, _Browser_pushUrl = F2(_Browser_pushUrl_raw);
+    var _Browser_replaceUrl_raw = function (key, url) {
+        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function () {
+            history.replaceState({}, "", url);
+            key();
+        }));
+    }, _Browser_replaceUrl = F2(_Browser_replaceUrl_raw);
     // GLOBAL EVENTS
     var _Browser_fakeNode = { addEventListener: function () { }, removeEventListener: function () { } };
     var _Browser_doc = typeof document !== "undefined" ? document : _Browser_fakeNode;
     var _Browser_window = typeof window !== "undefined" ? window : _Browser_fakeNode;
-    var _Browser_on_raw = (node, eventName, sendToSelf) => _Scheduler_spawn(_Scheduler_binding(function (callback) {
-        function handler(event) { _Scheduler_rawSpawn(sendToSelf(event)); }
-        node.addEventListener(eventName, handler, _VirtualDom_passiveSupported && { passive: true });
-        return function () { node.removeEventListener(eventName, handler); };
-    })), _Browser_on = F3(_Browser_on_raw);
+    var _Browser_on_raw = function (node, eventName, sendToSelf) {
+        return _Scheduler_spawn(_Scheduler_binding(function (callback) {
+            function handler(event) { _Scheduler_rawSpawn(sendToSelf(event)); }
+            node.addEventListener(eventName, handler, _VirtualDom_passiveSupported && { passive: true });
+            return function () { node.removeEventListener(eventName, handler); };
+        }));
+    }, _Browser_on = F3(_Browser_on_raw);
     var _Browser_decodeEvent_raw = function (decoder, event) {
         var result = _Json_runHelp(decoder, event);
         return $elm$core$Result$isOk(result) ? $elm$core$Maybe$Just(result.a) : $elm$core$Maybe$Nothing;
     }, _Browser_decodeEvent = F2(_Browser_decodeEvent_raw);
-    var _Browser_visibilityInfo = () => (typeof _VirtualDom_doc.hidden !== "undefined")
-        ? { bP: "hidden", bD: "visibilitychange" }
-        :
-            (typeof _VirtualDom_doc.mozHidden !== "undefined")
-                ? { bP: "mozHidden", bD: "mozvisibilitychange" }
-                :
-                    (typeof _VirtualDom_doc.msHidden !== "undefined")
-                        ? { bP: "msHidden", bD: "msvisibilitychange" }
-                        :
-                            (typeof _VirtualDom_doc.webkitHidden !== "undefined")
-                                ? { bP: "webkitHidden", bD: "webkitvisibilitychange" }
-                                : { bP: "hidden", bD: "visibilitychange" };
-    var _Browser_rAF = () => _Scheduler_binding(function (callback) {
-        var id = _Browser_requestAnimationFrame(function () {
+    // PAGE VISIBILITY
+    function _Browser_visibilityInfo() {
+        return (typeof _VirtualDom_doc.hidden !== "undefined")
+            ? { bU: "hidden", bI: "visibilitychange" }
+            :
+                (typeof _VirtualDom_doc.mozHidden !== "undefined")
+                    ? { bU: "mozHidden", bI: "mozvisibilitychange" }
+                    :
+                        (typeof _VirtualDom_doc.msHidden !== "undefined")
+                            ? { bU: "msHidden", bI: "msvisibilitychange" }
+                            :
+                                (typeof _VirtualDom_doc.webkitHidden !== "undefined")
+                                    ? { bU: "webkitHidden", bI: "webkitvisibilitychange" }
+                                    : { bU: "hidden", bI: "visibilitychange" };
+    }
+    // ANIMATION FRAMES
+    function _Browser_rAF() {
+        return _Scheduler_binding(function (callback) {
+            var id = _Browser_requestAnimationFrame(function () {
+                callback(_Scheduler_succeed(Date.now()));
+            });
+            return function () {
+                _Browser_cancelAnimationFrame(id);
+            };
+        });
+    }
+    function _Browser_now() {
+        return _Scheduler_binding(function (callback) {
             callback(_Scheduler_succeed(Date.now()));
         });
-        return function () {
-            _Browser_cancelAnimationFrame(id);
-        };
-    });
-    var _Browser_now = () => _Scheduler_binding(function (callback) {
-        callback(_Scheduler_succeed(Date.now()));
-    });
-    var _Browser_withNode = (id, doStuff) => _Scheduler_binding(function (callback) {
-        _Browser_requestAnimationFrame(function () {
-            var node = document.getElementById(id);
-            callback(node
-                ? _Scheduler_succeed(doStuff(node))
-                : _Scheduler_fail($elm$browser$Browser$Dom$NotFound(id)));
+    }
+    // DOM STUFF
+    function _Browser_withNode(id, doStuff) {
+        return _Scheduler_binding(function (callback) {
+            _Browser_requestAnimationFrame(function () {
+                var node = document.getElementById(id);
+                callback(node
+                    ? _Scheduler_succeed(doStuff(node))
+                    : _Scheduler_fail($elm$browser$Browser$Dom$NotFound(id)));
+            });
         });
-    });
-    var _Browser_withWindow = (doStuff) => _Scheduler_binding(function (callback) {
-        _Browser_requestAnimationFrame(function () {
-            callback(_Scheduler_succeed(doStuff()));
+    }
+    function _Browser_withWindow(doStuff) {
+        return _Scheduler_binding(function (callback) {
+            _Browser_requestAnimationFrame(function () {
+                callback(_Scheduler_succeed(doStuff()));
+            });
         });
-    });
+    }
     // FOCUS and BLUR
-    var _Browser_call_raw = (functionName, id) => _Browser_withNode(id, function (node) {
-        node[functionName]();
-        return _Utils_Tuple0;
-    }), _Browser_call = F2(_Browser_call_raw);
-    var _Browser_getViewport = () => ({
-        bl: _Browser_getScene(),
-        bs: {
-            bv: _Browser_window.pageXOffset,
-            bw: _Browser_window.pageYOffset,
-            bt: _Browser_doc.documentElement.clientWidth,
-            a1: _Browser_doc.documentElement.clientHeight
-        }
-    });
+    var _Browser_call_raw = function (functionName, id) {
+        return _Browser_withNode(id, function (node) {
+            node[functionName]();
+            return _Utils_Tuple0;
+        });
+    }, _Browser_call = F2(_Browser_call_raw);
+    // WINDOW VIEWPORT
+    function _Browser_getViewport() {
+        return {
+            br: _Browser_getScene(),
+            bx: {
+                bA: _Browser_window.pageXOffset,
+                bB: _Browser_window.pageYOffset,
+                by: _Browser_doc.documentElement.clientWidth,
+                a7: _Browser_doc.documentElement.clientHeight
+            }
+        };
+    }
     function _Browser_getScene() {
         var body = _Browser_doc.body;
         var elem = _Browser_doc.documentElement;
         return {
-            bt: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-            a1: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+            by: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+            a7: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
         };
     }
-    var _Browser_setViewport_raw = (x, y) => _Browser_withWindow(function () {
-        _Browser_window.scroll(x, y);
-        return _Utils_Tuple0;
-    }), _Browser_setViewport = F2(_Browser_setViewport_raw);
-    var _Browser_getViewportOf = (id) => _Browser_withNode(id, (node) => ({
-        bl: {
-            bt: node.scrollWidth,
-            a1: node.scrollHeight
-        },
-        bs: {
-            bv: node.scrollLeft,
-            bw: node.scrollTop,
-            bt: node.clientWidth,
-            a1: node.clientHeight
-        }
-    }));
-    var _Browser_setViewportOf_raw = (id, x, y) => _Browser_withNode(id, function (node) {
-        node.scrollLeft = x;
-        node.scrollTop = y;
-        return _Utils_Tuple0;
-    }), _Browser_setViewportOf = F3(_Browser_setViewportOf_raw);
-    var _Browser_getElement = (id) => _Browser_withNode(id, function (node) {
-        var rect = node.getBoundingClientRect();
-        var x = _Browser_window.pageXOffset;
-        var y = _Browser_window.pageYOffset;
-        return {
-            bl: _Browser_getScene(),
-            bs: {
-                bv: x,
-                bw: y,
-                bt: _Browser_doc.documentElement.clientWidth,
-                a1: _Browser_doc.documentElement.clientHeight
-            },
-            bK: {
-                bv: x + rect.left,
-                bw: y + rect.top,
-                bt: rect.width,
-                a1: rect.height
+    var _Browser_setViewport_raw = function (x, y) {
+        return _Browser_withWindow(function () {
+            _Browser_window.scroll(x, y);
+            return _Utils_Tuple0;
+        });
+    }, _Browser_setViewport = F2(_Browser_setViewport_raw);
+    // ELEMENT VIEWPORT
+    function _Browser_getViewportOf(id) {
+        return _Browser_withNode(id, function (node) {
+            return {
+                br: {
+                    by: node.scrollWidth,
+                    a7: node.scrollHeight
+                },
+                bx: {
+                    bA: node.scrollLeft,
+                    bB: node.scrollTop,
+                    by: node.clientWidth,
+                    a7: node.clientHeight
+                }
+            };
+        });
+    }
+    var _Browser_setViewportOf_raw = function (id, x, y) {
+        return _Browser_withNode(id, function (node) {
+            node.scrollLeft = x;
+            node.scrollTop = y;
+            return _Utils_Tuple0;
+        });
+    }, _Browser_setViewportOf = F3(_Browser_setViewportOf_raw);
+    // ELEMENT
+    function _Browser_getElement(id) {
+        return _Browser_withNode(id, function (node) {
+            var rect = node.getBoundingClientRect();
+            var x = _Browser_window.pageXOffset;
+            var y = _Browser_window.pageYOffset;
+            return {
+                br: _Browser_getScene(),
+                bx: {
+                    bA: x,
+                    bB: y,
+                    by: _Browser_doc.documentElement.clientWidth,
+                    a7: _Browser_doc.documentElement.clientHeight
+                },
+                bP: {
+                    bA: x + rect.left,
+                    bB: y + rect.top,
+                    by: rect.width,
+                    a7: rect.height
+                }
+            };
+        });
+    }
+    // LOAD and RELOAD
+    function _Browser_reload(skipCache) {
+        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
+            _VirtualDom_doc.location.reload(skipCache);
+        }));
+    }
+    function _Browser_load(url) {
+        return $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
+            try {
+                _Browser_window.location = url;
             }
-        };
-    });
-    var _Browser_reload = (skipCache) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
-        _VirtualDom_doc.location.reload(skipCache);
-    }));
-    var _Browser_load = (url) => $elm$core$Task$perform_raw($elm$core$Basics$never, _Scheduler_binding(function (callback) {
-        try {
-            _Browser_window.location = url;
-        }
-        catch (err) {
-            // Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
-            // Other browsers reload the page, so let's be consistent about that.
-            _VirtualDom_doc.location.reload(false);
-        }
-    }));
+            catch (err) {
+                // Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
+                // Other browsers reload the page, so let's be consistent about that.
+                _VirtualDom_doc.location.reload(false);
+            }
+        }));
+    }
     var _Benchmark_getTimestamp = typeof performance !== "undefined"
         ? performance.now.bind(performance)
         : Date.now;
     // sample : Int -> Operation -> Task Error Float
-    var _Benchmark_sample_raw = (n, fn) => _Scheduler_binding(function (callback) {
-        var start = _Benchmark_getTimestamp();
-        try {
-            for (var i = 0; i < n; i++) {
-                fn();
+    var _Benchmark_sample_raw = function (n, fn) {
+        return _Scheduler_binding(function (callback) {
+            var start = _Benchmark_getTimestamp();
+            try {
+                for (var i = 0; i < n; i++) {
+                    fn();
+                }
             }
-        }
-        catch (error) {
-            if (error instanceof RangeError) {
-                callback(_Scheduler_fail($elm_explorations$benchmark$Benchmark$LowLevel$StackOverflow));
+            catch (error) {
+                if (error instanceof RangeError) {
+                    callback(_Scheduler_fail($elm_explorations$benchmark$Benchmark$LowLevel$StackOverflow));
+                }
+                else {
+                    callback(_Scheduler_fail($elm_explorations$benchmark$Benchmark$LowLevel$UnknownError(error.message)));
+                }
+                return;
             }
-            else {
-                callback(_Scheduler_fail($elm_explorations$benchmark$Benchmark$LowLevel$UnknownError(error.message)));
-            }
-            return;
-        }
-        var end = _Benchmark_getTimestamp();
-        callback(_Scheduler_succeed(end - start));
-    }), _Benchmark_sample = F2(_Benchmark_sample_raw);
-    var _Benchmark_operation = (thunk) => thunk;
+            var end = _Benchmark_getTimestamp();
+            callback(_Scheduler_succeed(end - start));
+        });
+    }, _Benchmark_sample = F2(_Benchmark_sample_raw);
+    // operation : (() -> a) -> Operation
+    function _Benchmark_operation(thunk) {
+        return thunk;
+    }
     var $elm$core$Basics$EQ = 1;
     var $elm$core$Basics$GT = 2;
     var $elm$core$Basics$LT = 0;
@@ -2580,9 +3127,34 @@
                 continue foldr;
             }
         }
+    }, $elm$core$Dict$foldr_raw_unwrapped = function (func, acc, t) {
+        foldr: while (true) {
+            if (t.$ === -2) {
+                return acc;
+            }
+            else {
+                var key = t.b;
+                var value = t.c;
+                var left = t.d;
+                var right = t.e;
+                var $temp$func = func, $temp$acc = func(key, value, $elm$core$Dict$foldr_raw_unwrapped(func, acc, right)), $temp$t = left;
+                func = $temp$func;
+                acc = $temp$acc;
+                t = $temp$t;
+                continue foldr;
+            }
+        }
     }, $elm$core$Dict$foldr = F3($elm$core$Dict$foldr_raw);
-    var $elm$core$Dict$toList = (dict) => $elm$core$Dict$foldr_raw(F3((key, value, list) => _List_Cons(_Utils_Tuple2(key, value), list)), _List_Nil, dict);
-    var $elm$core$Dict$keys = (dict) => $elm$core$Dict$foldr_raw(F3((key, value, keyList) => _List_Cons(key, keyList)), _List_Nil, dict);
+    var $elm$core$Dict$toList = function (dict) {
+        return $elm$core$Dict$foldr_raw_unwrapped(function (key, value, list) {
+            return _List_cons_raw(_Utils_Tuple2(key, value), list);
+        }, _List_Nil, dict);
+    };
+    var $elm$core$Dict$keys = function (dict) {
+        return $elm$core$Dict$foldr_raw_unwrapped(function (key, value, keyList) {
+            return _List_cons_raw(key, keyList);
+        }, _List_Nil, dict);
+    };
     var $elm$core$Set$toList = function (_v0) {
         var dict = _v0;
         return $elm$core$Dict$keys(dict);
@@ -2603,25 +3175,45 @@
         });
         return _JsArray_foldr_raw(helper, _JsArray_foldr_raw(func, baseCase, tail), tree);
     }, $elm$core$Array$foldr = F3($elm$core$Array$foldr_raw);
-    var $elm$core$Array$toList = (array) => $elm$core$Array$foldr_raw($elm$core$List$cons, _List_Nil, array);
-    var $elm$core$Result$Err = (a) => ({ $: 1, a: a });
-    var $elm$json$Json$Decode$Failure_raw = (a, b) => ({ $: 3, a: a, b: b }), $elm$json$Json$Decode$Failure = F2($elm$json$Json$Decode$Failure_raw);
-    var $elm$json$Json$Decode$Field_raw = (a, b) => ({ $: 0, a: a, b: b }), $elm$json$Json$Decode$Field = F2($elm$json$Json$Decode$Field_raw);
-    var $elm$json$Json$Decode$Index_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm$json$Json$Decode$Index = F2($elm$json$Json$Decode$Index_raw);
-    var $elm$core$Result$Ok = (a) => ({ $: 0, a: a });
-    var $elm$json$Json$Decode$OneOf = (a) => ({ $: 2, a: a });
+    var $elm$core$Array$toList = function (array) {
+        return $elm$core$Array$foldr_raw($elm$core$List$cons, _List_Nil, array);
+    };
+    var $elm$core$Result$Err = function (a) {
+        return { $: 1, a: a };
+    };
+    var $elm$json$Json$Decode$Failure_raw = function (a, b) {
+        return { $: 3, a: a, b: b };
+    }, $elm$json$Json$Decode$Failure = F2($elm$json$Json$Decode$Failure_raw);
+    var $elm$json$Json$Decode$Field_raw = function (a, b) {
+        return { $: 0, a: a, b: b };
+    }, $elm$json$Json$Decode$Field = F2($elm$json$Json$Decode$Field_raw);
+    var $elm$json$Json$Decode$Index_raw = function (a, b) {
+        return { $: 1, a: a, b: b };
+    }, $elm$json$Json$Decode$Index = F2($elm$json$Json$Decode$Index_raw);
+    var $elm$core$Result$Ok = function (a) {
+        return { $: 0, a: a };
+    };
+    var $elm$json$Json$Decode$OneOf = function (a) {
+        return { $: 2, a: a };
+    };
     var $elm$core$Basics$False = 1;
     var $elm$core$Basics$add = _Basics_add;
-    var $elm$core$Maybe$Just = a => ({ $: 0, a: a });
+    var $elm$core$Maybe$Just = function (a) { return { $: 0, a: a }; };
     var $elm$core$Maybe$Nothing = { $: 1, a: null };
     var $elm$core$String$all = _String_all;
     var $elm$core$Basics$and = _Basics_and;
     var $elm$core$Basics$append = _Utils_append;
     var $elm$json$Json$Encode$encode = _Json_encode;
     var $elm$core$String$fromInt = _String_fromNumber;
-    var $elm$core$String$join_raw = (sep, chunks) => _String_join_raw(sep, _List_toArray(chunks)), $elm$core$String$join = F2($elm$core$String$join_raw);
-    var $elm$core$String$split_raw = (sep, string) => _List_fromArray(_String_split_raw(sep, string)), $elm$core$String$split = F2($elm$core$String$split_raw);
-    var $elm$json$Json$Decode$indent = (str) => $elm$core$String$join_raw("\n    ", $elm$core$String$split_raw("\n", str));
+    var $elm$core$String$join_raw = function (sep, chunks) {
+        return _String_join_raw(sep, _List_toArray(chunks));
+    }, $elm$core$String$join = F2($elm$core$String$join_raw);
+    var $elm$core$String$split_raw = function (sep, string) {
+        return _List_fromArray(_String_split_raw(sep, string));
+    }, $elm$core$String$split = F2($elm$core$String$split_raw);
+    var $elm$json$Json$Decode$indent = function (str) {
+        return $elm$core$String$join_raw("\n    ", $elm$core$String$split_raw("\n", str));
+    };
     var $elm$core$List$foldl_raw = function (func, acc, list) {
         foldl: while (true) {
             if (!list.b) {
@@ -2637,15 +3229,34 @@
                 continue foldl;
             }
         }
+    }, $elm$core$List$foldl_raw_unwrapped = function (func, acc, list) {
+        foldl: while (true) {
+            if (!list.b) {
+                return acc;
+            }
+            else {
+                var x = list.a;
+                var xs = list.b;
+                var $temp$func = func, $temp$acc = func(x, acc), $temp$list = xs;
+                func = $temp$func;
+                acc = $temp$acc;
+                list = $temp$list;
+                continue foldl;
+            }
+        }
     }, $elm$core$List$foldl = F3($elm$core$List$foldl_raw);
-    var $elm$core$List$length = (xs) => $elm$core$List$foldl_raw(F2((_v0, i) => i + 1), 0, xs);
+    var $elm$core$List$length = function (xs) {
+        return $elm$core$List$foldl_raw_unwrapped(function (_v0, i) {
+            return i + 1;
+        }, 0, xs);
+    };
     var $elm$core$List$map2 = _List_map2;
     var $elm$core$Basics$le = _Utils_le;
     var $elm$core$Basics$sub = _Basics_sub;
     var $elm$core$List$rangeHelp_raw = function (lo, hi, list) {
         rangeHelp: while (true) {
             if (_Utils_cmp(lo, hi) < 1) {
-                var $temp$lo = lo, $temp$hi = hi - 1, $temp$list = _List_Cons(hi, list);
+                var $temp$lo = lo, $temp$hi = hi - 1, $temp$list = _List_cons_raw(hi, list);
                 lo = $temp$lo;
                 hi = $temp$hi;
                 list = $temp$list;
@@ -2656,8 +3267,12 @@
             }
         }
     }, $elm$core$List$rangeHelp = F3($elm$core$List$rangeHelp_raw);
-    var $elm$core$List$range_raw = (lo, hi) => $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil), $elm$core$List$range = F2($elm$core$List$range_raw);
-    var $elm$core$List$indexedMap_raw = (f, xs) => _List_map2_raw(f, $elm$core$List$range_raw(0, $elm$core$List$length(xs) - 1), xs), $elm$core$List$indexedMap = F2($elm$core$List$indexedMap_raw);
+    var $elm$core$List$range_raw = function (lo, hi) {
+        return $elm$core$List$rangeHelp_raw(lo, hi, _List_Nil);
+    }, $elm$core$List$range = F2($elm$core$List$range_raw);
+    var $elm$core$List$indexedMap_raw = function (f, xs) {
+        return _List_map2_raw(f, $elm$core$List$range_raw(0, $elm$core$List$length(xs) - 1), xs);
+    }, $elm$core$List$indexedMap = F2($elm$core$List$indexedMap_raw);
     var $elm$core$Char$toCode = _Char_toCode;
     var $elm$core$Char$isLower = function (_char) {
         var code = $elm$core$Char$toCode(_char);
@@ -2668,16 +3283,26 @@
         return (code <= 90) && (65 <= code);
     };
     var $elm$core$Basics$or = _Basics_or;
-    var $elm$core$Char$isAlpha = (_char) => $elm$core$Char$isLower(_char) || $elm$core$Char$isUpper(_char);
+    var $elm$core$Char$isAlpha = function (_char) {
+        return $elm$core$Char$isLower(_char) || $elm$core$Char$isUpper(_char);
+    };
     var $elm$core$Char$isDigit = function (_char) {
         var code = $elm$core$Char$toCode(_char);
         return (code <= 57) && (48 <= code);
     };
-    var $elm$core$Char$isAlphaNum = (_char) => $elm$core$Char$isLower(_char) || ($elm$core$Char$isUpper(_char) || $elm$core$Char$isDigit(_char));
-    var $elm$core$List$reverse = (list) => $elm$core$List$foldl_raw($elm$core$List$cons, _List_Nil, list);
+    var $elm$core$Char$isAlphaNum = function (_char) {
+        return $elm$core$Char$isLower(_char) || ($elm$core$Char$isUpper(_char) || $elm$core$Char$isDigit(_char));
+    };
+    var $elm$core$List$reverse = function (list) {
+        return $elm$core$List$foldl_raw($elm$core$List$cons, _List_Nil, list);
+    };
     var $elm$core$String$uncons = _String_uncons;
-    var $elm$json$Json$Decode$errorOneOf_raw = (i, error) => "\n\n(" + ($elm$core$String$fromInt(i + 1) + (") " + $elm$json$Json$Decode$indent($elm$json$Json$Decode$errorToString(error)))), $elm$json$Json$Decode$errorOneOf = F2($elm$json$Json$Decode$errorOneOf_raw);
-    var $elm$json$Json$Decode$errorToString = (error) => $elm$json$Json$Decode$errorToStringHelp_raw(error, _List_Nil);
+    var $elm$json$Json$Decode$errorOneOf_raw = function (i, error) {
+        return "\n\n(" + (i + 1 + "" + (") " + $elm$json$Json$Decode$indent($elm$json$Json$Decode$errorToString(error))));
+    }, $elm$json$Json$Decode$errorOneOf = F2($elm$json$Json$Decode$errorOneOf_raw);
+    var $elm$json$Json$Decode$errorToString = function (error) {
+        return $elm$json$Json$Decode$errorToStringHelp_raw(error, _List_Nil);
+    };
     var $elm$json$Json$Decode$errorToStringHelp_raw = function (error, context) {
         errorToStringHelp: while (true) {
             switch (error.$) {
@@ -2697,15 +3322,15 @@
                         }
                     }();
                     var fieldName = isSimple ? ("." + f) : ("['" + (f + "']"));
-                    var $temp$error = err, $temp$context = _List_Cons(fieldName, context);
+                    var $temp$error = err, $temp$context = _List_cons_raw(fieldName, context);
                     error = $temp$error;
                     context = $temp$context;
                     continue errorToStringHelp;
                 case 1:
                     var i = error.a;
                     var err = error.b;
-                    var indexName = "[" + ($elm$core$String$fromInt(i) + "]");
-                    var $temp$error = err, $temp$context = _List_Cons(indexName, context);
+                    var indexName = "[" + (i + "" + "]");
+                    var $temp$error = err, $temp$context = _List_cons_raw(indexName, context);
                     error = $temp$error;
                     context = $temp$context;
                     continue errorToStringHelp;
@@ -2738,8 +3363,8 @@
                                     return "The Json.Decode.oneOf at json" + $elm$core$String$join_raw("", $elm$core$List$reverse(context));
                                 }
                             }();
-                            var introduction = starter + (" failed in the following " + ($elm$core$String$fromInt($elm$core$List$length(errors)) + " ways:"));
-                            return $elm$core$String$join_raw("\n\n", _List_Cons(introduction, $elm$core$List$indexedMap_raw($elm$json$Json$Decode$errorOneOf, errors)));
+                            var introduction = starter + (" failed in the following " + ($elm$core$List$length(errors) + "" + " ways:"));
+                            return $elm$core$String$join_raw("\n\n", _List_cons_raw(introduction, $elm$core$List$indexedMap_raw($elm$json$Json$Decode$errorOneOf, errors)));
                         }
                     }
                 default:
@@ -2758,32 +3383,46 @@
         }
     }, $elm$json$Json$Decode$errorToStringHelp = F2($elm$json$Json$Decode$errorToStringHelp_raw);
     var $elm$core$Array$branchFactor = 32;
-    var $elm$core$Array$Array_elm_builtin_raw = (a, b, c, d) => ({ $: 0, a: a, b: b, c: c, d: d }), $elm$core$Array$Array_elm_builtin = F4($elm$core$Array$Array_elm_builtin_raw);
+    var $elm$core$Array$Array_elm_builtin_raw = function (a, b, c, d) {
+        return { $: 0, a: a, b: b, c: c, d: d };
+    }, $elm$core$Array$Array_elm_builtin = F4($elm$core$Array$Array_elm_builtin_raw);
     var $elm$core$Elm$JsArray$empty = _JsArray_empty;
     var $elm$core$Basics$ceiling = _Basics_ceiling;
     var $elm$core$Basics$fdiv = _Basics_fdiv;
-    var $elm$core$Basics$logBase_raw = (base, number) => _Basics_log(number) / _Basics_log(base), $elm$core$Basics$logBase = F2($elm$core$Basics$logBase_raw);
+    var $elm$core$Basics$logBase_raw = function (base, number) {
+        return _Basics_log(number) / _Basics_log(base);
+    }, $elm$core$Basics$logBase = F2($elm$core$Basics$logBase_raw);
     var $elm$core$Basics$toFloat = _Basics_toFloat;
     var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling($elm$core$Basics$logBase_raw(2, $elm$core$Array$branchFactor));
     var $elm$core$Array$empty = $elm$core$Array$Array_elm_builtin_raw(0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
     var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
-    var $elm$core$Array$Leaf = (a) => ({ $: 1, a: a });
-    var $elm$core$Basics$apL_raw = (f, x) => f(x), $elm$core$Basics$apL = F2($elm$core$Basics$apL_raw);
-    var $elm$core$Basics$apR_raw = (x, f) => f(x), $elm$core$Basics$apR = F2($elm$core$Basics$apR_raw);
+    var $elm$core$Array$Leaf = function (a) {
+        return { $: 1, a: a };
+    };
+    var $elm$core$Basics$apL_raw = function (f, x) {
+        return f(x);
+    }, $elm$core$Basics$apL = F2($elm$core$Basics$apL_raw);
+    var $elm$core$Basics$apR_raw = function (x, f) {
+        return f(x);
+    }, $elm$core$Basics$apR = F2($elm$core$Basics$apR_raw);
     var $elm$core$Basics$eq = _Utils_equal;
     var $elm$core$Basics$floor = _Basics_floor;
     var $elm$core$Elm$JsArray$length = _JsArray_length;
     var $elm$core$Basics$gt = _Utils_gt;
-    var $elm$core$Basics$max_raw = (x, y) => (_Utils_cmp(x, y) > 0) ? x : y, $elm$core$Basics$max = F2($elm$core$Basics$max_raw);
+    var $elm$core$Basics$max_raw = function (x, y) {
+        return (_Utils_cmp(x, y) > 0) ? x : y;
+    }, $elm$core$Basics$max = F2($elm$core$Basics$max_raw);
     var $elm$core$Basics$mul = _Basics_mul;
-    var $elm$core$Array$SubTree = (a) => ({ $: 0, a: a });
+    var $elm$core$Array$SubTree = function (a) {
+        return { $: 0, a: a };
+    };
     var $elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
     var $elm$core$Array$compressNodes_raw = function (nodes, acc) {
         compressNodes: while (true) {
             var _v0 = _JsArray_initializeFromList_raw($elm$core$Array$branchFactor, nodes);
             var node = _v0.a;
             var remainingNodes = _v0.b;
-            var newAcc = _List_Cons($elm$core$Array$SubTree(node), acc);
+            var newAcc = _List_cons_raw($elm$core$Array$SubTree(node), acc);
             if (!remainingNodes.b) {
                 return $elm$core$List$reverse(newAcc);
             }
@@ -2834,7 +3473,7 @@
             }
             else {
                 var leaf = $elm$core$Array$Leaf(_JsArray_initialize_raw($elm$core$Array$branchFactor, fromIndex, fn));
-                var $temp$fn = fn, $temp$fromIndex = fromIndex - $elm$core$Array$branchFactor, $temp$len = len, $temp$nodeList = _List_Cons(leaf, nodeList), $temp$tail = tail;
+                var $temp$fn = fn, $temp$fromIndex = fromIndex - $elm$core$Array$branchFactor, $temp$len = len, $temp$nodeList = _List_cons_raw(leaf, nodeList), $temp$tail = tail;
                 fn = $temp$fn;
                 fromIndex = $temp$fromIndex;
                 len = $temp$len;
@@ -2880,20 +3519,34 @@
                 return 3;
         }
     };
-    var $elm$browser$Browser$External = (a) => ({ $: 1, a: a });
-    var $elm$browser$Browser$Internal = (a) => ({ $: 0, a: a });
-    var $elm$core$Basics$identity = (x) => x;
+    var $elm$browser$Browser$External = function (a) {
+        return { $: 1, a: a };
+    };
+    var $elm$browser$Browser$Internal = function (a) {
+        return { $: 0, a: a };
+    };
+    var $elm$core$Basics$identity = function (x) {
+        return x;
+    };
     var $elm$browser$Browser$Dom$NotFound = $elm$core$Basics$identity;
     var $elm$url$Url$Http = 0;
     var $elm$url$Url$Https = 1;
-    var $elm$url$Url$Url_raw = (protocol, host, port_, path, query, fragment) => ({ a0: fragment, a2: host, a8: path, bb: port_, bg: protocol, bh: query }), $elm$url$Url$Url = F6($elm$url$Url$Url_raw);
+    var $elm$url$Url$Url_raw = function (protocol, host, port_, path, query, fragment) {
+        return { a6: fragment, a8: host, be: path, bh: port_, bm: protocol, bn: query };
+    }, $elm$url$Url$Url = F6($elm$url$Url$Url_raw);
     var $elm$core$String$contains = _String_contains;
     var $elm$core$String$length = _String_length;
     var $elm$core$String$slice = _String_slice;
-    var $elm$core$String$dropLeft_raw = (n, string) => (n < 1) ? string : _String_slice_raw(n, $elm$core$String$length(string), string), $elm$core$String$dropLeft = F2($elm$core$String$dropLeft_raw);
+    var $elm$core$String$dropLeft_raw = function (n, string) {
+        return (n < 1) ? string : _String_slice_raw(n, $elm$core$String$length(string), string);
+    }, $elm$core$String$dropLeft = F2($elm$core$String$dropLeft_raw);
     var $elm$core$String$indexes = _String_indexes;
-    var $elm$core$String$isEmpty = (string) => string === "";
-    var $elm$core$String$left_raw = (n, string) => (n < 1) ? "" : _String_slice_raw(0, n, string), $elm$core$String$left = F2($elm$core$String$left_raw);
+    var $elm$core$String$isEmpty = function (string) {
+        return string === "";
+    };
+    var $elm$core$String$left_raw = function (n, string) {
+        return (n < 1) ? "" : _String_slice_raw(0, n, string);
+    }, $elm$core$String$left = F2($elm$core$String$left_raw);
     var $elm$core$String$toInt = _String_toInt;
     var $elm$url$Url$chompBeforePath_raw = function (protocol, path, params, frag, str) {
         if ($elm$core$String$isEmpty(str) || _String_contains_raw("@", str)) {
@@ -2968,7 +3621,9 @@
         }
     }, $elm$url$Url$chompAfterProtocol = F2($elm$url$Url$chompAfterProtocol_raw);
     var $elm$core$String$startsWith = _String_startsWith;
-    var $elm$url$Url$fromString = (str) => _String_startsWith_raw("http://", str) ? $elm$url$Url$chompAfterProtocol_raw(0, $elm$core$String$dropLeft_raw(7, str)) : (_String_startsWith_raw("https://", str) ? $elm$url$Url$chompAfterProtocol_raw(1, $elm$core$String$dropLeft_raw(8, str)) : $elm$core$Maybe$Nothing);
+    var $elm$url$Url$fromString = function (str) {
+        return _String_startsWith_raw("http://", str) ? $elm$url$Url$chompAfterProtocol_raw(0, $elm$core$String$dropLeft_raw(7, str)) : (_String_startsWith_raw("https://", str) ? $elm$url$Url$chompAfterProtocol_raw(1, $elm$core$String$dropLeft_raw(8, str)) : $elm$core$Maybe$Nothing);
+    };
     var $elm$core$Basics$never = function (_v0) {
         never: while (true) {
             var nvr = _v0;
@@ -3011,31 +3666,98 @@
                 }
             }
         }
+    }, $elm$core$List$foldrHelper_raw_unwrapped = function (fn, acc, ctr, ls) {
+        if (!ls.b) {
+            return acc;
+        }
+        else {
+            var a = ls.a;
+            var r1 = ls.b;
+            if (!r1.b) {
+                return fn(a, acc);
+            }
+            else {
+                var b = r1.a;
+                var r2 = r1.b;
+                if (!r2.b) {
+                    return fn(a, fn(b, acc));
+                }
+                else {
+                    var c = r2.a;
+                    var r3 = r2.b;
+                    if (!r3.b) {
+                        return fn(a, fn(b, fn(c, acc)));
+                    }
+                    else {
+                        var d = r3.a;
+                        var r4 = r3.b;
+                        var res = (ctr > 500) ? $elm$core$List$foldl_raw_unwrapped(fn, acc, $elm$core$List$reverse(r4)) : $elm$core$List$foldrHelper_raw_unwrapped(fn, acc, ctr + 1, r4);
+                        return fn(a, fn(b, fn(c, fn(d, res))));
+                    }
+                }
+            }
+        }
     }, $elm$core$List$foldrHelper = F4($elm$core$List$foldrHelper_raw);
-    var $elm$core$List$foldr_raw = (fn, acc, ls) => $elm$core$List$foldrHelper_raw(fn, acc, 0, ls), $elm$core$List$foldr = F3($elm$core$List$foldr_raw);
-    var $elm$core$List$map_raw = (f, xs) => $elm$core$List$foldr_raw(F2((x, acc) => _List_Cons(f(x), acc)), _List_Nil, xs), $elm$core$List$map = F2($elm$core$List$map_raw);
+    var $elm$core$List$foldr_raw = function (fn, acc, ls) {
+        return $elm$core$List$foldrHelper_raw(fn, acc, 0, ls);
+    }, $elm$core$List$foldr = F3($elm$core$List$foldr_raw);
+    var $elm$core$List$map_raw = function (f, xs) {
+        return $elm$core$List$foldr_raw(F2(function (x, acc) {
+            return _List_cons_raw(f(x), acc);
+        }), _List_Nil, xs);
+    }, $elm$core$List$map = F2($elm$core$List$map_raw);
     var $elm$core$Task$andThen = _Scheduler_andThen;
-    var $elm$core$Task$map_raw = (func, taskA) => _Scheduler_andThen_raw((a) => $elm$core$Task$succeed(func(a)), taskA), $elm$core$Task$map = F2($elm$core$Task$map_raw);
-    var $elm$core$Task$map2_raw = (func, taskA, taskB) => _Scheduler_andThen_raw((a) => _Scheduler_andThen_raw((b) => $elm$core$Task$succeed(A2(func, a, b)), taskB), taskA), $elm$core$Task$map2 = F3($elm$core$Task$map2_raw);
-    var $elm$core$Task$sequence = (tasks) => $elm$core$List$foldr_raw($elm$core$Task$map2($elm$core$List$cons), $elm$core$Task$succeed(_List_Nil), tasks);
+    var $elm$core$Task$map_raw = function (func, taskA) {
+        return _Scheduler_andThen_raw(function (a) {
+            return $elm$core$Task$succeed(func(a));
+        }, taskA);
+    }, $elm$core$Task$map = F2($elm$core$Task$map_raw);
+    var $elm$core$Task$map2_raw = function (func, taskA, taskB) {
+        return _Scheduler_andThen_raw(function (a) {
+            return _Scheduler_andThen_raw(function (b) {
+                return $elm$core$Task$succeed(A2(func, a, b));
+            }, taskB);
+        }, taskA);
+    }, $elm$core$Task$map2_raw_unwrapped = function (func, taskA, taskB) {
+        return _Scheduler_andThen_raw(function (a) {
+            return _Scheduler_andThen_raw(function (b) {
+                return $elm$core$Task$succeed(func(a, b));
+            }, taskB);
+        }, taskA);
+    }, $elm$core$Task$map2 = F3($elm$core$Task$map2_raw);
+    var $elm$core$Task$sequence = function (tasks) {
+        return $elm$core$List$foldr_raw($elm$core$Task$map2($elm$core$List$cons), $elm$core$Task$succeed(_List_Nil), tasks);
+    };
     var $elm$core$Platform$sendToApp = _Platform_sendToApp;
     var $elm$core$Task$spawnCmd_raw = function (router, _v0) {
         var task = _v0;
         return _Scheduler_spawn(_Scheduler_andThen_raw($elm$core$Platform$sendToApp(router), task));
     }, $elm$core$Task$spawnCmd = F2($elm$core$Task$spawnCmd_raw);
-    var $elm$core$Task$onEffects_raw = (router, commands, state) => $elm$core$Task$map_raw((_v0) => 0, $elm$core$Task$sequence($elm$core$List$map_raw($elm$core$Task$spawnCmd(router), commands))), $elm$core$Task$onEffects = F3($elm$core$Task$onEffects_raw);
-    var $elm$core$Task$onSelfMsg_raw = (_v0, _v1, _v2) => $elm$core$Task$succeed(0), $elm$core$Task$onSelfMsg = F3($elm$core$Task$onSelfMsg_raw);
+    var $elm$core$Task$onEffects_raw = function (router, commands, state) {
+        return $elm$core$Task$map_raw(function (_v0) {
+            return 0;
+        }, $elm$core$Task$sequence($elm$core$List$map_raw($elm$core$Task$spawnCmd(router), commands)));
+    }, $elm$core$Task$onEffects = F3($elm$core$Task$onEffects_raw);
+    var $elm$core$Task$onSelfMsg_raw = function (_v0, _v1, _v2) {
+        return $elm$core$Task$succeed(0);
+    }, $elm$core$Task$onSelfMsg = F3($elm$core$Task$onSelfMsg_raw);
     var $elm$core$Task$cmdMap_raw = function (tagger, _v0) {
         var task = _v0;
         return $elm$core$Task$map_raw(tagger, task);
     }, $elm$core$Task$cmdMap = F2($elm$core$Task$cmdMap_raw);
     _Platform_effectManagers["Task"] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
     var $elm$core$Task$command = _Platform_leaf("Task");
-    var $elm$core$Task$perform_raw = (toMessage, task) => $elm$core$Task$command($elm$core$Task$map_raw(toMessage, task)), $elm$core$Task$perform = F2($elm$core$Task$perform_raw);
+    var $elm$core$Task$perform_raw = function (toMessage, task) {
+        return $elm$core$Task$command($elm$core$Task$map_raw(toMessage, task));
+    }, $elm$core$Task$perform = F2($elm$core$Task$perform_raw);
     var $elm$browser$Browser$element = _Browser_element;
     var $author$project$Benchmark$Runner$Json$Update = $elm$core$Basics$identity;
     var $elm$core$Process$sleep = _Process_sleep;
-    var $author$project$Benchmark$Runner$Json$breakForRender = (task) => _Scheduler_andThen_raw((_v0) => task, $elm$core$Process$sleep(0));
+    var $author$project$Benchmark$Runner$Json$breakForRender = function (task) {
+        return _Scheduler_andThen_raw(function (_v0) {
+            return task;
+        }, $elm$core$Process$sleep(0));
+    };
     var $elm$core$List$any_raw = function (isOkay, list) {
         any: while (true) {
             if (!list.b) {
@@ -3056,10 +3778,16 @@
             }
         }
     }, $elm$core$List$any = F2($elm$core$List$any_raw);
-    var $elm$core$Basics$composeL_raw = (g, f, x) => g(f(x)), $elm$core$Basics$composeL = F3($elm$core$Basics$composeL_raw);
+    var $elm$core$Basics$composeL_raw = function (g, f, x) {
+        return g(f(x));
+    }, $elm$core$Basics$composeL = F3($elm$core$Basics$composeL_raw);
     var $elm$core$Basics$not = _Basics_not;
-    var $elm$core$List$all_raw = (isOkay, list) => !$elm$core$List$any_raw(A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay), list), $elm$core$List$all = F2($elm$core$List$all_raw);
-    var $elm$core$Basics$clamp_raw = (low, high, number) => (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number), $elm$core$Basics$clamp = F3($elm$core$Basics$clamp_raw);
+    var $elm$core$List$all_raw = function (isOkay, list) {
+        return !$elm$core$List$any_raw(A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay), list);
+    }, $elm$core$List$all = F2($elm$core$List$all_raw);
+    var $elm$core$Basics$clamp_raw = function (low, high, number) {
+        return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
+    }, $elm$core$Basics$clamp = F3($elm$core$Basics$clamp_raw);
     var $elm$core$Dict$foldl_raw = function (func, acc, dict) {
         foldl: while (true) {
             if (dict.$ === -2) {
@@ -3077,10 +3805,29 @@
                 continue foldl;
             }
         }
+    }, $elm$core$Dict$foldl_raw_unwrapped = function (func, acc, dict) {
+        foldl: while (true) {
+            if (dict.$ === -2) {
+                return acc;
+            }
+            else {
+                var key = dict.b;
+                var value = dict.c;
+                var left = dict.d;
+                var right = dict.e;
+                var $temp$func = func, $temp$acc = func(key, value, $elm$core$Dict$foldl_raw_unwrapped(func, acc, left)), $temp$dict = right;
+                func = $temp$func;
+                acc = $temp$acc;
+                dict = $temp$dict;
+                continue foldl;
+            }
+        }
     }, $elm$core$Dict$foldl = F3($elm$core$Dict$foldl_raw);
     var $elm_explorations$benchmark$Benchmark$Samples$count = function (_v0) {
         var samples = _v0;
-        return $elm$core$Dict$foldl_raw(F3((_v1, times, acc) => $elm$core$List$length(times) + acc), 0, samples);
+        return $elm$core$Dict$foldl_raw_unwrapped(function (_v1, times, acc) {
+            return $elm$core$List$length(times) + acc;
+        }, 0, samples);
     };
     var $elm_explorations$benchmark$Benchmark$Status$numBuckets = 25;
     var $elm_explorations$benchmark$Benchmark$Status$samplesPerBucket = 5;
@@ -3117,22 +3864,40 @@
     };
     var $elm$core$Platform$Cmd$batch = _Platform_batch;
     var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-    var $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Benchmark$Group = F2($elm_explorations$benchmark$Benchmark$Benchmark$Group_raw);
-    var $elm_explorations$benchmark$Benchmark$Benchmark$Series_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Benchmark$Series = F2($elm_explorations$benchmark$Benchmark$Benchmark$Series_raw);
-    var $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw = (a, b, c) => ({ $: 0, a: a, b: b, c: c }), $elm_explorations$benchmark$Benchmark$Benchmark$Single = F3($elm_explorations$benchmark$Benchmark$Benchmark$Single_raw);
-    var $elm_explorations$benchmark$Benchmark$Status$Failure = (a) => ({ $: 3, a: a });
-    var $elm_explorations$benchmark$Benchmark$Status$MeasurementError = (a) => ({ $: 0, a: a });
-    var $elm_explorations$benchmark$Benchmark$Status$Pending_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Status$Pending = F2($elm_explorations$benchmark$Benchmark$Status$Pending_raw);
+    var $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw = function (a, b) {
+        return { $: 2, a: a, b: b };
+    }, $elm_explorations$benchmark$Benchmark$Benchmark$Group = F2($elm_explorations$benchmark$Benchmark$Benchmark$Group_raw);
+    var $elm_explorations$benchmark$Benchmark$Benchmark$Series_raw = function (a, b) {
+        return { $: 1, a: a, b: b };
+    }, $elm_explorations$benchmark$Benchmark$Benchmark$Series = F2($elm_explorations$benchmark$Benchmark$Benchmark$Series_raw);
+    var $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw = function (a, b, c) {
+        return { $: 0, a: a, b: b, c: c };
+    }, $elm_explorations$benchmark$Benchmark$Benchmark$Single = F3($elm_explorations$benchmark$Benchmark$Benchmark$Single_raw);
+    var $elm_explorations$benchmark$Benchmark$Status$Failure = function (a) {
+        return { $: 3, a: a };
+    };
+    var $elm_explorations$benchmark$Benchmark$Status$MeasurementError = function (a) {
+        return { $: 0, a: a };
+    };
+    var $elm_explorations$benchmark$Benchmark$Status$Pending_raw = function (a, b) {
+        return { $: 2, a: a, b: b };
+    }, $elm_explorations$benchmark$Benchmark$Status$Pending = F2($elm_explorations$benchmark$Benchmark$Status$Pending_raw);
     var $elm_explorations$benchmark$Benchmark$Status$Unsized = { $: 1 };
     var $elm_explorations$benchmark$Benchmark$Status$bucketSpacingRatio = 2;
     var $elm_explorations$benchmark$Benchmark$Samples$Samples = $elm$core$Basics$identity;
     var $elm$core$Dict$RBEmpty_elm_builtin = { $: -2 };
     var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
     var $elm_explorations$benchmark$Benchmark$Samples$empty = $elm$core$Dict$empty;
-    var $elm_explorations$benchmark$Benchmark$Status$AnalysisError = (a) => ({ $: 1, a: a });
-    var $elm_explorations$benchmark$Benchmark$Status$Success_raw = (a, b) => ({ $: 4, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Status$Success = F2($elm_explorations$benchmark$Benchmark$Status$Success_raw);
+    var $elm_explorations$benchmark$Benchmark$Status$AnalysisError = function (a) {
+        return { $: 1, a: a };
+    };
+    var $elm_explorations$benchmark$Benchmark$Status$Success_raw = function (a, b) {
+        return { $: 4, a: a, b: b };
+    }, $elm_explorations$benchmark$Benchmark$Status$Success = F2($elm_explorations$benchmark$Benchmark$Status$Success_raw);
     var $elm$core$Dict$Black = 1;
-    var $elm$core$Dict$RBNode_elm_builtin_raw = (a, b, c, d, e) => ({ $: -1, a: a, b: b, c: c, d: d, e: e }), $elm$core$Dict$RBNode_elm_builtin = F5($elm$core$Dict$RBNode_elm_builtin_raw);
+    var $elm$core$Dict$RBNode_elm_builtin_raw = function (a, b, c, d, e) {
+        return { $: -1, a: a, b: b, c: c, d: d, e: e };
+    }, $elm$core$Dict$RBNode_elm_builtin = F5($elm$core$Dict$RBNode_elm_builtin_raw);
     var $elm$core$Dict$Red = 0;
     var $elm$core$Dict$balance_raw = function (color, key, value, left, right) {
         if ((right.$ === -1) && (!right.a)) {
@@ -3225,6 +3990,18 @@
             var right = dict.e;
             return $elm$core$Dict$RBNode_elm_builtin_raw(color, key, A2(func, key, value), $elm$core$Dict$map_raw(func, left), $elm$core$Dict$map_raw(func, right));
         }
+    }, $elm$core$Dict$map_raw_unwrapped = function (func, dict) {
+        if (dict.$ === -2) {
+            return $elm$core$Dict$RBEmpty_elm_builtin;
+        }
+        else {
+            var color = dict.a;
+            var key = dict.b;
+            var value = dict.c;
+            var left = dict.d;
+            var right = dict.e;
+            return $elm$core$Dict$RBNode_elm_builtin_raw(color, key, func(key, value), $elm$core$Dict$map_raw_unwrapped(func, left), $elm$core$Dict$map_raw_unwrapped(func, right));
+        }
     }, $elm$core$Dict$map = F2($elm$core$Dict$map_raw);
     var $elm$core$Result$map_raw = function (func, ra) {
         if (!ra.$) {
@@ -3240,21 +4017,37 @@
         var step = F2(function (x, _v0) {
             var trues = _v0.a;
             var falses = _v0.b;
-            return pred(x) ? _Utils_Tuple2(_List_Cons(x, trues), falses) : _Utils_Tuple2(trues, _List_Cons(x, falses));
+            return pred(x) ? _Utils_Tuple2(_List_cons_raw(x, trues), falses) : _Utils_Tuple2(trues, _List_cons_raw(x, falses));
         });
         return $elm$core$List$foldr_raw(step, _Utils_Tuple2(_List_Nil, _List_Nil), list);
     }, $elm$core$List$partition = F2($elm$core$List$partition_raw);
-    var $elm_explorations$benchmark$Benchmark$Samples$pointify = (samples) => $elm$core$Dict$foldr_raw(F3((sampleSize, values, acc) => _Utils_ap($elm$core$List$map_raw((b) => _Utils_Tuple2(sampleSize, b), values), acc)), _List_Nil, samples);
+    var $elm_explorations$benchmark$Benchmark$Samples$pointify = function (samples) {
+        return $elm$core$Dict$foldr_raw_unwrapped(function (sampleSize, values, acc) {
+            return _Utils_ap($elm$core$List$map_raw(function (b) {
+                return _Utils_Tuple2(sampleSize, b);
+            }, values), acc);
+        }, _List_Nil, samples);
+    };
     var $BrianHicks$elm_trend$Trend$Linear$predictY_raw = function (_v0, x) {
-        var slope = _v0.aR;
-        var intercept = _v0.aL;
+        var slope = _v0.aV;
+        var intercept = _v0.aQ;
         return (slope * x) + intercept;
     }, $BrianHicks$elm_trend$Trend$Linear$predictY = F2($BrianHicks$elm_trend$Trend$Linear$predictY_raw);
     var $BrianHicks$elm_trend$Trend$Math$AllZeros = { $: 1 };
-    var $BrianHicks$elm_trend$Trend$Math$NeedMoreValues = (a) => ({ $: 0, a: a });
-    var $BrianHicks$elm_trend$Trend$Linear$Robust_raw = (a, b) => ({ $: 0, a: a, b: b }), $BrianHicks$elm_trend$Trend$Linear$Robust = F2($BrianHicks$elm_trend$Trend$Linear$Robust_raw);
-    var $BrianHicks$elm_trend$Trend$Linear$Trend_raw = (a, b) => ({ $: 0, a: a, b: b }), $BrianHicks$elm_trend$Trend$Linear$Trend = F2($BrianHicks$elm_trend$Trend$Linear$Trend_raw);
-    var $elm$core$List$filter_raw = (isGood, list) => $elm$core$List$foldr_raw(F2((x, xs) => isGood(x) ? _List_Cons(x, xs) : xs), _List_Nil, list), $elm$core$List$filter = F2($elm$core$List$filter_raw);
+    var $BrianHicks$elm_trend$Trend$Math$NeedMoreValues = function (a) {
+        return { $: 0, a: a };
+    };
+    var $BrianHicks$elm_trend$Trend$Linear$Robust_raw = function (a, b) {
+        return { $: 0, a: a, b: b };
+    }, $BrianHicks$elm_trend$Trend$Linear$Robust = F2($BrianHicks$elm_trend$Trend$Linear$Robust_raw);
+    var $BrianHicks$elm_trend$Trend$Linear$Trend_raw = function (a, b) {
+        return { $: 0, a: a, b: b };
+    }, $BrianHicks$elm_trend$Trend$Linear$Trend = F2($BrianHicks$elm_trend$Trend$Linear$Trend_raw);
+    var $elm$core$List$filter_raw = function (isGood, list) {
+        return $elm$core$List$foldr_raw(F2(function (x, xs) {
+            return isGood(x) ? _List_cons_raw(x, xs) : xs;
+        }), _List_Nil, list);
+    }, $elm$core$List$filter = F2($elm$core$List$filter_raw);
     var $elm$core$Result$fromMaybe_raw = function (err, maybe) {
         if (!maybe.$) {
             var v = maybe.a;
@@ -3286,10 +4079,34 @@
                 }
             }
         }
+    }, $elm$core$Maybe$map3_raw_unwrapped = function (func, ma, mb, mc) {
+        if (ma.$ === 1) {
+            return $elm$core$Maybe$Nothing;
+        }
+        else {
+            var a = ma.a;
+            if (mb.$ === 1) {
+                return $elm$core$Maybe$Nothing;
+            }
+            else {
+                var b = mb.a;
+                if (mc.$ === 1) {
+                    return $elm$core$Maybe$Nothing;
+                }
+                else {
+                    var c = mc.a;
+                    return $elm$core$Maybe$Just(func(a, b, c));
+                }
+            }
+        }
     }, $elm$core$Maybe$map3 = F4($elm$core$Maybe$map3_raw);
     var $elm$core$List$sortBy = _List_sortBy;
-    var $elm$core$List$sort = (xs) => _List_sortBy_raw($elm$core$Basics$identity, xs);
-    var $BrianHicks$elm_trend$Trend$Linear$Line_raw = (slope, intercept) => ({ aL: intercept, aR: slope }), $BrianHicks$elm_trend$Trend$Linear$Line = F2($BrianHicks$elm_trend$Trend$Linear$Line_raw);
+    var $elm$core$List$sort = function (xs) {
+        return _List_sortBy_raw($elm$core$Basics$identity, xs);
+    };
+    var $BrianHicks$elm_trend$Trend$Linear$Line_raw = function (slope, intercept) {
+        return { aQ: intercept, aV: slope };
+    }, $BrianHicks$elm_trend$Trend$Linear$Line = F2($BrianHicks$elm_trend$Trend$Linear$Line_raw);
     var $elm$core$Maybe$andThen_raw = function (callback, maybeValue) {
         if (!maybeValue.$) {
             var value = maybeValue.a;
@@ -3320,6 +4137,20 @@
             else {
                 var b = mb.a;
                 return $elm$core$Maybe$Just(A2(func, a, b));
+            }
+        }
+    }, $elm$core$Maybe$map2_raw_unwrapped = function (func, ma, mb) {
+        if (ma.$ === 1) {
+            return $elm$core$Maybe$Nothing;
+        }
+        else {
+            var a = ma.a;
+            if (mb.$ === 1) {
+                return $elm$core$Maybe$Nothing;
+            }
+            else {
+                var b = mb.a;
+                return $elm$core$Maybe$Just(func(a, b));
             }
         }
     }, $elm$core$Maybe$map2 = F3($elm$core$Maybe$map2_raw);
@@ -3353,7 +4184,9 @@
             return $elm$core$Maybe$Nothing;
         }
     };
-    var $elm$core$List$sum = (numbers) => $elm$core$List$foldl_raw($elm$core$Basics$add, 0, numbers);
+    var $elm$core$List$sum = function (numbers) {
+        return $elm$core$List$foldl_raw($elm$core$Basics$add, 0, numbers);
+    };
     var $BrianHicks$elm_trend$Trend$Math$mean = function (numbers) {
         if (!numbers.b) {
             return $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$NeedMoreValues(1));
@@ -3374,7 +4207,7 @@
                 else {
                     var x = list.a;
                     var xs = list.b;
-                    var $temp$n = n - 1, $temp$list = xs, $temp$kept = _List_Cons(x, kept);
+                    var $temp$n = n - 1, $temp$list = xs, $temp$kept = _List_cons_raw(x, kept);
                     n = $temp$n;
                     list = $temp$list;
                     kept = $temp$kept;
@@ -3383,7 +4216,9 @@
             }
         }
     }, $elm$core$List$takeReverse = F3($elm$core$List$takeReverse_raw);
-    var $elm$core$List$takeTailRec_raw = (n, list) => $elm$core$List$reverse($elm$core$List$takeReverse_raw(n, list, _List_Nil)), $elm$core$List$takeTailRec = F2($elm$core$List$takeTailRec_raw);
+    var $elm$core$List$takeTailRec_raw = function (n, list) {
+        return $elm$core$List$reverse($elm$core$List$takeReverse_raw(n, list, _List_Nil));
+    }, $elm$core$List$takeTailRec = F2($elm$core$List$takeTailRec_raw);
     var $elm$core$List$takeFast_raw = function (ctr, n, list) {
         if (n <= 0) {
             return _List_Nil;
@@ -3405,7 +4240,7 @@
                                     var x = _v2.a;
                                     var _v3 = _v2.b;
                                     var y = _v3.a;
-                                    return { $: 1, a: x, b: { $: 1, a: y, b: _List_Nil } };
+                                    return _List_fromArray([x, y]);
                                 case 3:
                                     if (_v0.b.b.b.b) {
                                         var _v4 = _v0.b;
@@ -3414,7 +4249,7 @@
                                         var y = _v5.a;
                                         var _v6 = _v5.b;
                                         var z = _v6.a;
-                                        return { $: 1, a: x, b: { $: 1, a: y, b: { $: 1, a: z, b: _List_Nil } } };
+                                        return _List_fromArray([x, y, z]);
                                     }
                                     else {
                                         break _v0$5;
@@ -3430,7 +4265,7 @@
                                         var _v10 = _v9.b;
                                         var w = _v10.a;
                                         var tl = _v10.b;
-                                        return (ctr > 1000) ? _List_Cons(x, _List_Cons(y, _List_Cons(z, _List_Cons(w, $elm$core$List$takeTailRec_raw(n - 4, tl))))) : _List_Cons(x, _List_Cons(y, _List_Cons(z, _List_Cons(w, $elm$core$List$takeFast_raw(ctr + 1, n - 4, tl)))));
+                                        return (ctr > 1000) ? _List_cons_raw(x, _List_cons_raw(y, _List_cons_raw(z, _List_cons_raw(w, $elm$core$List$takeTailRec_raw(n - 4, tl))))) : _List_cons_raw(x, _List_cons_raw(y, _List_cons_raw(z, _List_cons_raw(w, $elm$core$List$takeFast_raw(ctr + 1, n - 4, tl)))));
                                     }
                                     else {
                                         break _v0$5;
@@ -3451,10 +4286,12 @@
             }
             var _v1 = _v0.b;
             var x = _v1.a;
-            return { $: 1, a: x, b: _List_Nil };
+            return _List_fromArray([x]);
         }
     }, $elm$core$List$takeFast = F3($elm$core$List$takeFast_raw);
-    var $elm$core$List$take_raw = (n, list) => $elm$core$List$takeFast_raw(0, n, list), $elm$core$List$take = F2($elm$core$List$take_raw);
+    var $elm$core$List$take_raw = function (n, list) {
+        return $elm$core$List$takeFast_raw(0, n, list);
+    }, $elm$core$List$take = F2($elm$core$List$take_raw);
     var $elm$core$Result$toMaybe = function (result) {
         if (!result.$) {
             var v = result.a;
@@ -3470,11 +4307,13 @@
     }, $BrianHicks$elm_trend$Trend$Linear$percentile = F2($BrianHicks$elm_trend$Trend$Linear$percentile_raw);
     var $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw = function (pct, slopes, points) {
         var slope = $BrianHicks$elm_trend$Trend$Linear$percentile_raw(pct, slopes);
-        var intercept = $elm$core$Maybe$andThen_raw($BrianHicks$elm_trend$Trend$Linear$percentile(pct), $elm$core$Maybe$map_raw($elm$core$List$sort, $elm$core$Maybe$map_raw((m) => $elm$core$List$map_raw(function (_v0) {
-            var x = _v0.a;
-            var y = _v0.b;
-            return y - (m * x);
-        }, points), slope)));
+        var intercept = $elm$core$Maybe$andThen_raw($BrianHicks$elm_trend$Trend$Linear$percentile(pct), $elm$core$Maybe$map_raw($elm$core$List$sort, $elm$core$Maybe$map_raw(function (m) {
+            return $elm$core$List$map_raw(function (_v0) {
+                var x = _v0.a;
+                var y = _v0.b;
+                return y - (m * x);
+            }, points);
+        }, slope)));
         return $elm$core$Maybe$map2_raw($BrianHicks$elm_trend$Trend$Linear$Line, slope, intercept);
     }, $BrianHicks$elm_trend$Trend$Linear$theilSenLine = F3($BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw);
     var $BrianHicks$elm_trend$Trend$Linear$robust = function (values) {
@@ -3486,18 +4325,20 @@
                 return $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$NeedMoreValues(2));
             }
             else {
-                var slopes = $elm$core$List$sort($elm$core$List$foldl_raw(F2(function (_v1, acc1) {
+                var slopes = $elm$core$List$sort($elm$core$List$foldl_raw_unwrapped(function (_v1, acc1) {
                     var x = _v1.a;
                     var y = _v1.b;
-                    return $elm$core$List$foldl_raw(F2(function (_v2, acc2) {
+                    return $elm$core$List$foldl_raw_unwrapped(function (_v2, acc2) {
                         var x1 = _v2.a;
                         var y1 = _v2.b;
                         var res = (y - y1) / (x - x1);
-                        return $elm$core$Basics$isNaN(res) ? acc2 : _List_Cons(res, acc2);
-                    }), acc1, values);
-                }), _List_Nil, values));
+                        return $elm$core$Basics$isNaN(res) ? acc2 : _List_cons_raw(res, acc2);
+                    }, acc1, values);
+                }, _List_Nil, values));
                 var finiteSlopes = $elm$core$List$filter_raw(A2($elm$core$Basics$composeL, $elm$core$Basics$not, $elm$core$Basics$isInfinite), slopes);
-                return $elm$core$Result$fromMaybe_raw($BrianHicks$elm_trend$Trend$Math$AllZeros, $elm$core$Maybe$map3_raw(F3((trendLine, lower, upper) => $BrianHicks$elm_trend$Trend$Linear$Trend_raw(trendLine, $BrianHicks$elm_trend$Trend$Linear$Robust_raw(lower, upper))), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.5, finiteSlopes, values), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.975, slopes, values), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.025, slopes, values)));
+                return $elm$core$Result$fromMaybe_raw($BrianHicks$elm_trend$Trend$Math$AllZeros, $elm$core$Maybe$map3_raw_unwrapped(function (trendLine, lower, upper) {
+                    return $BrianHicks$elm_trend$Trend$Linear$Trend_raw(trendLine, $BrianHicks$elm_trend$Trend$Linear$Robust_raw(lower, upper));
+                }, $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.5, finiteSlopes, values), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.975, slopes, values), $BrianHicks$elm_trend$Trend$Linear$theilSenLine_raw(0.025, slopes, values)));
             }
         }
     };
@@ -3518,12 +4359,16 @@
             var accGood = _v2.a;
             var accOutliers = _v2.b;
             return _Utils_Tuple2($elm$core$Dict$insert_raw(key, good, accGood), $elm$core$Dict$insert_raw(key, outliers, accOutliers));
-        }), _Utils_Tuple2($elm$core$Dict$empty, $elm$core$Dict$empty)), $elm$core$Result$map_raw((line) => $elm$core$Dict$map_raw(F2(function (sampleSize, values) {
-            var predicted = $BrianHicks$elm_trend$Trend$Linear$predictY_raw(line, sampleSize);
-            var upperBound = predicted * 1.1;
-            var lowerBound = predicted / 1.1;
-            return $elm$core$List$partition_raw((v) => (_Utils_cmp(lowerBound, v) < 0) && (_Utils_cmp(v, upperBound) < 0), values);
-        }), samples), $elm$core$Result$map_raw($BrianHicks$elm_trend$Trend$Linear$line, $BrianHicks$elm_trend$Trend$Linear$robust($elm_explorations$benchmark$Benchmark$Samples$pointify(samples))))));
+        }), _Utils_Tuple2($elm$core$Dict$empty, $elm$core$Dict$empty)), $elm$core$Result$map_raw(function (line) {
+            return $elm$core$Dict$map_raw_unwrapped(function (sampleSize, values) {
+                var predicted = $BrianHicks$elm_trend$Trend$Linear$predictY_raw(line, sampleSize);
+                var upperBound = predicted * 1.1;
+                var lowerBound = predicted / 1.1;
+                return $elm$core$List$partition_raw(function (v) {
+                    return (_Utils_cmp(lowerBound, v) < 0) && (_Utils_cmp(v, upperBound) < 0);
+                }, values);
+            }, samples);
+        }, $elm$core$Result$map_raw($BrianHicks$elm_trend$Trend$Linear$line, $BrianHicks$elm_trend$Trend$Linear$robust($elm_explorations$benchmark$Benchmark$Samples$pointify(samples))))));
     };
     var $elm$core$Tuple$mapFirst_raw = function (func, _v0) {
         var x = _v0.a;
@@ -3535,7 +4380,9 @@
         var y = _v0.b;
         return _Utils_Tuple2(x, func(y));
     }, $elm$core$Tuple$mapSecond = F2($elm$core$Tuple$mapSecond_raw);
-    var $elm_explorations$benchmark$Benchmark$Samples$points = (samples) => $elm$core$Tuple$mapSecond_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm$core$Tuple$mapFirst_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm_explorations$benchmark$Benchmark$Samples$groups(samples)));
+    var $elm_explorations$benchmark$Benchmark$Samples$points = function (samples) {
+        return $elm$core$Tuple$mapSecond_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm$core$Tuple$mapFirst_raw($elm_explorations$benchmark$Benchmark$Samples$pointify, $elm_explorations$benchmark$Benchmark$Samples$groups(samples)));
+    };
     var $BrianHicks$elm_trend$Trend$Linear$Quick = $elm$core$Basics$identity;
     var $elm$core$Result$andThen_raw = function (callback, result) {
         if (!result.$) {
@@ -3563,21 +4410,41 @@
                 return $elm$core$Result$Ok(A2(func, a, b));
             }
         }
+    }, $elm$core$Result$map2_raw_unwrapped = function (func, ra, rb) {
+        if (ra.$ === 1) {
+            var x = ra.a;
+            return $elm$core$Result$Err(x);
+        }
+        else {
+            var a = ra.a;
+            if (rb.$ === 1) {
+                var x = rb.a;
+                return $elm$core$Result$Err(x);
+            }
+            else {
+                var b = rb.a;
+                return $elm$core$Result$Ok(func(a, b));
+            }
+        }
     }, $elm$core$Result$map2 = F3($elm$core$Result$map2_raw);
     var $elm$core$Basics$pow = _Basics_pow;
     var $elm$core$Basics$sqrt = _Basics_sqrt;
     var $BrianHicks$elm_trend$Trend$Math$stddev = function (numbers) {
-        var helper = (seriesMean) => $elm$core$Result$map_raw($elm$core$Basics$sqrt, $BrianHicks$elm_trend$Trend$Math$mean($elm$core$List$map_raw((n) => A2($elm$core$Basics$pow, n - seriesMean, 2), numbers)));
+        var helper = function (seriesMean) {
+            return $elm$core$Result$map_raw($elm$core$Basics$sqrt, $BrianHicks$elm_trend$Trend$Math$mean($elm$core$List$map_raw(function (n) {
+                return _Basics_pow_raw(n - seriesMean, 2);
+            }, numbers)));
+        };
         return $elm$core$Result$andThen_raw(helper, $BrianHicks$elm_trend$Trend$Math$mean(numbers));
     };
     var $elm$core$List$unzip = function (pairs) {
-        var step_raw = function (_v0, _v1) {
+        var step = F2(function (_v0, _v1) {
             var x = _v0.a;
             var y = _v0.b;
             var xs = _v1.a;
             var ys = _v1.b;
-            return _Utils_Tuple2(_List_Cons(x, xs), _List_Cons(y, ys));
-        }, step = F2(step_raw);
+            return _Utils_Tuple2(_List_cons_raw(x, xs), _List_cons_raw(y, ys));
+        });
         return $elm$core$List$foldr_raw(step, _Utils_Tuple2(_List_Nil, _List_Nil), pairs);
     };
     var $BrianHicks$elm_trend$Trend$Math$correlation = function (values) {
@@ -3589,12 +4456,24 @@
                 return $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$NeedMoreValues(2));
             }
             else {
-                var standardize_raw = (meanResult, stddevResult, series) => $elm$core$Result$map2_raw(F2((meanValue, stddevValue) => $elm$core$List$map_raw((point) => (point - meanValue) / stddevValue, series)), meanResult, stddevResult), standardize = F3(standardize_raw);
+                var standardize = F3(function (meanResult, stddevResult, series) {
+                    return $elm$core$Result$map2_raw_unwrapped(function (meanValue, stddevValue) {
+                        return $elm$core$List$map_raw(function (point) {
+                            return (point - meanValue) / stddevValue;
+                        }, series);
+                    }, meanResult, stddevResult);
+                });
                 var _v1 = $elm$core$List$unzip(values);
                 var xs = _v1.a;
                 var ys = _v1.b;
-                var summedProduct = $elm$core$Result$map_raw($elm$core$List$sum, $elm$core$Result$map2_raw(F2((stdX, stdY) => _List_map2_raw($elm$core$Basics$mul, stdX, stdY)), standardize_raw($BrianHicks$elm_trend$Trend$Math$mean(xs), $BrianHicks$elm_trend$Trend$Math$stddev(xs), xs), standardize_raw($BrianHicks$elm_trend$Trend$Math$mean(ys), $BrianHicks$elm_trend$Trend$Math$stddev(ys), ys)));
-                return $elm$core$Result$andThen_raw((val) => $elm$core$Basics$isNaN(val) ? $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$AllZeros) : $elm$core$Result$Ok(val), $elm$core$Result$map_raw((sum) => sum / $elm$core$List$length(values), summedProduct));
+                var summedProduct = $elm$core$Result$map_raw($elm$core$List$sum, $elm$core$Result$map2_raw_unwrapped(function (stdX, stdY) {
+                    return _List_map2_raw($elm$core$Basics$mul, stdX, stdY);
+                }, A3(standardize, $BrianHicks$elm_trend$Trend$Math$mean(xs), $BrianHicks$elm_trend$Trend$Math$stddev(xs), xs), A3(standardize, $BrianHicks$elm_trend$Trend$Math$mean(ys), $BrianHicks$elm_trend$Trend$Math$stddev(ys), ys)));
+                return $elm$core$Result$andThen_raw(function (val) {
+                    return $elm$core$Basics$isNaN(val) ? $elm$core$Result$Err($BrianHicks$elm_trend$Trend$Math$AllZeros) : $elm$core$Result$Ok(val);
+                }, $elm$core$Result$map_raw(function (sum) {
+                    return sum / $elm$core$List$length(values);
+                }, summedProduct));
             }
         }
     };
@@ -3621,6 +4500,29 @@
                 }
             }
         }
+    }, $elm$core$Result$map3_raw_unwrapped = function (func, ra, rb, rc) {
+        if (ra.$ === 1) {
+            var x = ra.a;
+            return $elm$core$Result$Err(x);
+        }
+        else {
+            var a = ra.a;
+            if (rb.$ === 1) {
+                var x = rb.a;
+                return $elm$core$Result$Err(x);
+            }
+            else {
+                var b = rb.a;
+                if (rc.$ === 1) {
+                    var x = rc.a;
+                    return $elm$core$Result$Err(x);
+                }
+                else {
+                    var c = rc.a;
+                    return $elm$core$Result$Ok(func(a, b, c));
+                }
+            }
+        }
     }, $elm$core$Result$map3 = F4($elm$core$Result$map3_raw);
     var $BrianHicks$elm_trend$Trend$Linear$quick = function (values) {
         if (!values.b) {
@@ -3634,13 +4536,21 @@
                 var _v1 = $elm$core$List$unzip(values);
                 var xs = _v1.a;
                 var ys = _v1.b;
-                var slopeResult = $elm$core$Result$map3_raw(F3((correl, stddevY, stddevX) => (correl * stddevY) / stddevX), $BrianHicks$elm_trend$Trend$Math$correlation(values), $BrianHicks$elm_trend$Trend$Math$stddev(ys), $BrianHicks$elm_trend$Trend$Math$stddev(xs));
-                var intercept = $elm$core$Result$map3_raw(F3((meanY, slope, meanX) => meanY - (slope * meanX)), $BrianHicks$elm_trend$Trend$Math$mean(ys), slopeResult, $BrianHicks$elm_trend$Trend$Math$mean(xs));
-                return $elm$core$Result$map_raw((trendLine) => $BrianHicks$elm_trend$Trend$Linear$Trend_raw(trendLine, values), $elm$core$Result$map2_raw($BrianHicks$elm_trend$Trend$Linear$Line, slopeResult, intercept));
+                var slopeResult = $elm$core$Result$map3_raw_unwrapped(function (correl, stddevY, stddevX) {
+                    return (correl * stddevY) / stddevX;
+                }, $BrianHicks$elm_trend$Trend$Math$correlation(values), $BrianHicks$elm_trend$Trend$Math$stddev(ys), $BrianHicks$elm_trend$Trend$Math$stddev(xs));
+                var intercept = $elm$core$Result$map3_raw_unwrapped(function (meanY, slope, meanX) {
+                    return meanY - (slope * meanX);
+                }, $BrianHicks$elm_trend$Trend$Math$mean(ys), slopeResult, $BrianHicks$elm_trend$Trend$Math$mean(xs));
+                return $elm$core$Result$map_raw(function (trendLine) {
+                    return $BrianHicks$elm_trend$Trend$Linear$Trend_raw(trendLine, values);
+                }, $elm$core$Result$map2_raw($BrianHicks$elm_trend$Trend$Linear$Line, slopeResult, intercept));
             }
         }
     };
-    var $elm_explorations$benchmark$Benchmark$Samples$trend = (samples) => $BrianHicks$elm_trend$Trend$Linear$quick($elm_explorations$benchmark$Benchmark$Samples$points(samples).a);
+    var $elm_explorations$benchmark$Benchmark$Samples$trend = function (samples) {
+        return $BrianHicks$elm_trend$Trend$Linear$quick($elm_explorations$benchmark$Benchmark$Samples$points(samples).a);
+    };
     var $elm_explorations$benchmark$Benchmark$finalize = function (samples) {
         var _v0 = $elm_explorations$benchmark$Benchmark$Samples$trend(samples);
         if (!_v0.$) {
@@ -3653,8 +4563,12 @@
         }
     };
     var $elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum = 1;
-    var $elm$core$Basics$composeR_raw = (f, g, x) => g(f(x)), $elm$core$Basics$composeR = F3($elm$core$Basics$composeR_raw);
-    var $elm$core$Basics$min_raw = (x, y) => (_Utils_cmp(x, y) < 0) ? x : y, $elm$core$Basics$min = F2($elm$core$Basics$min_raw);
+    var $elm$core$Basics$composeR_raw = function (f, g, x) {
+        return g(f(x));
+    }, $elm$core$Basics$composeR = F3($elm$core$Basics$composeR_raw);
+    var $elm$core$Basics$min_raw = function (x, y) {
+        return (_Utils_cmp(x, y) < 0) ? x : y;
+    }, $elm$core$Basics$min = F2($elm$core$Basics$min_raw);
     var $elm$core$List$minimum = function (list) {
         if (list.b) {
             var x = list.a;
@@ -3671,7 +4585,7 @@
                 return result;
             }
             else {
-                var $temp$result = _List_Cons(value, result), $temp$n = n - 1, $temp$value = value;
+                var $temp$result = _List_cons_raw(value, result), $temp$n = n - 1, $temp$value = value;
                 result = $temp$result;
                 n = $temp$n;
                 value = $temp$value;
@@ -3679,13 +4593,19 @@
             }
         }
     }, $elm$core$List$repeatHelp = F3($elm$core$List$repeatHelp_raw);
-    var $elm$core$List$repeat_raw = (n, value) => $elm$core$List$repeatHelp_raw(_List_Nil, n, value), $elm$core$List$repeat = F2($elm$core$List$repeat_raw);
+    var $elm$core$List$repeat_raw = function (n, value) {
+        return $elm$core$List$repeatHelp_raw(_List_Nil, n, value);
+    }, $elm$core$List$repeat = F2($elm$core$List$repeat_raw);
     var $elm_explorations$benchmark$Benchmark$LowLevel$StackOverflow = { $: 0 };
-    var $elm_explorations$benchmark$Benchmark$LowLevel$UnknownError = (a) => ({ $: 1, a: a });
-    var $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw = (n, operation_) => _Benchmark_sample_raw(n, operation_), $elm_explorations$benchmark$Benchmark$LowLevel$sample = F2($elm_explorations$benchmark$Benchmark$LowLevel$sample_raw);
+    var $elm_explorations$benchmark$Benchmark$LowLevel$UnknownError = function (a) {
+        return { $: 1, a: a };
+    };
+    var $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw = function (n, operation_) {
+        return _Benchmark_sample_raw(n, operation_);
+    }, $elm_explorations$benchmark$Benchmark$LowLevel$sample = F2($elm_explorations$benchmark$Benchmark$LowLevel$sample_raw);
     var $elm$core$Basics$round = _Basics_round;
     var $elm_explorations$benchmark$Benchmark$LowLevel$standardizeSampleSize = function (sampleSize) {
-        var helper_raw = function (rough, magnitude) {
+        var helper = F2(function (rough, magnitude) {
             helper: while (true) {
                 if (rough > 10) {
                     var $temp$rough = $elm$core$Basics$round(rough / 10), $temp$magnitude = magnitude * 10;
@@ -3697,8 +4617,8 @@
                     return rough * magnitude;
                 }
             }
-        }, helper = F2(helper_raw);
-        return helper_raw(sampleSize, 1);
+        });
+        return A2(helper, sampleSize, 1);
     };
     var $elm$core$Maybe$withDefault_raw = function (_default, maybe) {
         if (!maybe.$) {
@@ -3710,8 +4630,12 @@
         }
     }, $elm$core$Maybe$withDefault = F2($elm$core$Maybe$withDefault_raw);
     var $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw = function (minimumRuntime, operation_) {
-        var sampleSize = (i) => i * 10;
-        var resample = F2((iteration, total) => (_Utils_cmp(total, minimumRuntime) < 0) ? _Scheduler_andThen_raw(resample(iteration + 1), $elm$core$Task$map_raw(A2($elm$core$Basics$composeR, $elm$core$List$minimum, $elm$core$Maybe$withDefault(0)), $elm$core$Task$sequence($elm$core$List$repeat_raw(3, $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize(iteration), operation_))))) : $elm$core$Task$succeed(sampleSize(iteration)));
+        var sampleSize = function (i) {
+            return i * 10;
+        };
+        var resample = F2(function (iteration, total) {
+            return (_Utils_cmp(total, minimumRuntime) < 0) ? _Scheduler_andThen_raw(resample(iteration + 1), $elm$core$Task$map_raw(A2($elm$core$Basics$composeR, $elm$core$List$minimum, $elm$core$Maybe$withDefault(0)), $elm$core$Task$sequence($elm$core$List$repeat_raw(3, $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize(iteration), operation_))))) : $elm$core$Task$succeed(sampleSize(iteration));
+        });
         return $elm$core$Task$map_raw($elm_explorations$benchmark$Benchmark$LowLevel$standardizeSampleSize, A2(resample, 1, 0));
     }, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum = F2($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw);
     var $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0 = $elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize = $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0);
@@ -4035,26 +4959,32 @@
         var samplesDict = _v0;
         return $elm$core$Dict$update_raw(sampleSize, function (value) {
             if (value.$ === 1) {
-                return $elm$core$Maybe$Just({ $: 1, a: sample, b: _List_Nil });
+                return $elm$core$Maybe$Just(_List_fromArray([sample]));
             }
             else {
                 var samples_ = value.a;
-                return $elm$core$Maybe$Just(_List_Cons(sample, samples_));
+                return $elm$core$Maybe$Just(_List_cons_raw(sample, samples_));
             }
         }, samplesDict);
     }, $elm_explorations$benchmark$Benchmark$Samples$record = F3($elm_explorations$benchmark$Benchmark$Samples$record_raw);
     var $elm_explorations$benchmark$Benchmark$LowLevel$warmup = function (operation_) {
         var toCollect = 1000;
         var sampleSize = 10000;
-        var helper = (soFar) => (_Utils_cmp(soFar, toCollect) > -1) ? $elm$core$Task$succeed(0) : _Scheduler_andThen_raw(helper, $elm$core$Task$map_raw($elm$core$Basics$add(soFar), $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize, operation_)));
+        var helper = function (soFar) {
+            return (_Utils_cmp(soFar, toCollect) > -1) ? $elm$core$Task$succeed(0) : _Scheduler_andThen_raw(helper, $elm$core$Task$map_raw($elm$core$Basics$add(soFar), $elm_explorations$benchmark$Benchmark$LowLevel$sample_raw(sampleSize, operation_)));
+        };
         return helper(0);
     };
     var $elm_explorations$benchmark$Benchmark$stepLowLevel_raw = function (operation, status) {
         switch (status.$) {
             case 0:
-                return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw((_v1) => $elm_explorations$benchmark$Benchmark$Status$Unsized, $elm_explorations$benchmark$Benchmark$LowLevel$warmup(operation)));
+                return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw(function (_v1) {
+                    return $elm_explorations$benchmark$Benchmark$Status$Unsized;
+                }, $elm_explorations$benchmark$Benchmark$LowLevel$warmup(operation)));
             case 1:
-                return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw((sampleSize) => $elm_explorations$benchmark$Benchmark$Status$Pending_raw(sampleSize, $elm_explorations$benchmark$Benchmark$Samples$empty), $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0, operation)));
+                return _Scheduler_onError_raw(A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$Task$succeed, $elm_explorations$benchmark$Benchmark$Status$Failure), $elm_explorations$benchmark$Benchmark$Status$MeasurementError), $elm$core$Task$map_raw(function (sampleSize) {
+                    return $elm_explorations$benchmark$Benchmark$Status$Pending_raw(sampleSize, $elm_explorations$benchmark$Benchmark$Samples$empty);
+                }, $elm_explorations$benchmark$Benchmark$LowLevel$findSampleSizeWithMinimum_raw($elm_explorations$benchmark$Benchmark$LowLevel$findSampleSize_a0, operation)));
             case 2:
                 var baseSampleSize = status.a;
                 var samples = status.b;
@@ -4081,7 +5011,9 @@
                     var name_ = _v1.a;
                     var inner = _v1.b;
                     var status = _v1.c;
-                    return $elm$core$Task$map_raw((status_) => _Utils_Tuple3(name_, inner, status_), $elm_explorations$benchmark$Benchmark$stepLowLevel_raw(inner, status));
+                    return $elm$core$Task$map_raw(function (status_) {
+                        return _Utils_Tuple3(name_, inner, status_);
+                    }, $elm_explorations$benchmark$Benchmark$stepLowLevel_raw(inner, status));
                 }, benchmarks)));
             default:
                 var name = benchmark_.a;
@@ -4089,8 +5021,12 @@
                 return $elm$core$Task$map_raw($elm_explorations$benchmark$Benchmark$Benchmark$Group(name), $elm$core$Task$sequence($elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$step, benchmarks)));
         }
     };
-    var $author$project$Benchmark$Runner$Json$next = (benchmark) => $elm_explorations$benchmark$Benchmark$done(benchmark) ? $elm$core$Platform$Cmd$none : $elm$core$Task$perform_raw($elm$core$Basics$identity, $author$project$Benchmark$Runner$Json$breakForRender($elm_explorations$benchmark$Benchmark$step(benchmark)));
-    var $author$project$Benchmark$Runner$Json$init_raw = (benchmark, _v0) => _Utils_Tuple2(benchmark, $author$project$Benchmark$Runner$Json$next(benchmark)), $author$project$Benchmark$Runner$Json$init = F2($author$project$Benchmark$Runner$Json$init_raw);
+    var $author$project$Benchmark$Runner$Json$next = function (benchmark) {
+        return $elm_explorations$benchmark$Benchmark$done(benchmark) ? $elm$core$Platform$Cmd$none : $elm$core$Task$perform_raw($elm$core$Basics$identity, $author$project$Benchmark$Runner$Json$breakForRender($elm_explorations$benchmark$Benchmark$step(benchmark)));
+    };
+    var $author$project$Benchmark$Runner$Json$init_raw = function (benchmark, _v0) {
+        return _Utils_Tuple2(benchmark, $author$project$Benchmark$Runner$Json$next(benchmark));
+    }, $author$project$Benchmark$Runner$Json$init = F2($author$project$Benchmark$Runner$Json$init_raw);
     var $elm$core$Platform$Sub$batch = _Platform_batch;
     var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
     var $elm$json$Json$Encode$float = _Json_wrap;
@@ -4102,46 +5038,72 @@
         var ys = _v1.b;
         var predictions = $elm$core$List$map_raw($BrianHicks$elm_trend$Trend$Linear$predictY(fit), xs);
         var meanY = $elm$core$Result$withDefault_raw(0, $BrianHicks$elm_trend$Trend$Math$mean(ys));
-        var sumSquareResiduals = $elm$core$List$sum(_List_map2_raw(F2((actual, prediction) => A2($elm$core$Basics$pow, actual - prediction, 2)), ys, predictions));
-        var sumSquareTotal = $elm$core$List$sum($elm$core$List$map_raw((y) => A2($elm$core$Basics$pow, y - meanY, 2), ys));
+        var sumSquareResiduals = $elm$core$List$sum(_List_map2_raw_unwrapped(function (actual, prediction) {
+            return _Basics_pow_raw(actual - prediction, 2);
+        }, ys, predictions));
+        var sumSquareTotal = $elm$core$List$sum($elm$core$List$map_raw(function (y) {
+            return _Basics_pow_raw(y - meanY, 2);
+        }, ys));
         return 1 - (sumSquareResiduals / sumSquareTotal);
     };
     var $elm$json$Json$Encode$int = _Json_wrap;
-    var $elm$json$Json$Encode$object = (pairs) => _Json_wrap($elm$core$List$foldl_raw(F2(function (_v0, obj) {
-        var k = _v0.a;
-        var v = _v0.b;
-        return _Json_addField_raw(k, v, obj);
-    }), _Json_emptyObject(0), pairs));
+    var $elm$json$Json$Encode$object = function (pairs) {
+        return _Json_wrap($elm$core$List$foldl_raw_unwrapped(function (_v0, obj) {
+            var k = _v0.a;
+            var v = _v0.b;
+            return _Json_addField_raw(k, v, obj);
+        }, _Json_emptyObject(0), pairs));
+    };
     var $BrianHicks$elm_trend$Trend$Linear$predictX_raw = function (_v0, y) {
-        var slope = _v0.aR;
-        var intercept = _v0.aL;
+        var slope = _v0.aV;
+        var intercept = _v0.aQ;
         return (y - intercept) / slope;
     }, $BrianHicks$elm_trend$Trend$Linear$predictX = F2($BrianHicks$elm_trend$Trend$Linear$predictX_raw);
-    var $author$project$Benchmark$Runner$Json$runsPerSecond_a0 = $BrianHicks$elm_trend$Trend$Linear$line, $author$project$Benchmark$Runner$Json$runsPerSecond_a1 = A2($elm$core$Basics$composeR, (a) => $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000), $elm$core$Basics$floor), $author$project$Benchmark$Runner$Json$runsPerSecond = A2($elm$core$Basics$composeR, $author$project$Benchmark$Runner$Json$runsPerSecond_a0, $author$project$Benchmark$Runner$Json$runsPerSecond_a1);
+    var $author$project$Benchmark$Runner$Json$runsPerSecond_a0 = $BrianHicks$elm_trend$Trend$Linear$line, $author$project$Benchmark$Runner$Json$runsPerSecond_a1 = A2($elm$core$Basics$composeR, function (a) {
+        return $BrianHicks$elm_trend$Trend$Linear$predictX_raw(a, 1000);
+    }, $elm$core$Basics$floor), $author$project$Benchmark$Runner$Json$runsPerSecond = A2($elm$core$Basics$composeR, $author$project$Benchmark$Runner$Json$runsPerSecond_a0, $author$project$Benchmark$Runner$Json$runsPerSecond_a1);
     var $elm$json$Json$Encode$string = _Json_wrap;
     var $author$project$Benchmark$Runner$Json$encodeStatus = function (status) {
         switch (status.$) {
             case 0:
-                return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("cold")), b: _List_Nil });
+                return $elm$json$Json$Encode$object(_List_fromArray([
+                    _Utils_Tuple2("status", $elm$json$Json$Encode$string("cold"))
+                ]));
             case 1:
-                return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("unsized")), b: _List_Nil });
+                return $elm$json$Json$Encode$object(_List_fromArray([
+                    _Utils_Tuple2("status", $elm$json$Json$Encode$string("unsized"))
+                ]));
             case 2:
                 var i = status.a;
                 var samples = status.b;
-                return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("pending")), b: { $: 1, a: _Utils_Tuple2("progress", $elm$json$Json$Encode$float($elm_explorations$benchmark$Benchmark$Status$progress(status))), b: _List_Nil } });
+                return $elm$json$Json$Encode$object(_List_fromArray([
+                    _Utils_Tuple2("status", $elm$json$Json$Encode$string("pending")),
+                    _Utils_Tuple2("progress", $elm$json$Json$Encode$float($elm_explorations$benchmark$Benchmark$Status$progress(status)))
+                ]));
             case 3:
                 var error = status.a;
-                return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("failure")), b: _List_Nil });
+                return $elm$json$Json$Encode$object(_List_fromArray([
+                    _Utils_Tuple2("status", $elm$json$Json$Encode$string("failure"))
+                ]));
             default:
                 var samples = status.a;
                 var quickTrend = status.b;
-                return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("status", $elm$json$Json$Encode$string("success")), b: { $: 1, a: _Utils_Tuple2("runsPerSecond", $elm$json$Json$Encode$int($elm$core$Basics$composeR_raw($author$project$Benchmark$Runner$Json$runsPerSecond_a0, $author$project$Benchmark$Runner$Json$runsPerSecond_a1, quickTrend))), b: { $: 1, a: _Utils_Tuple2("goodnessOfFit", $elm$json$Json$Encode$float($BrianHicks$elm_trend$Trend$Linear$goodnessOfFit(quickTrend))), b: _List_Nil } } });
+                return $elm$json$Json$Encode$object(_List_fromArray([
+                    _Utils_Tuple2("status", $elm$json$Json$Encode$string("success")),
+                    _Utils_Tuple2("runsPerSecond", $elm$json$Json$Encode$int($elm$core$Basics$composeR_raw($author$project$Benchmark$Runner$Json$runsPerSecond_a0, $author$project$Benchmark$Runner$Json$runsPerSecond_a1, quickTrend))),
+                    _Utils_Tuple2("goodnessOfFit", $elm$json$Json$Encode$float($BrianHicks$elm_trend$Trend$Linear$goodnessOfFit(quickTrend)))
+                ]));
         }
     };
-    var $author$project$Benchmark$Runner$Json$encodeResultItem = function (_v0) {
-        var name = _v0.a;
-        var status = _v0.b;
-        return $elm$json$Json$Encode$object({ $: 1, a: _Utils_Tuple2("name", $elm$json$Json$Encode$string(name)), b: { $: 1, a: _Utils_Tuple2("status", $author$project$Benchmark$Runner$Json$encodeStatus(status)), b: _List_Nil } });
+    var $elm$json$Json$Encode$list_raw = function (func, entries) {
+        return _Json_wrap($elm$core$List$foldl_raw(_Json_addEntry(func), _Json_emptyArray(0), entries));
+    }, $elm$json$Json$Encode$list = F2($elm$json$Json$Encode$list_raw);
+    var $author$project$Benchmark$Runner$Json$encodeResultItem = function (item) {
+        return $elm$json$Json$Encode$object(_List_fromArray([
+            _Utils_Tuple2("name", $elm$json$Json$Encode$string(item.ag)),
+            _Utils_Tuple2("tags", $elm$json$Json$Encode$list_raw($elm$json$Json$Encode$string, item.ao)),
+            _Utils_Tuple2("status", $author$project$Benchmark$Runner$Json$encodeStatus(item.an))
+        ]));
     };
     var $elm$core$List$append_raw = function (xs, ys) {
         if (!ys.b) {
@@ -4151,26 +5113,36 @@
             return $elm$core$List$foldr_raw($elm$core$List$cons, ys, xs);
         }
     }, $elm$core$List$append = F2($elm$core$List$append_raw);
-    var $elm$core$List$concat = (lists) => $elm$core$List$foldr_raw($elm$core$List$append, _List_Nil, lists);
-    var $elm$core$List$concatMap_raw = (f, list) => $elm$core$List$concat($elm$core$List$map_raw(f, list)), $elm$core$List$concatMap = F2($elm$core$List$concatMap_raw);
-    var $author$project$Benchmark$Runner$Json$flattenReportGroup_raw = function (group, report) {
+    var $elm$core$List$concat = function (lists) {
+        return $elm$core$List$foldr_raw($elm$core$List$append, _List_Nil, lists);
+    };
+    var $elm$core$List$concatMap_raw = function (f, list) {
+        return $elm$core$List$concat($elm$core$List$map_raw(f, list));
+    }, $elm$core$List$concatMap = F2($elm$core$List$concatMap_raw);
+    var $author$project$Benchmark$Runner$Json$flattenReportGroup_raw = function (groups, report) {
         switch (report.$) {
             case 0:
                 var name = report.a;
                 var status = report.b;
-                return { $: 1, a: _Utils_Tuple2(name, status), b: _List_Nil };
+                return _List_fromArray([
+                    { ag: name, an: status, ao: groups }
+                ]);
             case 1:
                 var name = report.a;
                 var statuses = report.b;
                 return $elm$core$List$map_raw(function (_v1) {
                     var tag = _v1.a;
-                    var val = _v1.b;
-                    return _Utils_Tuple2(group + (", " + (name + (", " + tag))), val);
+                    var status = _v1.b;
+                    return {
+                        ag: name,
+                        an: status,
+                        ao: _Utils_ap(groups, _List_fromArray([tag]))
+                    };
                 }, statuses);
             default:
                 var name = report.a;
                 var reports = report.b;
-                return $elm$core$List$concatMap_raw($author$project$Benchmark$Runner$Json$flattenReportGroup(group + (", " + (name + ", "))), reports);
+                return $elm$core$List$concatMap_raw($author$project$Benchmark$Runner$Json$flattenReportGroup(_Utils_ap(groups, _List_fromArray([name]))), reports);
         }
     }, $author$project$Benchmark$Runner$Json$flattenReportGroup = F2($author$project$Benchmark$Runner$Json$flattenReportGroup_raw);
     var $author$project$Benchmark$Runner$Json$flattenReport = function (report) {
@@ -4178,26 +5150,39 @@
             case 0:
                 var name = report.a;
                 var status = report.b;
-                return { $: 1, a: _Utils_Tuple2(name, status), b: _List_Nil };
+                return _List_fromArray([
+                    { ag: name, an: status, ao: _List_Nil }
+                ]);
             case 1:
                 var name = report.a;
                 var statuses = report.b;
                 return $elm$core$List$map_raw(function (_v1) {
                     var tag = _v1.a;
-                    var val = _v1.b;
-                    return _Utils_Tuple2(name + (", " + tag), val);
+                    var status = _v1.b;
+                    return {
+                        ag: name,
+                        an: status,
+                        ao: _List_fromArray([tag])
+                    };
                 }, statuses);
             default:
                 var name = report.a;
                 var reports = report.b;
-                return $elm$core$List$concatMap_raw($author$project$Benchmark$Runner$Json$flattenReportGroup(name), reports);
+                return $elm$core$List$concatMap_raw($author$project$Benchmark$Runner$Json$flattenReportGroup(_List_fromArray([name])), reports);
         }
     };
-    var $elm$json$Json$Encode$list_raw = (func, entries) => _Json_wrap($elm$core$List$foldl_raw(_Json_addEntry(func), _Json_emptyArray(0), entries)), $elm$json$Json$Encode$list = F2($elm$json$Json$Encode$list_raw);
-    var $author$project$Benchmark$Runner$Json$encodeReport = (report) => $elm$json$Json$Encode$list_raw($author$project$Benchmark$Runner$Json$encodeResultItem, $author$project$Benchmark$Runner$Json$flattenReport(report));
-    var $elm_explorations$benchmark$Benchmark$Reporting$Group_raw = (a, b) => ({ $: 2, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Group = F2($elm_explorations$benchmark$Benchmark$Reporting$Group_raw);
-    var $elm_explorations$benchmark$Benchmark$Reporting$Series_raw = (a, b) => ({ $: 1, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Series = F2($elm_explorations$benchmark$Benchmark$Reporting$Series_raw);
-    var $elm_explorations$benchmark$Benchmark$Reporting$Single_raw = (a, b) => ({ $: 0, a: a, b: b }), $elm_explorations$benchmark$Benchmark$Reporting$Single = F2($elm_explorations$benchmark$Benchmark$Reporting$Single_raw);
+    var $author$project$Benchmark$Runner$Json$encodeReport = function (report) {
+        return $elm$json$Json$Encode$list_raw($author$project$Benchmark$Runner$Json$encodeResultItem, $author$project$Benchmark$Runner$Json$flattenReport(report));
+    };
+    var $elm_explorations$benchmark$Benchmark$Reporting$Group_raw = function (a, b) {
+        return { $: 2, a: a, b: b };
+    }, $elm_explorations$benchmark$Benchmark$Reporting$Group = F2($elm_explorations$benchmark$Benchmark$Reporting$Group_raw);
+    var $elm_explorations$benchmark$Benchmark$Reporting$Series_raw = function (a, b) {
+        return { $: 1, a: a, b: b };
+    }, $elm_explorations$benchmark$Benchmark$Reporting$Series = F2($elm_explorations$benchmark$Benchmark$Reporting$Series_raw);
+    var $elm_explorations$benchmark$Benchmark$Reporting$Single_raw = function (a, b) {
+        return { $: 0, a: a, b: b };
+    }, $elm_explorations$benchmark$Benchmark$Reporting$Single = F2($elm_explorations$benchmark$Benchmark$Reporting$Single_raw);
     var $elm_explorations$benchmark$Benchmark$Reporting$fromBenchmark = function (internal) {
         switch (internal.$) {
             case 0:
@@ -4218,7 +5203,9 @@
                 return $elm_explorations$benchmark$Benchmark$Reporting$Group_raw(name, $elm$core$List$map_raw($elm_explorations$benchmark$Benchmark$Reporting$fromBenchmark, benchmarks));
         }
     };
-    var $author$project$Benchmark$Runner$Json$encode = (benchmark) => $author$project$Benchmark$Runner$Json$encodeReport($elm_explorations$benchmark$Benchmark$Reporting$fromBenchmark(benchmark));
+    var $author$project$Benchmark$Runner$Json$encode = function (benchmark) {
+        return $author$project$Benchmark$Runner$Json$encodeReport($elm_explorations$benchmark$Benchmark$Reporting$fromBenchmark(benchmark));
+    };
     var $author$project$Benchmark$Runner$Json$update_raw = function (sendReport, msg, model) {
         var benchmark = msg;
         return $elm_explorations$benchmark$Benchmark$done(benchmark) ? _Utils_Tuple2(benchmark, sendReport($author$project$Benchmark$Runner$Json$encode(benchmark))) : _Utils_Tuple2(benchmark, $author$project$Benchmark$Runner$Json$next(benchmark));
@@ -4228,36 +5215,39 @@
     var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
     var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
     var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-    var $author$project$Benchmark$Runner$Json$view = (model) => $elm$html$Html$div_raw({ $: 1, a: _VirtualDom_style_raw("white-space", "pre"), b: _List_Nil }, { $: 1, a: $elm$html$Html$text(_Json_encode_raw(4, $author$project$Benchmark$Runner$Json$encode(model))), b: _List_Nil });
-    var $author$project$Benchmark$Runner$Json$program_raw = (sendReport, benchmark) => $elm$browser$Browser$element({
-        bS: $author$project$Benchmark$Runner$Json$init(benchmark),
-        b4: (_v0) => $elm$core$Platform$Sub$none,
-        b6: $author$project$Benchmark$Runner$Json$update(sendReport),
-        b8: $author$project$Benchmark$Runner$Json$view
-    }), $author$project$Benchmark$Runner$Json$program = F2($author$project$Benchmark$Runner$Json$program_raw);
+    var $author$project$Benchmark$Runner$Json$view = function (model) {
+        return $elm$html$Html$div_raw(_List_fromArray([
+            _VirtualDom_style_raw("white-space", "pre")
+        ]), _List_fromArray([
+            $elm$html$Html$text(_Json_encode_raw(4, $author$project$Benchmark$Runner$Json$encode(model)))
+        ]));
+    };
+    var $author$project$Benchmark$Runner$Json$program_raw = function (sendReport, benchmark) {
+        return $elm$browser$Browser$element({
+            bX: $author$project$Benchmark$Runner$Json$init(benchmark),
+            b8: function (_v0) {
+                return $elm$core$Platform$Sub$none;
+            },
+            ca: $author$project$Benchmark$Runner$Json$update(sendReport),
+            cc: $author$project$Benchmark$Runner$Json$view
+        });
+    }, $author$project$Benchmark$Runner$Json$program = F2($author$project$Benchmark$Runner$Json$program_raw);
     var $author$project$Main$reportResults = _Platform_outgoingPort("reportResults", $elm$core$Basics$identity);
-    var $author$project$Main$addMyType_raw = function (mine, sum) {
-        switch (mine.$) {
-            case 0:
-                return sum;
-            case 1:
-                var i = mine.a;
-                return i + sum;
-            default:
-                return sum;
-        }
-    }, $author$project$Main$addMyType = F2($author$project$Main$addMyType_raw);
-    var $elm_explorations$benchmark$Benchmark$Status$Cold = { $: 0 };
-    var $elm_explorations$benchmark$Benchmark$LowLevel$operation = (fn) => _Benchmark_operation(fn);
-    var $elm_explorations$benchmark$Benchmark$benchmark_raw = (name, fn) => $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw(name, $elm_explorations$benchmark$Benchmark$LowLevel$operation(fn), $elm_explorations$benchmark$Benchmark$Status$Cold), $elm_explorations$benchmark$Benchmark$benchmark = F2($elm_explorations$benchmark$Benchmark$benchmark_raw);
     var $elm_explorations$benchmark$Benchmark$describe = $elm_explorations$benchmark$Benchmark$Benchmark$Group;
-    var $author$project$Main$One = a => ({ $: 1, a: a, b: null });
-    var $author$project$Main$Two_raw = (a, b) => ({ $: 2, a: a, b: b }), $author$project$Main$Two = F2($author$project$Main$Two_raw);
-    var $author$project$Main$Zero = { $: 0, a: null, b: null };
-    var $author$project$Main$values = { $: 1, a: $author$project$Main$Zero, b: { $: 1, a: $author$project$Main$One(5), b: { $: 1, a: $author$project$Main$Two_raw("Two", "two"), b: _List_Nil } } };
-    var $author$project$Main$many = $elm$core$List$concat($elm$core$List$repeat_raw(100, $author$project$Main$values));
-    var $author$project$Main$updateRecord_raw = (attr, record) => _Utils_update(record, { aO: 87 }), $author$project$Main$updateRecord = F2($author$project$Main$updateRecord_raw);
-    var $author$project$Main$suite = $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw("Benchmarks", { $: 1, a: $elm_explorations$benchmark$Benchmark$benchmark_raw("sum 100 entities in a list", (_v0) => $elm$core$List$foldl_raw($author$project$Main$addMyType, 0, $author$project$Main$many)), b: { $: 1, a: $elm_explorations$benchmark$Benchmark$benchmark_raw("1000 record updates", (_v1) => $elm$core$List$foldl_raw($author$project$Main$updateRecord, { aO: 1, bq: 3, br: 2 }, $author$project$Main$many)), b: _List_Nil } });
+    var $elm_explorations$benchmark$Benchmark$Status$Cold = { $: 0 };
+    var $elm_explorations$benchmark$Benchmark$LowLevel$operation = function (fn) {
+        return _Benchmark_operation(fn);
+    };
+    var $elm_explorations$benchmark$Benchmark$benchmark_raw = function (name, fn) {
+        return $elm_explorations$benchmark$Benchmark$Benchmark$Single_raw(name, $elm_explorations$benchmark$Benchmark$LowLevel$operation(fn), $elm_explorations$benchmark$Benchmark$Status$Cold);
+    }, $elm_explorations$benchmark$Benchmark$benchmark = F2($elm_explorations$benchmark$Benchmark$benchmark_raw);
+    var $author$project$Main$randomConstant = 39;
+    var $author$project$Main$stringifyingNumbers = $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw("String.from*", _List_fromArray([
+        $elm_explorations$benchmark$Benchmark$benchmark_raw("String.fromInt", function (_v0) {
+            return $author$project$Main$randomConstant + "";
+        })
+    ]));
+    var $author$project$Main$suite = $elm_explorations$benchmark$Benchmark$Benchmark$Group_raw("Basics", _List_fromArray([$author$project$Main$stringifyingNumbers]));
     var $author$project$Main$main = $author$project$Benchmark$Runner$Json$program_raw($author$project$Main$reportResults, $author$project$Main$suite);
     _Platform_export({ "Main": { "init": $author$project$Main$main($elm$json$Json$Decode$succeed(0))(0) } });
 }(this));

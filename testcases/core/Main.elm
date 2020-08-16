@@ -108,27 +108,31 @@ listLiteral _ =
 suite : Benchmark
 suite =
     describe "Basics"
-        [ benchmark "sum 300 list of custom types" <|
-            \_ -> List.foldl addMyType 0 many
-        , benchmark "Update single record" <|
-            \_ ->
-                updateSingleRecord
-                    { one = 1
-                    , two = 2
-                    , three = 3
-                    }
-        , benchmark "Update single record via inlining creation in elm" <|
-            \_ ->
-                updateSingleRecordManually
-                    { one = 1
-                    , two = 2
-                    , three = 3
-                    }
-        , benchmark "Return list literal"
-            listLiteral
-        , dictBenchmarks
-        , functionCalling
-        , jsonEncoding
+        [ 
+        --     benchmark "sum 300 list of custom types" <|
+        --     \_ -> List.foldl addMyType 0 many
+        -- , benchmark "Update single record" <|
+        --     \_ ->
+        --         updateSingleRecord
+        --             { one = 1
+        --             , two = 2
+        --             , three = 3
+        --             }
+        -- , benchmark "Update single record via inlining creation in elm" <|
+        --     \_ ->
+        --         updateSingleRecordManually
+        --             { one = 1
+        --             , two = 2
+        --             , three = 3
+        --             }
+        -- , benchmark "Return list literal"
+        --     listLiteral
+        -- , dictBenchmarks
+        -- , functionCalling
+        -- , jsonEncoding
+        -- , equality
+        -- , 
+        stringifyingNumbers
         ]
 
 
@@ -153,6 +157,34 @@ dictBenchmarks =
         , benchmark "Dict.size" <|
             \_ ->
                 Dict.size dict
+        ]
+
+
+expression x y z =
+    x + y * z
+
+
+randomConstant =
+    39
+
+
+equality =
+    describe "Equality"
+        [ benchmark "Equals literal int" <|
+            \_ ->
+                expression 2 9 8 == 25
+        , benchmark "Equals, no literal" <|
+            \_ ->
+                expression 2 9 8 == randomConstant
+        
+        ]
+
+
+stringifyingNumbers =
+    describe "String.from*"
+        [ benchmark "String.fromInt" <|
+            \_ ->
+                String.fromInt randomConstant
         ]
 
 
