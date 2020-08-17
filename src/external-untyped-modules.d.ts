@@ -1,5 +1,5 @@
 declare module 'node-elm-compiler' {
-  export function compileSync(files: string[], options: object): void;
+  export function compileToStringSync(files: string[], options: object): string;
 }
 
 declare module 'tree-sitter-elm';
