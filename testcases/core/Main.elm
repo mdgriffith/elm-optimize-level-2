@@ -9,6 +9,7 @@ import Dict
 import Html
 import Json.Decode
 import Json.Encode
+import List
 
 
 main : Benchmark.Runner.Json.JsonBenchmark
@@ -49,15 +50,114 @@ addMyType mine sum =
             sum
 
 
-type alias MyRecord =
-    { one : Int
-    , two : Int
-    , three : Int
+type alias ShapeA =
+    { a : String
+    , b : Int
     }
 
 
-updateRecord attr record =
-    { record | one = 87 }
+type alias ShapeB =
+    { a : ShapeA
+    , b : Bool
+    }
+
+
+type alias ShapeC =
+    { b : ShapeB
+    , c : ( Int, Int )
+    }
+
+
+type alias MyRecord =
+    { shapeA : ShapeA
+    , shapeB : ShapeB
+    , shape : ShapeC
+    }
+
+
+type ShapeUpdate
+    = Str String
+    | Boolean Bool
+    | Integer Int
+    | IntTuple ( Int, Int )
+
+
+shapeValue =
+    { shapeA = { a = "a variant", b = 31 }
+    , shapeB =
+        { a = { a = "a in b", b = 31 }
+        , b = False
+        }
+    , shapeC = { b = { a = { a = "a in b in c", b = -80 }, b = False }, c = ( 1, -100 ) }
+    }
+
+
+updateValues =
+    [ Str "string update"
+    , Boolean False
+    , Integer 1
+    , IntTuple ( 1, 400 )
+    , Str
+        ""
+    , Boolean True
+    , Integer -5
+    , IntTuple ( 600, -100 )
+    ]
+
+
+updateShape upd shape =
+    case upd of
+        Str s ->
+            let
+                a =
+                    shape.shapeA
+
+                newA =
+                    { a | a = s ++ a.a }
+            in
+            { shape | shapeA = newA }
+
+        Boolean bool ->
+            let
+                b =
+                    shape.shapeB
+
+                newB =
+                    { b | b = bool }
+            in
+            { shape | shapeB = newB }
+
+        Integer i ->
+            let
+                innerA =
+                    shape.shapeC.b.a
+
+                innerB =
+                    shape.shapeC.b
+
+                innerC =
+                    shape.shapeC
+
+                newA =
+                    { innerA | b = i + innerA.b }
+
+                newB =
+                    { innerB | a = newA }
+
+                newC =
+                    { innerC | b = newB }
+            in
+            { shape | shapeA = newA, shapeC = newC }
+
+        IntTuple ( a, b ) ->
+            let
+                c =
+                    shape.shapeC
+
+                newC =
+                    { c | c = ( Tuple.first c.c + a, Tuple.second c.c + b ) }
+            in
+            { shape | shapeC = newC }
 
 
 updateSingleRecord record =
@@ -108,16 +208,12 @@ listLiteral _ =
 suite : Benchmark
 suite =
     describe "Basics"
-        [ 
-        --     benchmark "sum 300 list of custom types" <|
-        --     \_ -> List.foldl addMyType 0 many
-        -- , benchmark "Update single record" <|
-        --     \_ ->
-        --         updateSingleRecord
-        --             { one = 1
-        --             , two = 2
-        --             , three = 3
-        --             }
+        [ --     benchmark "sum 300 list of custom types" <|
+          --     \_ -> List.foldl addMyType 0 many
+          benchmark "Update single record" <|
+            \_ ->
+                List.foldl updateShape shapeValue updateValues
+
         -- , benchmark "Update single record via inlining creation in elm" <|
         --     \_ ->
         --         updateSingleRecordManually
@@ -131,8 +227,8 @@ suite =
         -- , functionCalling
         -- , jsonEncoding
         -- , equality
-        -- , 
-        stringifyingNumbers
+        -- ,
+        -- , stringifyingNumbers
         ]
 
 
@@ -176,7 +272,6 @@ equality =
         , benchmark "Equals, no literal" <|
             \_ ->
                 expression 2 9 8 == randomConstant
-        
         ]
 
 
