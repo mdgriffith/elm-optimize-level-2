@@ -71,7 +71,7 @@ type alias ShapeC =
 type alias MyRecord =
     { shapeA : ShapeA
     , shapeB : ShapeB
-    , shape : ShapeC
+    , shapeC : ShapeC
     }
 
 
@@ -105,6 +105,7 @@ updateValues =
     ]
 
 
+updateShape : ShapeUpdate -> MyRecord -> MyRecord
 updateShape upd shape =
     case upd of
         Str s ->

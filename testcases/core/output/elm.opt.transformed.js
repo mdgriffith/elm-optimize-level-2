@@ -218,13 +218,17 @@
     function _Utils_Tuple3_UNUSED(a, b, c) { return { $: "#3", a: a, b: b, c: c }; }
     function _Utils_chr(c) { return c; }
     function _Utils_chr_UNUSED(c) { return new String(c); }
-    const _Utils_update = (oldRecord, updatedFields) => {
-        var newRecord = { ...oldRecord };
+    // RECORDS
+    function _Utils_update(oldRecord, updatedFields) {
+        var newRecord = {};
+        for (var key in oldRecord) {
+            newRecord[key] = oldRecord[key];
+        }
         for (var key in updatedFields) {
             newRecord[key] = updatedFields[key];
         }
         return newRecord;
-    };
+    }
     // APPEND
     var _Utils_append = F2(_Utils_ap);
     function _Utils_ap(xs, ys) {
@@ -1330,7 +1334,7 @@
     }
     // PROGRAMS
     var _Platform_worker = F4(function (impl, flagDecoder, debugMetadata, args) {
-        return _Platform_initialize(flagDecoder, args, impl.b1, impl.ch, impl.cf, function () { return function () { }; });
+        return _Platform_initialize(flagDecoder, args, impl.b1, impl.cg, impl.ce, function () { return function () { }; });
     });
     // INITIALIZE A PROGRAM
     function _Platform_initialize(flagDecoder, args, init, update, subscriptions, stepperBuilder) {
@@ -2697,8 +2701,8 @@
     // ELEMENT
     var _Debugger_element;
     var _Browser_element = _Debugger_element || F4(function (impl, flagDecoder, debugMetadata, args) {
-        return _Platform_initialize(flagDecoder, args, impl.b1, impl.ch, impl.cf, function (sendToApp, initialModel) {
-            var view = impl.cj;
+        return _Platform_initialize(flagDecoder, args, impl.b1, impl.cg, impl.ce, function (sendToApp, initialModel) {
+            var view = impl.ci;
             /**/
             var domNode = args["node"];
             //*/
@@ -2717,9 +2721,9 @@
     // DOCUMENT
     var _Debugger_document;
     var _Browser_document = _Debugger_document || F4(function (impl, flagDecoder, debugMetadata, args) {
-        return _Platform_initialize(flagDecoder, args, impl.b1, impl.ch, impl.cf, function (sendToApp, initialModel) {
+        return _Platform_initialize(flagDecoder, args, impl.b1, impl.cg, impl.ce, function (sendToApp, initialModel) {
             var divertHrefToApp = impl.a_ && impl.a_(sendToApp);
-            var view = impl.cj;
+            var view = impl.ci;
             var title = _VirtualDom_doc.title;
             var bodyNode = _VirtualDom_doc.body;
             var currNode = _VirtualDom_virtualize(bodyNode);
@@ -2731,7 +2735,7 @@
                 bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
                 currNode = nextNode;
                 _VirtualDom_divertHrefToApp = 0;
-                (title !== doc.cg) && (_VirtualDom_doc.title = title = doc.cg);
+                (title !== doc.cf) && (_VirtualDom_doc.title = title = doc.cf);
             });
         });
     });
@@ -2787,9 +2791,9 @@
             b1: function (flags) {
                 return A3(impl.b1, flags, _Browser_getUrl(), key);
             },
-            cj: impl.cj,
-            ch: impl.ch,
-            cf: impl.cf
+            ci: impl.ci,
+            cg: impl.cg,
+            ce: impl.ce
         });
     }
     function _Browser_getUrl() {
@@ -4954,11 +4958,11 @@
     var $author$project$Benchmark$Runner$Json$program = F2(function (sendReport, benchmark) {
         return $elm$browser$Browser$element({
             b1: $author$project$Benchmark$Runner$Json$init(benchmark),
-            cf: function (_v0) {
+            ce: function (_v0) {
                 return $elm$core$Platform$Sub$none;
             },
-            ch: $author$project$Benchmark$Runner$Json$update(sendReport),
-            cj: $author$project$Benchmark$Runner$Json$view
+            cg: $author$project$Benchmark$Runner$Json$update(sendReport),
+            ci: $author$project$Benchmark$Runner$Json$view
         });
     });
     var $author$project$Main$reportResults = _Platform_outgoingPort("reportResults", $elm$core$Basics$identity);
@@ -4979,7 +4983,7 @@
             B: { B: "a in b", p: 31 },
             p: false
         },
-        Z: {
+        Q: {
             p: {
                 B: { B: "a in b in c", p: -80 },
                 p: false
@@ -4996,33 +5000,29 @@
             case 0:
                 var s = upd.a;
                 var a = shape.aB;
-                var newA = _Utils_update(a, {
-                    B: _Utils_ap(s, a.B)
-                });
-                return _Utils_update(shape, { aB: newA });
+                var newA = { ...a, B: _Utils_ap(s, a.B) };
+                return { ...shape, aB: newA };
             case 1:
                 var bool = upd.a;
                 var b = shape.aP;
-                var newB = _Utils_update(b, { p: bool });
-                return _Utils_update(shape, { aP: newB });
+                var newB = { ...b, p: bool };
+                return { ...shape, aP: newB };
             case 2:
                 var i = upd.a;
-                var innerC = shape.Z;
-                var innerB = shape.Z.p;
-                var innerA = shape.Z.p.B;
-                var newA = _Utils_update(innerA, { p: i + innerA.p });
-                var newB = _Utils_update(innerB, { B: newA });
-                var newC = _Utils_update(innerC, { p: newB });
-                return _Utils_update(shape, { aB: newA, Z: newC });
+                var innerC = shape.Q;
+                var innerB = shape.Q.p;
+                var innerA = shape.Q.p.B;
+                var newA = { ...innerA, p: i + innerA.p };
+                var newB = { ...innerB, B: newA };
+                var newC = { ...innerC, p: newB };
+                return { ...shape, aB: newA, Q: newC };
             default:
                 var _v1 = upd.a;
                 var a = _v1.a;
                 var b = _v1.b;
-                var c = shape.Z;
-                var newC = _Utils_update(c, {
-                    at: _Utils_Tuple2(c.at.a + a, c.at.b + b)
-                });
-                return _Utils_update(shape, { Z: newC });
+                var c = shape.Q;
+                var newC = { ...c, at: _Utils_Tuple2(c.at.a + a, c.at.b + b) };
+                return { ...shape, Q: newC };
         }
     });
     var $author$project$Main$Boolean = function (a) {

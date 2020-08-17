@@ -1858,8 +1858,8 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 		flagDecoder,
 		args,
 		impl.b1,
-		impl.ch,
-		impl.cf,
+		impl.cg,
+		impl.ce,
 		function() { return function() {} }
 	);
 });
@@ -3929,10 +3929,10 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 		flagDecoder,
 		args,
 		impl.b1,
-		impl.ch,
-		impl.cf,
+		impl.cg,
+		impl.ce,
 		function(sendToApp, initialModel) {
-			var view = impl.cj;
+			var view = impl.ci;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3965,11 +3965,11 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		flagDecoder,
 		args,
 		impl.b1,
-		impl.ch,
-		impl.cf,
+		impl.cg,
+		impl.ce,
 		function(sendToApp, initialModel) {
 			var divertHrefToApp = impl.a_ && impl.a_(sendToApp)
-			var view = impl.cj;
+			var view = impl.ci;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3982,7 +3982,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.cg) && (_VirtualDom_doc.title = title = doc.cg);
+				(title !== doc.cf) && (_VirtualDom_doc.title = title = doc.cf);
 			});
 		}
 	);
@@ -4073,9 +4073,9 @@ function _Browser_application(impl)
 		{
 			return A3(impl.b1, flags, _Browser_getUrl(), key);
 		},
-		cj: impl.cj,
-		ch: impl.ch,
-		cf: impl.cf
+		ci: impl.ci,
+		cg: impl.cg,
+		ce: impl.ce
 	});
 }
 
@@ -7159,11 +7159,11 @@ var $author$project$Benchmark$Runner$Json$program = F2(
 		return $elm$browser$Browser$element(
 			{
 				b1: $author$project$Benchmark$Runner$Json$init(benchmark),
-				cf: function (_v0) {
+				ce: function (_v0) {
 					return $elm$core$Platform$Sub$none;
 				},
-				ch: $author$project$Benchmark$Runner$Json$update(sendReport),
-				cj: $author$project$Benchmark$Runner$Json$view
+				cg: $author$project$Benchmark$Runner$Json$update(sendReport),
+				ci: $author$project$Benchmark$Runner$Json$view
 			});
 	});
 var $author$project$Main$reportResults = _Platform_outgoingPort('reportResults', $elm$core$Basics$identity);
@@ -7189,7 +7189,7 @@ var $author$project$Main$shapeValue = {
 		B: {B: 'a in b', p: 31},
 		p: false
 	},
-	Z: {
+	Q: {
 		p: {
 			B: {B: 'a in b in c', p: -80},
 			p: false
@@ -7226,9 +7226,9 @@ var $author$project$Main$updateShape = F2(
 					{aP: newB});
 			case 2:
 				var i = upd.a;
-				var innerC = shape.Z;
-				var innerB = shape.Z.p;
-				var innerA = shape.Z.p.B;
+				var innerC = shape.Q;
+				var innerB = shape.Q.p;
+				var innerA = shape.Q.p.B;
 				var newA = _Utils_update(
 					innerA,
 					{p: i + innerA.p});
@@ -7240,12 +7240,12 @@ var $author$project$Main$updateShape = F2(
 					{p: newB});
 				return _Utils_update(
 					shape,
-					{aB: newA, Z: newC});
+					{aB: newA, Q: newC});
 			default:
 				var _v1 = upd.a;
 				var a = _v1.a;
 				var b = _v1.b;
-				var c = shape.Z;
+				var c = shape.Q;
 				var newC = _Utils_update(
 					c,
 					{
@@ -7253,7 +7253,7 @@ var $author$project$Main$updateShape = F2(
 					});
 				return _Utils_update(
 					shape,
-					{Z: newC});
+					{Q: newC});
 		}
 	});
 var $author$project$Main$Boolean = function (a) {
