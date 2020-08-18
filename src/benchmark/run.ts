@@ -11,14 +11,14 @@ import * as fs from 'fs';
 
 const defaultOptions: Transforms = {
   replaceVDomNode: false,
-  variantShapes: true,
+  variantShapes: false,
   inlineNumberToString: false,
-  inlineEquality: true,
-  inlineFunctions: true,
+  inlineEquality: false,
+  inlineFunctions: false,
   listLiterals: false,
-  passUnwrappedFunctions: true,
+  passUnwrappedFunctions: false,
   arrowFns: false,
-  objectUpdate: false,
+  objectUpdate: ObjectUpdate.InlineSpread,
   unusedValues: false,
 };
 
@@ -48,6 +48,10 @@ const options = {
     },
     {
       browser: Browser.Firefox,
+      headless: true,
+    },
+    {
+      browser: Browser.Safari,
       headless: true,
     },
   ],

@@ -65,9 +65,7 @@ We generate two definitions for a function, but in most cases a function is eith
 
 If a function is always called with the full number of arguments, the minifier can eliminate our wrapped version (`F2(MyFunction_fn)`) and *also* eliminate the `A2` call, which is explicitly smaller than before.
 
-# Direct call of Lambdas
-
-Similar to the above, but focused on lambdas.
+# Passing unwrapped functions and calling them directly
 
 Let's say we have some elm code that produces the following js.
 
@@ -84,11 +82,14 @@ we can transform it to
 var f = function(func, a, b) {
     return A2(func, a, b)
 }, f_unwrapped = function(func, a, b) {
-    return func(a, b)
+    return func(a, b) // <-- direct function call!
 };
 
+// note that the lambda is unwrapped as well
 f_unwrapped(function (a,b) {return a + b;}, 1, 2);
 ```
+
+This transformation works with separately defined functions too.
 
 
 
@@ -264,10 +265,20 @@ updateSingleRecordManually record =
     }
 ```
 
+
 It's worth exploring automating this transformation, though of course there's a question of how much this affects asset size on larger projects.
 
 However, it's hard to explore further without knowing the actual shape of the records being updated.
 
+**Future work**
+Explore more approaches. Next on TODO list:
+```
+_Utils_update(old, {a: newA})
+```
+to
+```
+{...old, a: newA}
+```
 
 
 # Inline Equality

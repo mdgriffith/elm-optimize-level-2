@@ -2,7 +2,7 @@
 import program from 'commander';
 import * as path from 'path';
 import * as Transform from './transform';
-import { ObjectUpdate, Transforms, InlineLists } from './types';
+import { Transforms } from './types';
 import { compileToStringSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 const { version } = require('../package.json');
@@ -38,19 +38,15 @@ program
   //   'transform into a more modern JS to save size (es2018)',
   //   false
   // )
-  .option(
-    '--output',
-    'The name of the javascript file to create.',
-    'elm.js'
-  )
+  .option('--output', 'The name of the javascript file to create.', 'elm.js')
   .parse(process.argv);
 
-type CLIOptions = {
-  modernize: boolean;
-  excludeTransforms: string[];
-};
+// type CLIOptions = {
+//   modernize: boolean;
+//   excludeTransforms: string[];
+// };
 
-async function run(filePath: string | undefined, options: CLIOptions) {
+async function run(filePath: string | undefined) {
   if (!filePath || !filePath.endsWith('.elm')) {
     console.error('Please provide a path to an Elm file.');
     program.outputHelp();
@@ -78,16 +74,15 @@ async function run(filePath: string | undefined, options: CLIOptions) {
   //     withExcluded.inlineFunctions && withExcluded.passUnwrappedFunctions,
   // };
 
-
   const source: string = compileToStringSync([fileName], {
     output: 'output/elm.opt.js',
     cwd: dirname,
     optimize: true,
     processOpts:
-    // ignore stdout
-    {
-      stdio: ['pipe', 'ignore', 'pipe']
-    }
+      // ignore stdout
+      {
+        stdio: ['pipe', 'ignore', 'pipe'],
+      },
   });
   const transformed = await Transform.transform(
     dirname,
@@ -95,15 +90,13 @@ async function run(filePath: string | undefined, options: CLIOptions) {
     source,
     false,
     defaultOptions
-  )
+  );
 
   fs.writeFileSync(program.output, transformed);
-  console.log("Success!");
-  console.log("")
-  console.log(`   ${fileName} ---> ${program.output}`)
-  console.log("")
-
-
+  console.log('Success!');
+  console.log('');
+  console.log(`   ${fileName} ---> ${program.output}`);
+  console.log('');
 }
 
-run(program.args[0], program.opts() as any).catch(e => console.error(e));
+run(program.args[0]).catch(e => console.error(e));

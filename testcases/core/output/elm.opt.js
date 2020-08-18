@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.aX.au === region.a2.au)
+	if (region.a1.ax === region.a8.ax)
 	{
-		return 'on line ' + region.aX.au;
+		return 'on line ' + region.a1.ax;
 	}
-	return 'on lines ' + region.aX.au + ' through ' + region.a2.au;
+	return 'on lines ' + region.a1.ax + ' through ' + region.a8.ax;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.bX,
-		impl.ca,
-		impl.b8,
+		impl.b1,
+		impl.cg,
+		impl.ce,
 		function() { return function() {} }
 	);
 });
@@ -2704,9 +2704,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		L: func(record.L),
-		aY: record.aY,
-		aT: record.aT
+		N: func(record.N),
+		a2: record.a2,
+		aZ: record.aZ
 	}
 });
 
@@ -2974,11 +2974,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.L;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aY;
+		var message = !tag ? value : tag < 3 ? value.a : value.N;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.a2;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.aT) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.aZ) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.bX,
-		impl.ca,
-		impl.b8,
+		impl.b1,
+		impl.cg,
+		impl.ce,
 		function(sendToApp, initialModel) {
-			var view = impl.cc;
+			var view = impl.ci;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.bX,
-		impl.ca,
-		impl.b8,
+		impl.b1,
+		impl.cg,
+		impl.ce,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.aU && impl.aU(sendToApp)
-			var view = impl.cc;
+			var divertHrefToApp = impl.a_ && impl.a_(sendToApp)
+			var view = impl.ci;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3977,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.bF);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.bL);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.b9) && (_VirtualDom_doc.title = title = doc.b9);
+				(title !== doc.cf) && (_VirtualDom_doc.title = title = doc.cf);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.b2;
-	var onUrlRequest = impl.b3;
+	var onUrlChange = impl.b8;
+	var onUrlRequest = impl.b9;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		aU: function(sendToApp)
+		a_: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.bm === next.bm
-							&& curr.a8 === next.a8
-							&& curr.bh.a === next.bh.a
+							&& curr.bs === next.bs
+							&& curr.be === next.be
+							&& curr.bn.a === next.bn.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		bX: function(flags)
+		b1: function(flags)
 		{
-			return A3(impl.bX, flags, _Browser_getUrl(), key);
+			return A3(impl.b1, flags, _Browser_getUrl(), key);
 		},
-		cc: impl.cc,
-		ca: impl.ca,
-		b8: impl.b8
+		ci: impl.ci,
+		cg: impl.cg,
+		ce: impl.ce
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { bU: 'hidden', bI: 'visibilitychange' }
+		? { b_: 'hidden', bO: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { bU: 'mozHidden', bI: 'mozvisibilitychange' }
+		? { b_: 'mozHidden', bO: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { bU: 'msHidden', bI: 'msvisibilitychange' }
+		? { b_: 'msHidden', bO: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { bU: 'webkitHidden', bI: 'webkitvisibilitychange' }
-		: { bU: 'hidden', bI: 'visibilitychange' };
+		? { b_: 'webkitHidden', bO: 'webkitvisibilitychange' }
+		: { b_: 'hidden', bO: 'visibilitychange' };
 }
 
 
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		br: _Browser_getScene(),
-		bx: {
-			bA: _Browser_window.pageXOffset,
-			bB: _Browser_window.pageYOffset,
-			by: _Browser_doc.documentElement.clientWidth,
-			a7: _Browser_doc.documentElement.clientHeight
+		bx: _Browser_getScene(),
+		bD: {
+			bG: _Browser_window.pageXOffset,
+			bH: _Browser_window.pageYOffset,
+			bE: _Browser_doc.documentElement.clientWidth,
+			bd: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4247,8 +4247,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		by: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		a7: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		bE: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		bd: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			br: {
-				by: node.scrollWidth,
-				a7: node.scrollHeight
-			},
 			bx: {
-				bA: node.scrollLeft,
-				bB: node.scrollTop,
-				by: node.clientWidth,
-				a7: node.clientHeight
+				bE: node.scrollWidth,
+				bd: node.scrollHeight
+			},
+			bD: {
+				bG: node.scrollLeft,
+				bH: node.scrollTop,
+				bE: node.clientWidth,
+				bd: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			br: _Browser_getScene(),
-			bx: {
-				bA: x,
-				bB: y,
-				by: _Browser_doc.documentElement.clientWidth,
-				a7: _Browser_doc.documentElement.clientHeight
+			bx: _Browser_getScene(),
+			bD: {
+				bG: x,
+				bH: y,
+				bE: _Browser_doc.documentElement.clientWidth,
+				bd: _Browser_doc.documentElement.clientHeight
 			},
-			bP: {
-				bA: x + rect.left,
-				bB: y + rect.top,
-				by: rect.width,
-				a7: rect.height
+			bV: {
+				bG: x + rect.left,
+				bH: y + rect.top,
+				bE: rect.width,
+				bd: rect.height
 			}
 		};
 	});
@@ -4894,7 +4894,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {a6: fragment, a8: host, be: path, bh: port_, bm: protocol, bn: query};
+		return {bc: fragment, be: host, bk: path, bn: port_, bs: protocol, bt: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5520,8 +5520,8 @@ var $elm_explorations$benchmark$Benchmark$Samples$pointify = function (samples) 
 };
 var $BrianHicks$elm_trend$Trend$Linear$predictY = F2(
 	function (_v0, x) {
-		var slope = _v0.aV;
-		var intercept = _v0.aQ;
+		var slope = _v0.a$;
+		var intercept = _v0.aW;
 		return (slope * x) + intercept;
 	});
 var $BrianHicks$elm_trend$Trend$Math$AllZeros = {$: 1};
@@ -5584,7 +5584,7 @@ var $elm$core$List$sort = function (xs) {
 };
 var $BrianHicks$elm_trend$Trend$Linear$Line = F2(
 	function (slope, intercept) {
-		return {aQ: intercept, aV: slope};
+		return {aW: intercept, a$: slope};
 	});
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
@@ -6880,8 +6880,8 @@ var $elm$json$Json$Encode$object = function (pairs) {
 };
 var $BrianHicks$elm_trend$Trend$Linear$predictX = F2(
 	function (_v0, y) {
-		var slope = _v0.aV;
-		var intercept = _v0.aQ;
+		var slope = _v0.a$;
+		var intercept = _v0.aW;
 		return (y - intercept) / slope;
 	});
 var $author$project$Benchmark$Runner$Json$runsPerSecond = A2(
@@ -6970,13 +6970,13 @@ var $author$project$Benchmark$Runner$Json$encodeResultItem = function (item) {
 			[
 				_Utils_Tuple2(
 				'name',
-				$elm$json$Json$Encode$string(item.ag)),
+				$elm$json$Json$Encode$string(item.aj)),
 				_Utils_Tuple2(
 				'tags',
-				A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, item.ao)),
+				A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, item.aq)),
 				_Utils_Tuple2(
 				'status',
-				$author$project$Benchmark$Runner$Json$encodeStatus(item.an))
+				$author$project$Benchmark$Runner$Json$encodeStatus(item.ap))
 			]));
 };
 var $elm$core$List$append = F2(
@@ -7003,7 +7003,7 @@ var $author$project$Benchmark$Runner$Json$flattenReportGroup = F2(
 				var status = report.b;
 				return _List_fromArray(
 					[
-						{ag: name, an: status, ao: groups}
+						{aj: name, ap: status, aq: groups}
 					]);
 			case 1:
 				var name = report.a;
@@ -7014,9 +7014,9 @@ var $author$project$Benchmark$Runner$Json$flattenReportGroup = F2(
 						var tag = _v1.a;
 						var status = _v1.b;
 						return {
-							ag: name,
-							an: status,
-							ao: _Utils_ap(
+							aj: name,
+							ap: status,
+							aq: _Utils_ap(
 								groups,
 								_List_fromArray(
 									[tag]))
@@ -7043,7 +7043,7 @@ var $author$project$Benchmark$Runner$Json$flattenReport = function (report) {
 			var status = report.b;
 			return _List_fromArray(
 				[
-					{ag: name, an: status, ao: _List_Nil}
+					{aj: name, ap: status, aq: _List_Nil}
 				]);
 		case 1:
 			var name = report.a;
@@ -7054,9 +7054,9 @@ var $author$project$Benchmark$Runner$Json$flattenReport = function (report) {
 					var tag = _v1.a;
 					var status = _v1.b;
 					return {
-						ag: name,
-						an: status,
-						ao: _List_fromArray(
+						aj: name,
+						ap: status,
+						aq: _List_fromArray(
 							[tag])
 					};
 				},
@@ -7158,16 +7158,15 @@ var $author$project$Benchmark$Runner$Json$program = F2(
 	function (sendReport, benchmark) {
 		return $elm$browser$Browser$element(
 			{
-				bX: $author$project$Benchmark$Runner$Json$init(benchmark),
-				b8: function (_v0) {
+				b1: $author$project$Benchmark$Runner$Json$init(benchmark),
+				ce: function (_v0) {
 					return $elm$core$Platform$Sub$none;
 				},
-				ca: $author$project$Benchmark$Runner$Json$update(sendReport),
-				cc: $author$project$Benchmark$Runner$Json$view
+				cg: $author$project$Benchmark$Runner$Json$update(sendReport),
+				ci: $author$project$Benchmark$Runner$Json$view
 			});
 	});
 var $author$project$Main$reportResults = _Platform_outgoingPort('reportResults', $elm$core$Basics$identity);
-var $elm_explorations$benchmark$Benchmark$describe = $elm_explorations$benchmark$Benchmark$Benchmark$Group;
 var $elm_explorations$benchmark$Benchmark$Status$Cold = {$: 0};
 var $elm_explorations$benchmark$Benchmark$LowLevel$operation = function (fn) {
 	return _Benchmark_operation(fn);
@@ -7180,24 +7179,120 @@ var $elm_explorations$benchmark$Benchmark$benchmark = F2(
 			$elm_explorations$benchmark$Benchmark$LowLevel$operation(fn),
 			$elm_explorations$benchmark$Benchmark$Status$Cold);
 	});
-var $author$project$Main$randomConstant = 39;
-var $author$project$Main$stringifyingNumbers = A2(
-	$elm_explorations$benchmark$Benchmark$describe,
-	'String.from*',
-	_List_fromArray(
-		[
-			A2(
-			$elm_explorations$benchmark$Benchmark$benchmark,
-			'String.fromInt',
-			function (_v0) {
-				return $elm$core$String$fromInt($author$project$Main$randomConstant);
-			})
-		]));
+var $elm_explorations$benchmark$Benchmark$describe = $elm_explorations$benchmark$Benchmark$Benchmark$Group;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $author$project$Main$shapeValue = {
+	aB: {B: 'a variant', p: 31},
+	aP: {
+		B: {B: 'a in b', p: 31},
+		p: false
+	},
+	Q: {
+		p: {
+			B: {B: 'a in b in c', p: -80},
+			p: false
+		},
+		at: _Utils_Tuple2(1, -100)
+	}
+};
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $author$project$Main$updateShape = F2(
+	function (upd, shape) {
+		switch (upd.$) {
+			case 0:
+				var s = upd.a;
+				var a = shape.aB;
+				var newA = _Utils_update(
+					a,
+					{
+						B: _Utils_ap(s, a.B)
+					});
+				return _Utils_update(
+					shape,
+					{aB: newA});
+			case 1:
+				var bool = upd.a;
+				var b = shape.aP;
+				var newB = _Utils_update(
+					b,
+					{p: bool});
+				return _Utils_update(
+					shape,
+					{aP: newB});
+			case 2:
+				var i = upd.a;
+				var innerC = shape.Q;
+				var innerB = shape.Q.p;
+				var innerA = shape.Q.p.B;
+				var newA = _Utils_update(
+					innerA,
+					{p: i + innerA.p});
+				var newB = _Utils_update(
+					innerB,
+					{B: newA});
+				var newC = _Utils_update(
+					innerC,
+					{p: newB});
+				return _Utils_update(
+					shape,
+					{aB: newA, Q: newC});
+			default:
+				var _v1 = upd.a;
+				var a = _v1.a;
+				var b = _v1.b;
+				var c = shape.Q;
+				var newC = _Utils_update(
+					c,
+					{
+						at: _Utils_Tuple2(c.at.a + a, c.at.b + b)
+					});
+				return _Utils_update(
+					shape,
+					{Q: newC});
+		}
+	});
+var $author$project$Main$Boolean = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Main$IntTuple = function (a) {
+	return {$: 3, a: a};
+};
+var $author$project$Main$Integer = function (a) {
+	return {$: 2, a: a};
+};
+var $author$project$Main$Str = function (a) {
+	return {$: 0, a: a};
+};
+var $author$project$Main$updateValues = _List_fromArray(
+	[
+		$author$project$Main$Str('string update'),
+		$author$project$Main$Boolean(false),
+		$author$project$Main$Integer(1),
+		$author$project$Main$IntTuple(
+		_Utils_Tuple2(1, 400)),
+		$author$project$Main$Str(''),
+		$author$project$Main$Boolean(true),
+		$author$project$Main$Integer(-5),
+		$author$project$Main$IntTuple(
+		_Utils_Tuple2(600, -100))
+	]);
 var $author$project$Main$suite = A2(
 	$elm_explorations$benchmark$Benchmark$describe,
 	'Basics',
 	_List_fromArray(
-		[$author$project$Main$stringifyingNumbers]));
+		[
+			A2(
+			$elm_explorations$benchmark$Benchmark$benchmark,
+			'Update single record',
+			function (_v0) {
+				return A3($elm$core$List$foldl, $author$project$Main$updateShape, $author$project$Main$shapeValue, $author$project$Main$updateValues);
+			})
+		]));
 var $author$project$Main$main = A2($author$project$Benchmark$Runner$Json$program, $author$project$Main$reportResults, $author$project$Main$suite);
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

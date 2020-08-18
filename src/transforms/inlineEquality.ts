@@ -60,13 +60,13 @@ export const inlineEquality = (): ts.TransformerFactory<ts.SourceFile> => contex
 // NOTE: we're cheating here with the source.
 // I've manually verified that these are number or string comparisons
 // So they can safely be converted to ===
-const overrideIdentifiers: string[] = [
-  'leftFringeRank',
-  'end_',
-  'c',
-  'startTagName',
-  'openChar',
-];
+// const overrideIdentifiers: string[] = [
+//   'leftFringeRank',
+//   'end_',
+//   'c',
+//   'startTagName',
+//   'openChar',
+// ];
 
 function inferIsPrimitive(node: any): boolean {
   let kind = ts.SyntaxKind[node.kind];
