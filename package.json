@@ -16,7 +16,7 @@
   "scripts": {
     "prepublish": "tsc -p tsconfig.json",
     "run": "ts-node -T src/index.ts testcases/bench/Main.elm --modernize",
-    "report": "ts-node -T src/bench-reporting/run.ts"
+    "report": "ts-node -T src/benchmark/run.ts"
   },
   "peerDependencies": {},
   "husky": {
