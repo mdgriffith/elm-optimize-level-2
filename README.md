@@ -52,7 +52,7 @@ This might seem a bit like magic. :sparkles:
 
 If you're interested in getting to know what's happening, [here's an overview of all the JS transformations we are exploring](transformations.md)!
 
-Not all of them are included in the CLI tool because not all of them turned out to be beneficial. Part of this endeavor is a science project :bowtie:, where we capture data on which transformations turn out to be worthwhile.
+Not all of them are included in the CLI tool because not all of them turned out to be beneficial. Part of this endeavor is a science project :bowtie:, where we capture data so we can know which transformations turn out to be worthwhile.
 
 A few are listed there as either incomplete or not attempted. That's future work!
 
