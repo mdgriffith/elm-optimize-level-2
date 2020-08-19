@@ -20,6 +20,8 @@ There are two parts to this.
 
 2. A tool you can use _right now_ to compile elm using the adjustments that have given us the most speed!
 
+**Note** This work was given a massive headstart by [Robin Heggelund Hansen's article on areas where the Elm Compiler's output could be improved](https://dev.to/skinney/improving-elm-s-compiler-output-5e1h). Go read it! It's great.
+
 ## Installation and Usage
 
 ```
