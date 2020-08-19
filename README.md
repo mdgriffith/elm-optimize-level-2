@@ -46,13 +46,13 @@ elm-optimize Main.elm --output app.js
 
 **Another Note** — Before deploying your app, you should also minify it and gzip it. `elm-optimize` does not do that for you. [Check out this doc for a recommended setup.](minification.md)
 
-## Exploration
+## What's actually happening?
 
-This is also a science project :bowtie:
+This might seem a bit like magic. :sparkles:
 
-The goal is to quantify different transformations that can be done to the JS output of the Elm compiler and what their effect would be.
+If you're interested in getting to know what's happening, [here's an overview of all the JS transformations we are exploring](transformations.md)!
 
-To get started, [here's a current overview of all the JS transformations we explored](transformations.md) and a summary of their effect. Not all of them are included in the CLI tool because not all of them turned out to be beneficial.
+Not all of them are included in the CLI tool because not all of them turned out to be beneficial. Part of this endeavor is a science project :bowtie:, where we capture data on which transformations turn out to be worthwhile.
 
 A few are listed there as either incomplete or not attempted. That's future work!
 

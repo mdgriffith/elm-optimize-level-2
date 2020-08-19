@@ -109,9 +109,7 @@ This transformation works with separately defined functions too.
 
 Higher order functions like `List.map` have a hard time taking advantage of the direct function calls because we don't know the arity of the function within the `List.map` call.
 
-However, we can figure it out.
-
-If `List.map` is called with a function that we know has an arity
+This is a challenging case, but worth exploring!
 
 # Making type representation isomorphic
 
@@ -295,14 +293,14 @@ If Elm's `==` is applied to any primitive such as:
 - String
 - Bool
 
-Then we can inline the definition directly as `===`.
+Then we can inline the definition directly as JS strict equality: `===`.
 
 Right now `elm-optimize` will infer if something is a primitive if a literal is used.
 
 ## Results Summary
 
 - Included in `elm-optimize` tool.
-- Looks to have the most impact on code that does a lot of equality comparisons, like parsing.
+- Looks to have the some impact on code that does a lot of equality comparisons, like parsing.
 
 The `_Utils_eq` function is very likely deoptimized because it can take _any_ two values and either do a reference check, or do structural equality, which we also know takes a while.
 
@@ -369,3 +367,10 @@ This is risky! You do less computation, but you are (1) moving a bunch of comput
 This could be worthwhile in HTML though, where there is a x === y check on nodes:
 https://github.com/elm/virtual-dom/blob/master/src/Elm/Kernel/VirtualDom.js#L706-L709
 So if two nodes were reference equal, you wouldn't have to ever diff them. I imagine this could be a big benefit if there was a long list where each element contained a somewhat large "constant" node for some UI thing. (edited)
+
+# Eta Conversion
+
+This is when you add or remove anonymous functions:
+`map (f x y) zs` to `map (\z -> f x y z) zs`
+
+Because of our previous optimizations where we can call a function directly, this can make sure we're getting the fast version of `f`!
