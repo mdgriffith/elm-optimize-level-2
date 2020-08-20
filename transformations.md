@@ -363,10 +363,10 @@ We would have to add something like a `--modernize` or `--no-ie` flag to the too
 
 This transformation hasn't been attempted yet, but the idea is that if a constant is detected in a let statement, it can be declared moved to top-level instead of recalculated every function run.
 
-This is risky! You do less computation, but you are (1) moving a bunch of computation to happen on start-up and (2) the results are allocated but can never be freed and (3) you may have data locality issues.
+This is risky! You do less computation, but you are (1) moving a bunch of computation to happen on start-up and (2) the results are allocated but can never be freed.
 This could be worthwhile in HTML though, where there is a x === y check on nodes:
 https://github.com/elm/virtual-dom/blob/master/src/Elm/Kernel/VirtualDom.js#L706-L709
-So if two nodes were reference equal, you wouldn't have to ever diff them. I imagine this could be a big benefit if there was a long list where each element contained a somewhat large "constant" node for some UI thing. (edited)
+So, if two nodes were reference equal, you wouldn't have to ever diff them. I imagine this could be a big benefit if there was a long list where each element contained a somewhat large "constant" node for some UI thing.
 
 # Eta Conversion
 
