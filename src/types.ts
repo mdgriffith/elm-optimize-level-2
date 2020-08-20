@@ -60,3 +60,16 @@ export enum Browser {
   IE = 'ie',
   Edge = 'edge',
 }
+
+export const toolDefaults: Transforms = {
+  replaceVDomNode: false,
+  variantShapes: true,
+  inlineNumberToString: false,
+  inlineEquality: true,
+  inlineFunctions: true,
+  listLiterals: false,
+  passUnwrappedFunctions: true,
+  arrowFns: false,
+  objectUpdate: false,
+  unusedValues: false,
+};

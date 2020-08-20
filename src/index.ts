@@ -2,23 +2,10 @@
 import program from 'commander';
 import * as path from 'path';
 import * as Transform from './transform';
-import { Transforms } from './types';
+import { Transforms, toolDefaults } from './types';
 import { compileToStringSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 const { version } = require('../package.json');
-
-const defaultOptions: Transforms = {
-  replaceVDomNode: false,
-  variantShapes: true,
-  inlineNumberToString: false,
-  inlineEquality: true,
-  inlineFunctions: true,
-  listLiterals: false,
-  passUnwrappedFunctions: true,
-  arrowFns: false,
-  objectUpdate: false,
-  unusedValues: false,
-};
 
 program
   .version(version)
@@ -63,7 +50,7 @@ async function run(inputFilePath: string | undefined) {
     jsSource,
     elmFilePath,
     false,
-    defaultOptions
+    toolDefaults
   );
   fs.writeFileSync(program.output, transformed);
   const fileName = path.basename(inputFilePath);

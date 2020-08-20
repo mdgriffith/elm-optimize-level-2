@@ -5,7 +5,13 @@ Compiles all the test cases and runs them via webdriver to summarize the results
 
 */
 
-import { ObjectUpdate, Transforms, Browser, InlineLists } from '../types';
+import {
+  ObjectUpdate,
+  Transforms,
+  Browser,
+  InlineLists,
+  toolDefaults,
+} from '../types';
 import * as Reporting from './reporting';
 import * as fs from 'fs';
 
@@ -22,19 +28,6 @@ const defaultOptions: Transforms = {
   unusedValues: false,
 };
 
-const test: Transforms = {
-  replaceVDomNode: false,
-  variantShapes: false,
-  inlineNumberToString: false,
-  inlineEquality: false,
-  inlineFunctions: false,
-  listLiterals: InlineLists.AsObjects,
-  passUnwrappedFunctions: false,
-  arrowFns: false,
-  objectUpdate: null,
-  unusedValues: false,
-};
-
 const options = {
   compile: true,
   gzip: true,
@@ -44,18 +37,18 @@ const options = {
   runBenchmark: [
     {
       browser: Browser.Chrome,
-      headless: true,
+      headless: false,
     },
-    {
-      browser: Browser.Firefox,
-      headless: true,
-    },
-    {
-      browser: Browser.Safari,
-      headless: true,
-    },
+    // {
+    //   browser: Browser.Firefox,
+    //   headless: true,
+    // },
+    // {
+    //   browser: Browser.Safari,
+    //   headless: true,
+    // },
   ],
-  transforms: defaultOptions,
+  transforms: toolDefaults, //defaultOptions,
 };
 
 async function go() {
@@ -68,31 +61,36 @@ async function go() {
       dir: 'testcases/core',
       elmFile: 'Main.elm',
     },
-    // {
-    //   name: 'Html',
-    //   dir: 'testcases/html',
-    //   elmFile: 'Main.elm',
-    // },
-    // {
-    //   name: 'Elm UI',
-    //   dir: 'testcases/elm-ui',
-    //   elmFile: 'Main.elm',
-    // },
+    {
+      name: 'Elm CSS',
+      dir: 'testcases/elm-css',
+      elmFile: 'Main.elm',
+    },
+    {
+      name: 'Html',
+      dir: 'testcases/html',
+      elmFile: 'Main.elm',
+    },
+    {
+      name: 'Elm UI',
+      dir: 'testcases/elm-ui',
+      elmFile: 'Main.elm',
+    },
     // {
     //   name: 'Elm UI 2',
     //   dir: 'testcases/elm-ui-2',
     //   elmFile: 'Main.elm',
     // },
-    // {
-    //   name: 'elm-animator',
-    //   dir: 'testcases/elm-animator',
-    //   elmFile: 'Run.elm',
-    // },
-    // {
-    //   name: 'Elm Markdown',
-    //   dir: 'testcases/elm-markdown',
-    //   elmFile: 'Run.elm',
-    // },
+    {
+      name: 'elm-animator',
+      dir: 'testcases/elm-animator',
+      elmFile: 'Run.elm',
+    },
+    {
+      name: 'Elm Markdown',
+      dir: 'testcases/elm-markdown',
+      elmFile: 'Run.elm',
+    },
     // // // This one takes forever
     // {
     //   name: 'elm-obj-file',
