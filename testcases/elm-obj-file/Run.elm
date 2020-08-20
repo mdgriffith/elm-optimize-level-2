@@ -20,11 +20,12 @@ port reportResults : Json.Encode.Value -> Cmd msg
 
 
 suite =
-    Benchmark.compare "decode"
-        "triangles"
-        (\_ -> Obj.Decode.decodeString Length.meters Obj.Decode.triangles obj |> Result.map (always ()))
-        "texturedFaces"
-        (\_ -> Obj.Decode.decodeString Length.meters Obj.Decode.texturedFaces obj |> Result.map (always ()))
+    Benchmark.describe "Elm Obj File"
+        [ Benchmark.bencmark "Decode Triangles"
+            (\_ -> Obj.Decode.decodeString Length.meters Obj.Decode.triangles obj |> Result.map (always ()))
+        , Benchmark.bencmark "Decode Textured Faces"
+            (\_ -> Obj.Decode.decodeString Length.meters Obj.Decode.texturedFaces obj |> Result.map (always ()))
+        ]
 
 
 obj : String
