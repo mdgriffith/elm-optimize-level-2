@@ -32,29 +32,29 @@ export type Options = {
 export const transform = async (
   dir: string,
   jsSource: string,
-  elmfile: string,
+  elmfile: string | undefined,
   verbose: boolean,
   transforms: Transforms
 ): Promise<string> => {
-  // Compile examples in `testcases/*` folder as js
-  // Run whatever transformations we want on them, saving steps as `elm.{transformation}.js`
   let source = ts.createSourceFile('elm.js', jsSource, ts.ScriptTarget.ES2018);
 
-  const elmSource = fs.readFileSync(elmfile, 'utf8');
-  let parsedVariants = parseElm({
-    author: 'author',
-    project: 'project',
-    source: elmSource,
-  }).concat(primitives);
+  let parsedVariants = primitives;
+  if (elmfile && transforms.variantShapes) {
+    const elmSource = fs.readFileSync(elmfile, 'utf8');
+    parsedVariants = parseElm({
+      author: 'author',
+      project: 'project',
+      source: elmSource,
+    })
+      .concat(parsedVariants)
 
-  parsedVariants = parsedVariants
-    .concat(parseDir('elm-packages'))
-    .concat(parseDir(dir));
-
-  // we dont care about types that have no slots on any variants
-  parsedVariants = parsedVariants.filter(variant => {
-    return variant.totalTypeSlotCount != 0;
-  });
+      .concat(parseDir('elm-packages'))
+      .concat(parseDir(dir));
+    // we dont care about types that have no slots on any variants
+    parsedVariants = parsedVariants.filter((variant) => {
+      return variant.totalTypeSlotCount != 0;
+    });
+  }
 
   const normalizeVariantShapes = createCustomTypesTransformer(
     parsedVariants,

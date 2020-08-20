@@ -23,80 +23,54 @@ const defaultOptions: Transforms = {
 program
   .version(version)
   .usage('[options] <src/Main.elm>')
-  // .option(
-  //   '-e --exclude-transforms <excludedTransforms>',
-  //   'names of transforms that should be excluded (comma delimited). ' +
-  //   'Names of available transforms:' +
-  //   Object.keys(defaultOptions)
-  //     .map(name => `'${name}'`)
-  //     .join(', '),
-  //   v => v.split(','),
-  //   []
-  // )
-  // .option(
-  //   '-m --modernize',
-  //   'transform into a more modern JS to save size (es2018)',
-  //   false
-  // )
   .option('--output', 'The name of the javascript file to create.', 'elm.js')
   .parse(process.argv);
 
-// type CLIOptions = {
-//   modernize: boolean;
-//   excludeTransforms: string[];
-// };
-
-async function run(filePath: string | undefined) {
-  if (!filePath || !filePath.endsWith('.elm')) {
+async function run(inputFilePath: string | undefined) {
+  if (
+    (!inputFilePath || !inputFilePath.endsWith('.elm')) &&
+    !program.transformExistingJs
+  ) {
     console.error('Please provide a path to an Elm file.');
     program.outputHelp();
     return;
   }
+  const dirname = process.cwd();
+  let jsSource: string = '';
+  let elmFilePath = undefined;
 
-  // const { excludeTransforms, modernize } = options;
-  // excludeTransforms;
-  // modernize;
-
-  const dirname = path.dirname(filePath);
-  const fileName = path.basename(filePath);
-
-  // const withExcluded: Transforms = Object.fromEntries(
-  //   Object.entries(defaultOptions).map(([name, val]) =>
-  //     excludeTransforms.includes(name) ? [name, false] : [name, val]
-  //   )
-  // ) as any;
-
-  // const withCorrections = {
-  //   ...withExcluded,
-  //   arrowFns: modernize && withExcluded.arrowFns,
-  //   objectUpdate: modernize && withExcluded.objectUpdate,
-  //   passUnwrappedFunctions:
-  //     withExcluded.inlineFunctions && withExcluded.passUnwrappedFunctions,
-  // };
-
-  const source: string = compileToStringSync([fileName], {
-    output: 'output/elm.opt.js',
-    cwd: dirname,
-    optimize: true,
-    processOpts:
-      // ignore stdout
-      {
-        stdio: ['pipe', 'ignore', 'pipe'],
-      },
-  });
+  if (inputFilePath && inputFilePath.endsWith('.js')) {
+    jsSource = fs.readFileSync(inputFilePath, 'utf8');
+  } else if (inputFilePath && inputFilePath.endsWith('.elm')) {
+    elmFilePath = inputFilePath;
+    jsSource = compileToStringSync([inputFilePath], {
+      output: 'output/elm.opt.js',
+      cwd: dirname,
+      optimize: true,
+      processOpts:
+        // ignore stdout
+        {
+          stdio: ['pipe', 'ignore', 'pipe'],
+        },
+    });
+  } else {
+    console.error('Please provide a path to an Elm file.');
+    program.outputHelp();
+    return;
+  }
   const transformed = await Transform.transform(
     dirname,
-    fileName,
-    source,
+    jsSource,
+    elmFilePath,
     false,
     defaultOptions
   );
-
   fs.writeFileSync(program.output, transformed);
+  const fileName = path.basename(inputFilePath);
   console.log('Success!');
   console.log('');
   console.log(`   ${fileName} ---> ${program.output}`);
   console.log('');
 }
 
-run(program.args[0]).catch(e => console.error(e));
+run(program.args[0]).catch((e) => console.error(e));
