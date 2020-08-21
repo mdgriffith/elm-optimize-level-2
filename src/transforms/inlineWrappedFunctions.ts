@@ -91,15 +91,13 @@ export const createInlineContext = (): InlineContext => ({
 function reportInlineTransformResult(ctx: InlineContext) {
   const { inlined } = ctx;
 
-  console.log(`inlining function calls
-    inlined    ${inlined.fromRawFunc}
-`);
+  console.log(`inlining ${inlined.fromRawFunc} function calls`);
 }
 
 export const createFunctionInlineTransformer = (
   logOverview: boolean
-): ts.TransformerFactory<ts.SourceFile> => context => {
-  return sourceFile => {
+): ts.TransformerFactory<ts.SourceFile> => (context) => {
+  return (sourceFile) => {
     const inlineContext: InlineContext = createInlineContext();
 
     // todo hack to only inline top level functions
@@ -302,7 +300,7 @@ const createSplitterVisitor = (
                 funcReturnsWrapper: funcWrapper,
               });
 
-              const argsIdentifiers = appliedArgs.map(name =>
+              const argsIdentifiers = appliedArgs.map((name) =>
                 ts.createIdentifier(name)
               );
 
@@ -418,7 +416,7 @@ const createInlinerVisitor = (
               return ts.createCall(
                 ts.createIdentifier(split.rawLambdaName),
                 undefined,
-                args.map(arg => ts.visitNode(arg, inliner))
+                args.map((arg) => ts.visitNode(arg, inliner))
               );
             }
 
@@ -436,10 +434,10 @@ const createInlinerVisitor = (
                 ts.createIdentifier(partialApplication.split.rawLambdaName),
                 undefined,
                 [
-                  ...partialApplication.appliedArgs.map(name =>
+                  ...partialApplication.appliedArgs.map((name) =>
                     ts.createIdentifier(name)
                   ),
-                  ...args.map(arg => ts.visitNode(arg, inliner)),
+                  ...args.map((arg) => ts.visitNode(arg, inliner)),
                 ]
               );
             }
@@ -460,10 +458,10 @@ const createInlinerVisitor = (
               ts.createIdentifier(partialApplication.split.rawLambdaName),
               undefined,
               [
-                ...partialApplication.appliedArgs.map(name =>
+                ...partialApplication.appliedArgs.map((name) =>
                   ts.createIdentifier(name)
                 ),
-                ...node.arguments.map(arg => ts.visitNode(arg, inliner)),
+                ...node.arguments.map((arg) => ts.visitNode(arg, inliner)),
               ]
             );
           }

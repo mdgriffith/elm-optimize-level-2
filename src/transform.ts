@@ -40,12 +40,12 @@ export const transform = async (
 
   let parsedVariants = primitives;
   if (elmfile && transforms.variantShapes) {
-    const elmSource = fs.readFileSync(elmfile, 'utf8');
-    parsedVariants = parseElm({
-      author: 'author',
-      project: 'project',
-      source: elmSource,
-    }).concat(parsedVariants);
+    // const elmSource = fs.readFileSync(elmfile, 'utf8');
+    // parsedVariants = parseElm({
+    //   author: 'author',
+    //   project: 'project',
+    //   source: elmSource,
+    // }).concat(parsedVariants);
     // We have the ability to parse for more variant shapes,
     // Though I think we should include this once we understand the shapes a bit better.
     // There are also questions about 1. shipping a file with *all type* defined in elm-package
@@ -64,6 +64,9 @@ export const transform = async (
     parsedVariants,
     Mode.Prod
   );
+  if (verbose) {
+    console.log('Reshaping ' + parsedVariants.length + ' variants');
+  }
 
   // We have to ensure that this transformation takes place before everything else
   if (transforms.replaceVDomNode) {
