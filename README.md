@@ -44,13 +44,13 @@ elm-optimize Main.elm --output app.js
 
 **Note** — elm-optimize only generates a js file, it doesn't support generating HTML.
 
-**Another Note** — Before deploying your app, you should also minify it and gzip it. `elm-optimize` does not do that for you. [Check out this doc for a recommended setup.](minification.md)
+**Another Note** — Before deploying your app, you should also minify it and gzip it. `elm-optimize` does not do that for you. [Check out this doc for a recommended setup.](notes/minification.md)
 
 ## What's actually happening?
 
 This might seem a bit like magic. :sparkles:
 
-If you're interested in getting to know what's happening, [here's an overview of all the JS transformations we are exploring](transformations.md)!
+If you're interested in getting to know what's happening, [here's an overview of all the JS transformations we are exploring](notes/transformations.md)!
 
 Not all of them are included in the CLI tool because not all of them turned out to be beneficial. Part of this endeavor is a science project :bowtie:, where we capture data so we can know which transformations turn out to be worthwhile.
 
@@ -70,25 +70,29 @@ Though here are a few highlights:
 
 **Note** — keep in mind that these numbers have _all the caveats_ that benchmarks usually have. You may not see similar numbers depending on your machine, your browser, subtle differences in your code, etc.
 
-**Another Note** — From what we've seen, given that you're [minifying and gzipping your JS](minification.md), these transformations should either have no effect on asset size, or may even make your app slightly smaller.
+**Another Note** — From what we've seen, given that you're [minifying and gzipping your JS](notes/minification.md), these transformations should either have no effect on asset size, or may even make your app slightly smaller.
 
 ## Html
 
 | Name                              | Transformtions | Browser | Ops/Second | % Change |
 | --------------------------------- | -------------- | ------- | ---------- | -------- |
-| create a 4 level nested html tree | baseline       | firefox | 19,878     |          |
-| create a 4 level nested html tree | optimized      | firefox | 24,878     | (125%)   |
-| create a 4 level nested html tree | baseline       | chrome  | 43,689     |          |
-| create a 4 level nested html tree | optimized      | chrome  | 113,266    | (259%)   |
+| create a 4 level nested html tree |                | safari  | 34,899     |          |
+| create a 4 level nested html tree | final          | safari  | 39,631     | (114%)   |
+| create a 4 level nested html tree |                | firefox | 15,909     |          |
+| create a 4 level nested html tree | final          | firefox | 22,361     | (141%)   |
+| create a 4 level nested html tree |                | chrome  | 28,959     |          |
+| create a 4 level nested html tree | final          | chrome  | 72,753     | (251%)   |
 
 ## Elm Markdown
 
 | Name                      | Transformtions | Browser | Ops/Second | % Change |
 | ------------------------- | -------------- | ------- | ---------- | -------- |
-| dillonkearns/elm-markdown | baseline       | firefox | 1,226      |          |
-| dillonkearns/elm-markdown | optimized      | firefox | 2,497      | (204%)   |
-| dillonkearns/elm-markdown | baseline       | chrome  | 3,116      |          |
-| dillonkearns/elm-markdown | optimized      | chrome  | 5,099      | (164%)   |
+| dillonkearns/elm-markdown |                | safari  | 2,428      |          |
+| dillonkearns/elm-markdown | final          | safari  | 3,196      | (132%)   |
+| dillonkearns/elm-markdown |                | firefox | 1,096      |          |
+| dillonkearns/elm-markdown | final          | firefox | 2,194      | (200%)   |
+| dillonkearns/elm-markdown |                | chrome  | 2,489      |          |
+| dillonkearns/elm-markdown | final          | chrome  | 3,572      | (144%)   |
 
 ## Running Benchmarks Locally
 
@@ -104,14 +108,22 @@ _For this project, contributions always start with communication before code!_
 
 That being said, there are a few areas that might be opportunities for contribution.
 
-**First and formost** is to try `elm-optimize` on any current Elm project you have.
+1. Try `elm-optimize` on any current Elm project you have!
 
-We'd love to hear your results whether they be success, no effect, or caused a regression.
+   We'd love to hear your results whether they be success, no effect, or caused a regression.
 
-If your project saw an explicit improvement or performance regression, [leave a comment on this issue](https://github.com/mdgriffith/elm-optimize/issues/15).
+   If your project saw an explicit improvement or performance regression, [leave a comment on this issue](https://github.com/mdgriffith/elm-optimize/issues/15).
 
-For more serious issues, feel free to file a separate issue.
+   For more serious issues, feel free to file a separate issue.
 
-**Secondly**, if you believe there are public benchmarks that we could track that are _not essentially covered_ by our current benchmarks, let us know! We want the benchmarking suite to be as comprehensive as possible, though we have to weigh that against having a million benchmarks that essentially test the same thing.
+2. Are there more interesting benchmarks we could track?
 
-**Thirdly**, if you believe there are additional JS transformations that would be interesting to explore, or would like to try improving existing transformations in some way, get in touch!
+   We want the benchmarking suite to be as comprehensive as possible, though we have to weigh that against having a million benchmarks that essentially test the same thing.
+
+3) Know of an interesting transformation to try out?
+
+   Let us know! Either open an issue, or make a PR adding it to [notes/transformations.md](notes/transformations.md).
+
+4. Know of an article, paper, or project we might be interested in?
+
+   Let us know! We're keeping a list of relevant resources in [notes/resources.md](notes/resources.md)

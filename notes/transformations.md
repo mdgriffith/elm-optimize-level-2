@@ -141,10 +141,11 @@ This does require information from the Elm code itself, which we're currently ge
 
 ## Results Summary
 
-- Included
+- Partially Included - We stub in shapes for `Maybe` and `List`, but that's it.
 - Has an effect in certain circumstances in browsers using V8(Chrome and Edge). Nothing observable otherwise.
   - Most prominently observed in the `Elm Core - sum 300 list of custom types` benchmark. Otherwise I didn't notice it.
 - No noticable effect on asset size.
+- More work is needed to make parsing an existing project more robust and also to discover what approach for representing the shapes actually produces the best benefit.
 
 # Inlining literal list constructors
 
@@ -374,3 +375,9 @@ This is when you add or remove anonymous functions:
 `map (f x y) zs` to `map (\z -> f x y z) zs`
 
 Because of our previous optimizations where we can call a function directly, this can make sure we're getting the fast version of `f`!
+
+# Tail Recursion Modulo Cons
+
+Whew, what a name! I feel like this should be my DJ name in the future.
+
+In Elm
