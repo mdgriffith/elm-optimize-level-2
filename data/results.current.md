@@ -239,12 +239,12 @@
 | capture frames(15fps)           | final          | firefox | 4,875       | (198%)   |
 | capture frames(15fps)           |                | chrome  | 6,824       |          |
 | capture frames(15fps)           | final          | chrome  | 7,386       | (108%)   |
-| Standard                        |                | safari  | 33,587,780  |          |
-| Standard                        | final          | safari  | 39,840,290  | (119%)   |
-| Standard                        |                | firefox | 26,787,868  |          |
-| Standard                        | final          | firefox | 61,579,006  | (230%)   |
-| Standard                        |                | chrome  | 94,414,867  |          |
-| Standard                        | final          | chrome  | 103,362,327 | (109%)   |
+| Standard equality               |                | safari  | 33,587,780  |          |
+| Standard equality               | final          | safari  | 39,840,290  | (119%)   |
+| Standard equality               |                | firefox | 26,787,868  |          |
+| Standard equality               | final          | firefox | 61,579,006  | (230%)   |
+| Standard equality               |                | chrome  | 94,414,867  |          |
+| Standard equality               | final          | chrome  | 103,362,327 | (109%)   |
 | (one - two) < 0 form            |                | safari  | 43,071,520  |          |
 | (one - two) < 0 form            | final          | safari  | 55,126,291  | (128%)   |
 | (one - two) < 0 form            |                | firefox | 30,722,876  |          |
