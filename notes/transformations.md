@@ -240,20 +240,20 @@ const _Utils_update = (oldRecord, updatedFields) =>
 
 At the call site, replace
 
-```
-_Utils_update(old, newFields)
+```js
+_Utils_update(old, newFields);
 ```
 
 with
 
-```
-Object.assign({}, old, newFields)
+```js
+Object.assign({}, old, newFields);
 ```
 
 Or we can use the spread operator inline:
 
-```
-{...old, ...new}
+```js
+{...old, field: new}
 ```
 
 ## Result Summary
@@ -319,14 +319,14 @@ Chrome doesn't really see a speedup here though, so it's likely smart enough to 
 
 Before
 
-```
-String$fromFloat(val)
+```js
+String$fromFloat(val);
 ```
 
 After:
 
-```
-val + ""
+```js
+val + '';
 ```
 
 ## Results Summary
@@ -339,14 +339,14 @@ This hasn't shown any measureable benefit. Likely because this is such a simple 
 
 Before
 
-```
-var x = function(x){}
+```js
+var x = function (x) {};
 ```
 
 After
 
-```
-var x = (x) => {}
+```js
+var x = (x) => {};
 ```
 
 This was done for asset size. The nuance being that it's done to potentially optimize the _minified_ size of code, but not necessarily the gzipped version.
