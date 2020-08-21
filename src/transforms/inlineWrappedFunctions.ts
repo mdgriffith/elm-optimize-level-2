@@ -16,9 +16,9 @@ var $elm$core$String$join = F2(function (sep, chunks) {
 
 transformed
 
-var $elm$core$String$join_raw = function (sep, chunks) {
+var $elm$core$String$join_fn = function (sep, chunks) {
   return A2(_String_join, sep, _List_toArray(chunks));
-}, $elm$core$String$join = F2($elm$core$String$join_raw);
+}, $elm$core$String$join = F2($elm$core$String$join_fn);
 
 
 */
@@ -53,7 +53,7 @@ export type FuncSplit = {
 };
 
 const deriveRawLambdaName = (wrappedName: string): string =>
-  wrappedName + '_raw';
+  wrappedName + '_fn';
 
 const wrapperRegex = /F(?<arity>[1-9]+[0-9]*)/;
 
@@ -361,7 +361,7 @@ const createSplitterVisitor = (
               // var f = A2(g, a,b);  where g returns F2
               // splits into
               // var f = A2(g, a,b);
-              // var f_raw = f.f;
+              // var f_fn = f.f;
               return [
                 node,
                 ts.createVariableDeclaration(

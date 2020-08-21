@@ -149,14 +149,14 @@ test('it can pass raw functions if there is one registered', () => {
         return func(a, b)
     };
 
-    f_unwrapped(wrappedFunc_raw, 1, 2);
+    f_unwrapped(wrappedFunc_fn, 1, 2);
   `;
 
   const inlineContext = createInlineContext();
 
   inlineContext.splits.set('wrappedFunc', {
     arity: 2,
-    rawLambdaName: 'wrappedFunc_raw',
+    rawLambdaName: 'wrappedFunc_fn',
     type: 'raw_func',
   });
 
