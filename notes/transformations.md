@@ -378,6 +378,66 @@ Because of our previous optimizations where we can call a function directly, thi
 
 # Tail Recursion Modulo Cons
 
-Whew, what a name! I feel like this should be my DJ name in the future.
+Whew, what a name!
 
-In Elm
+In Elm, if you have a recursive function that calls itself at the top level, then it will be compiled into while loop. Here's an example:
+
+```elm
+sum : Int -> List Int ->  Int
+sum current list =
+  case list of
+    [] ->
+        current
+
+    (x :: remaining) ->
+        sum (x + current) remaining
+```
+
+The critical part here is that `sum` is called as the _first thing_ on that branch. Because that's easy to detect, we can reliably convert the above code into a `while` loop. (Note, all this stuff is called _Tail Call Optimization_).
+
+However, it's a pretty common case where we can't quite do that.
+
+Let's take a look at an implementation of `List.map`. (Note, this isn't how Elm currently does it, this is just for illustrative purposes.)
+
+We could implement `List.map` like this:
+
+```elm
+type List a = Nil | Cons a (List a)
+
+map : (a -> b) -> List a -> List b
+map func list =
+  case list of
+    Nil -> Nil
+    Cons x xs ->
+      Cons (func x) (map func xs)
+```
+
+But our recursive function(`map`) is not the _first thing_ being called in that branch! It's the `Cons` constructor! (Heyy, Tail Recursion Modulo **Cons**)
+
+The idea for this transformation is that we could take the above code, and generate the following JS code.
+
+```js
+function map(func, list) {
+  var first;
+  var prev;
+  while (true) {
+    if (list.$ === 'Nil') {
+      if (prev) {
+        prev.b = Nil;
+      } else {
+        first = Nil;
+      }
+      return first;
+    } else {
+      var node = Cons(func(list.a), null);
+      if (prev) {
+        prev.b = node;
+      } else {
+        first = node;
+      }
+      prev = node;
+      list = list.b;
+    }
+  }
+}
+```
