@@ -32,11 +32,8 @@ type Results = {
   benchmarks: any;
 };
 
-
-
 // Render results as markdown
 export const terminal = (report: Results): string => {
-
   let buffer: string[] = [];
 
   // List asset sizes
@@ -46,12 +43,12 @@ export const terminal = (report: Results): string => {
     report.assets[key].forEach((item: Stat) => {
       buffer.push(
         '    ' +
-        item.name.padEnd(40, ' ') +
-        '' +
-        humanizeNumber(
-          roundToDecimal(1, item.bytes / Math.pow(2, 10))
-        ).padStart(10, ' ') +
-        'kb'
+          item.name.padEnd(40, ' ') +
+          '' +
+          humanizeNumber(
+            roundToDecimal(1, item.bytes / Math.pow(2, 10))
+          ).padStart(10, ' ') +
+          'kb'
       );
     });
     buffer.push('');
@@ -90,15 +87,17 @@ export const terminal = (report: Results): string => {
             } else {
               delta = ' (' + Math.round(percentChange) + '%)';
             }
-
           }
 
-          const goodness =
-            chalk.grey('(' + Math.round(item.status.goodnessOfFit * 100) + '%*)');
+          const goodness = chalk.grey(
+            '(' + Math.round(item.status.goodnessOfFit * 100) + '%*)'
+          );
 
           const label = '   ' + item.browser + tag + goodness;
           const datapoint =
-            chalk.yellow(humanizeNumber(item.status.runsPerSecond).padStart(10, ' ')) +
+            chalk.yellow(
+              humanizeNumber(item.status.runsPerSecond).padStart(10, ' ')
+            ) +
             ' runs/sec ' +
             delta;
           buffer.push(label.padEnd(60, ' ') + datapoint);
@@ -118,10 +117,8 @@ export const terminal = (report: Results): string => {
   return buffer.join('\n');
 };
 
-
 // Render results as markdown
 export const markdown = (report: Results): string => {
-
   let buffer: string[] = [];
 
   buffer.push('# Benchmark results');
@@ -134,12 +131,12 @@ export const markdown = (report: Results): string => {
     report.assets[key].forEach((item: Stat) => {
       buffer.push(
         '    ' +
-        item.name.padEnd(40, ' ') +
-        '' +
-        humanizeNumber(
-          roundToDecimal(1, item.bytes / Math.pow(2, 10))
-        ).padStart(10, ' ') +
-        'kb'
+          item.name.padEnd(40, ' ') +
+          '' +
+          humanizeNumber(
+            roundToDecimal(1, item.bytes / Math.pow(2, 10))
+          ).padStart(10, ' ') +
+          'kb'
       );
     });
     buffer.push('');
@@ -212,12 +209,12 @@ export const markdownTable = (report: Results): string => {
     report.assets[key].forEach((item: Stat) => {
       buffer.push(
         '    ' +
-        item.name.padEnd(40, ' ') +
-        '' +
-        humanizeNumber(
-          roundToDecimal(1, item.bytes / Math.pow(2, 10))
-        ).padStart(10, ' ') +
-        'kb'
+          item.name.padEnd(40, ' ') +
+          '' +
+          humanizeNumber(
+            roundToDecimal(1, item.bytes / Math.pow(2, 10))
+          ).padStart(10, ' ') +
+          'kb'
       );
     });
     buffer.push('');
@@ -230,25 +227,25 @@ export const markdownTable = (report: Results): string => {
     buffer.push('');
     buffer.push(
       '|' +
-      [
-        'Name'.padEnd(40, ' '),
-        'Transformtions'.padEnd(30, ' '),
-        'Browser'.padEnd(10, ' '),
-        'Ops/Second'.padEnd(14, ' '),
-        '% Change'.padEnd(8, ' '),
-      ].join('|') +
-      '|'
+        [
+          'Name'.padEnd(40, ' '),
+          'Transformtions'.padEnd(30, ' '),
+          'Browser'.padEnd(10, ' '),
+          'Ops/Second'.padEnd(14, ' '),
+          '% Change'.padEnd(8, ' '),
+        ].join('|') +
+        '|'
     );
     buffer.push(
       '|' +
-      [
-        ''.padEnd(40, '-'),
-        ''.padEnd(30, '-'),
-        ''.padEnd(10, '-'),
-        ''.padEnd(14, '-'),
-        ''.padEnd(8, '-'),
-      ].join('|') +
-      '|'
+        [
+          ''.padEnd(40, '-'),
+          ''.padEnd(30, '-'),
+          ''.padEnd(10, '-'),
+          ''.padEnd(14, '-'),
+          ''.padEnd(8, '-'),
+        ].join('|') +
+        '|'
     );
 
     for (let benchKey in report.benchmarks[project]) {
@@ -269,7 +266,6 @@ export const markdownTable = (report: Results): string => {
             let percentChange = (item.status.runsPerSecond / base) * 100;
             delta = ' (' + Math.round(percentChange) + '%)';
           }
-
 
           let tag = '';
           if (item.tag != null) {
@@ -372,32 +368,28 @@ export function reformat(results: any): any {
       }
     });
 
-
     for (const [key, value] of Object.entries(reformed[project])) {
-      reformed[project][key].sort(sortResults)
+      reformed[project][key].sort(sortResults);
     }
-
   });
   return reformed;
 }
 
 function sortResults(a, b) {
-
   if (a.browser == b.browser) {
     if (a.tag == null) {
-      return -1
+      return -1;
     } else if (b.tag == null) {
-      return 1
+      return 1;
     } else if (a.tag == 'final') {
-      return -1
+      return -1;
     } else if (b.tag == 'final') {
-      return 1
+      return 1;
     } else {
-      return (a.tag > b.tag) ? 1 : -1
+      return a.tag > b.tag ? 1 : -1;
     }
   } else {
-    return (a.browser < b.browser) ? 1 : -1
-
+    return a.browser < b.browser ? 1 : -1;
   }
 }
 
@@ -431,10 +423,10 @@ export const run = async function (
       cwd: instance.dir,
       optimize: true,
       processOpts:
-      // ignore stdout
-      {
-        stdio: ['pipe', 'ignore', 'pipe']
-      }
+        // ignore stdout
+        {
+          stdio: ['pipe', 'ignore', 'pipe'],
+        },
     });
 
     const transformed = await Transform.transform(
@@ -443,22 +435,31 @@ export const run = async function (
       path.join(instance.dir, instance.elmFile),
       options.verbose,
       options.transforms
-    )
-    fs.writeFileSync(
-      path.join(instance.dir, 'output', 'elm.opt.js'),
-      source
     );
+    fs.writeFileSync(path.join(instance.dir, 'output', 'elm.opt.js'), source);
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       transformed
     );
     if (options.minify) {
-      await Post.minify(path.join(instance.dir, 'output', 'elm.opt.js'), path.join(instance.dir, 'output', 'elm.opt.min.js'))
-      await Post.minify(path.join(instance.dir, 'output', 'elm.opt.transformed.js'), path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'))
+      await Post.minify(
+        path.join(instance.dir, 'output', 'elm.opt.js'),
+        path.join(instance.dir, 'output', 'elm.opt.min.js')
+      );
+      await Post.minify(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js')
+      );
     }
     if (options.minify && options.gzip) {
-      await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.min.js'), path.join(instance.dir, 'output', 'elm.opt.min.js.gz'))
-      await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'), path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz'))
+      await Post.gzip(
+        path.join(instance.dir, 'output', 'elm.opt.min.js'),
+        path.join(instance.dir, 'output', 'elm.opt.min.js.gz')
+      );
+      await Post.gzip(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'),
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz')
+      );
     }
 
     if (options.assetSizes) {
@@ -497,6 +498,7 @@ const emptyOpts: Transforms = {
   listLiterals: false,
   passUnwrappedFunctions: false,
   arrowFns: false,
+  shorthandObjectLiterals: false,
   objectUpdate: false,
   unusedValues: false,
 };
@@ -597,15 +599,12 @@ export const runWithBreakdown = async function (
       cwd: instance.dir,
       optimize: true,
       processOpts:
-      // ignore stdout
-      {
-        stdio: ['pipe', 'ignore', 'pipe']
-      }
+        // ignore stdout
+        {
+          stdio: ['pipe', 'ignore', 'pipe'],
+        },
     });
-    fs.writeFileSync(
-      path.join(instance.dir, 'output', 'elm.opt.js'),
-      source
-    );
+    fs.writeFileSync(path.join(instance.dir, 'output', 'elm.opt.js'), source);
 
     const final = await Transform.transform(
       instance.dir,
@@ -613,13 +612,12 @@ export const runWithBreakdown = async function (
       path.join(instance.dir, instance.elmFile),
       options.verbose,
       options.transforms
-    )
+    );
 
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       final
     );
-
 
     for (let browser of options.runBenchmark) {
       results.push(
@@ -642,14 +640,13 @@ export const runWithBreakdown = async function (
 
     let steps = breakdown(options.transforms);
     for (let i in steps) {
-
       const intermediate = await Transform.transform(
         instance.dir,
         source,
         path.join(instance.dir, instance.elmFile),
         options.verbose,
         steps[i].options
-      )
+      );
       fs.writeFileSync(
         path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
         intermediate
@@ -658,10 +655,16 @@ export const runWithBreakdown = async function (
       const dashedLabel = steps[i].name.replace(unallowedChars, '-');
 
       if (options.minify) {
-        await Post.minify(path.join(instance.dir, 'output', 'elm.opt.transformed.js'), path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js`))
+        await Post.minify(
+          path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+          path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js`)
+        );
       }
       if (options.minify && options.gzip) {
-        await Post.gzip(path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js`), path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js.gz`))
+        await Post.gzip(
+          path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js`),
+          path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js.gz`)
+        );
       }
 
       for (let browser of options.runBenchmark) {
@@ -676,30 +679,38 @@ export const runWithBreakdown = async function (
       }
     }
 
-
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       final
     );
 
     if (options.minify) {
-      await Post.minify(path.join(instance.dir, 'output', 'elm.opt.js'), path.join(instance.dir, 'output', 'elm.opt.min.js'))
-      await Post.minify(path.join(instance.dir, 'output', 'elm.opt.transformed.js'), path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'))
+      await Post.minify(
+        path.join(instance.dir, 'output', 'elm.opt.js'),
+        path.join(instance.dir, 'output', 'elm.opt.min.js')
+      );
+      await Post.minify(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js')
+      );
     }
     if (options.minify && options.gzip) {
-      await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.min.js'), path.join(instance.dir, 'output', 'elm.opt.min.js.gz'))
-      await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'), path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz'))
+      await Post.gzip(
+        path.join(instance.dir, 'output', 'elm.opt.min.js'),
+        path.join(instance.dir, 'output', 'elm.opt.min.js.gz')
+      );
+      await Post.gzip(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'),
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz')
+      );
     }
     if (options.assetSizes) {
       assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
     }
-
-
   }
 
   return { assets: assets, benchmarks: reformat(results) };
 };
-
 
 const unallowedChars = /[^A-Za-z0-9]/g;
 
@@ -719,16 +730,13 @@ export const runWithKnockout = async function (
       cwd: instance.dir,
       optimize: true,
       processOpts:
-      // ignore stdout
-      {
-        stdio: ['pipe', 'ignore', 'pipe']
-      }
+        // ignore stdout
+        {
+          stdio: ['pipe', 'ignore', 'pipe'],
+        },
     });
 
-    fs.writeFileSync(
-      path.join(instance.dir, 'output', 'elm.opt.js'),
-      source
-    );
+    fs.writeFileSync(path.join(instance.dir, 'output', 'elm.opt.js'), source);
 
     const final = await Transform.transform(
       instance.dir,
@@ -736,7 +744,7 @@ export const runWithKnockout = async function (
       path.join(instance.dir, instance.elmFile),
       options.verbose,
       options.transforms
-    )
+    );
 
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
@@ -770,7 +778,7 @@ export const runWithKnockout = async function (
         path.join(instance.dir, instance.elmFile),
         options.verbose,
         steps[i].options
-      )
+      );
       fs.writeFileSync(
         path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
         intermediate
@@ -779,10 +787,28 @@ export const runWithKnockout = async function (
       const dashedLabel = steps[i].name.replace(unallowedChars, '-');
 
       if (options.minify) {
-        await Post.minify(path.join(instance.dir, 'output', 'elm.opt.transformed.js'), path.join(instance.dir, 'output', `elm.opt.minus-${dashedLabel}.min.js`))
+        await Post.minify(
+          path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+          path.join(
+            instance.dir,
+            'output',
+            `elm.opt.minus-${dashedLabel}.min.js`
+          )
+        );
       }
       if (options.minify && options.gzip) {
-        await Post.gzip(path.join(instance.dir, 'output', `elm.opt.minus-${dashedLabel}.min.js`), path.join(instance.dir, 'output', `elm.opt.minus-${dashedLabel}.min.js.gz`))
+        await Post.gzip(
+          path.join(
+            instance.dir,
+            'output',
+            `elm.opt.minus-${dashedLabel}.min.js`
+          ),
+          path.join(
+            instance.dir,
+            'output',
+            `elm.opt.minus-${dashedLabel}.min.js.gz`
+          )
+        );
       }
 
       for (let browser of options.runBenchmark) {
@@ -802,22 +828,31 @@ export const runWithKnockout = async function (
       final
     );
     if (options.minify) {
-      await Post.minify(path.join(instance.dir, 'output', 'elm.opt.js'), path.join(instance.dir, 'output', 'elm.opt.min.js'))
-      await Post.minify(path.join(instance.dir, 'output', 'elm.opt.transformed.js'), path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'))
+      await Post.minify(
+        path.join(instance.dir, 'output', 'elm.opt.js'),
+        path.join(instance.dir, 'output', 'elm.opt.min.js')
+      );
+      await Post.minify(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js')
+      );
     }
     if (options.minify && options.gzip) {
-      await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.min.js'), path.join(instance.dir, 'output', 'elm.opt.min.js.gz'))
-      await Post.gzip(path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'), path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz'))
+      await Post.gzip(
+        path.join(instance.dir, 'output', 'elm.opt.min.js'),
+        path.join(instance.dir, 'output', 'elm.opt.min.js.gz')
+      );
+      await Post.gzip(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'),
+        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz')
+      );
     }
 
     assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
-
-
   }
 
   return { assets: assets, benchmarks: reformat(results) };
 };
-
 
 const knockout = function (
   options: Transforms

@@ -28,12 +28,14 @@ This does require information from the Elm code itself, which we're currently ge
 
 import ts from 'typescript';
 import { Mode, ElmVariant } from '../types';
+import { matchWrapping } from './patterns';
 
 // TODO fill a proper array
 const argNames = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
 const createVariantObjectLiteral = (
-  { name, totalTypeSlotCount, slots, index }: ElmVariant,
+  { name, totalTypeSlotCount, index }: ElmVariant,
+  slotsCount: number,
   mode: Mode
 ): ts.ObjectLiteralExpression => {
   return ts.createObjectLiteral([
@@ -45,31 +47,28 @@ const createVariantObjectLiteral = (
     ),
     // existing arguments
     ...argNames
-      .slice(0, slots.length)
-      .map(arg => ts.createPropertyAssignment(arg, ts.createIdentifier(arg))),
+      .slice(0, slotsCount)
+      .map((arg) => ts.createPropertyAssignment(arg, ts.createIdentifier(arg))),
     // fillings with nulls for the rest
     ...argNames
-      .slice(slots.length, totalTypeSlotCount)
-      .map(arg => ts.createPropertyAssignment(arg, ts.createNull())),
+      .slice(slotsCount, totalTypeSlotCount)
+      .map((arg) => ts.createPropertyAssignment(arg, ts.createNull())),
   ]);
 };
 
 const createCtorVariant = (
   replacement: ElmVariant,
+  slotsCount: number,
   mode: Mode
 ): ts.Expression => {
-  const { slots } = replacement;
-
-  const numberOfArgs = slots.length;
-
   const funcExpression = ts.createFunctionExpression(
     undefined, // modifiers
     undefined, //asteriskToken
     undefined, //name
     undefined, //typeParameters
     argNames
-      .slice(0, numberOfArgs)
-      .map(arg =>
+      .slice(0, slotsCount)
+      .map((arg) =>
         ts.createParameter(
           undefined,
           undefined,
@@ -82,14 +81,16 @@ const createCtorVariant = (
       ),
     undefined, //type
     ts.createBlock([
-      ts.createReturn(createVariantObjectLiteral(replacement, mode)),
+      ts.createReturn(
+        createVariantObjectLiteral(replacement, slotsCount, mode)
+      ),
     ])
   );
 
-  if (numberOfArgs > 1) {
+  if (slotsCount > 1) {
     // wrap it in Fn
     return ts.createCall(
-      ts.createIdentifier('F' + numberOfArgs.toString()),
+      ts.createIdentifier('F' + slotsCount.toString()),
       undefined,
       [funcExpression]
     );
@@ -98,21 +99,49 @@ const createCtorVariant = (
   return funcExpression;
 };
 
+const extractNumberOfSlots = (exp: ts.Expression): number => {
+  if (ts.isFunctionExpression(exp)) {
+    // should be just one
+    if (exp.parameters.length !== 1) {
+      throw new Error('expected a wrapped function expression');
+    }
+
+    return 1;
+  }
+
+  if (ts.isObjectLiteralExpression(exp)) {
+    return 0;
+  }
+
+  // means that we are dealing with an arity > 1
+  const match = matchWrapping(exp);
+  if (match) {
+    return match.arity;
+  }
+
+  throw new Error('unexpected expression');
+};
+
 export const createCustomTypesTransformer = (
   replacements: ElmVariant[],
   mode: Mode
-): ts.TransformerFactory<ts.SourceFile> => context => {
-  return sourceFile => {
+): ts.TransformerFactory<ts.SourceFile> => (context) => {
+  return (sourceFile) => {
     const visitor = (node: ts.Node): ts.Node => {
-      if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+      if (
+        ts.isVariableDeclaration(node) &&
+        ts.isIdentifier(node.name) &&
+        node.initializer
+      ) {
         for (const replacement of replacements) {
           if (node.name.text === replacement.jsName) {
-            if (replacement.slots.length === 0) {
+            const slotsCount = extractNumberOfSlots(node.initializer);
+            if (slotsCount === 0) {
               return ts.updateVariableDeclaration(
                 node,
                 node.name,
                 node.type,
-                createVariantObjectLiteral(replacement, mode)
+                createVariantObjectLiteral(replacement, slotsCount, mode)
               );
             }
 
@@ -120,7 +149,7 @@ export const createCustomTypesTransformer = (
               node,
               node.name,
               node.type,
-              createCtorVariant(replacement, mode)
+              createCtorVariant(replacement, slotsCount, mode)
             );
           }
         }

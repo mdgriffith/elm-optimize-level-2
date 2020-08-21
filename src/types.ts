@@ -31,6 +31,7 @@ export type Transforms = {
   passUnwrappedFunctions: boolean;
   listLiterals: InlineLists | false;
   arrowFns: boolean;
+  shorthandObjectLiterals: boolean;
   objectUpdate: ObjectUpdate | false;
   unusedValues: boolean;
 };
@@ -70,6 +71,7 @@ export const toolDefaults: Transforms = {
   listLiterals: false,
   passUnwrappedFunctions: true,
   arrowFns: false,
+  shorthandObjectLiterals: false,
   objectUpdate: false,
   unusedValues: false,
 };
