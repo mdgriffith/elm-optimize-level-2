@@ -2,7 +2,6 @@
 
 ## Elm Core asset overview
 
-    .keep                                            0kb
     elm.opt.js                                   166.5kb
     elm.opt.min.js                                33.1kb
     elm.opt.min.js.gz                             11.2kb
@@ -12,7 +11,6 @@
 
 ## Elm CSS asset overview
 
-    .keep                                            0kb
     elm.opt.js                                   218.4kb
     elm.opt.min.js                                43.8kb
     elm.opt.min.js.gz                             14.3kb
@@ -54,9 +52,6 @@
     elm.opt.js                                   338.1kb
     elm.opt.min.js                                69.7kb
     elm.opt.min.js.gz                             22.3kb
-    elm.opt.prepack.js                           387.6kb
-    elm.opt.prepack.min.js                        78.2kb
-    elm.opt.prepack.min.js.gz                     27.3kb
     elm.opt.transformed.js                       438.7kb
     elm.opt.transformed.min.js                    66.9kb
     elm.opt.transformed.min.js.gz                 22.1kb
