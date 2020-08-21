@@ -46,8 +46,8 @@ export const extractAstFromCode = (sourceText: string): ts.Node => {
 
 const createReplaceUtilsUpdateWithObjectSpread = (
   kind: ObjectUpdate
-): ts.TransformerFactory<ts.SourceFile> => context => {
-  return sourceFile => {
+): ts.TransformerFactory<ts.SourceFile> => (context) => {
+  return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // detects function f(..){..}
       if (
@@ -72,8 +72,10 @@ const createReplaceUtilsUpdateWithObjectSpread = (
 };
 const OBJECT_UPDATE = '_Utils_update';
 
-const inlineObjectAssign = (): ts.TransformerFactory<ts.SourceFile> => context => {
-  return sourceFile => {
+const inlineObjectAssign = (): ts.TransformerFactory<ts.SourceFile> => (
+  context
+) => {
+  return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // detects function f(..){..}
       if (ts.isCallExpression(node)) {
@@ -95,8 +97,10 @@ const inlineObjectAssign = (): ts.TransformerFactory<ts.SourceFile> => context =
   };
 };
 
-const inlineObjectSpread = (): ts.TransformerFactory<ts.SourceFile> => context => {
-  return sourceFile => {
+const inlineObjectSpread = (): ts.TransformerFactory<ts.SourceFile> => (
+  context
+) => {
+  return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // detects function f(..){..}
       if (ts.isCallExpression(node)) {
@@ -105,7 +109,7 @@ const inlineObjectSpread = (): ts.TransformerFactory<ts.SourceFile> => context =
           node.expression.text === OBJECT_UPDATE
         ) {
           let props: any[] = [];
-          node.arguments[1].forEachChild(child => {
+          node.arguments[1].forEachChild((child) => {
             if (ts.isPropertyAssignment(child)) {
               props.push(
                 ts.createPropertyAssignment(child.name, child.initializer)
@@ -125,8 +129,10 @@ const inlineObjectSpread = (): ts.TransformerFactory<ts.SourceFile> => context =
   };
 };
 
-export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.SourceFile> = context => {
-  return sourceFile => {
+export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.SourceFile> = (
+  context
+) => {
+  return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       //   console.log(
       //     `Visiting: ${ts.SyntaxKind[node.kind]} with name ${
@@ -195,5 +201,67 @@ export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.So
     };
 
     return ts.visitNode(sourceFile, visitor);
+  };
+};
+
+export const convertToObjectShorthandLiterals: ts.TransformerFactory<ts.SourceFile> = (
+  context
+) => {
+  return (sourceFile) => {
+    let shortenedCount = 0;
+
+    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      if (ts.isObjectLiteralExpression(node)) {
+        let hasAnyTransforms = false;
+        const props: ts.ObjectLiteralElementLike[] = [];
+        for (const prop of node.properties) {
+          if (ts.isPropertyAssignment(prop)) {
+            if (
+              ts.isIdentifier(prop.name) &&
+              ts.isIdentifier(prop.initializer) &&
+              prop.name.text === prop.initializer.text
+            ) {
+              // bingo
+              props.push(ts.createShorthandPropertyAssignment(prop.name.text));
+              shortenedCount += 1;
+              hasAnyTransforms = true;
+            } else {
+              const visitedAssignment = ts.visitNode(prop.initializer, visitor);
+              if (visitedAssignment === prop.initializer) {
+                // found nothing in initializer
+                props.push(prop);
+              } else {
+                // initializer has some transforms too
+                hasAnyTransforms = true;
+                props.push(
+                  ts.updatePropertyAssignment(
+                    prop,
+                    prop.name,
+                    visitedAssignment
+                  )
+                );
+              }
+            }
+          } else {
+            props.push(prop);
+          }
+        }
+
+        if (hasAnyTransforms) {
+          return ts.updateObjectLiteral(node, props);
+        }
+      }
+
+      return ts.visitEachChild(node, visitor, context);
+    };
+
+    const res = ts.visitNode(sourceFile, visitor);
+
+    console.log(
+      'convertToObjectsShorthand -> shortened assignments:',
+      shortenedCount
+    );
+
+    return res;
   };
 };
