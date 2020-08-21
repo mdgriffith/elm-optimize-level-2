@@ -24,6 +24,7 @@ const defaultOptions: Transforms = {
   listLiterals: false,
   passUnwrappedFunctions: false,
   arrowFns: false,
+  shorthandObjectLiterals: false,
   objectUpdate: ObjectUpdate.InlineSpread,
   unusedValues: false,
 };

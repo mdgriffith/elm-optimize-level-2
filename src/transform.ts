@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { parseElm, parseDir, primitives } from './parseElm';
+import { parseElm, primitives } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './transforms/variantShapes';
 import { Mode, Transforms, InlineLists } from './types';
@@ -16,6 +16,7 @@ import { inlineEquality } from './transforms/inlineEquality';
 import {
   objectUpdate,
   convertFunctionExpressionsToArrowFuncs,
+  convertToObjectShorthandLiterals,
 } from './transforms/modernizeJS';
 import { createRemoveUnusedLocalsTransform } from './transforms/removeUnusedLocals';
 import { createPassUnwrappedFunctionsTransformer } from './transforms/passUnwrappedFunctions';
@@ -96,6 +97,7 @@ export const transform = async (
       transforms.objectUpdate && objectUpdate(transforms.objectUpdate),
     ],
     [transforms.arrowFns, convertFunctionExpressionsToArrowFuncs],
+    [transforms.shorthandObjectLiterals, convertToObjectShorthandLiterals],
     [transforms.unusedValues, createRemoveUnusedLocalsTransform()],
   ]);
 
