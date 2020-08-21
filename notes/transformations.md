@@ -447,3 +447,15 @@ function map(func, list) {
   }
 }
 ```
+
+# Skip Allocating Tuples in Case Statements
+
+It's pretty common to put things in a tuple(or threeple) to start a case statement.
+
+```elm
+    case (a, b) of
+       (ThingOne, ThingTwo) ->
+          --...
+```
+
+We could skip allocating the tuple though.
