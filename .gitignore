@@ -5,3 +5,7 @@ node_modules
 
 elm-stuff
 index.html
+
+# Ignore generated files
+testcases/**/output/*.js
+testcases/**/output/*.gz
