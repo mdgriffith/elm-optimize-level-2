@@ -1,7 +1,12 @@
-mkdir testcases/elm-ui-2
-mkdir testcases/elm-ui-2/output
-cp testcases/bench/standard.html testcases/elm-ui-2/standard.html
-cp testcases/bench/transformed.html testcases/elm-ui-2/transformed.html
-cp testcases/bench/elm.json testcases/elm-ui-2/elm.json
+repo="https://github.com/mdgriffith/elm-ui"
+branch="master"
+name="elm-ui-2"
 
-git submodule add --branch 2.0 https://github.com/mdgriffith/elm-ui testcases/elm-ui-2/repo
+mkdir testcases/$name
+mkdir testcases/$name/output
+touch testcases/$name/output/.keep
+cp testcases/elm-markdown/standard.html testcases/$name/standard.html
+cp testcases/elm-markdown/transformed.html testcases/$name/transformed.html
+cp testcases/elm-markdown/elm.json testcases/$name/elm.json
+
+git submodule add --branch$branch $repo testcases/$name/repo
