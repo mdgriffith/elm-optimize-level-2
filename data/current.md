@@ -10,4 +10,4 @@ Namely that
 
 We track both benchmark performance and minified+gzipped asset size.
 
-[Here are the general results](data/results.current.md)!
+[Here are the general results](results.current.md)!
