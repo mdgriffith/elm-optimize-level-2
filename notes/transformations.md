@@ -250,13 +250,19 @@ with
 Object.assign({}, old, newFields)
 ```
 
+Or we can use the spread operator inline:
+
+```
+{...old, ...new}
+```
+
 ## Result Summary
 
 - Not included in elm-optimize tool
 - Again, all of these tricks rely on either the spread operator or `Object.assign`, both of which are not supported in IE.
-- The most promising approach was inlining the call completely with `Object.assign`.
-  - Gave a `366%` boost in chrome!
-  - And caused firefox to reduce performance by 50% :sweat_smile:
+- The most promising approach was inlining the call completely with `{...old, field: newValue}`.
+  - Gave a `501%` boost in chrome!
+  - And caused safari to reduce performance by 50% :sweat_smile:
 
 Simply creating a new record and copying each field manually is significantly faster than and of these transformations.(~9x in chrome, and ~6.5x in firefox). You can do this directly in elm.
 
