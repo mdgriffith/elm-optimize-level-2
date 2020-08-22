@@ -2,7 +2,7 @@
 import program from 'commander';
 import * as path from 'path';
 import * as Transform from './transform';
-import { Transforms, toolDefaults } from './types';
+import { toolDefaults } from './types';
 import { compileToStringSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 const { version } = require('../package.json');
@@ -10,7 +10,11 @@ const { version } = require('../package.json');
 program
   .version(version)
   .usage('[options] <src/Main.elm>')
-  .option('--output', 'The name of the javascript file to create.', 'elm.js')
+  .option(
+    '--output <output>',
+    'The name of the javascript file to create.',
+    'elm.js'
+  )
   .parse(process.argv);
 
 async function run(inputFilePath: string | undefined) {
@@ -37,27 +41,32 @@ async function run(inputFilePath: string | undefined) {
       processOpts:
         // ignore stdout
         {
-          stdio: ['pipe', 'ignore', 'pipe'],
+          stdio: ['inherit', 'ignore', 'inherit'],
         },
     });
+    if (jsSource != '') {
+      console.log('Compiled, optimizing JS...');
+    }
   } else {
     console.error('Please provide a path to an Elm file.');
     program.outputHelp();
     return;
   }
-  const transformed = await Transform.transform(
-    dirname,
-    jsSource,
-    elmFilePath,
-    false,
-    toolDefaults
-  );
-  fs.writeFileSync(program.output, transformed);
-  const fileName = path.basename(inputFilePath);
-  console.log('Success!');
-  console.log('');
-  console.log(`   ${fileName} ---> ${program.output}`);
-  console.log('');
+  if (jsSource != '') {
+    const transformed = await Transform.transform(
+      dirname,
+      jsSource,
+      elmFilePath,
+      false,
+      toolDefaults
+    );
+    fs.writeFileSync(program.output, transformed);
+    const fileName = path.basename(inputFilePath);
+    console.log('Success!');
+    console.log('');
+    console.log(`   ${fileName} ---> ${program.output}`);
+    console.log('');
+  }
 }
 
 run(program.args[0]).catch((e) => console.error(e));
