@@ -1,5 +1,4 @@
-import * as fs from 'fs';
-import { parseElm, primitives } from './parseElm';
+import { primitives } from './parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './transforms/variantShapes';
 import { Mode, Transforms, InlineLists } from './types';
@@ -31,7 +30,7 @@ export type Options = {
 };
 
 export const transform = async (
-  dir: string,
+  _dir: string,
   jsSource: string,
   elmfile: string | undefined,
   verbose: boolean,
