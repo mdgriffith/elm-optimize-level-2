@@ -24,6 +24,7 @@ async function run(inputFilePath: string | undefined) {
 
   if (inputFilePath && inputFilePath.endsWith('.js')) {
     jsSource = fs.readFileSync(inputFilePath, 'utf8');
+    console.log('Optimizing existing JS...');
   } else if (inputFilePath && inputFilePath.endsWith('.elm')) {
     elmFilePath = inputFilePath;
     jsSource = compileToStringSync([inputFilePath], {
