@@ -1,21 +1,27 @@
 {
+  "name": "elm-optimize-more",
+  "description": "An optimizer specifically for the Javascript that the Elm Compiler produces.",
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
     "src"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mdgriffith/elm-optimize-more.git"
+  },
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "bin": {
     "elm-optimize-more": "./dist/index.js"
   },
   "scripts": {
-    "prepublish": "tsc -p tsconfig.json",
-    "run": "ts-node -T src/index.ts testcases/bench/Main.elm --modernize",
+    "prepare": "tsc -p tsconfig.json",
+    "run": "ts-node -T src/index.ts testcases/core/Main.elm",
     "report": "ts-node -T src/benchmark/run.ts"
   },
   "peerDependencies": {},
@@ -28,7 +34,6 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "lib",
   "author": "",
   "module": "dist/lib.esm.js",
   "devDependencies": {
