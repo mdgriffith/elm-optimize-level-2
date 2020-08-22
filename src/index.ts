@@ -18,14 +18,6 @@ program
   .parse(process.argv);
 
 async function run(inputFilePath: string | undefined) {
-  if (
-    (!inputFilePath || !inputFilePath.endsWith('.elm')) &&
-    !program.transformExistingJs
-  ) {
-    console.error('Please provide a path to an Elm file.');
-    program.outputHelp();
-    return;
-  }
   const dirname = process.cwd();
   let jsSource: string = '';
   let elmFilePath = undefined;
