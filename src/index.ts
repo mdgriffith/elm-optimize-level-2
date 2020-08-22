@@ -53,6 +53,13 @@ async function run(inputFilePath: string | undefined) {
       false,
       toolDefaults
     );
+
+    // Make sure all the folders up to the output file exist, if not create them.
+    // This mirrors elm make behavior.
+    const outputDirectory = path.dirname(program.output);
+    if (!fs.existsSync(outputDirectory)) {
+      fs.mkdirSync(outputDirectory, { recursive: true });
+    }
     fs.writeFileSync(program.output, transformed);
     const fileName = path.basename(inputFilePath);
     console.log('Success!');
