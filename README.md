@@ -2,9 +2,9 @@
 
 **NOT FOR SHARING YET** - _Please wait for the announcement before sharing widely, it should be coming soon_ :)
 
-**Note, Experimental** - _This project is just starting. While we currently believe every adjustment to the resulting javascript should be safe and make things explicitly faster, it's hard to be 100% certain until we have a large number of projects using it successfully. So, beware!_
+**Beware, Experimental** - _This project is just starting and does have the power to break your Elm code in very un-Elm ways! While we currently believe every adjustment to the resulting javascript should be safe and make things explicitly faster, some of this code is subtle and it's hard to be 100% certain until we have a large number of projects using it successfully._
 
-_And let us know how it goes by leaving [a comment in this issue](https://github.com/mdgriffith/elm-optimize-more/issues/15)._ :smiley:
+_If you want to help out, try it out, **run your test suite** and let us know how it goes by leaving [a comment in this issue](https://github.com/mdgriffith/elm-optimize-more/issues/15)!_ :smiley:
 
 Elm is fast.
 
