@@ -64,7 +64,7 @@ async function run(inputFilePath: string | undefined) {
     const fileName = path.basename(inputFilePath);
     console.log('Success!');
     console.log('');
-    console.log(`   ${fileName} ---> ${program.output}`);
+    console.log(`   ${fileName} ───> ${program.output}`);
     console.log('');
   }
 }
