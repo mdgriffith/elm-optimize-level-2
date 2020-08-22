@@ -1,57 +1,15 @@
+/*
+ */
+
 import Parser from 'tree-sitter';
 import Elm from 'tree-sitter-elm';
-import { ElmVariant } from './types';
+import { ElmVariant } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
 
 // Parse the elm file using tree sitter
 const elmParser = new Parser();
 elmParser.setLanguage(Elm);
-
-// List variants
-
-const nil: ElmVariant = {
-  typeName: 'List',
-  name: 'Nil',
-  jsName: '_List_Nil',
-  index: 0,
-  slots: [],
-  totalTypeSlotCount: 2,
-};
-
-const cons: ElmVariant = {
-  typeName: 'List',
-  name: 'Cons',
-  jsName: '_List_Nil',
-  index: 1,
-  slots: ['a'],
-  totalTypeSlotCount: 2,
-};
-
-const listVariants = [nil, cons];
-
-// Maybe variants
-
-const nothing: ElmVariant = {
-  typeName: 'Maybe',
-  name: 'Nothing',
-  jsName: '$elm$core$Maybe$Nothing',
-  index: 1,
-  slots: [],
-  totalTypeSlotCount: 1,
-};
-
-const just: ElmVariant = {
-  typeName: 'Maybe',
-  name: 'Just',
-  jsName: '$elm$core$Maybe$Just',
-  index: 0,
-  slots: ['a'],
-  totalTypeSlotCount: 1,
-};
-const maybe = [nothing, just];
-
-export const primitives = listVariants.concat(maybe);
 
 export const parseElm = ({
   author,
@@ -194,10 +152,10 @@ export const parseDir = (dir: string): ElmVariant[] => {
   let variants: ElmVariant[] = [];
   const files = fs.readdirSync(dir);
 
-  files.forEach(function(author) {
+  files.forEach(function (author) {
     if (fs.statSync(dir + '/' + author).isDirectory()) {
       const projs = fs.readdirSync(path.join(dir, author));
-      projs.forEach(function(project) {
+      projs.forEach(function (project) {
         if (fs.statSync(path.join(dir, author, project)).isDirectory()) {
           const vars = parseElmFilesInDirectory(
             path.join(dir, author, project),
@@ -238,10 +196,10 @@ const parseElmFilesInDirectory = (
   return variants;
 };
 
-var walkSync = function(dir: string, filelist: string[]) {
+var walkSync = function (dir: string, filelist: string[]) {
   var files = fs.readdirSync(dir);
   filelist = filelist || [];
-  files.forEach(function(file: string) {
+  files.forEach(function (file: string) {
     if (fs.statSync(path.join(dir, file)).isDirectory()) {
       filelist = walkSync(path.join(dir, file), filelist);
     } else {

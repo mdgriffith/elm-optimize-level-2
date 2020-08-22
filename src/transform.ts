@@ -1,4 +1,5 @@
-import { primitives } from './parseElm';
+import { primitives } from './parsing/primitives';
+// import { parseElm } from './parsing/parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './transforms/variantShapes';
 import { Mode, Transforms, InlineLists } from './types';
