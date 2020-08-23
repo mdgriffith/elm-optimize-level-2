@@ -95,14 +95,19 @@ function reportInlineTransformResult(ctx: InlineContext) {
 }
 
 export const createFunctionInlineTransformer = (
-  logOverview: boolean
+  logOverview: boolean,
+  ignoreTopLevel?: 'for tests'
 ): ts.TransformerFactory<ts.SourceFile> => (context) => {
   return (sourceFile) => {
     const inlineContext: InlineContext = createInlineContext();
 
     // todo hack to only inline top level functions
     // const { topScope } = matchElmSource(sourceFile)!;
-    const splitter = createSplitterVisitor(inlineContext, context);
+    const splitter = createSplitterVisitor(
+      inlineContext,
+      context,
+      ignoreTopLevel === 'for tests'
+    );
     const splittedNode = ts.visitNode(sourceFile, splitter);
 
     const inliner = createInlinerVisitor(inlineContext, context);
@@ -131,7 +136,8 @@ const isTopLevelScope = (path: ts.Node[]) => {
 
 const createSplitterVisitor = (
   { splits, partialApplications, functionsThatWrapFunctions }: InlineContext,
-  context: ts.TransformationContext
+  context: ts.TransformationContext,
+  ignoreTopLevel: boolean
 ) => {
   const visitor = (path: ts.Node[]) => (
     node: ts.Node
@@ -142,7 +148,7 @@ const createSplitterVisitor = (
       // todo this is basically a hack to only be able to inline top level functions
       ts.isIdentifier(node.name) &&
       node.initializer &&
-      isTopLevelScope(path)
+      (ignoreTopLevel || isTopLevelScope(path))
     ) {
       // detects an alias to existing split
       if (ts.isIdentifier(node.initializer)) {
@@ -201,15 +207,12 @@ const createSplitterVisitor = (
                 if (maybeWrapper) {
                   functionsThatWrapFunctions.set(node.name.text, maybeWrapper);
                 }
-              }
-
-              // it can be either a function expression:
-              // "var a = F123( function (a) {return a})"
-              // "var a = F123( a => a)"
-              // something like
-              // var a = F2(Math.pow)
-              if (true) {
-                // TODO typecheck?
+              } else {
+                // it can be either a function expression:
+                // "var a = F123( function (a) {return a})"
+                // "var a = F123( a => a)"
+                // something like
+                // var a = F2(Math.pow)
                 const rawLambdaName = deriveRawLambdaName(originalName);
 
                 splits.set(originalName, {

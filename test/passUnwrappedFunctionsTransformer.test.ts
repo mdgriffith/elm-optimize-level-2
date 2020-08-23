@@ -132,6 +132,41 @@ test('it properly replaces names in recursion and all uses of the passed functio
   expect(actual).toBe(expected);
 });
 
+test('it bails out if there is a call with different arity', () => {
+  const initialCodeWithA = `
+    var f = function(func, a, b) {
+        A3(func, a, b, 1);
+        A2(func, a, b);
+    };
+
+    f(F3(function (a,b,c) {return a + b + c;}), 1, 2);
+    `;
+
+  const initialCodeWithDirectCall = `
+    var f = function(func, a, b) {
+      A3(func, a, b, func(a));
+    };
+    
+    f(F3(function (a,b,c) {return a + b + c;}), 1, 2);
+  `;
+
+  const resA = transformCode(
+    initialCodeWithA,
+    initialCodeWithA,
+    createPassUnwrappedFunctionsTransformer(() => undefined)
+  );
+
+  expect(resA.actual).toBe(resA.expected);
+
+  const resDirectCall = transformCode(
+    initialCodeWithDirectCall,
+    initialCodeWithDirectCall,
+    createPassUnwrappedFunctionsTransformer(() => undefined)
+  );
+
+  expect(resDirectCall.actual).toBe(resDirectCall.expected);
+});
+
 // commented out for now
 test('it can pass raw functions if there is one registered', () => {
   const initialCode = `
