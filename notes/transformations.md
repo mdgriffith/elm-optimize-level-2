@@ -16,7 +16,7 @@ This is so that functions can be partially applied, meaning you can apply a few 
 
 The most significant speedups we've seen is in finding places where we can skip the wrapper and call the actual function directly. This happens when you call a function with exactly the number of arguments it needs.
 
-In order to do this, we need to adjust function declarations so that the original function can be called either in the standrd 'wrapped' way, or directly.
+In order to do this, we need to adjust function declarations so that the original function can be called either in the standard 'wrapped' way, or directly.
 
 before
 
@@ -35,7 +35,7 @@ var MyFunction_fn = function (tag, value) {
   MyFunction = F2(MyFunction_fn);
 ```
 
-Then, if this function is called with `A2, we can unwrap the wrapper and call the function directly.
+Then, if this function is called with `A2`, we can unwrap the wrapper and call the function directly.
 
 before
 
@@ -167,22 +167,22 @@ with `InlineMode.UsingLiteralObjects`
 ({ $: 1, a: 'a', b: { $: 1, a: 'b', b: { $: 1, a: 'c', b: _List_Nil } } });
 ```
 
-_Note_ - Elm actually had this originally(the literal objects verion)! But there's an issue in Chrome with more than 1000 elements.
+_Note_ - Elm actually had this originally (the literal objects version)! But there's an issue in Chrome with more than 1000 elements.
 
 There's also tradeoff between asset size and speed.
 
-Also of note, becaue `_List_fromArray` is used for lists of _anything_, that it's likely being deoptimized by the javascript compiler.
+Also of note, because `_List_fromArray` is used for lists of _anything_, that it's likely being deoptimized by the JavaScript compiler.
 
-There may be a nice trade off here of using `InlineMode.UsingConsFunc`, but only inlining at most 20 elements or something, and then using `List_fromArray` after that.
+There may be a nice trade-off here of using `InlineMode.UsingConsFunc`, but only inlining at most 20 elements or something, and then using `List_fromArray` after that.
 
 ## Results Summary
 
 - Not included in the elm-optimize-more tool because it was hard to find a benchmark that reported numbers to justify it.
-- Though maybe we just need to be better at benchmarking it
+- Though maybe we just need to be better at benchmarking it.
 
 # Object Update
 
-When updating a record in elm via `{ record | field = new }`, elm runs the following function:
+When updating a record in Elm via `{ record | field = new }`, Elm runs the following function:
 
 ```javascript
 function _Utils_update(oldRecord, updatedFields) {
@@ -264,7 +264,7 @@ Or we can use the spread operator inline:
   - Gave a `501%` boost in chrome!
   - And caused safari to reduce performance by 50% :sweat_smile:
 
-Simply creating a new record and copying each field manually is significantly faster than and of these transformations.(~9x in chrome, and ~6.5x in firefox). You can do this directly in elm.
+Simply creating a new record and copying each field manually is significantly faster than any of these transformations (~9x in chrome, and ~6.5x in firefox). You can do this directly in Elm.
 
 ```
 updateSingleRecordManually record =
@@ -386,7 +386,7 @@ Because of our previous optimizations where we can call a function directly, thi
 
 Whew, what a name!
 
-In Elm, if you have a recursive function that calls itself at the top level, then it will be compiled into while loop. Here's an example:
+In Elm, if you have a recursive function that calls itself at the top level, then it will be compiled into a while loop. Here's an example:
 
 ```elm
 sum : Int -> List Int ->  Int
@@ -450,7 +450,7 @@ function map(func, list) {
 
 # Skip Allocating Tuples in Case Statements
 
-It's pretty common to put things in a tuple(or threeple) to start a case statement.
+It's pretty common to put things in a tuple (or threeple) to start a case statement.
 
 ```elm
     case (a, b) of
