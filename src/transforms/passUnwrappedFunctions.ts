@@ -68,11 +68,10 @@ export const createPassUnwrappedFunctionsTransformer = (
             // 1. it is a different argument, we don't yet unwrap for two
             // 2. arity of the call doesn't match
 
-            if (existing.parameterPos !== parameterPos) {
-              foundFunctions.set(funcName, 'bail_out');
-            }
-
-            if (existing.arity !== arity) {
+            if (
+              existing.parameterPos !== parameterPos ||
+              existing.arity !== arity
+            ) {
               foundFunctions.set(funcName, 'bail_out');
             }
           }
