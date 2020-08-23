@@ -20,6 +20,7 @@
     "elm-optimize-more": "./dist/index.js"
   },
   "scripts": {
+    "test": "jest",
     "prepare": "tsc -p tsconfig.json",
     "run": "ts-node -T src/index.ts testcases/core/Main.elm",
     "report": "ts-node -T src/benchmark/run.ts"
@@ -37,9 +38,11 @@
   "author": "",
   "module": "dist/lib.esm.js",
   "devDependencies": {
+    "jest-watch-typeahead": "^0.6.0",
     "@gfx/zopfli": "^1.0.15",
     "@types/commander": "^2.12.2",
     "chalk": "^4.1.0",
+    "jest": "26.4.2",
     "chromedriver": "^84.0.1",
     "geckodriver": "^1.20.0",
     "husky": "^4.2.5",
@@ -56,6 +59,7 @@
     "commander": "^6.0.0",
     "tree-sitter": "^0.16.1",
     "tree-sitter-elm": "^2.7.9",
+    "ts-jest": "^26.2.0",
     "ts-union": "^2.2.1"
   }
 }

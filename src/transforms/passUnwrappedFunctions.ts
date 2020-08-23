@@ -18,10 +18,10 @@ type WrappedUsage = {
 
 export const createPassUnwrappedFunctionsTransformer = (
   getCtx: () => InlineContext | undefined
-): ts.TransformerFactory<ts.SourceFile> => context => {
+): ts.TransformerFactory<ts.SourceFile> => (context) => {
   getCtx;
-  return sourceFile => {
-    const foundFunctions: WrappedUsage[] = [];
+  return (sourceFile) => {
+    const foundFunctions = new Map<string, WrappedUsage | 'bail_out'>();
     const [program, copiedSource] = createProgramFromSource(sourceFile);
     const typeChecker = program.getTypeChecker();
 
@@ -46,19 +46,35 @@ export const createPassUnwrappedFunctionsTransformer = (
           const funcDeclaration = declaration.parent.parent;
           const func = declaration.parent;
           const parameterPos = func.parameters.findIndex(
-            p => p === declaration
+            (p) => p === declaration
           );
           const funcName = declaration.parent.parent.name.text;
 
-          foundFunctions.push({
-            arity,
-            callExpression,
-            funcDeclaration: funcDeclaration,
-            funcExpression: func,
-            parameterPos,
-            funcName,
-            parameterName: declaration.name.text,
-          });
+          const existing = foundFunctions.get(funcName);
+
+          if (!existing) {
+            foundFunctions.set(funcName, {
+              arity,
+              callExpression,
+              funcDeclaration: funcDeclaration,
+              funcExpression: func,
+              parameterPos,
+              funcName,
+              parameterName: declaration.name.text,
+            });
+          } else if (existing !== 'bail_out') {
+            // it means that we already registered this function
+            // we will need to bail out if:
+            // 1. it is a different argument, we don't yet unwrap for two
+            // 2. arity of the call doesn't match
+
+            if (
+              existing.parameterPos !== parameterPos ||
+              existing.arity !== arity
+            ) {
+              foundFunctions.set(funcName, 'bail_out');
+            }
+          }
         }
       }
 
@@ -68,17 +84,19 @@ export const createPassUnwrappedFunctionsTransformer = (
     const addFunctionsWithoutUnwrapping = (
       node: ts.Node
     ): ts.VisitResult<ts.Node> => {
-      if (ts.isVariableDeclaration(node)) {
-        // todo make it a map maybe?
-        const funcToModify = foundFunctions.find(
-          f => f.funcDeclaration == node
-        );
+      if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+        const funcToModify = foundFunctions.get(node.name.text);
 
-        if (funcToModify) {
-          const modifyFunction = (node: ts.Node): ts.VisitResult<ts.Node> => {
-            if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
-              const calledFuncIdentifier = node.expression;
-              const match = matchWrappedInvocation(node);
+        if (funcToModify && funcToModify !== 'bail_out') {
+          let bailOut = false;
+          const modifyFunction = (
+            nodeInModfifyFunc: ts.Node
+          ): ts.VisitResult<ts.Node> => {
+            if (
+              ts.isCallExpression(nodeInModfifyFunc) &&
+              ts.isIdentifier(nodeInModfifyFunc.expression)
+            ) {
+              const match = matchWrappedInvocation(nodeInModfifyFunc);
               if (
                 match &&
                 match.calleeName.text === funcToModify.parameterName &&
@@ -89,8 +107,22 @@ export const createPassUnwrappedFunctionsTransformer = (
                   match.calleeName,
                   undefined,
                   // recursively transform all calls within a function
-                  match.args.map(arg => ts.visitNode(arg, modifyFunction))
+                  match.args.map((arg) => ts.visitNode(arg, modifyFunction))
                 );
+              }
+
+              const calledFuncIdentifier = nodeInModfifyFunc.expression;
+
+              // can be a curried version of callee name in the same body
+              // example: A2(func, a,b) and func(c)
+              if (
+                calledFuncIdentifier.text === funcToModify.parameterName &&
+                nodeInModfifyFunc.arguments.length === 1 &&
+                funcToModify.arity !== 1
+              ) {
+                // means that we have an invocation that is not uniform with expected arity
+                // therefore we cannot pass a raw function to it
+                bailOut = true;
               }
 
               // recursive call to itself
@@ -98,7 +130,9 @@ export const createPassUnwrappedFunctionsTransformer = (
                 return ts.createCall(
                   ts.createIdentifier(deriveNewFuncName(funcToModify.funcName)),
                   undefined,
-                  node.arguments.map(arg => ts.visitNode(arg, modifyFunction))
+                  nodeInModfifyFunc.arguments.map((arg) =>
+                    ts.visitNode(arg, modifyFunction)
+                  )
                 );
               }
 
@@ -106,29 +140,25 @@ export const createPassUnwrappedFunctionsTransformer = (
               // that is now unwrapped
               // thus check if we have an unwrapped version
               if (
-                node.arguments.some(
-                  arg =>
+                nodeInModfifyFunc.arguments.some(
+                  (arg) =>
                     ts.isIdentifier(arg) &&
                     arg.text === funcToModify.parameterName
                 )
               ) {
-                const existingUnwrappedFunc = foundFunctions.find(
-                  f => f.funcName === calledFuncIdentifier.text
+                const existingUnwrappedFunc = foundFunctions.get(
+                  calledFuncIdentifier.text
                 );
 
-                if (!existingUnwrappedFunc) {
-                  // todo we need to bail out but let's fail for now
-                  throw new Error(
-                    `${calledFuncIdentifier.text} doesn't have an unwrapped version`
-                  );
-                }
-
-                // we need to make sure that arity matches
-                if (existingUnwrappedFunc.arity !== funcToModify.arity) {
-                  // todo we need to bail out but let's fail for now
-                  throw new Error(
-                    `${calledFuncIdentifier.text} doesn't match expected arity of a passed function with expected arity of the parent function`
-                  );
+                if (
+                  // todo we need to bail out because we cannot find an unwrapped version
+                  !existingUnwrappedFunc ||
+                  existingUnwrappedFunc === 'bail_out' ||
+                  // we need to make sure that arity matches
+                  // TODO make sure that the position matches too, e.g. it is the same parameter
+                  existingUnwrappedFunc.arity !== funcToModify.arity
+                ) {
+                  bailOut = true;
                 }
 
                 return ts.createCall(
@@ -136,12 +166,18 @@ export const createPassUnwrappedFunctionsTransformer = (
                     deriveNewFuncName(calledFuncIdentifier.text)
                   ),
                   undefined,
-                  node.arguments.map(arg => ts.visitNode(arg, modifyFunction))
+                  nodeInModfifyFunc.arguments.map((arg) =>
+                    ts.visitNode(arg, modifyFunction)
+                  )
                 );
               }
             }
 
-            return ts.visitEachChild(node, modifyFunction, context);
+            return ts.visitEachChild(
+              nodeInModfifyFunc,
+              modifyFunction,
+              context
+            );
           };
 
           const newFuncExpression = ts.visitNode(
@@ -149,14 +185,18 @@ export const createPassUnwrappedFunctionsTransformer = (
             modifyFunction
           );
 
-          return [
-            node,
-            ts.createVariableDeclaration(
-              deriveNewFuncName(funcToModify.funcName),
-              undefined,
-              newFuncExpression
-            ),
-          ];
+          if (bailOut) {
+            foundFunctions.delete(funcToModify.funcName);
+          } else {
+            return [
+              node,
+              ts.createVariableDeclaration(
+                deriveNewFuncName(funcToModify.funcName),
+                undefined,
+                newFuncExpression
+              ),
+            ];
+          }
         }
       }
 
@@ -170,12 +210,11 @@ export const createPassUnwrappedFunctionsTransformer = (
         const { expression } = node;
         if (ts.isIdentifier(expression)) {
           // todo make it a map maybe?
-          const funcToUnwrap = foundFunctions.find(
-            f => f.funcName == expression.text
-          );
+          const funcToUnwrap = foundFunctions.get(expression.text);
 
           if (
             funcToUnwrap &&
+            funcToUnwrap !== 'bail_out' &&
             // actually the same symbol
             typeChecker.getSymbolAtLocation(expression) ===
               typeChecker.getSymbolAtLocation(funcToUnwrap.funcDeclaration.name)
@@ -195,7 +234,7 @@ export const createPassUnwrappedFunctionsTransformer = (
                   [
                     ...args
                       .slice(0, funcToUnwrap.parameterPos)
-                      .map(a =>
+                      .map((a) =>
                         ts.visitNode(a, replaceUsagesWithUnwrappedVersion)
                       ),
                     ts.visitNode(
@@ -204,7 +243,7 @@ export const createPassUnwrappedFunctionsTransformer = (
                     ),
                     ...args
                       .slice(argPos + 1)
-                      .map(a =>
+                      .map((a) =>
                         ts.visitNode(a, replaceUsagesWithUnwrappedVersion)
                       ),
                   ]
@@ -222,13 +261,13 @@ export const createPassUnwrappedFunctionsTransformer = (
                     [
                       ...args
                         .slice(0, funcToUnwrap.parameterPos)
-                        .map(a =>
+                        .map((a) =>
                           ts.visitNode(a, replaceUsagesWithUnwrappedVersion)
                         ),
                       ts.createIdentifier(existingSplit.rawLambdaName),
                       ...args
                         .slice(argPos + 1)
-                        .map(a =>
+                        .map((a) =>
                           ts.visitNode(a, replaceUsagesWithUnwrappedVersion)
                         ),
                     ]

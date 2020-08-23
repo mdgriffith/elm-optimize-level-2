@@ -35,7 +35,7 @@ test('it can process nested calls of A2 with non identifiers as the first arg ',
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createFunctionInlineTransformer()
+    createFunctionInlineTransformer(false, 'for tests')
   );
 
   expect(actual).toBe(expected);
@@ -73,7 +73,7 @@ test('it can process partial application inlining', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createFunctionInlineTransformer()
+    createFunctionInlineTransformer(false, 'for tests')
   );
 
   expect(actual).toBe(expected);
@@ -103,7 +103,7 @@ test('it can inline functions that were wrapped by other functions', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createFunctionInlineTransformer()
+    createFunctionInlineTransformer(false, 'for tests')
   );
 
   expect(actual).toBe(expected);
@@ -138,7 +138,7 @@ test('it can inline functions that were wrapped by other functions even if they 
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createFunctionInlineTransformer()
+    createFunctionInlineTransformer(false, 'for tests')
   );
 
   expect(actual).toBe(expected);
@@ -174,7 +174,7 @@ test('it can inline functions that were wrapped by other functions even if they 
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createFunctionInlineTransformer()
+    createFunctionInlineTransformer(false, 'for tests')
   );
 
   expect(actual).toBe(expected);
@@ -196,7 +196,7 @@ test('it can inline functions declared not via an identifier or lambda', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createFunctionInlineTransformer()
+    createFunctionInlineTransformer(false, 'for tests')
   );
 
   expect(actual).toBe(expected);
