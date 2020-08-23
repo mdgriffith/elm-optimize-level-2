@@ -74,25 +74,25 @@ Though here are a few highlights:
 
 ## Html
 
-| Name                              | Transformtions | Browser | Ops/Second | % Change |
-| --------------------------------- | -------------- | ------- | ---------- | -------- |
-| create a 4 level nested html tree |                | safari  | 34,899     |          |
-| create a 4 level nested html tree | final          | safari  | 39,631     | (114%)   |
-| create a 4 level nested html tree |                | firefox | 15,909     |          |
-| create a 4 level nested html tree | final          | firefox | 22,361     | (141%)   |
-| create a 4 level nested html tree |                | chrome  | 28,959     |          |
-| create a 4 level nested html tree | final          | chrome  | 72,753     | (251%)   |
+| Name                              | Transformations | Browser | Ops/Second | % Change |
+| --------------------------------- | --------------- | ------- | ---------- | -------- |
+| create a 4 level nested html tree |                 | safari  | 34,899     |          |
+| create a 4 level nested html tree | final           | safari  | 39,631     | (114%)   |
+| create a 4 level nested html tree |                 | firefox | 15,909     |          |
+| create a 4 level nested html tree | final           | firefox | 22,361     | (141%)   |
+| create a 4 level nested html tree |                 | chrome  | 28,959     |          |
+| create a 4 level nested html tree | final           | chrome  | 72,753     | (251%)   |
 
 ## Elm Markdown
 
-| Name                      | Transformtions | Browser | Ops/Second | % Change |
-| ------------------------- | -------------- | ------- | ---------- | -------- |
-| dillonkearns/elm-markdown |                | safari  | 2,428      |          |
-| dillonkearns/elm-markdown | final          | safari  | 3,196      | (132%)   |
-| dillonkearns/elm-markdown |                | firefox | 1,096      |          |
-| dillonkearns/elm-markdown | final          | firefox | 2,194      | (200%)   |
-| dillonkearns/elm-markdown |                | chrome  | 2,489      |          |
-| dillonkearns/elm-markdown | final          | chrome  | 3,572      | (144%)   |
+| Name                      | Transformations | Browser | Ops/Second | % Change |
+| ------------------------- | --------------- | ------- | ---------- | -------- |
+| dillonkearns/elm-markdown |                 | safari  | 2,428      |          |
+| dillonkearns/elm-markdown | final           | safari  | 3,196      | (132%)   |
+| dillonkearns/elm-markdown |                 | firefox | 1,096      |          |
+| dillonkearns/elm-markdown | final           | firefox | 2,194      | (200%)   |
+| dillonkearns/elm-markdown |                 | chrome  | 2,489      |          |
+| dillonkearns/elm-markdown | final           | chrome  | 3,572      | (144%)   |
 
 ## Running Benchmarks Locally
 
