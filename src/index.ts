@@ -5,16 +5,24 @@ import * as Transform from './transform';
 import { toolDefaults } from './types';
 import { compileToStringSync } from 'node-elm-compiler';
 import * as fs from 'fs';
+import chalk from 'chalk';
 const { version } = require('../package.json');
 
 program
   .version(version)
-  .usage('[options] <src/Main.elm>')
-  .option(
-    '--output <output>',
-    'The name of the javascript file to create.',
-    'elm.js'
+  .description(
+    `${chalk.yellow('Elm Optimize Level 2!')}
+    
+This applies a second level of optimization to the javascript that Elm creates.
+
+Make sure you're familiar with Elm's built-in optimization first: ${chalk.cyan(
+      'https://guide.elm-lang.org/optimization/asset_size.html'
+    )}
+
+Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and then I'll make some more optimizations!`
   )
+  .usage('[options] <src/Main.elm>')
+  .option('--output <output>', 'the javascript file to create.', 'elm.js')
   .parse(process.argv);
 
 async function run(inputFilePath: string | undefined) {
