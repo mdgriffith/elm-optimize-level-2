@@ -1,6 +1,6 @@
 # Overview of Transformations
 
-This is an overview of the transformations for `elm-optimize-more`.
+This is an overview of the transformations for `elm-optimize-level-2`.
 
 Not all of them made the cut, but seeing that a transformation is not as effective as initially thought is really good information.
 
@@ -51,7 +51,7 @@ MyFunction_fn(one two)
 
 ## Results Summary
 
-- Included in `elm-optimize-more` tool\*\*
+- Included in `elm-optimize-level-2` tool\*\*
 - Potentially large positive effect on speed
 - Likley small but positive effect on asset size
 
@@ -177,7 +177,7 @@ There may be a nice trade-off here of using `InlineMode.UsingConsFunc`, but only
 
 ## Results Summary
 
-- Not included in the elm-optimize-more tool because it was hard to find a benchmark that reported numbers to justify it.
+- Not included in the elm-optimize-level-2 tool because it was hard to find a benchmark that reported numbers to justify it.
 - Though maybe we just need to be better at benchmarking it.
 
 # Object Update
@@ -258,7 +258,7 @@ Or we can use the spread operator inline:
 
 ## Result Summary
 
-- Not included in elm-optimize-more tool
+- Not included in elm-optimize-level-2 tool
 - Again, all of these tricks rely on either the spread operator or `Object.assign`, both of which are not supported in IE.
 - The most promising approach was inlining the call completely with `{...old, field: newValue}`.
   - Gave a `501%` boost in chrome!
@@ -302,11 +302,11 @@ If Elm's `==` is applied to any primitive such as:
 
 Then we can inline the definition directly as JS strict equality: `===`.
 
-Right now `elm-optimize-more` will infer if something is a primitive if a literal is used.
+Right now `elm-optimize-level-2` will infer if something is a primitive if a literal is used.
 
 ## Results Summary
 
-- Included in `elm-optimize-more` tool.
+- Included in `elm-optimize-level-2` tool.
 - Looks to have the some impact on code that does a lot of equality comparisons, like parsing.
 
 The `_Utils_eq` function is very likely deoptimized because it can take _any_ two values and either do a reference check, or do structural equality, which we also know takes a while.
@@ -355,7 +355,7 @@ This is still a benefit because the minified code is what ultimately needs to be
 
 ## Results Summary
 
-- Not included in the `elm-optimize-more` tool
+- Not included in the `elm-optimize-level-2` tool
 - Comes with the caveat that the [code will not work on IE](https://caniuse.com/#feat=arrow-functions)
 
 We weren't able to pin down a benchmark where this reported a benefit in the numbers, though likely to explore this we need (1) A larger codebase, and (2)
