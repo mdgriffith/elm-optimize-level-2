@@ -1,6 +1,6 @@
 {
-  "name": "elm-optimize-more",
-  "description": "An optimizer specifically for the Javascript that the Elm Compiler produces.",
+  "name": "elm-optimize-level-2",
+  "description": "A second level of optimization for the Javascript that the Elm Compiler produces.",
   "version": "0.1.0",
   "license": "BSD-3-Clause",
   "main": "dist/index.js",
@@ -11,18 +11,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/mdgriffith/elm-optimize-more.git"
+    "url": "https://github.com/mdgriffith/elm-optimize-level-2.git"
   },
   "engines": {
     "node": ">=12"
   },
   "bin": {
-    "elm-optimize-more": "./dist/index.js"
+    "elm-optimize-level-2": "./dist/index.js"
   },
   "scripts": {
     "test": "jest",
     "prepare": "tsc -p tsconfig.json",
     "run": "ts-node -T src/index.ts testcases/core/Main.elm",
+    "help": "ts-node -T src/index.ts --help",
     "report": "ts-node -T src/benchmark/run.ts"
   },
   "peerDependencies": {},
@@ -41,7 +42,6 @@
     "jest-watch-typeahead": "^0.6.0",
     "@gfx/zopfli": "^1.0.15",
     "@types/commander": "^2.12.2",
-    "chalk": "^4.1.0",
     "jest": "26.4.2",
     "chromedriver": "^84.0.1",
     "geckodriver": "^1.20.0",
@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "commander": "^6.0.0",
+    "chalk": "^4.1.0",
     "tree-sitter": "^0.16.1",
     "tree-sitter-elm": "^2.7.9",
     "ts-jest": "^26.2.0",
