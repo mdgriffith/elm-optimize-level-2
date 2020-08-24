@@ -7,7 +7,8 @@
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "bin"
   ],
   "repository": {
     "type": "git",
@@ -17,7 +18,7 @@
     "node": ">=12"
   },
   "bin": {
-    "elm-optimize-level-2": "./dist/index.js"
+    "elm-optimize-level-2": "./bin/elm-optimize-level-2.js"
   },
   "scripts": {
     "test": "jest",
@@ -53,13 +54,13 @@
     "ts-node": "^8.10.2",
     "tslib": "^2.0.0",
     "typescript": "^3.9.7",
-    "uglify-js": "^3.10.0"
+    "uglify-js": "^3.10.0",
+    "tree-sitter": "^0.16.1",
+    "tree-sitter-elm": "^2.7.9"
   },
   "dependencies": {
     "commander": "^6.0.0",
     "chalk": "^4.1.0",
-    "tree-sitter": "^0.16.1",
-    "tree-sitter-elm": "^2.7.9",
     "ts-jest": "^26.2.0",
     "ts-union": "^2.2.1"
   }
