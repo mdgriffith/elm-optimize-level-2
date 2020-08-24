@@ -1,10 +1,10 @@
-# Elm Optimize
+# Elm Optimize, Level 2!
 
-**NOT FOR SHARING YET** - _Please wait for the announcement before sharing widely, it should be coming soon_ :)
+_New to Elm? Check out the [Elm Guide's section on optimization](https://guide.elm-lang.org/optimization/). Elm already has a lot of optimization stuff built in, [like the `--optimize` flag](https://guide.elm-lang.org/optimization/asset_size.html)! Defintiely check those out before using this project._
 
 **Beware, Experimental** - _This project is just starting and does have the power to break your Elm code in very un-Elm ways! While we currently believe every adjustment to the resulting javascript should be safe and make things explicitly faster, some of this code is subtle and it's hard to be 100% certain until we have a large number of projects using it successfully._
 
-_If you want to help out, try it out, **run your test suite** and let us know how it goes by leaving [a comment in this issue](https://github.com/mdgriffith/elm-optimize-more/issues/15)!_ :smiley:
+_If you want to help out, try it out, **run your test suite** and let us know how it goes by leaving [a comment in this issue](https://github.com/mdgriffith/elm-optimize-level-2/issues/15)!_ :smiley:
 
 Elm is fast.
 
@@ -12,7 +12,7 @@ Can we make it faster?
 
 [Turns out, yes!](#Benchmarks) :rocket:
 
-Elm Optimize is a project for exploring different optimizations that are specific to elm-generated javascript.
+Elm Optimize, Level 2 is a project for exploring different optimizations that are specific to elm-generated javascript.
 
 There are two parts to this.
 
@@ -25,13 +25,13 @@ There are two parts to this.
 ## Installation and Usage
 
 ```
-npm install -g elm-optimize-more
+npm install -g elm-optimize-level-2
 ```
 
-Then you can use `elm-optimize-more` just as you would `elm-make --optimize`.
+Then you can use `elm-optimize-level-2` just as you would `elm-make --optimize`.
 
 ```
-elm-optimize-more Main.elm
+elm-optimize-level-2 Main.elm
 ```
 
 will generate an `elm.js` file.
@@ -39,12 +39,12 @@ will generate an `elm.js` file.
 The only configurable option is what to name the generated js file.
 
 ```
-elm-optimize-more Main.elm --output app.js
+elm-optimize-level-2 Main.elm --output app.js
 ```
 
-**Note** — elm-optimize-more only generates a js file, it doesn't support generating HTML.
+**Note** — elm-optimize-level-2 only generates a js file, it doesn't support generating HTML.
 
-**Another Note** — Before deploying your app, you should also minify it and gzip it. `elm-optimize-more` does not do that for you. [Check out this doc for a recommended setup.](notes/minification.md)
+**Another Note** — Before deploying your app, you should also minify it and gzip it. `elm-optimize-level-2` does not do that for you. [Check out this doc for a recommended setup.](notes/minification.md)
 
 ## What's actually happening?
 
@@ -58,7 +58,7 @@ A few are listed there as either incomplete or not attempted. That's future work
 
 ## Benchmarks
 
-**Note** — _These results are really exciting! However, it's not totally obvious that your project will see similar gains. Performance is a tricky beast! If you do see significant speedups in your project, [leave a comment here on this issue](https://github.com/mdgriffith/elm-optimize-more/issues/15), we love to see realworld cases._
+**Note** — _These results are really exciting! However, it's not totally obvious that your project will see similar gains. Performance is a tricky beast! If you do see significant speedups in your project, [leave a comment here on this issue](https://github.com/mdgriffith/elm-optimize-level-2/issues/15), we love to see realworld cases._
 
 In an effort to quantify these transformations, we've put together a number of benchmarks, including some from exisiting Elm packages such as `dillonkearns/elm-markdown`, `w0rm/elm-obj-file`, and `mdgriffith/elm-ui`.
 
@@ -108,11 +108,11 @@ _For this project, contributions always start with communication before code!_
 
 That being said, there are a few areas that might be opportunities for contribution.
 
-1. Try `elm-optimize-more` on any current Elm project you have!
+1. Try `elm-optimize-level-2` on any current Elm project you have!
 
    We'd love to hear your results whether they be success, no effect, or caused a regression.
 
-   If your project saw an explicit improvement or performance regression, [leave a comment on this issue](https://github.com/mdgriffith/elm-optimize-more/issues/15).
+   If your project saw an explicit improvement or performance regression, [leave a comment on this issue](https://github.com/mdgriffith/elm-optimize-level-2/issues/15).
 
    For more serious issues, feel free to file a separate issue.
 
