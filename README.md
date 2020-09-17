@@ -1,6 +1,6 @@
 # Elm Optimize, Level 2!
 
-_New to Elm? Check out the [Elm Guide's section on optimization](https://guide.elm-lang.org/optimization/). Elm already has a lot of optimization stuff built in, [like the `--optimize` flag](https://guide.elm-lang.org/optimization/asset_size.html)! Defintiely check those out before using this project._
+_New to Elm? Check out the [Elm Guide's section on optimization](https://guide.elm-lang.org/optimization/). Elm already has a lot of optimization stuff built in, [like the `--optimize` flag](https://guide.elm-lang.org/optimization/asset_size.html)! Definitely check those out before using this project._
 
 **Beware, Experimental** - _This project is just starting and does have the power to break your Elm code in very un-Elm ways! While we currently believe every adjustment to the resulting javascript should be safe and make things explicitly faster, some of this code is subtle and it's hard to be 100% certain until we have a large number of projects using it successfully._
 
