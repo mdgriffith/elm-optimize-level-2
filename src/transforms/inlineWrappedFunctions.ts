@@ -55,9 +55,9 @@ export type FuncSplit = {
 const deriveRawLambdaName = (wrappedName: string): string =>
   wrappedName + '_fn';
 
-const wrapperRegex = /F(?<arity>[1-9]+[0-9]*)/;
+const wrapperRegex = /^F(?<arity>[1-9]+[0-9]*)$/;
 
-const invocationRegex = /A(?<arity>[1-9]+[0-9]*)/;
+const invocationRegex = /^A(?<arity>[1-9]+[0-9]*)$/;
 
 function reportInlinining(split: FuncSplit, { inlined }: InlineContext) {
   switch (split.type) {
