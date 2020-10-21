@@ -50,6 +50,7 @@
     "prepack": "^0.2.54",
     "selenium-webdriver": "^4.0.0-alpha.7",
     "terser": "^5.1.0",
+    "ts-jest": "^26.2.0",
     "ts-node": "^8.10.2",
     "tslib": "^2.0.0",
     "uglify-js": "^3.10.0",
@@ -60,7 +61,6 @@
     "typescript": "^3.9.7",
     "commander": "^6.0.0",
     "chalk": "^4.1.0",
-    "ts-jest": "^26.2.0",
     "ts-union": "^2.2.1",
     "node-elm-compiler": "^5.0.4"
   }
