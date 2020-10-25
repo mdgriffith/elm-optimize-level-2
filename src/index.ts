@@ -47,6 +47,8 @@ async function run(inputFilePath: string | undefined) {
     });
     if (jsSource != '') {
       console.log('Compiled, optimizing JS...');
+    } else {
+      process.exit(1)
     }
   } else {
     console.error('Please provide a path to an Elm file.');
