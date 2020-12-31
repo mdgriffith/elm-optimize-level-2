@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import {ast, create} from './utils/create';
 
 const newVDomNS4 = `_VirtualDom_nodeNS = F4(function (namespace, tag, factList, kidList) {
       for (var kids = [], descendantsCount = 0; kidList.b; kidList = kidList.b) // WHILE_CONS
@@ -19,21 +20,6 @@ const newVDomNS4 = `_VirtualDom_nodeNS = F4(function (namespace, tag, factList, 
 
 })`;
 
-const ast = (sourceText: string): ts.Node => {
-  const source = ts.createSourceFile('bla', sourceText, ts.ScriptTarget.ES2018);
-
-  return source.statements[0];
-};
-
-function create(name: string, body: ts.Node): ts.Node {
-  if (
-    ts.isExpressionStatement(body) &&
-    ts.isBinaryExpression(body.expression)
-  ) {
-    return ts.createVariableDeclaration(name, undefined, body.expression.right);
-  }
-  return body;
-}
 
 export const replaceVDomNode = (): ts.TransformerFactory<ts.SourceFile> => context => {
   return sourceFile => {

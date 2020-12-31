@@ -1,5 +1,7 @@
 import ts from 'typescript';
 import { ObjectUpdate } from '../types';
+import {ast, create} from './utils/create';
+
 
 const copyWithSpread = `
 const _Utils_update = (oldRecord, updatedFields) => {
@@ -39,10 +41,7 @@ export const objectUpdate = (
   }
 };
 
-export const extractAstFromCode = (sourceText: string): ts.Node => {
-  const source = ts.createSourceFile('bla', sourceText, ts.ScriptTarget.ES2018);
-  return source.statements[0];
-};
+
 
 const createReplaceUtilsUpdateWithObjectSpread = (
   kind: ObjectUpdate
@@ -56,11 +55,11 @@ const createReplaceUtilsUpdateWithObjectSpread = (
       ) {
         switch (kind) {
           case ObjectUpdate.UseSpreadForUpdateAndOriginalRecord:
-            return extractAstFromCode(spreadForBoth);
+            return ast(spreadForBoth);
           case ObjectUpdate.UseSpreadOnlyToMakeACopy:
-            return extractAstFromCode(copyWithSpread);
+            return ast(copyWithSpread);
           case ObjectUpdate.UseAssign:
-            return extractAstFromCode(assign);
+            return ast(assign);
         }
       }
 
