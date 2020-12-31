@@ -10,6 +10,10 @@ _These are resources that discuss specifics about what matters for Javascript pe
 
 [What's up with Monomorpism](https://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html)
 
+
+[Asking optimization status from V8](https://www.npmjs.com/package/v8-natives)
+
+
 ## Transforming JS code
 
 _Here are resources that are concerned with querying and transforming Javascript code._
@@ -29,3 +33,7 @@ _Here are resources that are concerned with querying and transforming Javascript
 ## Research
 
 [Description of VLists](https://infoscience.epfl.ch/record/52465/files/IC_TECH_REPORT_200244.pdf)
+
+
+
+
