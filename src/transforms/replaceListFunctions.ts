@@ -2,13 +2,13 @@ import ts, { isIdentifier } from 'typescript';
 import { ast } from './utils/create';
 
 const $elm$core$List$map = `
-var $elm$core$List$map = F2(function(f, xs) {
+var $elm$core$List$map = F2(function (f, xs) {
   var tmp = _List_Cons(undefined, _List_Nil);
   var end = tmp;
-  while (xs.b) {
-    end.b = _List_Cons(f(xs.a), _List_Nil);
-    xs = xs.b;
-    end = end.b;
+  for (; xs.b; xs = xs.b) {
+    var next = _List_Cons(f(xs.a), _List_Nil);
+    end.b = next;
+    end = next;
   }
   return tmp.b;
 });
@@ -18,11 +18,10 @@ const $elm$core$List$indexedMap = `
 var $elm$core$List$indexedMap = F2(function (f, xs) {
   var tmp = _List_Cons(undefined, _List_Nil);
   var end = tmp;
-  for (var i = 0; xs.b; i++) {
+  for (var i = 0; xs.b; i++, xs = xs.b) {
     var next = _List_Cons(A2(f, i, xs.a), _List_Nil);
     end.b = next;
     end = next;
-    xs = xs.b;
   }
   return tmp.b;
 });
@@ -32,13 +31,12 @@ const $elm$core$List$filter = `
 var $elm$core$List$filter = F2(function (f, xs) {
   var tmp = _List_Cons(undefined, _List_Nil);
   var end = tmp;
-  while (xs.b) {
+  for (; xs.b; xs = xs.b) {
     if (f(xs.a)) {
       var next = _List_Cons(xs.a, _List_Nil);
       end.b = next;
       end = next;
     }
-    xs = xs.b;
   }
   return tmp.b;
 });
@@ -48,16 +46,16 @@ const $elm$core$List$append = `
 var $elm$core$List$append = F2(function (xs, ys) {
   var tmp = _List_Cons(undefined, _List_Nil);
   var end = tmp;
-  while (xs.b) {
+  for (; xs.b; xs = xs.b) {
     var next = _List_Cons(xs.a, _List_Nil);
     end.b = next;
     end = next;
-    xs = xs.b;
   }
   end.b = ys;
 
   return tmp.b;
-});`;
+});
+`;
 
 const $elm$core$List$concat = `
 var $elm$core$List$concat = function (lists) {
@@ -68,17 +66,17 @@ var $elm$core$List$concat = function (lists) {
   }
   for (; lists.b.b; lists = lists.b) {
     var xs = lists.a;
-    while (xs.b) {
+    for (; xs.b; xs = xs.b) {
       var next = _List_Cons(xs.a, _List_Nil);
       end.b = next;
       end = next;
-      xs = xs.b;
     }
   }
   end.b = lists;
 
   return tmp.b;
-};`;
+};
+`;
 
 const $elm$core$List$intersperse = `
 var $elm$core$List$intersperse = F2(function (sep, xs) {
@@ -92,16 +90,16 @@ var $elm$core$List$intersperse = F2(function (sep, xs) {
   end = end.b;
   xs = xs.b;
 
-  while (xs.b) {
+  for (; xs.b; xs = xs.b) {
     var valNode = _List_Cons(xs.a, _List_Nil);
     var sepNode = _List_Cons(sep, valNode);
     end.b = sepNode;
     end = valNode;
-    xs = xs.b;
   }
 
   return tmp.b;
-});`;
+});
+`;
 
 const $elm$core$List$partition = `
 var $elm$core$List$partition = F2(function (f, xs) {
@@ -109,7 +107,7 @@ var $elm$core$List$partition = F2(function (f, xs) {
   var falsesHead = _List_Cons(undefined, _List_Nil);
   var truesEnd = truesHead;
   var falsesEnd = falsesHead;
-  while (xs.b) {
+  for (; xs.b; xs = xs.b) {
     var next = _List_Cons(xs.a, _List_Nil);
     if (f(xs.a)) {
       truesEnd.b = next;
@@ -118,10 +116,10 @@ var $elm$core$List$partition = F2(function (f, xs) {
       falsesEnd.b = next;
       falsesEnd = next;
     }
-    xs = xs.b;
   }
   return _Utils_Tuple2(truesHead.b, falsesHead.b);
-});`;
+});
+`;
 
 const $elm$core$List$unzip = `
 var $elm$core$List$unzip = function (pairs) {
@@ -129,7 +127,7 @@ var $elm$core$List$unzip = function (pairs) {
   var bHead = _List_Cons(undefined, _List_Nil);
   var aEnd = aHead;
   var bEnd = bHead;
-  while (pairs.b) {
+  for (; pairs.b; pairs = pairs.b) {
     var tuple = pairs.a;
 
     var aNext = _List_Cons(tuple.a, _List_Nil);
@@ -139,11 +137,10 @@ var $elm$core$List$unzip = function (pairs) {
     var bNext = _List_Cons(tuple.b, _List_Nil);
     bEnd.b = bNext;
     bEnd = bNext;
-
-    pairs = pairs.b;
   }
   return _Utils_Tuple2(aHead.b, bHead.b);
-};`;
+};
+`;
 
 
 const replacements = {
