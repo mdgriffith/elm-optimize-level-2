@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import { ObjectUpdate } from '../types';
-import {ast, create} from './utils/create';
+import {ast} from './utils/create';
 
 
 const copyWithSpread = `
