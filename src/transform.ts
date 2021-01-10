@@ -22,6 +22,7 @@ import { createRemoveUnusedLocalsTransform } from './transforms/removeUnusedLoca
 import { createPassUnwrappedFunctionsTransformer } from './transforms/passUnwrappedFunctions';
 import { replaceVDomNode } from './transforms/adjustVirtualDom';
 import { inlineNumberToString } from './transforms/inlineNumberToString';
+import { replaceListFunctions } from './transforms/replaceListFunctions';
 
 export type Options = {
   compile: boolean;
@@ -102,6 +103,7 @@ export const transform = async (
     [transforms.arrowFns, convertFunctionExpressionsToArrowFuncs],
     [transforms.shorthandObjectLiterals, convertToObjectShorthandLiterals],
     [transforms.unusedValues, createRemoveUnusedLocalsTransform()],
+    [transforms.replaceListFunctions, replaceListFunctions],
   ]);
 
   const {
