@@ -34,6 +34,7 @@ export type Transforms = {
   shorthandObjectLiterals: boolean;
   objectUpdate: ObjectUpdate | false;
   unusedValues: boolean;
+  replaceListFunctions: boolean;
 };
 
 export enum InlineLists {
@@ -74,4 +75,5 @@ export const toolDefaults: Transforms = {
   shorthandObjectLiterals: false,
   objectUpdate: false,
   unusedValues: false,
+  replaceListFunctions: false,
 };
