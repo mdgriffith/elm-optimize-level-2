@@ -120,7 +120,7 @@ That being said, there are a few areas that might be opportunities for contribut
 
    We want the benchmarking suite to be as comprehensive as possible, though we have to weigh that against having a million benchmarks that essentially test the same thing.
 
-3) Know of an interesting transformation to try out?
+3. Know of an interesting transformation to try out?
 
    Let us know! Either open an issue, or make a PR adding it to [notes/transformations.md](notes/transformations.md).
 
