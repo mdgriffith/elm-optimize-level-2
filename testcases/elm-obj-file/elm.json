@@ -14,13 +14,12 @@
             "elm/html": "1.0.0",
             "elm/http": "2.0.0",
             "elm/json": "1.1.3",
-            "elm-explorations/benchmark": "1.0.1",
+            "elm-explorations/benchmark": "1.0.2",
             "ianmackenzie/elm-geometry": "3.6.0",
             "ianmackenzie/elm-triangular-mesh": "1.0.4",
             "ianmackenzie/elm-units": "2.6.0"
         },
         "indirect": {
-            "Skinney/murmur3": "2.0.8",
             "elm/bytes": "1.0.8",
             "elm/file": "1.0.5",
             "elm/regex": "1.0.0",
@@ -31,11 +30,14 @@
             "ianmackenzie/elm-float-extra": "1.1.0",
             "ianmackenzie/elm-interval": "2.0.0",
             "ianmackenzie/elm-units-interval": "1.1.0",
-            "mdgriffith/style-elements": "5.0.1"
+            "mdgriffith/style-elements": "5.0.2",
+            "robinheghan/murmur3": "1.0.0"
         }
     },
     "test-dependencies": {
         "direct": {},
-        "indirect": {}
+        "indirect": {
+            "Skinney/murmur3": "2.0.8"
+        }
     }
 }
