@@ -72,7 +72,7 @@ var $elm$core$List$concat = function (lists) {
       end = next;
     }
   }
-  end.b = lists;
+  end.b = lists.a;
 
   return tmp.b;
 };
