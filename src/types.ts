@@ -35,6 +35,7 @@ export type Transforms = {
   objectUpdate: ObjectUpdate | false;
   unusedValues: boolean;
   replaceListFunctions: boolean;
+  v8Analysis: boolean;
 };
 
 export enum InlineLists {
@@ -76,4 +77,5 @@ export const toolDefaults: Transforms = {
   objectUpdate: false,
   unusedValues: false,
   replaceListFunctions: false,
+  v8Analysis: false
 };

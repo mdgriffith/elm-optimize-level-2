@@ -19,14 +19,16 @@ const defaultOptions: Transforms = {
   replaceVDomNode: false,
   variantShapes: true,
   inlineNumberToString: false,
-  inlineEquality: false,
-  inlineFunctions: false,
+  inlineEquality: true,
+  inlineFunctions: true,
   listLiterals: false,
-  passUnwrappedFunctions: false,
+  passUnwrappedFunctions: true,
   arrowFns: false,
   shorthandObjectLiterals: false,
-  objectUpdate: ObjectUpdate.InlineSpread,
+  objectUpdate: false,
   unusedValues: false,
+  replaceListFunctions: true,
+  v8Analysis: false
 };
 
 const options = {
@@ -67,11 +69,11 @@ async function go() {
     //   dir: 'testcases/elm-css',
     //   elmFile: 'Main.elm',
     // },
-    // {
-    //   name: 'Html',
-    //   dir: 'testcases/html',
-    //   elmFile: 'Main.elm',
-    // },
+    {
+      name: 'Html',
+      dir: 'testcases/html',
+      elmFile: 'Main.elm',
+    },
     // {
     //   name: 'Elm UI',
     //   dir: 'testcases/elm-ui',
@@ -93,11 +95,11 @@ async function go() {
     //   elmFile: 'Run.elm',
     // },
     // // // This one takes forever
-    {
-      name: 'elm-obj-file',
-      dir: 'testcases/elm-obj-file',
-      elmFile: 'Run.elm',
-    },
+    // {
+    //   name: 'elm-obj-file',
+    //   dir: 'testcases/elm-obj-file',
+    //   elmFile: 'Run.elm',
+    // },
   ]);
   const result = await report;
 
