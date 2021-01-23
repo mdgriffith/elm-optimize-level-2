@@ -232,9 +232,9 @@
   }
 
   if (testIfAllowNativeSyntax()) {
-    loadScript('output/v8-native-calls.js', finishSetup);
+    loadScript('v8-native-calls.js', finishSetup);
   } else {
-    loadScript('output/v8-native-dummy.js', finishSetup);
+    loadScript('v8-native-dummy.js', finishSetup);
   }
 
   // Add this helper function
