@@ -461,6 +461,13 @@ export const run = async function (
         path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz')
       );
     }
+    
+    if (options.transforms.v8Analysis) {
+      await Post.includeV8Helpers(path.join(instance.dir, 'output'))
+    } else {
+      await Post.includeStubbedV8Helpers(path.join(instance.dir, 'output'))
+    }
+
 
     if (options.assetSizes) {
       assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
@@ -501,6 +508,8 @@ const emptyOpts: Transforms = {
   shorthandObjectLiterals: false,
   objectUpdate: false,
   unusedValues: false,
+  replaceListFunctions: false,
+  v8Analysis: false
 };
 
 const breakdown = function (
