@@ -21,6 +21,9 @@ export const benchmark = async (
     chromeOptions.headless();
     // safariOptions.headless();
   }
+  // Should probably make this configurable...
+  chromeOptions.addArguments('js-flags=--allow-natives-syntax')
+  
 
   let driver = await new Webdriver.Builder()
     .forBrowser(options.browser)
@@ -43,7 +46,7 @@ export const benchmark = async (
     await driver.wait(Webdriver.until.titleIs('done'), 480000);
     result = await driver.executeScript('return window.results;');
   } finally {
-    await driver.quit();
+    // await driver.quit();
   }
   return { name: name, tag: tag, browser: options.browser, results: result };
 };
