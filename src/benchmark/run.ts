@@ -28,7 +28,7 @@ const defaultOptions: Transforms = {
   objectUpdate: false,
   unusedValues: false,
   replaceListFunctions: true,
-  v8Analysis: false
+  v8Analysis: true
 };
 
 const options = {
@@ -51,7 +51,8 @@ const options = {
       headless: true,
     },
   ],
-  transforms: toolDefaults, //defaultOptions,
+  transforms: toolDefaults
+  
 };
 
 async function go() {
