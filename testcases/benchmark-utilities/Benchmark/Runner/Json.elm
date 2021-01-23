@@ -10,7 +10,7 @@ import Json.Encode as Encode
 import Process
 import Task exposing (Task)
 import Trend.Linear as Trend exposing (Quick, Trend)
-
+import Debug.V8
 
 type alias JsonBenchmark =
     Program () Model Msg
@@ -81,6 +81,9 @@ view model =
     Html.div [ Attr.style "white-space" "pre" ]
         [ Html.text
             (Encode.encode 4 (encode model))
+
+        , Html.text 
+            (Encode.encode 4 (Debug.V8.reportV8StatusForBenchmarks ()))
         ]
 
 

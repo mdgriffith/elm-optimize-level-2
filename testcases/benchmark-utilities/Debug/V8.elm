@@ -1,12 +1,21 @@
-module Debug.V8 exposing (analyze, report)
+module Debug.V8 exposing (memory, optimizationStatus, reportV8StatusForBenchmarks)
 
 {-| -}
 
 import Json.Encode
 
 
-analyze : String -> a -> a
-analyze tag value =
+memory : String -> a -> a
+memory tag value =
+    value
+
+
+type Status
+    = Status Int
+
+
+optimizationStatus : String -> a -> a
+optimizationStatus tag value =
     value
 
 
@@ -35,7 +44,7 @@ analyze tag value =
     hasSloppyArgumentsElements obj
 
 -}
-type alias Shape =
+type alias Memory =
     { tag : String
     , hasFastProperties : Bool
     , hasFastSmiElements : Bool
@@ -50,6 +59,6 @@ type alias Shape =
     }
 
 
-report : () -> Json.Encode.Value
-report _ =
+reportV8StatusForBenchmarks : () -> Json.Encode.Value
+reportV8StatusForBenchmarks _ =
     Json.Encode.null
