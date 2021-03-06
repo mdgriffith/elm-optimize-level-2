@@ -459,3 +459,24 @@ It's pretty common to put things in a tuple (or threeple) to start a case statem
 ```
 
 We could skip allocating the tuple though.
+
+# Simplify identity
+
+This transforms:
+* all functions equivalent to `identity` into `identity`
+* `identity a` to `a`
+* `List.map identity` to `identiy` (hence by also applying the previous, this transform `List.map identity a` to `a`.
+
+## Why does it matters?
+We don't really write a lot of code with identity directly written in the code base. However, if we create a wrapper and a function like that:
+```
+type Wrapper = Wrapper Int
+
+toInt : Wrapper -> Int
+toInt (Wrapper i) = i
+```
+the compiler will remove the wrapper around the Int and transform `toInt` in a function equivalent to `identity` (and the `Wrapper` constructor as well). So when we do something like `List.map toInt veryLongList`, we loop over the very long list to only recopy it.
+
+We could applying the same kind of transformation on all the functors (Maybe, Result, Cmd, Sub, Html, ...) but I doubt it would be as beneficial as for the lists (and maybe arrays).
+
+This would be usefull if the codebase heavily use this wrapping technique. I see no downside doing it otherwise (asset size would even decrease a little)
