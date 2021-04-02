@@ -35,6 +35,7 @@ export type Transforms = {
   objectUpdate: ObjectUpdate | false;
   unusedValues: boolean;
   replaceListFunctions: boolean;
+  replaceStringFunctions: boolean;
   v8Analysis: boolean;
 };
 
@@ -77,5 +78,6 @@ export const toolDefaults: Transforms = {
   objectUpdate: false,
   unusedValues: false,
   replaceListFunctions: false,
+  replaceStringFunctions: false,
   v8Analysis: false
 };
