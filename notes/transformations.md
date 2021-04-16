@@ -459,3 +459,13 @@ It's pretty common to put things in a tuple (or threeple) to start a case statem
 ```
 
 We could skip allocating the tuple though.
+
+# String Joining
+
+For joining (and concating) strings, Elm uses Javascript's Array join method after converting the list into a Javascript array.
+We can replace this implementation with a faster one that traverses the list and builds the string through concatenation instead.
+
+## Results Summary
+
+* Not included in elm-optimize-level-2 tool
+* The implementation used is similar to the improved String.join implementation [here](https://gitlab.com/e-neighborhood-watch/elm-string-benchmarks/#stringjoin) which sees some serious improvements over Elm's normal String.join.

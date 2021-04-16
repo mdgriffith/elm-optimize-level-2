@@ -23,6 +23,7 @@ import { createPassUnwrappedFunctionsTransformer } from './transforms/passUnwrap
 import { replaceVDomNode } from './transforms/adjustVirtualDom';
 import { inlineNumberToString } from './transforms/inlineNumberToString';
 import { replaceListFunctions } from './transforms/replaceListFunctions';
+import { replaceStringFunctions } from './transforms/replaceStringFunctions';
 import { reportFunctionStatusInBenchmarks, v8Debug } from './transforms/analyze';
 
 export type Options = {
@@ -80,6 +81,7 @@ export const transform = async (
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
     [transforms.replaceListFunctions, replaceListFunctions],
+    [transforms.replaceStringFunctions, replaceStringFunctions],
     
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
