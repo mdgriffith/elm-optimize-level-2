@@ -34,7 +34,7 @@ export const benchmark = async (
 
   // docs for selenium:
   // https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_WebDriver.html
-  let result = [];
+  let result: any = [];
   try {
     const label: string = tag == null ? name : name + ', ' + tag;
     console.log(

@@ -375,7 +375,7 @@ export function reformat(results: any): any {
   return reformed;
 }
 
-function sortResults(a, b) {
+function sortResults(a: any, b: any) {
   if (a.browser == b.browser) {
     if (a.tag == null) {
       return -1;
@@ -422,11 +422,11 @@ export const run = async function (
       output: 'output/elm.opt.js',
       cwd: instance.dir,
       optimize: true,
-      processOpts:
-        // ignore stdout
-        {
-          stdio: ['pipe', 'ignore', 'pipe'],
-        },
+//       processOpts:
+//         // ignore stdout
+//         {
+//           stdio: ['pipe', 'pipe', 'pipe'],
+//         },
     });
 
     const transformed = await Transform.transform(
@@ -509,6 +509,7 @@ const emptyOpts: Transforms = {
   objectUpdate: false,
   unusedValues: false,
   replaceListFunctions: false,
+  replaceStringFunctions: false,
   v8Analysis: false
 };
 

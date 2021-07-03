@@ -72,16 +72,25 @@ export async function minify(inputFilename: string, outputFilename: string) {
     console.log('Error mangling with Terser');
   }
 }
+
+const gzipOptions: Compress.ZopfliOptions = {
+    verbose: false,
+    verbose_more: false,
+    numiterations: 15,
+    blocksplitting: true,
+    blocksplittingmax: 15,
+};
 export async function gzip(file: string, output: string) {
   // --keep = keep the original file
   // --force = overwrite the exisign gzip file if it's there
   // execSync('gzip --keep --force ' + file);
   const fileContents = fs.readFileSync(file, 'utf8');
-  const promise = Compress.gzipAsync(fileContents, {}).then(compressed => {
+  const promise = Compress.gzipAsync(fileContents, gzipOptions).then(compressed => {
     fs.writeFileSync(output, compressed);
   });
 
-  await promise;
+
+
 }
 
 
