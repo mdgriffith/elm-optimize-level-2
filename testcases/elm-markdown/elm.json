@@ -17,15 +17,15 @@
             "elm/parser": "1.1.0",
             "elm/regex": "1.0.0",
             "elm/url": "1.0.0",
-            "elm-explorations/benchmark": "1.0.1",
+            "elm-explorations/benchmark": "1.0.2",
             "elm-explorations/markdown": "1.0.0",
             "rtfeldman/elm-hex": "1.0.0"
         },
         "indirect": {
-            "Skinney/murmur3": "2.0.8",
             "elm/time": "1.0.0",
             "elm/virtual-dom": "1.0.2",
-            "mdgriffith/style-elements": "5.0.1"
+            "mdgriffith/style-elements": "5.0.2",
+            "robinheghan/murmur3": "1.0.0"
         }
     },
     "test-dependencies": {

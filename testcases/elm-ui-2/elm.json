@@ -14,14 +14,14 @@
             "elm/html": "1.0.0",
             "elm/json": "1.1.3",
             "elm/virtual-dom": "1.0.2",
-            "elm-explorations/benchmark": "1.0.1"
+            "elm-explorations/benchmark": "1.0.2"
         },
         "indirect": {
-            "Skinney/murmur3": "2.0.8",
             "elm/regex": "1.0.0",
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
-            "mdgriffith/style-elements": "5.0.1"
+            "mdgriffith/style-elements": "5.0.2",
+            "robinheghan/murmur3": "1.0.0"
         }
     },
     "test-dependencies": {
