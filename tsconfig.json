@@ -13,7 +13,7 @@
     "outDir": "dist",
     "strict": true,
     "strictNullChecks": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
@@ -26,7 +26,7 @@
   ],
   "exclude": [
     "node_modules",
-    "src/benchmark",
+
     "__tests__",
     "**/__tests__",
     "src/__tests__"
