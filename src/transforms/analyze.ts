@@ -108,7 +108,7 @@ const reportAnalysis = function(fns: string[]) {
         for (const fn of fns) {
             var opt_status = v8.getOptimizationStatus(fn.ref);
             var binary = opt_status.toString(2).padStart(12, '0');
-            var tag = "unknown"
+            var tag = binary
 
             if (binary == "000000000001") {
                 tag = "uncalled"
@@ -117,9 +117,8 @@ const reportAnalysis = function(fns: string[]) {
             } else if (binary == "000001000001") {
                 tag = "interpreted"
             }
+            results[fn.name] = { status: tag };
 
-
-            results[fn.name] = binary + "(" + tag + ")";
         }
     }
     return results;
@@ -157,6 +156,7 @@ export const v8Debug: ts.TransformerFactory<ts.SourceFile> = context => {
 export const reportFunctionStatusInBenchmarks: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
         const callgraph = createCallGraph(sourceFile)
+//         console.log(callgraph)
 
         let called = getCalled(callgraph, "$author$project$Main$suite", undefined)
 

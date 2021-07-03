@@ -48,5 +48,6 @@ export const benchmark = async (
   } finally {
     // await driver.quit();
   }
-  return { name: name, tag: tag, browser: options.browser, results: result };
+//   console.log(result.v8)
+  return { name: name, tag: tag, browser: options.browser, results: result.benchmarks, v8: result.v8 };
 };

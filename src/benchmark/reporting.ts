@@ -101,6 +101,37 @@ export const terminal = (report: Results): string => {
             ' runs/sec ' +
             delta;
           buffer.push(label.padEnd(60, ' ') + datapoint);
+
+          if (item.v8) {
+            buffer.push("")
+            if (item.v8.uncalled.length > 0){
+                buffer.push("   " + chalk.yellow("Uncalled"))
+
+                buffer.push("       " + item.v8.uncalled.join("\n       ") )
+                buffer.push("")
+            }
+            if (item.v8.interpreted.length > 0){
+                buffer.push("   " + chalk.yellow("Interpreted"))
+
+                buffer.push("       " + item.v8.interpreted.join("\n       ")  )
+                buffer.push("")
+            }
+            if (item.v8.optimized.length > 0){
+                buffer.push("   " + chalk.green("Optimized"))
+
+                buffer.push("       " + item.v8.optimized.join("\n       ") )
+                buffer.push("")
+            }
+            if (item.v8.other.length > 0){
+                buffer.push("   " + chalk.green("Unknown status"))
+                for (func of item.v8.other){
+                     buffer.push("        " + func.name + "(" + func.status  +")" )
+                }
+
+            }
+          }
+
+
         } else {
           console.log('FAILURE', item);
         }
@@ -350,11 +381,13 @@ export function reformat(results: any): any {
   results.forEach((item: any) => {
     project = item.name;
     item.results.forEach((result: any) => {
+      console.log(item)
       const newItem = {
         browser: item.browser,
         tag: item.tag,
         benchTags: result.tags,
         status: result.status,
+        v8: reformatV8(item.v8)
       };
       if (project in reformed) {
         if (result.name in reformed[project]) {
@@ -495,6 +528,22 @@ export const run = async function (
 
   return { assets: assets, benchmarks: reformat(results) };
 };
+
+
+
+function reformatV8(val: any){
+    let gathered = {uncalled: [], optimized: [], interpreted: [], other: []}
+    for (const key in val){
+        const status = val[key].status
+        if (status in gathered) {
+            gathered[status].push(key)
+        } else {
+            gathered.other.push( {status: status, name: key} )
+        }
+    }
+    return gathered
+}
+
 
 const emptyOpts: Transforms = {
   replaceVDomNode: false,

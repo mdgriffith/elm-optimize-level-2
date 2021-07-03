@@ -47,9 +47,13 @@ update sendReport msg model =
         Update benchmark ->
             if Benchmark.done benchmark then
                 ( benchmark
-                , sendReport (encode benchmark)
+                , sendReport
+                    (Encode.object
+                        [ ("benchmarks", (encode benchmark))
+                        , ("v8", Debug.V8.reportV8StatusForBenchmarks ())
+                        ]
+                    )
                 )
-
             else
                 ( benchmark
                 , next benchmark
