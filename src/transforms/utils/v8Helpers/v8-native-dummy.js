@@ -1,6 +1,6 @@
 /*
  --------------------------------------
- (c)2014-2017, Nathanael Anderson.
+ (c)2014-2021, Nathanael Anderson.
  Repository: https://github.com/Nathanaela/v8-Natives
  --------------------------------------
  v8-Natives is under The MIT License (MIT)
@@ -60,5 +60,4 @@ _global.v8 = v8;
 
 
 }(typeof exports === 'undefined' ? this : exports));
-
 

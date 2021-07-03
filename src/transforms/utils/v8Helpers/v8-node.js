@@ -1,6 +1,6 @@
 /*
  --------------------------------------
- (c)2014-2019, Nathanael Anderson.
+ (c)2014-2021, Nathanael Anderson.
  Repository: https://github.com/Nathanaela/v8-Natives
  --------------------------------------
  v8-Natives is under The MIT License (MIT)
@@ -221,6 +221,5 @@ function benchmarkNoParams(itter, f) {
 
 v8.helpers = {printStatus: printStatus, testOptimization: testOptimization, benchmark: benchmark};
 module.exports = v8;
-
 
 
