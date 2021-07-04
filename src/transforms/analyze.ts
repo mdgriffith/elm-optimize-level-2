@@ -156,15 +156,9 @@ export const v8Debug: ts.TransformerFactory<ts.SourceFile> = context => {
 export const reportFunctionStatusInBenchmarks: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
         const callgraph = createCallGraph(sourceFile)
-//         console.log(callgraph)
-
-        let called = getCalled(callgraph, "$author$project$V8$Benchmark$suite", undefined)
-
-        // The callgraph creator gets a little confused in some places, so you can manually stub in function names if you want:
-        called = called.concat(["_VirtualDom_nodeNS_fn",
-//             "$author$project$Suite$viewLevels_fn",
-//             "$author$project$Suite$viewLevels",
-            "$elm$html$Html$div.f"])
+        const suite = "$author$project$Suite$suite"
+        const main_runner = "$author$project$V8$Benchmark$main"
+        let called = getCalled(callgraph, suite, undefined)
 
         const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
             if (ts.isVariableDeclaration(node)) {

@@ -107,12 +107,7 @@ export const terminal = (report: Results): string => {
                 buffer.push("")
             }
 
-            if (item.v8.uncalled.length > 0){
-                buffer.push("   " + chalk.yellow("Uncalled"))
 
-                buffer.push("       " + item.v8.uncalled.join("\n       ") )
-                buffer.push("")
-            }
             if (item.v8.interpreted.length > 0){
                 buffer.push("   " + chalk.yellow("Interpreted"))
 
@@ -128,9 +123,14 @@ export const terminal = (report: Results): string => {
             if (item.v8.other.length > 0){
                 buffer.push("   " + chalk.green("Unknown status"))
                 for (const func of item.v8.other){
-                     buffer.push("        " + func.name + "(" + func.status  +")" )
+                     buffer.push("        " + func.name + ", status: " + func.status )
                 }
+            }
 
+             if (item.v8.uncalled.length > 0){
+                buffer.push("   " + chalk.yellow("Uncalled"))
+                buffer.push("       " + item.v8.uncalled.join("\n       ") )
+                buffer.push("")
             }
           }
 
@@ -146,8 +146,7 @@ export const terminal = (report: Results): string => {
     buffer.push('');
     buffer.push('');
   }
-  buffer.push('');
-  buffer.push('');
+
   return buffer.join('\n');
 };
 
@@ -384,7 +383,6 @@ export function reformat(results: any): any {
   results.forEach((item: any) => {
     project = item.name;
     item.results.forEach((result: any) => {
-      console.log(item)
       const newItem = {
         browser: item.browser,
         tag: item.tag,
@@ -1056,13 +1054,10 @@ async function prepare_boilerplate(
 
     const base = path.join(dir, 'elm-stuff', 'elm-optimize-level-2')
     const htmlPath =  path.join(base, 'run.html')
-    console.log("Creating dir")
+
     fs.mkdirSync(base, {recursive: true})
-    console.log("Writing Html")
-    fs.writeFileSync(htmlPath, htmlTemplate);
-    console.log("Copying js")
-    fs.writeFileSync(path.join(base, 'elm.opt.transformed.js'), js);
-    console.log("Including helpers")
+    fs.writeFileSync(htmlPath, htmlTemplate)
+    fs.writeFileSync(path.join(base, 'elm.opt.transformed.js'), js)
     await Post.includeV8Helpers(path.join(base))
     return await Visit.benchmark(
           browser,

@@ -59,8 +59,10 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
     if (ts.isCallExpression(node.initializer) && ts.isIdentifier(node.initializer.expression) && ts.isIdentifier(node.name)) {
        
         const fn_var_name = node.name.text;
-        
-  
+
+        contextFn = node.name.text;
+        graph.all.push(fn_var_name);
+
         // match F{n} wrapper
         const fnWrapper = node.initializer.expression.text.match(wrapperRegex);
         if (fnWrapper && fnWrapper.groups) {
@@ -131,14 +133,22 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
 
   // logNode(node, sourceFile, indentLevel);
   if (!already_inspected){
+
+    if (node.arguments){
+        for (const arg of node.arguments) {
+            let subgraph = extractFunctionCalls(arg, sourceFile, indentLevel + 1, contextFn);
+            graph.all = graph.all.concat(subgraph.all)
+            graph.called = merge_maps(graph.called, subgraph.called)
+        }
+    }
+
     node.forEachChild(child => {
-      
       let subgraph = extractFunctionCalls(child, sourceFile, indentLevel + 1, contextFn);
-      
       graph.all = graph.all.concat(subgraph.all)
       graph.called = merge_maps(graph.called, subgraph.called)
     });
   }
+
   return graph
 }
 
@@ -236,7 +246,7 @@ export function createCallGraph(source: ts.SourceFile): CallGraph {
         callgraph.all = callgraph.all.concat(subgraph.all)
         callgraph.called = merge_maps(callgraph.called, subgraph.called)
     });
-    
+
     // Only include functions that exist in the `allFunctions` list
     // This will remove functions defined and called within the body of another function
     // Which we can't ask function status for unless we get more clever.
