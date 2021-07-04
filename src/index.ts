@@ -7,6 +7,7 @@ import { compileToStringSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 import chalk from 'chalk';
 const { version } = require('../package.json');
+import * as Bench from './benchmark/init'
 
 program
   .version(version)
@@ -23,12 +24,23 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   )
   .usage('[options] <src/Main.elm>')
   .option('--output <output>', 'the javascript file to create.', 'elm.js')
+  .option('--init-benchmark <output>', 'Generate some files to help run benchmarks', 'benchmarks')
+  .option('--benchmark', 'Run the given file as a benchmark.')
+
   .parse(process.argv);
 
 async function run(inputFilePath: string | undefined) {
   const dirname = process.cwd();
   let jsSource: string = '';
   let elmFilePath = undefined;
+//   console.log(program.benchmark)
+//   console.log(program.initBenchmark)
+  if (program.initBenchmark) {
+    console.log(`Initializing benchmark ${program.initBenchmark}`)
+    Bench.generate(program.initBenchmark)
+
+    process.exit(0)
+  }
 
   if (inputFilePath && inputFilePath.endsWith('.js')) {
     jsSource = fs.readFileSync(inputFilePath, 'utf8');

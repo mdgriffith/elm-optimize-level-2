@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Transforms, RunTestcaseOptions, InlineLists } from '../types';
+import { Transforms, RunTestcaseOptions, InlineLists, BrowserOptions } from '../types';
 import * as Visit from './visit';
 import chalk from 'chalk';
 import * as Transform from '../transform';
@@ -127,7 +127,7 @@ export const terminal = (report: Results): string => {
             }
             if (item.v8.other.length > 0){
                 buffer.push("   " + chalk.green("Unknown status"))
-                for (func of item.v8.other){
+                for (const func of item.v8.other){
                      buffer.push("        " + func.name + "(" + func.status  +")" )
                 }
 
@@ -419,7 +419,7 @@ function reformatV8(val: any){
         if (key.startsWith("$elm_explorations$benchmark$Benchmark$") || key == "_Benchmark_operation"){
             continue
         }
-        const status = val[key].status
+        const status: string = val[key].status
         if (status in gathered) {
             gathered[status].push(key)
         } else {
