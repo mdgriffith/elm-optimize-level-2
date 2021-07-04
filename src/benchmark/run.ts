@@ -28,6 +28,7 @@ const defaultOptions: Transforms = {
   objectUpdate: false,
   unusedValues: false,
   replaceListFunctions: true,
+  replaceStringFunctions: true,
   v8Analysis: true
 };
 
@@ -42,16 +43,16 @@ const options = {
       browser: Browser.Chrome,
       headless: false,
     },
-    {
-      browser: Browser.Firefox,
-      headless: true,
-    },
-    {
-      browser: Browser.Safari,
-      headless: true,
-    },
+//     {
+//       browser: Browser.Firefox,
+//       headless: true,
+//     },
+//     {
+//       browser: Browser.Safari,
+//       headless: true,
+//     },
   ],
-  transforms: toolDefaults
+  transforms: defaultOptions
   
 };
 
@@ -73,7 +74,7 @@ async function go() {
     {
       name: 'Html',
       dir: 'testcases/html',
-      elmFile: 'Main.elm',
+      elmFile: 'V8/Benchmark.elm',
     },
     // {
     //   name: 'Elm UI',

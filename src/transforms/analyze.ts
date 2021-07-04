@@ -158,12 +158,12 @@ export const reportFunctionStatusInBenchmarks: ts.TransformerFactory<ts.SourceFi
         const callgraph = createCallGraph(sourceFile)
 //         console.log(callgraph)
 
-        let called = getCalled(callgraph, "$author$project$Main$suite", undefined)
+        let called = getCalled(callgraph, "$author$project$V8$Benchmark$suite", undefined)
 
         // The callgraph creator gets a little confused in some places, so you can manually stub in function names if you want:
         called = called.concat(["_VirtualDom_nodeNS_fn",
-            "$author$project$Main$viewLevels_fn",
-            "$author$project$Main$viewLevels", 
+//             "$author$project$Suite$viewLevels_fn",
+//             "$author$project$Suite$viewLevels",
             "$elm$html$Html$div.f"])
 
         const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {

@@ -103,7 +103,10 @@ export const terminal = (report: Results): string => {
           buffer.push(label.padEnd(60, ' ') + datapoint);
 
           if (item.v8) {
-            buffer.push("")
+            if (item.v8.uncalled.length + item.v8.interpreted.length + item.v8.optimized.length + item.v8.other.length > 0) {
+                buffer.push("")
+            }
+
             if (item.v8.uncalled.length > 0){
                 buffer.push("   " + chalk.yellow("Uncalled"))
 
@@ -408,6 +411,25 @@ export function reformat(results: any): any {
   return reformed;
 }
 
+
+
+function reformatV8(val: any){
+    let gathered = {uncalled: [], optimized: [], interpreted: [], other: []}
+    for (const key in val){
+        if (key.startsWith("$elm_explorations$benchmark$Benchmark$") || key == "_Benchmark_operation"){
+            continue
+        }
+        const status = val[key].status
+        if (status in gathered) {
+            gathered[status].push(key)
+        } else {
+            gathered.other.push( {status: status, name: key} )
+        }
+    }
+    return gathered
+}
+
+
 function sortResults(a: any, b: any) {
   if (a.browser == b.browser) {
     if (a.tag == null) {
@@ -508,22 +530,25 @@ export const run = async function (
 
     for (let browser of options.runBenchmark) {
       results.push(
-        await Visit.benchmark(
-          browser,
-          instance.name,
-          null,
-          path.join(instance.dir, 'standard.html')
-        )
-      );
+            await prepare_boilerplate(
+                  browser,
+                  instance.name,
+                  null,
+                  instance.dir,
+                  source
+                )
+                );
+
       results.push(
-        await Visit.benchmark(
-          browser,
-          instance.name,
-          'final',
-          path.join(instance.dir, 'transformed.html')
-        )
-      );
-    }
+            await prepare_boilerplate(
+                  browser,
+                  instance.name,
+                  'final',
+                  instance.dir,
+                  transformed
+                )
+                );
+      }
   }
 
   return { assets: assets, benchmarks: reformat(results) };
@@ -531,18 +556,6 @@ export const run = async function (
 
 
 
-function reformatV8(val: any){
-    let gathered = {uncalled: [], optimized: [], interpreted: [], other: []}
-    for (const key in val){
-        const status = val[key].status
-        if (status in gathered) {
-            gathered[status].push(key)
-        } else {
-            gathered.other.push( {status: status, name: key} )
-        }
-    }
-    return gathered
-}
 
 
 const emptyOpts: Transforms = {
@@ -985,3 +998,78 @@ const knockout = function (
 
   return transforms;
 };
+
+
+
+// BOILERPLATE MANAGEMENT
+
+
+
+const htmlTemplate = `
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>V8 Benchmark</title>
+    <script src="elm.opt.transformed.js"></script>
+  </head>
+  <body>
+    <div id="myapp"></div>
+    <script>
+      function start() {
+        var app = Elm.V8.Benchmark.init({
+          node: document.getElementById('myapp'),
+        });
+        window.results = [];
+        app.ports.reportResults.subscribe(function (message) {
+          window.results = message;
+          document.title = 'done';
+        });
+      }
+    </script>
+    <script src="v8-browser.js" onload="waitForV8(start)"></script>
+  </body>
+</html>
+`
+
+
+/*
+
+    elmFile -> the elm file that has the harness for running the benchmark
+
+
+    Steps
+    1. compile elmFile into js in elm-stuff/elm-optimize-level-2
+    2. copy htmlTemplate into elm-stuff if it doesn't exist.  (names are hardcoded)
+    3. Visit.benchmark
+
+
+*/
+
+
+async function prepare_boilerplate(
+    browser: BrowserOptions,
+    name:string,
+    tag: string | null,
+    dir: string,
+    js: string
+    ) {
+
+    const base = path.join(dir, 'elm-stuff', 'elm-optimize-level-2')
+    const htmlPath =  path.join(base, 'run.html')
+    console.log("Creating dir")
+    fs.mkdirSync(base, {recursive: true})
+    console.log("Writing Html")
+    fs.writeFileSync(htmlPath, htmlTemplate);
+    console.log("Copying js")
+    fs.writeFileSync(path.join(base, 'elm.opt.transformed.js'), js);
+    console.log("Including helpers")
+    await Post.includeV8Helpers(path.join(base))
+    return await Visit.benchmark(
+          browser,
+          name,
+          tag,
+          htmlPath
+        )
+}
+
+

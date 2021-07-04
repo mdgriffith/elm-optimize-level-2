@@ -1,21 +1,12 @@
-port module Main exposing (main)
+module Suite exposing (suite)
 
 {-| -}
 
 import Benchmark exposing (..)
-import Benchmark.Runner exposing (BenchmarkProgram, program)
-import Benchmark.Runner.Json
 import Html
 import Html.Attributes as Attr
-import Json.Encode
 
 
-main : Benchmark.Runner.Json.JsonBenchmark
-main =
-    Benchmark.Runner.Json.program reportResults suite
-
-
-port reportResults : Json.Encode.Value -> Cmd msg
 
 
 three =
