@@ -2,12 +2,13 @@
 import program from 'commander';
 import * as path from 'path';
 import * as Transform from './transform';
-import { toolDefaults } from './types';
+import { toolDefaults, benchmarkDefaults, Browser} from './types';
 import { compileToStringSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 import chalk from 'chalk';
 const { version } = require('../package.json');
-import * as Bench from './benchmark/init'
+import * as BenchInit from './benchmark/init'
+import * as Benchmark from './benchmark/reporting';
 
 program
   .version(version)
@@ -24,8 +25,8 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   )
   .usage('[options] <src/Main.elm>')
   .option('--output <output>', 'the javascript file to create.', 'elm.js')
-  .option('--init-benchmark <output>', 'Generate some files to help run benchmarks', 'benchmarks')
-  .option('--benchmark', 'Run the given file as a benchmark.')
+  .option('--init-benchmark <dir>', 'Generate some files to help run benchmarks')
+  .option('--benchmark <dir>', 'Run the benchmark in the given directory.')
 
   .parse(process.argv);
 
@@ -33,13 +34,40 @@ async function run(inputFilePath: string | undefined) {
   const dirname = process.cwd();
   let jsSource: string = '';
   let elmFilePath = undefined;
-//   console.log(program.benchmark)
-//   console.log(program.initBenchmark)
+
   if (program.initBenchmark) {
     console.log(`Initializing benchmark ${program.initBenchmark}`)
-    Bench.generate(program.initBenchmark)
-
+    BenchInit.generate(program.initBenchmark)
     process.exit(0)
+  }
+
+  if (program.benchmark) {
+      const options = {
+          compile: true,
+          gzip: true,
+          minify: true,
+          verbose: true,
+          assetSizes: true,
+          runBenchmark: [
+            {
+              browser: Browser.Chrome,
+              headless: false,
+            },
+          ],
+          transforms: benchmarkDefaults
+      };
+      const report = await Benchmark.run(options, [
+        {
+          name: 'Benchmark',
+          dir: program.benchmark,
+          elmFile: 'V8/Benchmark.elm',
+        }
+      ]);
+      const result = await report;
+      console.log(Benchmark.terminal(result));
+//       fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
+      process.exit(0)
+
   }
 
   if (inputFilePath && inputFilePath.endsWith('.js')) {

@@ -81,3 +81,21 @@ export const toolDefaults: Transforms = {
   replaceStringFunctions: false,
   v8Analysis: false
 };
+
+
+export const benchmarkDefaults: Transforms = {
+  replaceVDomNode: false,
+  variantShapes: true,
+  inlineNumberToString: false,
+  inlineEquality: true,
+  inlineFunctions: true,
+  listLiterals: false,
+  passUnwrappedFunctions: true,
+  arrowFns: false,
+  shorthandObjectLiterals: false,
+  objectUpdate: false,
+  unusedValues: false,
+  replaceListFunctions: true,
+  replaceStringFunctions: true,
+  v8Analysis: true
+};
