@@ -64,12 +64,12 @@ async function go() {
     // {
     //   name: 'Elm Core',
     //   dir: 'testcases/core',
-    //   elmFile: 'Main.elm',
+    //   elmFile: 'V8/Benchmark.elm',
     // },
     // {
     //   name: 'Elm CSS',
     //   dir: 'testcases/elm-css',
-    //   elmFile: 'Main.elm',
+    //   elmFile: 'V8/Benchmark.elm',
     // },
     {
       name: 'Html',
@@ -79,28 +79,28 @@ async function go() {
     // {
     //   name: 'Elm UI',
     //   dir: 'testcases/elm-ui',
-    //   elmFile: 'Main.elm',
+    //   elmFile: 'V8/Benchmark.elm',
     // },
     // {
     //   name: 'Elm UI 2',
     //   dir: 'testcases/elm-ui-2',
-    //   elmFile: 'Main.elm',
+    //   elmFile: 'V8/Benchmark.elm',
     // },
     // {
     //   name: 'elm-animator',
     //   dir: 'testcases/elm-animator',
-    //   elmFile: 'Run.elm',
+    //   elmFile: 'V8/Benchmark.elm',
     // },
     // {
     //   name: 'Elm Markdown',
     //   dir: 'testcases/elm-markdown',
-    //   elmFile: 'Run.elm',
+    //   elmFile: 'V8/Benchmark.elm',
     // },
     // // // This one takes forever
     // {
     //   name: 'elm-obj-file',
     //   dir: 'testcases/elm-obj-file',
-    //   elmFile: 'Run.elm',
+    //   elmFile: 'V8/Benchmark.elm',
     // },
   ]);
   const result = await report;
