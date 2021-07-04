@@ -24,8 +24,9 @@
     "test": "jest",
     "help": "ts-node -T src/index.ts --help",
     "prepare": "tsc -p tsconfig.json",
+    "lvl-2": "ts-node -T src/index.ts",
     "run": "ts-node -T src/index.ts testcases/core/Main.elm",
-    "run-benchmarks": "NODE_OPTIONS='--trace-warnings' ts-node -T src/benchmark/run.ts"
+    "run-benchmarks": "ts-node -T src/benchmark/run.ts"
   },
   "husky": {
     "hooks": {}
