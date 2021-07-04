@@ -37,6 +37,7 @@ export type Transforms = {
   replaceListFunctions: boolean;
   replaceStringFunctions: boolean;
   v8Analysis: boolean;
+  replacements: { [name: string]: string } | null
 };
 
 export enum InlineLists {
@@ -79,7 +80,8 @@ export const toolDefaults: Transforms = {
   unusedValues: false,
   replaceListFunctions: false,
   replaceStringFunctions: false,
-  v8Analysis: false
+  v8Analysis: false,
+  replacements: null
 };
 
 
@@ -97,5 +99,6 @@ export const benchmarkDefaults: Transforms = {
   unusedValues: false,
   replaceListFunctions: true,
   replaceStringFunctions: true,
-  v8Analysis: true
+  v8Analysis: true,
+  replacements: null
 };

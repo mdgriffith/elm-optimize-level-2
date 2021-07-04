@@ -570,7 +570,8 @@ const emptyOpts: Transforms = {
   unusedValues: false,
   replaceListFunctions: false,
   replaceStringFunctions: false,
-  v8Analysis: false
+  v8Analysis: false,
+  replacements: null
 };
 
 const breakdown = function (

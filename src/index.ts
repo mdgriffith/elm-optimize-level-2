@@ -27,13 +27,19 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   .option('--output <output>', 'the javascript file to create.', 'elm.js')
   .option('--init-benchmark <dir>', 'Generate some files to help run benchmarks')
   .option('--benchmark <dir>', 'Run the benchmark in the given directory.')
-
+  .option('--replacements <dir>', 'Replace stuff')
   .parse(process.argv);
 
 async function run(inputFilePath: string | undefined) {
   const dirname = process.cwd();
   let jsSource: string = '';
   let elmFilePath = undefined;
+
+  const replacementDir = hasReplacements(process.argv)
+  let replacements = null
+  if (replacementDir){
+     replacements = readFilesSync(replacementDir)
+  }
 
   if (program.initBenchmark) {
     console.log(`Initializing benchmark ${program.initBenchmark}`)
@@ -54,7 +60,7 @@ async function run(inputFilePath: string | undefined) {
               headless: false,
             },
           ],
-          transforms: benchmarkDefaults
+          transforms: { ...benchmarkDefaults, ...{replacements: replacements} }
       };
       const report = await Benchmark.run(options, [
         {
@@ -69,6 +75,7 @@ async function run(inputFilePath: string | undefined) {
       process.exit(0)
 
   }
+
 
   if (inputFilePath && inputFilePath.endsWith('.js')) {
     jsSource = fs.readFileSync(inputFilePath, 'utf8');
@@ -101,7 +108,7 @@ async function run(inputFilePath: string | undefined) {
       jsSource,
       elmFilePath,
       false,
-      toolDefaults
+      { ...toolDefaults, ...{replacements: replacements} }
     );
 
     // Make sure all the folders up to the output file exist, if not create them.
@@ -117,6 +124,49 @@ async function run(inputFilePath: string | undefined) {
     console.log(`   ${fileName} ───> ${program.output}`);
     console.log('');
   }
+}
+
+
+function hasReplacements(args: string[]){
+    let flagged = false
+    let dir = null
+    for (const arg of args) {
+        if (flagged) {
+            dir = arg
+            break
+        } else {
+            if (arg == "--replacements"){
+                flagged = true
+            }
+        }
+    }
+    return dir
+}
+
+
+function readFilesSync(dir) {
+  let foundAnything = false
+  const files = {};
+
+  fs.readdirSync(dir).forEach(filename => {
+    const name = path.parse(filename).name;
+    const ext = path.parse(filename).ext;
+    const filepath = path.resolve(dir, filename);
+    const stat = fs.statSync(filepath);
+    const isFile = stat.isFile();
+
+    if (isFile) {
+         const content = fs.readFileSync(path.join(dir, filename))
+         files[name] = content.toString()
+         foundAnything = true
+    }
+  });
+  if (foundAnything) {
+    return files;
+  } else {
+    return null
+  }
+
 }
 
 run(program.args[0]).catch((e) => console.error(e));

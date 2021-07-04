@@ -25,6 +25,7 @@ import { inlineNumberToString } from './transforms/inlineNumberToString';
 import { replaceListFunctions } from './transforms/replaceListFunctions';
 import { replaceStringFunctions } from './transforms/replaceStringFunctions';
 import { reportFunctionStatusInBenchmarks, v8Debug } from './transforms/analyze';
+import * as Replace from './transforms/replace';
 
 export type Options = {
   compile: boolean;
@@ -80,9 +81,9 @@ export const transform = async (
 
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
+    [transforms.replacements != null, Replace.replace(transforms.replacements)],
     [transforms.replaceListFunctions, replaceListFunctions],
     [transforms.replaceStringFunctions, replaceStringFunctions],
-    
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose)],

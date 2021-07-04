@@ -5,6 +5,26 @@ const invocationRegex = /A(?<arity>[1-9]+[0-9]*)/;
 const wrapperRegex = /F(?<arity>[1-9]+[0-9]*)/;
 
 
+
+export type CallGraph = {
+  all: string[],
+  called: Map<string, string[]>
+}
+
+export function print(fns: CallGraph){
+    // Output
+    console.log('');
+    console.log('======================================');
+    console.log(fns.all);
+    console.log('--------------------------------------');
+    console.log(fns.called);
+    console.log('--------------------------------------');
+    console.log('Functions: \t\t\t', fns.all.length);
+    console.log('Functions that call others: \t', fns.called.size);
+    console.log('--------------------------------------');
+}
+
+
 // =================================================================================================
 
 /**
@@ -134,7 +154,7 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
   // logNode(node, sourceFile, indentLevel);
   if (!already_inspected){
 
-    if (node.arguments){
+    if ('arguments' in node && node.arguments){
         for (const arg of node.arguments) {
             let subgraph = extractFunctionCalls(arg, sourceFile, indentLevel + 1, contextFn);
             graph.all = graph.all.concat(subgraph.all)
@@ -263,22 +283,4 @@ export function createCallGraph(source: ts.SourceFile): CallGraph {
     });
    
     return callgraph;
-  }
-
-  export type CallGraph = {
-      all: string[],
-      called: Map<string, string[]>
-  }
-
-  export function print(fns: CallGraph){
-    // Output
-    console.log('');
-    console.log('======================================');
-    console.log(fns.all);
-    console.log('--------------------------------------');
-    console.log(fns.called);
-    console.log('--------------------------------------');
-    console.log('Functions: \t\t\t', fns.all.length);
-    console.log('Functions that call others: \t', fns.called.size);
-    console.log('--------------------------------------');
   }

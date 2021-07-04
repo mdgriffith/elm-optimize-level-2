@@ -29,7 +29,8 @@ const defaultOptions: Transforms = {
   unusedValues: false,
   replaceListFunctions: true,
   replaceStringFunctions: true,
-  v8Analysis: true
+  v8Analysis: true,
+  replacements: null
 };
 
 const options = {
