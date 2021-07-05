@@ -101,9 +101,6 @@ _global.v8 = {
     isSmi: function(data) {
         return %IsSmi(data);
     },
-    isValidSmi: function(data) {
-       return %IsValidSmi(data);
-    },
     neverOptimizeFunction: function(func) {
         return %NeverOptimizeFunction(func);
     },
