@@ -1,8 +1,7 @@
 {
     "type": "application",
     "source-directories": [
-        ".",
-        "../benchmark-utilities"
+        "."
     ],
     "elm-version": "0.19.1",
     "dependencies": {
