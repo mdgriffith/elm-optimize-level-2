@@ -136,14 +136,11 @@ export const terminal = (report: Results): string => {
              if (item.v8.memory.length > 0){
                 buffer.push("   " + chalk.yellow("Memory representation"))
                 for (const mem of item.v8.memory){
-                     buffer.push("        " + mem.name + "\n" + indent(8, JSON.stringify(mem.representation,null, 4)) )
+                     buffer.push("       " + mem.name + "\n          " + mem.representation.join("\n          "))
+                     buffer.push("")
                 }
-                buffer.push("")
              }
-
           }
-
-
         } else {
           console.log('FAILURE', item);
         }
@@ -158,6 +155,17 @@ export const terminal = (report: Results): string => {
 
   return buffer.join('\n');
 };
+
+function v8MemoryDescription(representation) {
+    let descriptors = []
+    for (const key in representation){
+        if (representation[key]) {
+            descriptors.push(key)
+        }
+    }
+    return descriptors
+}
+
 
 // Render results as markdown
 export const markdown = (report: Results): string => {
@@ -421,7 +429,6 @@ export function reformat(results: any): any {
 
 
 function reformatV8(val: any){
-    console.log(val)
     let gathered = {uncalled: [], optimized: [], interpreted: [], other: [], memory: []}
     if (val == null) {
         return gathered
@@ -438,7 +445,7 @@ function reformatV8(val: any){
         }
     }
     for (const key in val.memory){
-        gathered.memory.push({name: key, representation: val.memory[key] })
+        gathered.memory.push({name: key, representation: v8MemoryDescription(val.memory[key]) })
     }
     return gathered
 }
