@@ -1,8 +1,29 @@
-module V8.Debug exposing (memory, optimizationStatus, reportV8StatusForBenchmarks)
+module V8.Debug exposing (runMemory,enableMemoryChecks, MemoryAnalyzer, analyzeMemory, memory, optimizationStatus, reportV8StatusForBenchmarks)
 
 {-| -}
 
 import Json.Encode
+
+
+
+type MemoryAnalyzer =
+    Memory (List (() -> ()))
+
+analyzeMemory : List (() -> ()) -> MemoryAnalyzer
+analyzeMemory =
+    Memory
+
+runMemory : MemoryAnalyzer -> ()
+runMemory (Memory fns) =
+    let
+        _ = List.map (\fn -> fn ()) fns
+    in
+    ()
+
+
+enableMemoryChecks : () -> ()
+enableMemoryChecks _ =
+    ()
 
 
 memory : String -> a -> a
@@ -44,7 +65,7 @@ optimizationStatus tag value =
     hasSloppyArgumentsElements obj
 
 -}
-type alias Memory =
+type alias MemoryProperties =
     { tag : String
     , hasFastProperties : Bool
     , hasFastSmiElements : Bool

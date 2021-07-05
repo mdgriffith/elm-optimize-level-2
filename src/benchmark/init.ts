@@ -28,15 +28,19 @@ const main = `port module V8.Benchmark exposing (main)
 import V8.Benchmark.Runner.Json
 import Suite
 import Json.Encode
+import V8.Debug
 
 main : V8.Benchmark.Runner.Json.JsonBenchmark
 main =
-    V8.Benchmark.Runner.Json.program reportResults Suite.suite
+    V8.Benchmark.Runner.Json.program
+        reportResults
+        Suite.suite
+        (V8.Debug.analyzeMemory [])
 
 port reportResults : Json.Encode.Value -> Cmd msg
 `
 
-const runner = `module V8.Benchmark.Runner.Json exposing (JsonBenchmark, program)
+const runner = `module V8.Benchmark.Runner.Json exposing ( JsonBenchmark, program)
 
 import Benchmark exposing (Benchmark)
 import Benchmark.Reporting
@@ -56,11 +60,11 @@ type alias JsonBenchmark =
 
 {-| A benchmark runner which will send results out a port when done.
 -}
-program : (Encode.Value -> Cmd Msg) -> Benchmark -> Program () Model Msg
-program sendReport benchmark =
+program : (Encode.Value -> Cmd Msg) -> Benchmark -> V8.Debug.MemoryAnalyzer -> Program () Model Msg
+program sendReport benchmark analyzeMemory =
     Browser.element
         { init = init benchmark
-        , update = update sendReport
+        , update = update sendReport analyzeMemory
         , view = view
         , subscriptions = \_ -> Sub.none
         }
@@ -78,12 +82,17 @@ init benchmark _ =
 type Msg
     = Update Benchmark
 
-
-update : (Encode.Value -> Cmd Msg) -> Msg -> Model -> ( Model, Cmd Msg )
-update sendReport msg model =
+update : (Encode.Value -> Cmd Msg) ->  V8.Debug.MemoryAnalyzer ->  Msg -> Model -> ( Model, Cmd Msg )
+update sendReport memory msg model =
     case msg of
         Update benchmark ->
             if Benchmark.done benchmark then
+                let
+                    _ = V8.Debug.enableMemoryChecks ()
+                    _ =
+                        V8.Debug.runMemory memory
+
+                in
                 ( benchmark
                 , sendReport
                     (Encode.object
@@ -92,6 +101,7 @@ update sendReport msg model =
                         ]
                     )
                 )
+
             else
                 ( benchmark
                 , next benchmark
@@ -111,7 +121,7 @@ next benchmark =
     else
         Benchmark.step benchmark
             |> breakForRender
-            |> Task.perform Update
+            |> Task.perform (Update)
 
 
 
@@ -243,18 +253,40 @@ runsPerSecond =
     Trend.line
         >> (\a -> Trend.predictX a 1000)
         >> floor
+
 `
 
-const debug = `module V8.Debug exposing (memory, optimizationStatus, reportV8StatusForBenchmarks)
+const debug = `module V8.Debug exposing (runMemory,enableMemoryChecks, MemoryAnalyzer, analyzeMemory, memory, optimizationStatus, reportV8StatusForBenchmarks)
 
 {-| -}
 
 import Json.Encode
 
 
+
+type MemoryAnalyzer =
+    Memory (List (() -> ()))
+
+analyzeMemory : List (() -> ()) -> MemoryAnalyzer
+analyzeMemory =
+    Memory
+
+runMemory : MemoryAnalyzer -> ()
+runMemory (Memory fns) =
+    let
+        _ = List.map (\fn -> fn ()) fns
+    in
+    ()
+
+
+enableMemoryChecks : () -> ()
+enableMemoryChecks _ =
+    ()
+
+
 memory : String -> a -> a
-memory tag value =
-    value
+memory tag v =
+    v
 
 
 type Status
@@ -291,7 +323,7 @@ optimizationStatus tag value =
     hasSloppyArgumentsElements obj
 
 -}
-type alias Memory =
+type alias MemoryProperties =
     { tag : String
     , hasFastProperties : Bool
     , hasFastSmiElements : Bool
@@ -309,4 +341,5 @@ type alias Memory =
 reportV8StatusForBenchmarks : () -> Json.Encode.Value
 reportV8StatusForBenchmarks _ =
     Json.Encode.null
+
 `

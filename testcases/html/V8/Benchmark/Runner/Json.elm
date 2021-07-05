@@ -1,4 +1,4 @@
-module V8.Benchmark.Runner.Json exposing (JsonBenchmark, program)
+module V8.Benchmark.Runner.Json exposing ( JsonBenchmark, program)
 
 import Benchmark exposing (Benchmark)
 import Benchmark.Reporting
@@ -18,11 +18,11 @@ type alias JsonBenchmark =
 
 {-| A benchmark runner which will send results out a port when done.
 -}
-program : (Encode.Value -> Cmd Msg) -> Benchmark -> Program () Model Msg
-program sendReport benchmark =
+program : (Encode.Value -> Cmd Msg) -> Benchmark -> V8.Debug.MemoryAnalyzer -> Program () Model Msg
+program sendReport benchmark analyzeMemory =
     Browser.element
         { init = init benchmark
-        , update = update sendReport
+        , update = update sendReport analyzeMemory
         , view = view
         , subscriptions = \_ -> Sub.none
         }
@@ -40,15 +40,16 @@ init benchmark _ =
 type Msg
     = Update Benchmark
 
-test = List.repeat 5 87
-
-update : (Encode.Value -> Cmd Msg) -> Msg -> Model -> ( Model, Cmd Msg )
-update sendReport msg model =
+update : (Encode.Value -> Cmd Msg) ->  V8.Debug.MemoryAnalyzer ->  Msg -> Model -> ( Model, Cmd Msg )
+update sendReport memory msg model =
     case msg of
         Update benchmark ->
             if Benchmark.done benchmark then
                 let
-                    x = test |> V8.Debug.memory "myValue"
+                    _ = V8.Debug.enableMemoryChecks ()
+                    _ =
+                        V8.Debug.runMemory memory
+
                 in
                 ( benchmark
                 , sendReport
@@ -58,6 +59,7 @@ update sendReport msg model =
                         ]
                     )
                 )
+
             else
                 ( benchmark
                 , next benchmark
@@ -77,7 +79,7 @@ next benchmark =
     else
         Benchmark.step benchmark
             |> breakForRender
-            |> Task.perform Update
+            |> Task.perform (Update)
 
 
 

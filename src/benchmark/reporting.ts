@@ -1032,6 +1032,8 @@ const htmlTemplate = `
   <body>
     <div id="myapp"></div>
     <script>
+      window.memoryCheckReady = false
+      window.memory = {}
       function start() {
         var app = Elm.V8.Benchmark.init({
           node: document.getElementById('myapp'),

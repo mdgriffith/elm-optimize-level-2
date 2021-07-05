@@ -56,51 +56,45 @@ The stubbed version of the functions are:
 */
 
 
+const ENABLE_MEMORY_COLLECTION = '$author$project$V8$Debug$enableMemoryChecks';
+const new_memory_collection_enabled = `$author$project$V8$Debug$enableMemoryChecks = function (v) {
+    window.memoryCheckReady = true
+});`;
+
+
 const DEBUG_MEMORY_FN = '$author$project$V8$Debug$memory';
 const new_memory = `$author$project$V8$Debug$memory = F2(function (tag, value) {
-    if (v8 && v8.isNative()) {
-         if (!window.memory) {
-            window.memory = {}
-         }
+    if (v8 && window.memoryCheckReady) {
          if (tag in window.memory) {
             return value
          } else {
-            window.memory[tag] = {
-                 hasFastProperties: v8.hasFastProperties(value),
-                 hasFastPackedElements: v8.hasFastPackedElements(value),
-                 hasDoubleElements: v8.hasDoubleElements(value),
-                 hasDictionaryElements: v8.hasDictionaryElements(value),
-                 isSmi: v8.isSmi(value)
-                 hasSmiOrObjectElements: v8.hasSmiOrObjectElements(value),
-                 hasSloppyArgumentsElements: v8.hasSloppyArgumentsElements(value)
+            if (v8.isSmi(value)) {
+                window.memory[tag] = {
+                     hasFastProperties: false,
+                     hasFastPackedElements: false,
+                     hasDoubleElements: false,
+                     hasDictionaryElements: false,
+                     isSmi: true
+                     hasSmiOrObjectElements: false,
+                     hasSloppyArgumentsElements: false,
+                }
+            } else {
+                window.memory[tag] = {
+                     hasFastProperties: v8.hasFastProperties(value),
+                     hasFastPackedElements: v8.hasFastPackedElements(value),
+                     hasDoubleElements: v8.hasDoubleElements(value),
+                     hasDictionaryElements: v8.hasDictionaryElements(value),
+                     isSmi: false
+                     hasSmiOrObjectElements: v8.hasSmiOrObjectElements(value),
+                     hasSloppyArgumentsElements: v8.hasSloppyArgumentsElements(value)
+                }
             }
-
          }
      }
     return value;
 });`;
 
-const FULL = `$author$project$V8$Debug$memory = F2(function (tag, value) {
-    console.log("TEST")
-//     if (v8 && v8.isNative()) {
-        // console.log("MEMORY ANALYSIS", value)
-//         var analysis = {
-//             hasFastProperties: v8.hasFastProperties(value),
-//             hasFastSmiElements: v8.hasFastSmiElements(value),
-//             hasFastObjectElements: v8.hasFastObjectElements(value),
-//             hasFastDoubleElements: v8.hasFastDoubleElements(value),
-//             hasDictionaryElements: v8.hasDictionaryElements(value),
-//             hasFastHoleyElements: v8.hasFastHoleyElements(value),
-//             isValidSmi: v8.isValidSmi(value),
-//             isSmi: v8.isSmi(value)
-//             hasFastSmiOrObjectElements: v8.hasFastSmiOrObjectElements(value),
-//             hasSloppyArgumentsElements: v8.hasSloppyArgumentsElements(value)
-//         }
-//         console.log(v8);
-//     }
-    console.log(value)
-    return value;
-})`;
+
 
 const DEBUG_OPT_STATUS_FN = '$author$project$V8$Debug$optimizationStatus';
 const new_opt_status = `$author$project$V8$Debug$optimizationStatus = F2(function (tag, fn) {
@@ -164,7 +158,12 @@ export const v8Debug: ts.TransformerFactory<ts.SourceFile> = context => {
                     node.name.text == DEBUG_OPT_STATUS_FN
                 ) {
                     return create(DEBUG_OPT_STATUS_FN, ast(new_opt_status));
-                } 
+                } else if (
+                    ts.isIdentifier(node.name) &&
+                    node.name.text == ENABLE_MEMORY_COLLECTION
+                ) {
+                    return create(ENABLE_MEMORY_COLLECTION, ast(new_memory_collection_enabled));
+                }
             }
             return ts.visitEachChild(node, visitor, context);
         };
