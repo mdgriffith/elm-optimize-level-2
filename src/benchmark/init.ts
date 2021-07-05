@@ -15,7 +15,7 @@ export function generate(dir: string){
     fs.mkdirSync(path.join(dir, "V8", "Benchmark", "Runner"), {recursive: true})
 
     fs.writeFileSync(path.join(dir, "V8", "Benchmark.elm"), main)
-    fs.writeFileSync(path.join(dir, "V8", "Benchmark", "Runner", "Json.elm"), main)
+    fs.writeFileSync(path.join(dir, "V8", "Benchmark", "Runner", "Json.elm"), runner)
     fs.writeFileSync(path.join(dir, "V8", "Debug.elm"),debug)
 }
 
@@ -25,13 +25,13 @@ const main = `port module V8.Benchmark exposing (main)
 {-| -}
 
 
-import Benchmark.Runner.Json
+import V8.Benchmark.Runner.Json
 import Suite
 import Json.Encode
 
-main : Benchmark.Runner.Json.JsonBenchmark
+main : V8.Benchmark.Runner.Json.JsonBenchmark
 main =
-    Benchmark.Runner.Json.program reportResults Suite.suite
+    V8.Benchmark.Runner.Json.program reportResults Suite.suite
 
 port reportResults : Json.Encode.Value -> Cmd msg
 `
