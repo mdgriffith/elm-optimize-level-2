@@ -103,7 +103,7 @@ export const terminal = (report: Results): string => {
           buffer.push(label.padEnd(60, ' ') + datapoint);
 
           if (item.v8) {
-            if (item.v8.uncalled.length + item.v8.interpreted.length + item.v8.optimized.length + item.v8.other.length > 0) {
+            if (item.v8.uncalled.length + item.v8.interpreted.length + item.v8.optimized.length + item.v8.other.length + item.v8.memory.length > 0) {
                 buffer.push("")
             }
 
@@ -132,6 +132,15 @@ export const terminal = (report: Results): string => {
                 buffer.push("       " + item.v8.uncalled.join("\n       ") )
                 buffer.push("")
             }
+
+             if (item.v8.memory.length > 0){
+                buffer.push("   " + chalk.yellow("Memory representation"))
+                for (const mem of item.v8.memory){
+                     buffer.push("        " + mem.name + "\n" + indent(8, JSON.stringify(mem.representation,null, 4)) )
+                }
+                buffer.push("")
+             }
+
           }
 
 
@@ -412,17 +421,24 @@ export function reformat(results: any): any {
 
 
 function reformatV8(val: any){
-    let gathered = {uncalled: [], optimized: [], interpreted: [], other: []}
-    for (const key in val){
+    console.log(val)
+    let gathered = {uncalled: [], optimized: [], interpreted: [], other: [], memory: []}
+    if (val == null) {
+        return gathered
+    }
+    for (const key in val.fns){
         if (key.startsWith("$elm_explorations$benchmark$Benchmark$") || key == "_Benchmark_operation"){
             continue
         }
-        const status: string = val[key].status
+        const status: string = val.fns[key].status
         if (status in gathered) {
             gathered[status].push(key)
         } else {
             gathered.other.push( {status: status, name: key} )
         }
+    }
+    for (const key in val.memory){
+        gathered.memory.push({name: key, representation: val.memory[key] })
     }
     return gathered
 }
@@ -514,13 +530,6 @@ export const run = async function (
         path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz')
       );
     }
-    
-    if (options.transforms.v8Analysis) {
-      await Post.includeV8Helpers(path.join(instance.dir, 'output'))
-    } else {
-      await Post.includeStubbedV8Helpers(path.join(instance.dir, 'output'))
-    }
-
 
     if (options.assetSizes) {
       assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
@@ -548,6 +557,7 @@ export const run = async function (
                 );
       }
   }
+  console.log(results)
 
   return { assets: assets, benchmarks: reformat(results) };
 };
@@ -708,6 +718,7 @@ export const runWithBreakdown = async function (
         )
       );
     }
+
 
     let steps = breakdown(options.transforms);
     for (let i in steps) {
@@ -1069,3 +1080,7 @@ async function prepare_boilerplate(
 }
 
 
+
+function indent(level, str) {
+    return " ".repeat(level) + str.split("\n").join("\n" + " ".repeat(level))
+}

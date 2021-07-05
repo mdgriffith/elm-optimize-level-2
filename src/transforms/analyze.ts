@@ -43,11 +43,11 @@ import {createCallGraph, print, getCalled} from './utils/callgraph';
 
 The stubbed version of the functions are:
 
-    var $author$project$Debug$V8$report = function (_v0) {
+    var $author$project$V8$Debug$report = function (_v0) {
         return $elm$json$Json$Encode$null;
     };
 
-    var $author$project$Debug$V8$analyze = F2(function (tag, value) {
+    var $author$project$V8$Debug$analyze = F2(function (tag, value) {
             return value;
         });
 
@@ -56,30 +56,54 @@ The stubbed version of the functions are:
 */
 
 
-const DEBUG_MEMORY_FN = '$author$project$Debug$V8$memory';
-const new_memory = `$author$project$Debug$V8$memory = F2(function (tag, value) {
-    console.log("TEST")
+const DEBUG_MEMORY_FN = '$author$project$V8$Debug$memory';
+const new_memory = `$author$project$V8$Debug$memory = F2(function (tag, value) {
     if (v8 && v8.isNative()) {
+         if (!window.memory) {
+            window.memory = {}
+         }
+         if (tag in window.memory) {
+            return value
+         } else {
+            window.memory[tag] = {
+                 hasFastProperties: v8.hasFastProperties(value),
+                 hasFastPackedElements: v8.hasFastPackedElements(value),
+                 hasDoubleElements: v8.hasDoubleElements(value),
+                 hasDictionaryElements: v8.hasDictionaryElements(value),
+                 isSmi: v8.isSmi(value)
+                 hasSmiOrObjectElements: v8.hasSmiOrObjectElements(value),
+                 hasSloppyArgumentsElements: v8.hasSloppyArgumentsElements(value)
+            }
+
+         }
+     }
+    return value;
+});`;
+
+const FULL = `$author$project$V8$Debug$memory = F2(function (tag, value) {
+    console.log("TEST")
+//     if (v8 && v8.isNative()) {
         // console.log("MEMORY ANALYSIS", value)
-        var analysis = {
-            hasFastProperties: v8.hasFastProperties(value),
-            // hasFastSmiElements: v8.hasFastSmiElements(value),
-            // hasFastObjectElements: v8.hasFastObjectElements(value),
-            // hasFastDoubleElements: v8.hasFastDoubleElements(value),
-            hasDictionaryElements: v8.hasDictionaryElements(value),
-            // hasFastHoleyElements: v8.hasFastHoleyElements(value),
-            // isValidSmi: v8.isValidSmi(value),
-            isSmi: v8.isSmi(value),
-            // hasFastSmiOrObjectElements: v8.hasFastSmiOrObjectElements(value),
-            hasSloppyArgumentsElements: v8.hasSloppyArgumentsElements(value)
-        }
-        // console.log(tag, analysis);
-    }
+//         var analysis = {
+//             hasFastProperties: v8.hasFastProperties(value),
+//             hasFastSmiElements: v8.hasFastSmiElements(value),
+//             hasFastObjectElements: v8.hasFastObjectElements(value),
+//             hasFastDoubleElements: v8.hasFastDoubleElements(value),
+//             hasDictionaryElements: v8.hasDictionaryElements(value),
+//             hasFastHoleyElements: v8.hasFastHoleyElements(value),
+//             isValidSmi: v8.isValidSmi(value),
+//             isSmi: v8.isSmi(value)
+//             hasFastSmiOrObjectElements: v8.hasFastSmiOrObjectElements(value),
+//             hasSloppyArgumentsElements: v8.hasSloppyArgumentsElements(value)
+//         }
+//         console.log(v8);
+//     }
+    console.log(value)
     return value;
 })`;
 
-const DEBUG_OPT_STATUS_FN = '$author$project$Debug$V8$optimizationStatus';
-const new_opt_status = `$author$project$Debug$V8$optimizationStatus = F2(function (tag, fn) {
+const DEBUG_OPT_STATUS_FN = '$author$project$V8$Debug$optimizationStatus';
+const new_opt_status = `$author$project$V8$Debug$optimizationStatus = F2(function (tag, fn) {
     if (v8.isNative()) {
         var opt_status = v8.getOptimizationStatus(fn);
         var binary = opt_status.toString(2).padStart(12, '0');
@@ -92,7 +116,7 @@ const new_opt_status = `$author$project$Debug$V8$optimizationStatus = F2(functio
 
 
 // Reporting status automatically for benchmarked fns
-const DEBUG_REPORT_FN = '$author$project$Debug$V8$reportV8StatusForBenchmarks';
+const DEBUG_REPORT_FN = '$author$project$V8$Debug$reportV8StatusForBenchmarks';
 const reportAnalysis = function(fns: string[]) {
     let fns_string = "";
     
@@ -101,7 +125,7 @@ const reportAnalysis = function(fns: string[]) {
     }
     
 
-    return `$author$project$Debug$V8$reportV8StatusForBenchmarks = function (_v0) {
+    return `$author$project$V8$Debug$reportV8StatusForBenchmarks = function (_v0) {
     var fns = [ ${fns_string} ]
     var results = {}
     if (v8.isNative()) {
@@ -121,7 +145,7 @@ const reportAnalysis = function(fns: string[]) {
 
         }
     }
-    return results;
+    return { fns: results, memory: window.memory  };
 }`
 }
 
