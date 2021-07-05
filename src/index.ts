@@ -144,7 +144,7 @@ function hasReplacements(args: string[]){
 }
 
 
-function readFilesSync(dir) {
+function readFilesSync(dir: string) {
   let foundAnything = false
   const files = {};
 
