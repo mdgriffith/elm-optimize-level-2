@@ -22,6 +22,8 @@ _These are resources that discuss specifics about what matters for Javascript pe
 
 [Example of looking at IC to check polymorphism](https://benediktmeurer.de/2018/03/23/impact-of-polymorphism-on-component-based-frameworks-like-react/)
 
+[JavaScript engine fundamentals: optimizing prototypes](https://mathiasbynens.be/notes/prototypes)
+
 
 ## Transforming JS code
 
