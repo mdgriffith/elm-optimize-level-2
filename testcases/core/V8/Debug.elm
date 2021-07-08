@@ -1,13 +1,18 @@
-module V8.Debug exposing (memory, optimizationStatus, reportV8StatusForBenchmarks)
+module V8.Debug exposing (enableMemoryChecks, memory, optimizationStatus, reportV8StatusForBenchmarks)
 
 {-| -}
 
 import Json.Encode
 
 
+enableMemoryChecks : () -> ()
+enableMemoryChecks _ =
+    ()
+
+
 memory : String -> a -> a
-memory tag value =
-    value
+memory tag v =
+    v
 
 
 type Status
@@ -44,7 +49,7 @@ optimizationStatus tag value =
     hasSloppyArgumentsElements obj
 
 -}
-type alias Memory =
+type alias MemoryProperties =
     { tag : String
     , hasFastProperties : Bool
     , hasFastSmiElements : Bool

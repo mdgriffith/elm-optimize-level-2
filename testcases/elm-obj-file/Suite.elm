@@ -2,9 +2,7 @@ module Suite exposing (suite)
 
 {-| -}
 
-import Benchmark exposing (..)
-import Benchmark.Runner exposing (BenchmarkProgram, program)
-import Benchmark.Runner.Json
+import V8.Benchmark.Runner.Json as Benchmark exposing (..)
 import Html
 import Json.Encode
 import Length

@@ -451,8 +451,8 @@ import Trend.Math as Math
 
 
 {-| Ways a benchmark can fail, expressed as either at runtime (in
-which case we have a `LowLevel.Error`) or while analyzing data (in
-which case we have a `Trend.Math.Error`.)
+which case we have a \`LowLevel.Error\`) or while analyzing data (in
+which case we have a \`Trend.Math.Error\`.)
 -}
 type Error
     = MeasurementError LowLevel.Error
@@ -461,25 +461,25 @@ type Error
 
 {-| Indicate the status of a benchmark.
 
-  - `Cold`: We have not warmed up the JIT yet.
+  - \`Cold\`: We have not warmed up the JIT yet.
 
-  - `Unsized`: We have not yet determined the best sample size for
+  - \`Unsized\`: We have not yet determined the best sample size for
     this benchmark.
 
-  - `Pending`: We are in the process of collecting sample data. We
+  - \`Pending\`: We are in the process of collecting sample data. We
     will keep collecting sample data using the base sample size (first
-    argument) until we have enough samples (`numBuckets *
-    samplesPerBucket`.) We also store samples while in progress
+    argument) until we have enough samples (\`numBuckets *
+    samplesPerBucket\`.) We also store samples while in progress
     (second argument.)
 
-  - `Failure`: We ran into an exception while collecting sample
-    data. The attached `Error` tells us what went wrong.
+  - \`Failure\`: We ran into an exception while collecting sample
+    data. The attached \`Error\` tells us what went wrong.
 
-  - `Success`: We finished collecting all our sample data (first
+  - \`Success\`: We finished collecting all our sample data (first
     argument.) We've calculated a trend using this data (second
     argument.)
 
-See "The Life of a Benchmark" in the docs for `Benchmark` for an
+See "The Life of a Benchmark" in the docs for \`Benchmark\` for an
 explanation of how these fit together.
 
 -}
@@ -492,7 +492,7 @@ type Status
 
 
 {-| How far along is this benchmark? This is a percentage, represented
-as a `Float` between `0` and `1`.
+as a \`Float\` between \`0\` and \`1\`.
 -}
 progress : Status -> Float
 progress status =
@@ -601,7 +601,7 @@ record sampleSize sample (Samples samplesDict) =
             samplesDict
 
 
-{-| A point representing `(sampleSize, runtime)`.
+{-| A point representing \`(sampleSize, runtime)\`.
 -}
 type alias Point =
     ( Float, Float )
@@ -643,7 +643,7 @@ groups (Samples samples) =
         |> Result.withDefault ( samples, Dict.empty )
 
 
-{-| The `(sampleSize, runtime)` coordinates for plotting or
+{-| The \`(sampleSize, runtime)\` coordinates for plotting or
 calculation. The first item in the tuple is the points to be used for
 consideration in a trend. The second item contains the outliers.
 -}

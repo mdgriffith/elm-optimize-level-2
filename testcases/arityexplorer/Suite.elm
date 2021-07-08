@@ -2,7 +2,7 @@ module Suite exposing (suite)
 
 {-| -}
 
-import Benchmark exposing (..)
+import V8.Benchmark.Runner.Json exposing (..)
 
 
 
