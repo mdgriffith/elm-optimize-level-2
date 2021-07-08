@@ -2,12 +2,11 @@ module Suite exposing (suite)
 
 {-| -}
 
-import Benchmark exposing (..)
-
+import V8.Benchmark.Runner.Json exposing (..)
 import Element2 exposing (..)
 import Element2.Background as Background
 import Element2.Font as Font
-
+import V8.Debug
 
 
 
@@ -36,7 +35,7 @@ viewLevels level _ =
 
     else
         row
-            [ Font.size 16
-            , Background.color blue
+            [ V8.Debug.memory "font size" (Font.size 16)
+            , V8.Debug.memory "bg:blue" (Background.color blue)
             ]
             (List.map (viewLevels (level - 1)) three)
