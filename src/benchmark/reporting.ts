@@ -156,7 +156,7 @@ export const terminal = (report: Results): string => {
   return buffer.join('\n');
 };
 
-function v8MemoryDescription(representation) {
+function v8MemoryDescription(representation: Memory): string[] {
     let descriptors = []
     for (const key in representation){
         if (representation[key]) {
@@ -426,10 +426,24 @@ export function reformat(results: any): any {
   return reformed;
 }
 
+type V8Data = {
+    fns: { [key: string]: { status: string }; },
+    memory: { [key: string]:  Memory }
+}
 
+type Memory =
+    { [key: string]: boolean }
 
-function reformatV8(val: any){
-    let gathered = {uncalled: [], optimized: [], interpreted: [], other: [], memory: []}
+type V8FormattedData = {
+    uncalled: string[],
+    optimized: string[],
+    interpreted: string[],
+    other: {status: string, name: string}[]
+    memory: {name: string, representation: string[]}[]
+}
+
+function reformatV8(val: V8Data | null): V8FormattedData {
+    let gathered: V8FormattedData = {uncalled: [], optimized: [], interpreted: [], other: [], memory: []}
     if (val == null) {
         return gathered
     }
@@ -438,11 +452,26 @@ function reformatV8(val: any){
             continue
         }
         const status: string = val.fns[key].status
-        if (status in gathered) {
-            gathered[status].push(key)
-        } else {
-            gathered.other.push( {status: status, name: key} )
+
+        switch(status) {
+           case 'uncalled': {
+              gathered.uncalled.push(key)
+              break;
+           }
+           case 'optimized': {
+              gathered.optimized.push(key)
+              break;
+           }
+           case 'interpreted': {
+              gathered.interpreted.push(key)
+              break;
+           }
+           default: {
+              gathered.other.push( {status: status, name: key} )
+              break;
+           }
         }
+
     }
     for (const key in val.memory){
         gathered.memory.push({name: key, representation: v8MemoryDescription(val.memory[key]) })
@@ -1090,6 +1119,6 @@ async function prepare_boilerplate(
 
 
 
-function indent(level, str) {
+function indent(level: number, str: string) {
     return " ".repeat(level) + str.split("\n").join("\n" + " ".repeat(level))
 }

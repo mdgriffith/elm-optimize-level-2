@@ -79,9 +79,15 @@ export const transform = async (
     source = results.transformed[0];
   }
 
+  let replacementTransformer = inlineEquality()
+  if (transforms.replacements != null){
+    replacementTransformer = Replace.replace(transforms.replacements)
+  }
+
+
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
-    [transforms.replacements != null, Replace.replace(transforms.replacements)],
+    [transforms.replacements != null, replacementTransformer ],
     [transforms.replaceListFunctions, replaceListFunctions],
     [transforms.replaceStringFunctions, replaceStringFunctions],
     [transforms.v8Analysis, v8Debug],

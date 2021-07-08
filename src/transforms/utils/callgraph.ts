@@ -153,8 +153,7 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
 
   // logNode(node, sourceFile, indentLevel);
   if (!already_inspected){
-
-    if ('arguments' in node && node.arguments){
+    if (ts.isCallExpression(node)) {
         for (const arg of node.arguments) {
             let subgraph = extractFunctionCalls(arg, sourceFile, indentLevel + 1, contextFn);
             graph.all = graph.all.concat(subgraph.all)

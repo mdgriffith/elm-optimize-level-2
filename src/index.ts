@@ -144,9 +144,9 @@ function hasReplacements(args: string[]){
 }
 
 
-function readFilesSync(dir: string) {
+function readFilesSync(dir: string): {[key: string]: string} | null {
   let foundAnything = false
-  const files = {};
+  const files: {[key: string]: string} = {};
 
   fs.readdirSync(dir).forEach(filename => {
     const name = path.parse(filename).name;

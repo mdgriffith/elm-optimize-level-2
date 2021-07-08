@@ -3,12 +3,9 @@ import ts, { isIdentifier } from 'typescript';
 import { ast } from './utils/create';
 
 export const replace = (
-  replacements: { [name: string]: string } | null
+  replacements: { [name: string]: string }
 ): ts.TransformerFactory<ts.SourceFile> => (context) => {
   return (sourceFile) => {
-        if (replacements == null) {
-            return null
-        }
         const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
             if (ts.isVariableStatement(node)) {
               const name = node.declarationList.declarations[0]?.name;
