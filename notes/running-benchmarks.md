@@ -48,6 +48,12 @@ Then:
 
 6. Profit?
 
+7. Once you have that working, you can use `V8.Debug.memory "my tag" someRandomValue` to inspect its' memory representation.
+
+   - `Smi` means SMall Integer and is great for performance.
+   - `fast properties` is generally the next step up.
+   - anything mentioning dictionary elements is slow.  I'm not sure if this shows up in elm, but might when using a type with a lot of variants that have a bunch of different shapes.
+
 
 
    
