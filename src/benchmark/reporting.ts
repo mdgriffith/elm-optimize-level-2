@@ -541,6 +541,11 @@ export const run = async function (
       options.verbose,
       options.transforms
     );
+    removeFilesFromDir(path.join(instance.dir, 'output'))
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', '.keep'),
+      ""
+    );
     fs.writeFileSync(path.join(instance.dir, 'output', 'elm.opt.js'), source);
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
@@ -593,8 +598,6 @@ export const run = async function (
                 );
       }
   }
-  console.log(results)
-
   return { assets: assets, benchmarks: reformat(results) };
 };
 
@@ -864,6 +867,12 @@ export const runWithKnockout = async function (
       options.transforms
     );
 
+    removeFilesFromDir(path.join(instance.dir, 'output'))
+
+    fs.writeFileSync(
+      path.join(instance.dir, 'output', '.keep'),
+      ""
+    );
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       final
@@ -1093,6 +1102,13 @@ const htmlTemplate = `
 
 */
 
+
+function removeFilesFromDir(dir: string){
+    const files = fs.readdirSync(dir)
+    for (const file of files) {
+        fs.unlinkSync(path.join(dir, file));
+    }
+}
 
 async function prepare_boilerplate(
     browser: BrowserOptions,
