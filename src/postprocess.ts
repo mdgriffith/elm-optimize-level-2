@@ -85,7 +85,7 @@ export async function gzip(file: string, output: string) {
   // --force = overwrite the exisign gzip file if it's there
   // execSync('gzip --keep --force ' + file);
   const fileContents = fs.readFileSync(file, 'utf8');
-  const promise = Compress.gzipAsync(fileContents, gzipOptions).then(compressed => {
+  const promise = await Compress.gzipAsync(fileContents, gzipOptions).then(compressed => {
     fs.writeFileSync(output, compressed);
   });
 
