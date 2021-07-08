@@ -2,10 +2,10 @@ module Suite exposing (suite)
 
 {-| -}
 
-import Benchmark exposing (..)
+import V8.Benchmark.Runner.Json exposing (..)
 import Html
 import Html.Attributes as Attr
-
+import V8.Debug
 
 
 
@@ -16,17 +16,24 @@ three =
 suite : Benchmark
 suite =
     describe "HTML"
-        [ benchmark "create a 4 level nested html tree" <|
-            \_ ->
-                Html.div []
-                    (List.map (viewLevels 4) three)
+        [ benchmark "create a 4 level nested html tree" view
         ]
 
 
+view _ =
+     let
+        _ = V8.Debug.memory "number - inner" 10
+
+        _ = V8.Debug.memory "list nums - inner" [10]
+
+    in
+    Html.div []
+        (List.map (viewLevels 4) three)
+
 viewLevels level _ =
-    if level == 0 then
+    if V8.Debug.memory "level" level == 0 then
         Html.text ""
 
     else
-        Html.div []
+        Html.div (V8.Debug.memory "attrs" [])
             (List.map (viewLevels (level - 1)) three)

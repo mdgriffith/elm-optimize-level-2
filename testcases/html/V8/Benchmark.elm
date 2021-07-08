@@ -7,12 +7,12 @@ import V8.Benchmark.Runner.Json
 import Suite
 import Json.Encode
 
+
 main : V8.Benchmark.Runner.Json.JsonBenchmark
 main =
     V8.Benchmark.Runner.Json.program
         reportResults
         Suite.suite
-        --(V8.Benchmark.Runner.Json.memory [])
-        Suite.memory
+
 
 port reportResults : Json.Encode.Value -> Cmd msg
