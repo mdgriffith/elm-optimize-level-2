@@ -115,6 +115,7 @@ const reportAnalysis = function(fns: string[]) {
     let fns_string = "";
     
     for (const fn_name of fns) {
+        if (fn_name == "html" || fn_name == "createNode"|| fn_name.startsWith("$author$project$V8")){  continue }
         fns_string = fns_string + "{ name: \"" + fn_name + "\", ref:" +  fn_name + "}"
     }
     
