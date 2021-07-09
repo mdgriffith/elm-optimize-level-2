@@ -103,6 +103,6 @@ export const benchmarkDefaults: Transforms = {
   unusedValues: false,
   replaceListFunctions: false,
   replaceStringFunctions: false,
-  v8Analysis: false,
+  v8Analysis: true,
   replacements: null
 };
