@@ -13,6 +13,12 @@ export const replace = (
                 const key = name.text as keyof typeof replacements;
                 return ast(replacements[key]);
               }
+            } else if (ts.isFunctionDeclaration(node)) {
+              const name = node.name;
+              if (isIdentifier(name) && name.text in replacements) {
+                const key = name.text as keyof typeof replacements;
+                return ast(replacements[key]);
+              }
             }
             return ts.visitEachChild(node, visitor, context);
         };
