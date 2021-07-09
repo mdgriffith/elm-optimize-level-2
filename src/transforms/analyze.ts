@@ -58,7 +58,12 @@ The stubbed version of the functions are:
 
 const ENABLE_MEMORY_COLLECTION = '$author$project$V8$Debug$enableMemoryChecks';
 const new_memory_collection_enabled = `$author$project$V8$Debug$enableMemoryChecks = function (v) {
-    window.memoryCheckReady = true
+    window.memoryCheckReady = false
+});`;
+
+const DISABLE_MEMORY_COLLECTION = '$author$project$V8$Debug$disableMemoryChecks';
+const new_memory_collection_disabled = `$author$project$V8$Debug$disableMemoryChecks = function (v) {
+    window.memoryCheckReady = false
 });`;
 
 
@@ -164,6 +169,11 @@ export const v8Debug: ts.TransformerFactory<ts.SourceFile> = context => {
                     node.name.text == ENABLE_MEMORY_COLLECTION
                 ) {
                     return create(ENABLE_MEMORY_COLLECTION, ast(new_memory_collection_enabled));
+                } else if (
+                    ts.isIdentifier(node.name) &&
+                    node.name.text == DISABLE_MEMORY_COLLECTION
+                ) {
+                    return create(DISABLE_MEMORY_COLLECTION, ast(new_memory_collection_disabled));
                 }
             }
             return ts.visitEachChild(node, visitor, context);

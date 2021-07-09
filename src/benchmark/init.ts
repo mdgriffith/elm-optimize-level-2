@@ -351,7 +351,7 @@ runsPerSecond =
         >> floor
 `
 
-const debug = `module V8.Debug exposing (enableMemoryChecks, memory, optimizationStatus, reportV8StatusForBenchmarks)
+const debug = `module V8.Debug exposing (enableMemoryChecks, disableMemoryChecks, memory, optimizationStatus, reportV8StatusForBenchmarks)
 
 {-| -}
 
@@ -360,6 +360,11 @@ import Json.Encode
 
 enableMemoryChecks : () -> ()
 enableMemoryChecks _ =
+    ()
+
+
+disableMemoryChecks : () -> ()
+disableMemoryChecks _ =
     ()
 
 
