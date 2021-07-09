@@ -72,12 +72,12 @@ export const unallowedChars = /[^A-Za-z0-9]/g;
 
 export const toolDefaults: Transforms = {
   replaceVDomNode: false,
-  variantShapes: true,
+  variantShapes: false,
   inlineNumberToString: false,
-  inlineEquality: true,
-  inlineFunctions: true,
+  inlineEquality: false,
+  inlineFunctions: false,
   listLiterals: false,
-  passUnwrappedFunctions: true,
+  passUnwrappedFunctions: false,
   arrowFns: false,
   shorthandObjectLiterals: false,
   objectUpdate: false,
@@ -91,18 +91,18 @@ export const toolDefaults: Transforms = {
 
 export const benchmarkDefaults: Transforms = {
   replaceVDomNode: false,
-  variantShapes: true,
+  variantShapes: false,
   inlineNumberToString: false,
-  inlineEquality: true,
-  inlineFunctions: true,
+  inlineEquality: false,
+  inlineFunctions: false,
   listLiterals: false,
-  passUnwrappedFunctions: true,
+  passUnwrappedFunctions: false,
   arrowFns: false,
   shorthandObjectLiterals: false,
   objectUpdate: false,
   unusedValues: false,
-  replaceListFunctions: true,
-  replaceStringFunctions: true,
-  v8Analysis: true,
+  replaceListFunctions: false,
+  replaceStringFunctions: false,
+  v8Analysis: false,
   replacements: null
 };
