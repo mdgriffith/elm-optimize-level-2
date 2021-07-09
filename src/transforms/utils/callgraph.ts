@@ -53,7 +53,6 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
     });
   }
 
-
   // Arrow function
   if (
     ts.isVariableDeclaration(node) &&
@@ -69,8 +68,6 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
     }
   }
 
-
-
   // Elm style function declarations with wrapper
   // i.e. var my_function = F3(function(x,y,z){ return a })
   let already_inspected: boolean = false;
@@ -81,31 +78,23 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
         const fn_var_name = node.name.text;
 
         contextFn = node.name.text;
-        graph.all.push(fn_var_name);
 
         // match F{n} wrapper
         const fnWrapper = node.initializer.expression.text.match(wrapperRegex);
         if (fnWrapper && fnWrapper.groups) {
+            graph.all.push(fn_var_name);
             node.initializer.forEachChild((child) => {
                 if (ts.isFunctionExpression(child)) {
                     graph.all.push(fn_var_name);
                     contextFn = fn_var_name
                     let subgraph = extractFunctionCalls(child, sourceFile, indentLevel + 1, contextFn);
 
-                    graph.all = graph.all.concat(subgraph.all)
+//                     graph.all = graph.all.concat(subgraph.all)
                     graph.all.push(contextFn)
                     graph.called = merge_maps(graph.called, subgraph.called)
                     already_inspected = true
                 } 
             })
-        } else {
-          contextFn = fn_var_name
-          let subgraph = extractFunctionCalls(node.initializer, sourceFile, indentLevel + 1, contextFn);
-
-          graph.all = graph.all.concat(subgraph.all)
-          graph.all.push(contextFn)
-          graph.called = merge_maps(graph.called, subgraph.called)
-          already_inspected = true
         }
 
     } else if (ts.isIdentifier(node.name)) {
@@ -118,13 +107,20 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
 
       } else {
         let subgraph = extractFunctionCalls(node.initializer, sourceFile, indentLevel + 1, contextFn);
-        graph.all = graph.all.concat(subgraph.all)
+//         graph.all = graph.all.concat(subgraph.all)
         graph.all.push(contextFn)
         graph.called = merge_maps(graph.called, subgraph.called)
         
       }
       already_inspected = true
     }
+  }
+
+
+  if (ts.isIdentifier(node) && (node.text.includes("$") ) ) {
+    var new_called = new Map()
+    new_called.set(contextFn, [node.text])
+    graph.called = merge_maps(graph.called, new_called)
   }
 
   // Looking for elm invocations
@@ -238,12 +234,15 @@ export function getCalled(graph: CallGraph, entry: string, already_called: undef
         continue
       }
       called.push(item)
-      // const item_called = getCalled(graph, item, called)
       called = getCalled(graph, item, called)
     }
   }
+
   return called
+
+
 }
+
 
 
 export function createCallGraph(source: ts.SourceFile): CallGraph {
