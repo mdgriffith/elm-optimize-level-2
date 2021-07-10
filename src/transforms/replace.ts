@@ -1,6 +1,6 @@
 
 import ts, { isIdentifier } from 'typescript';
-import { ast } from './utils/create';
+import { ast, astNodes } from './utils/create';
 
 export const replace = (
   replacements: { [name: string]: string }
@@ -12,6 +12,12 @@ export const replace = (
               if (isIdentifier(name) && name.text in replacements) {
                 const key = name.text as keyof typeof replacements;
                 return ast(replacements[key]);
+              }
+            } else if (ts.isFunctionDeclaration(node)) {
+              const name = node.name;
+              if (isIdentifier(name) && name.text in replacements) {
+                const key = name.text as keyof typeof replacements;
+                return astNodes(replacements[key]);
               }
             }
             return ts.visitEachChild(node, visitor, context);
