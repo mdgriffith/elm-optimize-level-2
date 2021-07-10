@@ -23,6 +23,27 @@ export function prepack(input: string): string {
   return code;
 }
 
+
+export type Post = {
+    minify: Boolean,
+    gzip: Boolean,
+}
+
+export async function process(file: string, options: Post) {
+    let pieces = file.split('.')
+    let ext = pieces.pop()
+    const base = pieces.join(".")
+    if (options.minify){
+        await minify( file, base + ".min." + ext );
+    }
+
+    if (options.minify && options.gzip) {
+       await gzip(  base + ".min." + ext, base + ".min." + ext + ".gz" );
+    }
+}
+
+
+
 export async function minify(inputFilename: string, outputFilename: string) {
   const compress = {
     toplevel: true,

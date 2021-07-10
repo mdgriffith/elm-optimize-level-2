@@ -551,26 +551,20 @@ export const run = async function (
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       transformed
     );
-    if (options.minify) {
-      await Post.minify(
+
+    await Post.process(
         path.join(instance.dir, 'output', 'elm.opt.js'),
-        path.join(instance.dir, 'output', 'elm.opt.min.js')
-      );
-      await Post.minify(
+        { minify: options.minify
+        , gzip: options.gzip
+        }
+    )
+
+    await Post.process(
         path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js')
-      );
-    }
-    if (options.minify && options.gzip) {
-      await Post.gzip(
-        path.join(instance.dir, 'output', 'elm.opt.min.js'),
-        path.join(instance.dir, 'output', 'elm.opt.min.js.gz')
-      );
-      await Post.gzip(
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'),
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz')
-      );
-    }
+        { minify: options.minify
+        , gzip: options.gzip
+        }
+    )
 
     if (options.assetSizes) {
       assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
@@ -725,7 +719,12 @@ export const runWithBreakdown = async function (
         },
     });
     fs.writeFileSync(path.join(instance.dir, 'output', 'elm.opt.js'), source);
-
+    await Post.process(
+        path.join(instance.dir, 'output', 'elm.opt.js'),
+        { minify: options.minify
+        , gzip: options.gzip
+        }
+    )
     const transformed = await Transform.transform(
       instance.dir,
       source,
@@ -738,6 +737,12 @@ export const runWithBreakdown = async function (
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       transformed
     );
+    await Post.process(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        { minify: options.minify
+        , gzip: options.gzip
+        }
+    )
 
     for (let browser of options.runBenchmark) {
         results.push(
@@ -771,25 +776,18 @@ export const runWithBreakdown = async function (
         options.verbose,
         steps[i].options
       );
+      const dashedLabel = steps[i].name.replace(unallowedChars, '-');
       fs.writeFileSync(
-        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.js`),
         intermediate
       );
 
-      const dashedLabel = steps[i].name.replace(unallowedChars, '-');
-
-      if (options.minify) {
-        await Post.minify(
-          path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-          path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js`)
-        );
-      }
-      if (options.minify && options.gzip) {
-        await Post.gzip(
-          path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js`),
-          path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.min.js.gz`)
-        );
-      }
+      await Post.process(
+        path.join(instance.dir, 'output', `elm.opt.${dashedLabel}.js`),
+        { minify: options.minify
+        , gzip: options.gzip
+        }
+      )
 
       for (let browser of options.runBenchmark) {
         results.push(
@@ -804,31 +802,6 @@ export const runWithBreakdown = async function (
       }
     }
 
-    fs.writeFileSync(
-      path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-      transformed
-    );
-
-    if (options.minify) {
-      await Post.minify(
-        path.join(instance.dir, 'output', 'elm.opt.js'),
-        path.join(instance.dir, 'output', 'elm.opt.min.js')
-      );
-      await Post.minify(
-        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js')
-      );
-    }
-    if (options.minify && options.gzip) {
-      await Post.gzip(
-        path.join(instance.dir, 'output', 'elm.opt.min.js'),
-        path.join(instance.dir, 'output', 'elm.opt.min.js.gz')
-      );
-      await Post.gzip(
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'),
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz')
-      );
-    }
     if (options.assetSizes) {
       assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
     }
@@ -881,6 +854,12 @@ export const runWithKnockout = async function (
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
       transformed
     );
+    await Post.process(
+        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        { minify: options.minify
+        , gzip: options.gzip
+        }
+    )
 
     for (let browser of options.runBenchmark) {
         results.push(
@@ -913,37 +892,17 @@ export const runWithKnockout = async function (
         options.verbose,
         steps[i].options
       );
+      const dashedLabel = steps[i].name.replace(unallowedChars, '-');
       fs.writeFileSync(
-        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
+        path.join(instance.dir, 'output', `elm.opt.minus-${dashedLabel}.js`),
         intermediate
       );
-
-      const dashedLabel = steps[i].name.replace(unallowedChars, '-');
-
-      if (options.minify) {
-        await Post.minify(
-          path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-          path.join(
-            instance.dir,
-            'output',
-            `elm.opt.minus-${dashedLabel}.min.js`
-          )
-        );
-      }
-      if (options.minify && options.gzip) {
-        await Post.gzip(
-          path.join(
-            instance.dir,
-            'output',
-            `elm.opt.minus-${dashedLabel}.min.js`
-          ),
-          path.join(
-            instance.dir,
-            'output',
-            `elm.opt.minus-${dashedLabel}.min.js.gz`
-          )
-        );
-      }
+      await Post.process(
+        path.join(instance.dir, 'output', `elm.opt.minus-${dashedLabel}.js`),
+        { minify: options.minify
+        , gzip: options.gzip
+        }
+      )
 
       for (let browser of options.runBenchmark) {
         results.push(
@@ -958,30 +917,7 @@ export const runWithKnockout = async function (
       }
     }
 
-    fs.writeFileSync(
-      path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-      transformed
-    );
-    if (options.minify) {
-      await Post.minify(
-        path.join(instance.dir, 'output', 'elm.opt.js'),
-        path.join(instance.dir, 'output', 'elm.opt.min.js')
-      );
-      await Post.minify(
-        path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js')
-      );
-    }
-    if (options.minify && options.gzip) {
-      await Post.gzip(
-        path.join(instance.dir, 'output', 'elm.opt.min.js'),
-        path.join(instance.dir, 'output', 'elm.opt.min.js.gz')
-      );
-      await Post.gzip(
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js'),
-        path.join(instance.dir, 'output', 'elm.opt.transformed.min.js.gz')
-      );
-    }
+
 
     assets[instance.name] = assetSizeStats(path.join(instance.dir, 'output'));
   }
