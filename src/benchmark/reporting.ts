@@ -726,7 +726,7 @@ export const runWithBreakdown = async function (
     });
     fs.writeFileSync(path.join(instance.dir, 'output', 'elm.opt.js'), source);
 
-    const final = await Transform.transform(
+    const transformed = await Transform.transform(
       instance.dir,
       source,
       path.join(instance.dir, instance.elmFile),
@@ -736,26 +736,29 @@ export const runWithBreakdown = async function (
 
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-      final
+      transformed
     );
 
     for (let browser of options.runBenchmark) {
-      results.push(
-        await Visit.benchmark(
-          browser,
-          instance.name,
-          null,
-          path.join(instance.dir, 'standard.html')
-        )
-      );
-      results.push(
-        await Visit.benchmark(
-          browser,
-          instance.name,
-          'final',
-          path.join(instance.dir, 'transformed.html')
-        )
-      );
+        results.push(
+            await prepare_boilerplate(
+                  browser,
+                  instance.name,
+                  null,
+                  instance.dir,
+                  source
+                )
+                );
+
+        results.push(
+            await prepare_boilerplate(
+                  browser,
+                  instance.name,
+                  'final',
+                  instance.dir,
+                  transformed
+                )
+                );
     }
 
 
@@ -790,19 +793,20 @@ export const runWithBreakdown = async function (
 
       for (let browser of options.runBenchmark) {
         results.push(
-          await Visit.benchmark(
-            browser,
-            instance.name,
-            steps[i].name,
-            path.join(instance.dir, 'transformed.html')
-          )
-        );
+            await prepare_boilerplate(
+                  browser,
+                  instance.name,
+                  steps[i].name,
+                  instance.dir,
+                  intermediate
+                )
+                );
       }
     }
 
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-      final
+      transformed
     );
 
     if (options.minify) {
@@ -859,7 +863,7 @@ export const runWithKnockout = async function (
 
     fs.writeFileSync(path.join(instance.dir, 'output', 'elm.opt.js'), source);
 
-    const final = await Transform.transform(
+    const transformed = await Transform.transform(
       instance.dir,
       source,
       path.join(instance.dir, instance.elmFile),
@@ -875,26 +879,29 @@ export const runWithKnockout = async function (
     );
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-      final
+      transformed
     );
 
     for (let browser of options.runBenchmark) {
-      results.push(
-        await Visit.benchmark(
-          browser,
-          instance.name,
-          null,
-          path.join(instance.dir, 'standard.html')
-        )
-      );
-      results.push(
-        await Visit.benchmark(
-          browser,
-          instance.name,
-          'final',
-          path.join(instance.dir, 'transformed.html')
-        )
-      );
+        results.push(
+            await prepare_boilerplate(
+                  browser,
+                  instance.name,
+                  null,
+                  instance.dir,
+                  source
+                )
+                );
+
+        results.push(
+            await prepare_boilerplate(
+                  browser,
+                  instance.name,
+                  'final',
+                  instance.dir,
+                  transformed
+                )
+                );
     }
 
     let steps = knockout(options.transforms);
@@ -940,19 +947,20 @@ export const runWithKnockout = async function (
 
       for (let browser of options.runBenchmark) {
         results.push(
-          await Visit.benchmark(
-            browser,
-            instance.name,
-            steps[i].name,
-            path.join(instance.dir, 'transformed.html')
-          )
-        );
+            await prepare_boilerplate(
+                  browser,
+                  instance.name,
+                  steps[i].name,
+                  instance.dir,
+                  intermediate
+                )
+                );
       }
     }
 
     fs.writeFileSync(
       path.join(instance.dir, 'output', 'elm.opt.transformed.js'),
-      final
+      transformed
     );
     if (options.minify) {
       await Post.minify(
@@ -1088,6 +1096,21 @@ const htmlTemplate = `
 </html>
 `
 
+const jsTemplate = `const { Elm } = require("./elm.opt.transformed.js")
+globalThis["v8"] = require('./v8-node.js');
+globalThis["window"] = {memoryCheckReady: false, memory: {}}
+const main = () =>
+  new Promise((resolve, reject) => {
+    const app = Elm.V8.Benchmark.init({ flags: {  } })
+    app.ports.reportResults.subscribe(resolve)
+  })
+    .then((report) => {
+        console.log(JSON.stringify(report))
+    })
+
+main()`
+
+
 
 /*
 
@@ -1120,16 +1143,19 @@ async function prepare_boilerplate(
 
     const base = path.join(dir, 'elm-stuff', 'elm-optimize-level-2')
     const htmlPath =  path.join(base, 'run.html')
+    const jsPath =  path.join(base, 'run.js')
 
     fs.mkdirSync(base, {recursive: true})
     fs.writeFileSync(htmlPath, htmlTemplate)
+    fs.writeFileSync(jsPath, jsTemplate)
     fs.writeFileSync(path.join(base, 'elm.opt.transformed.js'), js)
     await Post.includeV8Helpers(path.join(base))
     return await Visit.benchmark(
           browser,
           name,
           tag,
-          htmlPath
+          htmlPath,
+          jsPath
         )
 }
 

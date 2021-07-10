@@ -96,6 +96,7 @@ export async function gzip(file: string, output: string) {
 
 export async function includeV8Helpers(output_dir: string){
   fs.copyFileSync("./src/transforms/utils/v8Helpers/v8-browser.js", path.join(output_dir, 'v8-browser.js'))
+  fs.copyFileSync("./src/transforms/utils/v8Helpers/v8-node.js", path.join(output_dir, 'v8-node.js'))
   fs.copyFileSync("./src/transforms/utils/v8Helpers/v8-native-dummy.js", path.join(output_dir, 'v8-native-dummy.js'))
   fs.copyFileSync("./src/transforms/utils/v8Helpers/v8-native-calls.js", path.join(output_dir, 'v8-native-calls.js'))
 }

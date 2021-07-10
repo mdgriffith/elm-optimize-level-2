@@ -64,7 +64,9 @@ export enum Browser {
   Safari = 'safari',
   IE = 'ie',
   Edge = 'edge',
+  Node = 'node'
 }
+
 
 export const toolDefaults: Transforms = {
   replaceVDomNode: false,

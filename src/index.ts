@@ -57,7 +57,7 @@ async function run(inputFilePath: string | undefined) {
           runBenchmark: [
             {
               browser: Browser.Chrome,
-              headless: false,
+              headless: true,
             },
           ],
           transforms: { ...benchmarkDefaults, ...{replacements: replacements} }

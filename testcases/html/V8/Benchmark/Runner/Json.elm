@@ -52,10 +52,9 @@ type alias JsonBenchmark =
 -}
 program : (Encode.Value -> Cmd Msg) -> Benchmark -> Program () Model Msg
 program sendReport bench =
-    Browser.element
+    Platform.worker
         { init = init bench
         , update = update sendReport
-        , view = view
         , subscriptions = \_ -> Sub.none
         }
 
@@ -198,21 +197,6 @@ finalize samples =
 
         Err err ->
             Status.Failure (Status.AnalysisError err)
-
-
--- VIEW
-
-
-view : Model -> Html Msg
-view model =
-    Html.div [ Attr.style "white-space" "pre" ]
-        [ Html.text
-            (Encode.encode 4 (encode model))
-
-        , Html.text
-            (Encode.encode 4 (V8.Debug.reportV8StatusForBenchmarks ()))
-        ]
-
 
 
 -- ENCODE RESULTS
