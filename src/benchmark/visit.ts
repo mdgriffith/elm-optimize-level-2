@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as Webdriver from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
 import * as firefox from 'selenium-webdriver/firefox';
@@ -7,7 +8,7 @@ import { BrowserOptions, Browser, unallowedChars } from '../types';
 import chalk from 'chalk';
 import * as Process from 'child_process'
 import * as Util from 'util'
-
+import * as ParseLog from './parseLog'
 function isBrowser(browser: Browser): Boolean {
     return browser != Browser.Node && browser != Browser.V8JitLog
 }
@@ -73,6 +74,9 @@ export const generateNodeJitLog  = async (
         chalk.yellow("node")
   );
  return exec(`node --allow-natives-syntax --print-opt-code --code-comments ${js} > ${jitLogPath}`).then(() => {
+     const summary = ParseLog.summarize(jitLogPath)
+     fs.writeFileSync(jitLogPath + ".summary", summary);
+
      return { name: name, tag: tag, browser: options.browser, results: [], v8: null };
  })
 };

@@ -10,5 +10,6 @@ index.html
 testcases/**/output/*.js
 testcases/**/output/*.gz
 testcases/**/output/*.jitlog
+testcases/**/output/*.summary
 
 .idea
