@@ -12,7 +12,8 @@ export function summarize(path: string) {
             let sectionFormatted = []
             sectionFormatted.push(subsections[0])
             subsections.shift()
-            for (const sub of subsections){
+            for (const subsection of subsections){
+                const sub = subsection.trim()
                 if (sub.startsWith("Inlined functions")){
                     sectionFormatted.push(sub)
                 } else if (sub.startsWith("RelocInfo")) {
