@@ -8,7 +8,8 @@ import * as fs from 'fs';
 import chalk from 'chalk';
 const { version } = require('../package.json');
 import * as BenchInit from './benchmark/init'
-import * as Benchmark from './benchmark/reporting';
+import * as Benchmark from './benchmark/benchmark';
+import * as Reporting from './benchmark/reporting';
 
 program
   .version(version)
@@ -74,7 +75,7 @@ async function run(inputFilePath: string | undefined) {
         }
       ]);
       const result = await report;
-      console.log(Benchmark.terminal(result));
+      console.log(Reporting.terminal(result));
 //       fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
       process.exit(0)
 

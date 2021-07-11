@@ -13,6 +13,7 @@ import {
   toolDefaults,
 } from '../types';
 import * as Reporting from './reporting';
+import * as Benchmark from './benchmark';
 import * as fs from 'fs';
 
 const defaultOptions: Transforms = {
@@ -58,7 +59,7 @@ const options = {
 };
 
 async function go() {
-  const report = await Reporting.run(options, [
+  const report = await Benchmark.run(options, [
     // Use `runWithBreakdown` if you want the breakdown
     // const report = await Reporting.runWithKnockout(options, [
     // const report = await Reporting.runWithBreakdown(options, [
