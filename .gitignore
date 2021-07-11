@@ -9,5 +9,6 @@ index.html
 # Ignore generated files
 testcases/**/output/*.js
 testcases/**/output/*.gz
+testcases/**/output/*.jitlog
 
 .idea
