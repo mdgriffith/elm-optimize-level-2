@@ -4,7 +4,7 @@ export function summarize(path: string) {
     const content = fs.readFileSync(path)
 
     const formatted = []
-    const sections = content.toString().split("--- Optimized code ---")
+    const sections = content.toString().split("--- Raw source ---")
 
     for (const section of sections) {
         const subsections = section.split("\n\n")
@@ -20,6 +20,8 @@ export function summarize(path: string) {
 
                     sectionFormatted.push(`${deopts} deoptimizations`)
 
+                } else if (sub.startsWith("--- Optimized code ---")){
+                    sectionFormatted.push(sub)
                 }
             }
             formatted.push(sectionFormatted.join("\n\n"))
@@ -27,6 +29,6 @@ export function summarize(path: string) {
 
     }
 
-    return formatted.join("\n\n------------\n\n--- Optimized code ---")
+    return formatted.join("\n\n------------\n\n--- Raw source ---")
 
 }
