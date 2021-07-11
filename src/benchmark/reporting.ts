@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Transforms, RunTestcaseOptions, InlineLists, BrowserOptions } from '../types';
+import { Transforms, RunTestcaseOptions, InlineLists, BrowserOptions, Browser } from '../types';
 import * as Visit from './visit';
 import chalk from 'chalk';
 import * as Transform from '../transform';
@@ -156,7 +156,7 @@ export const terminal = (report: Results): string => {
   return buffer.join('\n');
 };
 
-function v8MemoryDescription(representation: Memory): string[] {
+function v8MemoryDescription(representation: Visit.Memory): string[] {
     let descriptors = []
     for (const key in representation){
         if (representation[key]) {
@@ -394,7 +394,20 @@ export const markdownTable = (report: Results): string => {
   
   
   */
-export function reformat(results: any): any {
+
+type BenchRunFormatted = {
+    [key: string]:
+        {[key: string]:
+            { browser: Browser
+            , tag: string | null
+            , benchTags: string[]
+            , status: {runsPerSecond: number, goodnessOfFit: number}
+            , v8: V8FormattedData
+            }
+         }
+}
+
+export function reformat(results: Visit.BenchRun[]): any {
   let project: string = 'Unknown';
   let reformed: any = {};
   results.forEach((item: any) => {
@@ -426,14 +439,6 @@ export function reformat(results: any): any {
   return reformed;
 }
 
-type V8Data = {
-    fns: { [key: string]: { status: string }; },
-    memory: { [key: string]:  Memory }
-}
-
-type Memory =
-    { [key: string]: boolean }
-
 type V8FormattedData = {
     uncalled: string[],
     optimized: string[],
@@ -442,7 +447,7 @@ type V8FormattedData = {
     memory: {name: string, representation: string[]}[]
 }
 
-function reformatV8(val: V8Data | null): V8FormattedData {
+function reformatV8(val: Visit.V8Data | null): V8FormattedData {
     let gathered: V8FormattedData = {uncalled: [], optimized: [], interpreted: [], other: [], memory: []}
     if (val == null) {
         return gathered
@@ -1081,6 +1086,9 @@ async function prepare_boilerplate(
     const htmlPath =  path.join(base, 'run.html')
     const jsPath =  path.join(base, 'run.js')
 
+    const nonNulltag = tag ? '.' + tag.replace(unallowedChars, '-') : ''
+    const jitLogPath = path.join(dir, 'output', `elm.opt${nonNulltag}.jitlog`)
+
     fs.mkdirSync(base, {recursive: true})
     fs.writeFileSync(htmlPath, htmlTemplate)
     fs.writeFileSync(jsPath, jsTemplate)
@@ -1091,9 +1099,9 @@ async function prepare_boilerplate(
           name,
           tag,
           htmlPath,
-          jsPath
+          jsPath,
+          jitLogPath
         )
-}
 
 
 

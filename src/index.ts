@@ -59,6 +59,10 @@ async function run(inputFilePath: string | undefined) {
               browser: Browser.Chrome,
               headless: true,
             },
+            {
+              browser: Browser.V8JitLog,
+              headless: true,
+            },
           ],
           transforms: { ...benchmarkDefaults, ...{replacements: replacements} }
       };

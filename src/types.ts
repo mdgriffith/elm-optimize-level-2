@@ -64,9 +64,11 @@ export enum Browser {
   Safari = 'safari',
   IE = 'ie',
   Edge = 'edge',
-  Node = 'node'
+  Node = 'node',
+  V8JitLog = 'v8-jit-log'
 }
 
+export const unallowedChars = /[^A-Za-z0-9]/g;
 
 export const toolDefaults: Transforms = {
   replaceVDomNode: false,
