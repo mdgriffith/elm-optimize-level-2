@@ -36,6 +36,7 @@ export type Transforms = {
   unusedValues: boolean;
   replaceListFunctions: boolean;
   replaceStringFunctions: boolean;
+  recordUpdates: boolean;
   v8Analysis: boolean;
   replacements: { [name: string]: string } | null
 };
@@ -84,6 +85,7 @@ export const toolDefaults: Transforms = {
   unusedValues: false,
   replaceListFunctions: false,
   replaceStringFunctions: false,
+  recordUpdates: false,
   v8Analysis: false,
   replacements: null
 };
@@ -103,6 +105,7 @@ export const benchmarkDefaults: Transforms = {
   unusedValues: false,
   replaceListFunctions: false,
   replaceStringFunctions: false,
+  recordUpdates: true,
   v8Analysis: true,
   replacements: null
 };
