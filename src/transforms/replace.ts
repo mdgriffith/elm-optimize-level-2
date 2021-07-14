@@ -15,7 +15,7 @@ export const replace = (
               }
             } else if (ts.isFunctionDeclaration(node)) {
               const name = node.name;
-              if (isIdentifier(name) && name.text in replacements) {
+              if (name && isIdentifier(name) && name.text in replacements) {
                 const key = name.text as keyof typeof replacements;
                 return astNodes(replacements[key]);
               }
