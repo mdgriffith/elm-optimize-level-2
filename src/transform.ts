@@ -117,7 +117,7 @@ export const transform = async (
     [transforms.arrowFns, convertFunctionExpressionsToArrowFuncs],
     [transforms.shorthandObjectLiterals, convertToObjectShorthandLiterals],
     [transforms.unusedValues, createRemoveUnusedLocalsTransform()],
-    [transforms.recordUpdate, recordUpdate()],
+    [transforms.recordUpdates, recordUpdate()],
     [transforms.v8Analysis, reportFunctionStatusInBenchmarks],
   ]);
 

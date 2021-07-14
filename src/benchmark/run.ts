@@ -30,6 +30,7 @@ const defaultOptions: Transforms = {
   unusedValues: false,
   replaceListFunctions: true,
   replaceStringFunctions: true,
+  recordUpdates: false,
   v8Analysis: true,
   replacements: null
 };

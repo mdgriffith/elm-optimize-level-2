@@ -4,25 +4,29 @@ export const recordUpdate = (): ts.TransformerFactory<ts.SourceFile> =>
 (context) => (sourceFile) => {
     console.log('record update');
     const registry = new RecordRegistry();
-    ts.visitNode(sourceFile, removeApplicativeFuncVisitor(registry, context));
+    ts.visitNode(sourceFile, replaceObjectLiterals(registry, context));
     return sourceFile;
 }
 
 
-function RecordRegistry() {
-    this.counter = 0;
-    this.map = new Map();
+class RecordRegistry {
+    counter: number;
+    map: Map<String, String>;
+
+    constructor() {
+        this.counter = 0;
+        this.map = new Map();
+    }
+
+    register(recordAst: ts.Node) {
+        console.log(recordAst);
+    }
 }
 
-RecordRegistry.prototype.register = function(recordAst) {
-    console.log(recordAst);
-}
-
-
-function unwrapVisitor(recordRegistry, context) {
+function replaceObjectLiterals(_registry: RecordRegistry, _ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
-        if (isRecordLiteral(visitedNode)) {
-            return visitedNode.arguments[0];
+        if (isRecordLiteral(node)) {
+            return node;
         }
 
         return node;
@@ -32,5 +36,5 @@ function unwrapVisitor(recordRegistry, context) {
 }
 
 function isRecordLiteral(node: ts.Node): boolean {
-    return ts.isObjectLiteral(node);
+    return ts.isObjectLiteralExpression(node);
 }
