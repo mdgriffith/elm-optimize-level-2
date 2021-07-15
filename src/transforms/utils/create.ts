@@ -1,4 +1,3 @@
-
 import ts from 'typescript';
 
 export const ast = (sourceText: string): ts.Node => {
