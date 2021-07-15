@@ -56,7 +56,8 @@ async function run(inputFilePath: string | undefined) {
           verbose: true,
           assetSizes: true,
           runBenchmark: [
-            { browser: Browser.Firefox }
+            { browser: Browser.Safari },
+            { browser: Browser.Firefox },
           ],
           transforms: { ...benchmarkDefaults, ...{replacements: replacements} }
       };
