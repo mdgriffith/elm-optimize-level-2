@@ -1,11 +1,12 @@
 import ts from 'typescript';
-import { astNodes } from './utils/create';
+import { ast, astNodes } from './utils/create';
 
 export const recordUpdate = (): ts.TransformerFactory<ts.SourceFile> =>
 (context) => (sourceFile) => {
     const registry = new RecordRegistry();
 
-    const replacedLiterals = ts.visitNode(sourceFile, replaceObjectLiterals(registry, context));
+    const replacedUpdates = ts.visitNode(sourceFile, replaceUpdateStatements(context));
+    const replacedLiterals = ts.visitNode(replacedUpdates, replaceObjectLiterals(registry, context));
 
     const recordStatements = createRecordStatements(registry);
     replacedLiterals.statements = recordStatements.concat(replacedLiterals.statements);
@@ -42,12 +43,41 @@ class RecordRegistry {
     }
 }
 
-function replaceObjectLiterals(registry: RecordRegistry, ctx: ts.TransformationContext) {
+
+function replaceUpdateStatements(ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
-        if (isUpdateExpression(node)) {
-            return node;
+        const visitedNode = ts.visitEachChild(node, visitorHelp, ctx);
+        if (!isUpdateExpression(visitedNode)) {
+            return visitedNode;
         }
 
+        const objName = visitedNode.arguments[0].text;
+        const props = visitedNode.arguments[1].properties;
+        const propSetters = props.
+            map((it) => `obj.${it.name.text} = ${it.initializer.text};`).
+            join(' ');
+
+        const replacementNode = ast(`
+            ${objName}.$clone(function(obj) {
+                ${propSetters}
+            });
+        `);
+
+        return replacementNode;
+    }
+
+    return visitorHelp;
+}
+
+function isUpdateExpression(node: ts.Node): boolean {
+    return ts.isCallExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        node.expression.text === '_Utils_update';
+}
+
+
+function replaceObjectLiterals(registry: RecordRegistry, ctx: ts.TransformationContext) {
+    const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
         const visitedNode = ts.visitEachChild(node, visitorHelp, ctx);
         if (!isRecordLiteral(visitedNode)) {
             return visitedNode;
@@ -66,12 +96,6 @@ function replaceObjectLiterals(registry: RecordRegistry, ctx: ts.TransformationC
     }
 
     return visitorHelp;
-}
-
-function isUpdateExpression(node: ts.Node): boolean {
-    return ts.isCallExpression(node) &&
-        ts.isIdentifier(node.expression) &&
-        node.expression.text === '_Utils_update';
 }
 
 function isRecordLiteral(node: ts.Node): boolean {
