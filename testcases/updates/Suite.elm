@@ -2,10 +2,7 @@ module Suite exposing (suite)
 
 {-| -}
 
-import Html
-import Html.Attributes as Attr
 import V8.Benchmark.Runner.Json exposing (..)
-import V8.Debug
 
 
 type alias Model =
@@ -25,7 +22,7 @@ emptyRecord =
 
 type Msg
     = SetString String
-    | SetNum Int
+    | SetAll String Int
 
 
 update : Msg -> Model -> Model
@@ -37,10 +34,11 @@ update msg model =
                 , sortKey = ( val, model.someNum )
             }
 
-        SetNum val ->
+        SetAll str int ->
             { model
-                | someNum = val
-                , sortKey = ( model.someString, val )
+                | someString = str
+                , someNum = int
+                , sortKey = ( str, int )
             }
 
 
@@ -52,7 +50,7 @@ range =
 suite : Benchmark
 suite =
     describe "Updates"
-        [ benchmark "Inc" <|
+        [ benchmark "Update" <|
             \_ ->
                 List.foldl updater emptyRecord range
         ]
@@ -62,4 +60,4 @@ updater : Int -> Model -> Model
 updater idx rec =
     rec
         |> update (SetString ("String" ++ String.fromInt idx))
-        |> update (SetNum idx)
+        |> update (SetAll ("Str-" ++ String.fromInt idx) idx)
