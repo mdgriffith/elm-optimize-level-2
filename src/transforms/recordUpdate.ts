@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { ast, astNodes } from './utils/create';
+import { astNodes } from './utils/create';
 
 export const recordUpdate = (): ts.TransformerFactory<ts.SourceFile> =>
 (context) => (sourceFile) => {
@@ -52,18 +52,34 @@ function replaceUpdateStatements(ctx: ts.TransformationContext) {
         }
 
         const objName = visitedNode.arguments[0].text;
-        const props = visitedNode.arguments[1].properties;
-        const propSetters = props.
-            map((it) => `obj.${it.name.text} = ${it.initializer.text};`).
-            join(' ');
+        const propSetters = visitedNode.arguments[1].properties.
+            map((it) => ts.createExpressionStatement(
+                ts.createBinary(
+                    ts.createPropertyAccess(
+                        ts.createIdentifier('r'),
+                        ts.createIdentifier(it.name.text)
+                    ),
+                    ts.createToken(ts.SyntaxKind.EqualsToken),
+                    it.initializer
+                )
+        ));
 
-        const replacementNode = ast(`
-            ${objName}.$clone(function(obj) {
-                ${propSetters}
-            });
-        `);
-
-        return replacementNode;
+        return ts.createCall(
+            ts.createPropertyAccess(
+                ts.createIdentifier(objName),
+                ts.createIdentifier('$clone')
+            ),
+            undefined,
+            [ ts.createFunctionExpression(
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                [ ts.createIdentifier('r') ],
+                undefined,
+                ts.createBlock(propSetters)
+            ) ]
+        );
     }
 
     return visitorHelp;
