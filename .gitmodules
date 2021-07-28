@@ -11,3 +11,6 @@
 [submodule "testcases/elm-markdown/repo"]
 	path = testcases/elm-markdown/repo
 	url = https://github.com/dillonkearns/elm-markdown
+[submodule "testcases/liikennematto/repo"]
+	path = testcases/liikennematto/repo
+	url = git@github.com:klemola/liikennematto.git
