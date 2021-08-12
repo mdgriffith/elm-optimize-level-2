@@ -18,5 +18,5 @@ terser app.js --compress 'pure_funcs="F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,
 
 gzip --keep --force app.min.js
 # --keep = keep the original file
-# --force = overwrite the exisign gzip file if it's there
+# --force = overwrite the existing gzip file if it's there
 ```
