@@ -52,11 +52,31 @@ function replaceUpdateStatements(ctx: ts.TransformationContext) {
         }
 
         const objName = visitedNode.arguments[0].text;
+        const copyId = ts.createIdentifier('_r');
+
+        const cloneObj = ts.createVariableStatement(
+            undefined,
+            ts.createVariableDeclarationList([
+                ts.createVariableDeclaration(
+                    copyId,
+                    undefined,
+                    ts.createCall(
+                        ts.createPropertyAccess(
+                            ts.createIdentifier(objName),
+                            ts.createIdentifier('$clone')
+                        ),
+                        undefined,
+                        []
+                    )
+                )
+            ])
+        );
+
         const propSetters = visitedNode.arguments[1].properties.
             map((it) => ts.createExpressionStatement(
                 ts.createBinary(
                     ts.createPropertyAccess(
-                        ts.createIdentifier('r'),
+                        copyId,
                         ts.createIdentifier(it.name.text)
                     ),
                     ts.createToken(ts.SyntaxKind.EqualsToken),
@@ -64,22 +84,13 @@ function replaceUpdateStatements(ctx: ts.TransformationContext) {
                 )
         ));
 
-        return ts.createCall(
-            ts.createPropertyAccess(
-                ts.createIdentifier(objName),
-                ts.createIdentifier('$clone')
-            ),
-            undefined,
-            [ ts.createFunctionExpression(
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                [ ts.createIdentifier('r') ],
-                undefined,
-                ts.createBlock(propSetters)
-            ) ]
-        );
+        const retStmt = ts.createReturn(copyId);
+
+        propSetters.push(retStmt);
+
+        const block = [ cloneObj ].concat(propSetters);
+
+        return ts.createImmediatelyInvokedFunctionExpression(block);
     }
 
     return visitorHelp;
@@ -145,10 +156,8 @@ function createRecordStatement(className: String, props: String[]): String {
             ${propSetters}
         }
 
-        ${className}.prototype.$clone = function(cb) {
-            var clone = new ${className}(${propGetters});
-            cb(clone);
-            return clone;
+        ${className}.prototype.$clone = function() {
+            return new ${className}(${propGetters});
         }
     `;
 }
