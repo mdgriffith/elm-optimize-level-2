@@ -25,6 +25,7 @@ import { inlineNumberToString } from './transforms/inlineNumberToString';
 import { replaceListFunctions } from './transforms/replaceListFunctions';
 import { replaceStringFunctions } from './transforms/replaceStringFunctions';
 import { reportFunctionStatusInBenchmarks, v8Debug } from './transforms/analyze';
+import { recordUpdate } from './transforms/recordUpdate';
 import * as Replace from './transforms/replace';
 
 export type Options = {
@@ -116,6 +117,7 @@ export const transform = async (
     [transforms.arrowFns, convertFunctionExpressionsToArrowFuncs],
     [transforms.shorthandObjectLiterals, convertToObjectShorthandLiterals],
     [transforms.unusedValues, createRemoveUnusedLocalsTransform()],
+    [transforms.recordUpdates, recordUpdate()],
     [transforms.v8Analysis, reportFunctionStatusInBenchmarks],
   ]);
 

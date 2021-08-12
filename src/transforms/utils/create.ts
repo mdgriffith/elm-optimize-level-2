@@ -1,4 +1,3 @@
-
 import ts from 'typescript';
 
 export const ast = (sourceText: string): ts.Node => {
@@ -6,9 +5,9 @@ export const ast = (sourceText: string): ts.Node => {
     return source.statements[0];
 };
 
-export const astNodes = (sourceText: string): [ts.Node] => {
+export const astNodes = (sourceText: string): ts.Node[] => {
     const source = ts.createSourceFile('bla', sourceText, ts.ScriptTarget.ES2018);
-    return source.statements;
+    return Array.from(source.statements);
 }
 
 export function create(name: string, body: ts.Node): ts.Node {

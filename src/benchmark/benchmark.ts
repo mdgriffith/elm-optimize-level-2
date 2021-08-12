@@ -266,6 +266,7 @@ const emptyOpts: Transforms = {
   unusedValues: false,
   replaceListFunctions: false,
   replaceStringFunctions: false,
+  recordUpdates: false,
   v8Analysis: false,
   replacements: null
 };

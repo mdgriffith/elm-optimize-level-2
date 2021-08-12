@@ -56,14 +56,14 @@ async function run(inputFilePath: string | undefined) {
           verbose: true,
           assetSizes: true,
           runBenchmark: [
-            {
-              browser: Browser.Chrome,
-              headless: true,
-            },
-            {
-              browser: Browser.V8JitLog,
-              headless: true,
-            },
+              {
+                  browser: Browser.Chrome,
+                  headless: true,
+              },
+              {
+                  browser: Browser.V8JitLog,
+                  headless: true,
+              },
           ],
           transforms: { ...benchmarkDefaults, ...{replacements: replacements} }
       };
