@@ -5,8 +5,9 @@ export const recordUpdate = (): ts.TransformerFactory<ts.SourceFile> =>
 (context) => (sourceFile) => {
     const registry = new RecordRegistry();
 
-    const replacedUpdates = ts.visitNode(sourceFile, replaceUpdateStatements(context));
-    const replacedLiterals = ts.visitNode(replacedUpdates, replaceObjectLiterals(registry, context));
+    const propSet = new Set<String>();
+    const replacedUpdates = ts.visitNode(sourceFile, replaceUpdateStatements(propSet, context));
+    const replacedLiterals = ts.visitNode(replacedUpdates, replaceObjectLiterals(propSet, registry, context));
 
     const recordStatements = createRecordStatements(registry);
     replacedLiterals.statements = recordStatements.concat(replacedLiterals.statements);
@@ -44,7 +45,7 @@ class RecordRegistry {
 }
 
 
-function replaceUpdateStatements(ctx: ts.TransformationContext) {
+function replaceUpdateStatements(propSet: Set<String>, ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
         const visitedNode = ts.visitEachChild(node, visitorHelp, ctx);
         if (!isUpdateExpression(visitedNode)) {
@@ -71,6 +72,11 @@ function replaceUpdateStatements(ctx: ts.TransformationContext) {
                 )
             ])
         );
+
+        // Add updated properties to propSet
+        visitedNode.arguments[1].properties.map((it) => it.name.text).forEach((it) => {
+            propSet.add(it);
+        });
 
         const propSetters = visitedNode.arguments[1].properties.
             map((it) => ts.createExpressionStatement(
@@ -103,10 +109,16 @@ function isUpdateExpression(node: ts.Node): boolean {
 }
 
 
-function replaceObjectLiterals(registry: RecordRegistry, ctx: ts.TransformationContext) {
+function replaceObjectLiterals(propSet: Set<String>, registry: RecordRegistry, ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
         const visitedNode = ts.visitEachChild(node, visitorHelp, ctx);
         if (!isRecordLiteral(visitedNode)) {
+            return visitedNode;
+        }
+
+        // Abort of none of the record properties are used in an update expression
+        const recordPropNames = visitedNode.properties.map((it) => it.name.text);
+        if (!recordPropNames.some((it) => propSet.has(it))) {
             return visitedNode;
         }
 
