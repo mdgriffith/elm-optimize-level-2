@@ -23,10 +23,11 @@
   "scripts": {
     "test": "jest",
     "help": "ts-node -T src/index.ts --help",
-    "prepare": "tsc -p tsconfig.json",
+    "prepare": "tsc -p tsconfig.json && npm run copy-replacements",
     "lvl-2": "ts-node -T src/index.ts",
     "run": "ts-node -T src/index.ts testcases/core/Main.elm",
-    "run-benchmarks": "ts-node -T src/benchmark/run.ts"
+    "run-benchmarks": "ts-node -T src/benchmark/run.ts",
+    "copy-replacements": "copyfiles -u 2 src/replacements/**/* dist/replacements"
   },
   "husky": {
     "hooks": {}
@@ -43,6 +44,7 @@
     "@gfx/zopfli": "^1.0.15",
     "@types/commander": "^2.12.2",
     "chromedriver": "^91.0.1",
+    "copyfiles": "^2.4.1",
     "geckodriver": "^1.20.0",
     "husky": "^4.2.5",
     "jest": "26.4.2",
