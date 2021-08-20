@@ -1,3 +1,5 @@
+import { readFilesSync } from './fs_util';
+
 export enum Mode {
   Prod = 'prod',
   Dev = 'dev',
@@ -87,7 +89,7 @@ export const toolDefaults: Transforms = {
   replaceStringFunctions: false,
   recordUpdates: false,
   v8Analysis: false,
-  replacements: null
+  replacements: readFilesSync(__dirname + '/replacements/faster-function-wrappers')
 };
 
 
@@ -107,5 +109,5 @@ export const benchmarkDefaults: Transforms = {
   replaceStringFunctions: true,
   recordUpdates: false,
   v8Analysis: true,
-  replacements: null
+  replacements: readFilesSync(__dirname + '/replacements/faster-function-wrappers')
 };
