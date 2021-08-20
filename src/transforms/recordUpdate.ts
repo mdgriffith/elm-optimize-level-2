@@ -10,9 +10,9 @@ export const recordUpdate = (): ts.TransformerFactory<ts.SourceFile> =>
     const replacedLiterals = ts.visitNode(replacedUpdates, replaceObjectLiterals(propSet, registry, context));
 
     const recordStatements = createRecordStatements(registry);
-    replacedLiterals.statements = recordStatements.concat(replacedLiterals.statements);
+    const insertedCtors = ts.visitNode(replacedLiterals, insertRecordConstructors(recordStatements, context));
 
-    return replacedLiterals;
+    return insertedCtors;
 }
 
 
@@ -37,7 +37,7 @@ class RecordRegistry {
 
         const recordId = this.counter + 1;
         this.counter = recordId;
-        const recordClassName = `Record${recordId}`;
+        const recordClassName = `$$Record${recordId}`;
 
         this.map.set(shapeId, recordClassName);
 
@@ -55,7 +55,7 @@ function replaceUpdateStatements(propSet: Set<String>, ctx: ts.TransformationCon
         }
 
         const objName = (updateExpression.arguments[0] as ts.Identifier).text;
-        const copyId = ts.createIdentifier('_r');
+        const copyId = ts.createIdentifier('$r');
 
         const cloneObj = ts.createVariableStatement(
             undefined,
@@ -155,7 +155,7 @@ function isRecordLiteral(node: ts.Node): ts.ObjectLiteralExpression | null {
 }
 
 
-function createRecordStatements(registry: RecordRegistry): ts.NodeArray<ts.Statement> {
+function createRecordStatements(registry: RecordRegistry): ts.Node[] {
     const statementString = Array.from(registry.map.entries()).
         map((it) => createRecordStatement(
             it[1].valueOf(),
@@ -184,3 +184,21 @@ function createRecordStatement(className: string, props: string[]): string {
         }
     `;
 }
+
+
+function insertRecordConstructors(ctors: ts.Node[], ctx: ts.TransformationContext) {
+    const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
+        if (isFirstFWrapper(node)) {
+            return ctors.concat(node);
+        }
+
+        return ts.visitEachChild(node, visitorHelp, ctx);
+    }
+
+    return visitorHelp;
+}
+
+function isFirstFWrapper(node: ts.Node): boolean {
+    return ts.isFunctionDeclaration(node) && node?.name?.text === 'F';
+}
+
