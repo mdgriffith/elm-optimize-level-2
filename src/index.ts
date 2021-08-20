@@ -74,8 +74,7 @@ async function run(inputFilePath: string | undefined) {
           elmFile: 'V8/Benchmark.elm',
         }
       ]);
-      const result = await report;
-      console.log(Reporting.terminal(result));
+      console.log(Reporting.terminal(report));
 //       fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
       process.exit(0)
 

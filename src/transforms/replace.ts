@@ -17,7 +17,7 @@ export const replace = (
               const name = node.name;
               if (name && isIdentifier(name) && name.text in replacements) {
                 const key = name.text as keyof typeof replacements;
-                return astNodes(replacements[key]);
+                return Array.from(astNodes(replacements[key]));
               }
             }
             return ts.visitEachChild(node, visitor, context);

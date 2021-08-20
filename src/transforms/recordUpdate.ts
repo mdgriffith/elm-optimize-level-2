@@ -25,13 +25,14 @@ class RecordRegistry {
         this.map = new Map();
     }
 
-    register(recordAst: ts.Node): String {
+    register(recordAst: ts.ObjectLiteralExpression): string {
         const shapeId = recordAst.properties.
-            map((it) => it.name.text).
+            map((it) => (it.name as ts.Identifier).text).
             join(",");
 
-        if (this.map.has(shapeId)) {
-            return this.map.get(shapeId);
+        const possibleShape = this.map.get(shapeId);
+        if (possibleShape) {
+            return possibleShape.valueOf();
         }
 
         const recordId = this.counter + 1;
@@ -48,11 +49,12 @@ class RecordRegistry {
 function replaceUpdateStatements(propSet: Set<String>, ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
         const visitedNode = ts.visitEachChild(node, visitorHelp, ctx);
-        if (!isUpdateExpression(visitedNode)) {
+        const updateExpression = isUpdateExpression(visitedNode);
+        if (!updateExpression) {
             return visitedNode;
         }
 
-        const objName = visitedNode.arguments[0].text;
+        const objName = (updateExpression.arguments[0] as ts.Identifier).text;
         const copyId = ts.createIdentifier('_r');
 
         const cloneObj = ts.createVariableStatement(
@@ -74,19 +76,21 @@ function replaceUpdateStatements(propSet: Set<String>, ctx: ts.TransformationCon
         );
 
         // Add updated properties to propSet
-        visitedNode.arguments[1].properties.map((it) => it.name.text).forEach((it) => {
-            propSet.add(it);
-        });
+        const objectLiteral = updateExpression.arguments[1] as ts.ObjectLiteralExpression;
 
-        const propSetters = visitedNode.arguments[1].properties.
+        objectLiteral.properties.
+            map((it) => (it.name as ts.Identifier).text).
+            forEach((it) => { propSet.add(it); });
+
+        const propSetters: ts.Statement[] = objectLiteral.properties.
             map((it) => ts.createExpressionStatement(
                 ts.createBinary(
                     ts.createPropertyAccess(
                         copyId,
-                        ts.createIdentifier(it.name.text)
+                        it.name as ts.Identifier
                     ),
                     ts.createToken(ts.SyntaxKind.EqualsToken),
-                    it.initializer
+                    (it as ts.PropertyAssignment).initializer
                 )
         ));
 
@@ -94,7 +98,7 @@ function replaceUpdateStatements(propSet: Set<String>, ctx: ts.TransformationCon
 
         propSetters.push(retStmt);
 
-        const block = [ cloneObj ].concat(propSetters);
+        const block = [ cloneObj as ts.Statement ].concat(propSetters);
 
         return ts.createImmediatelyInvokedFunctionExpression(block);
     }
@@ -102,32 +106,37 @@ function replaceUpdateStatements(propSet: Set<String>, ctx: ts.TransformationCon
     return visitorHelp;
 }
 
-function isUpdateExpression(node: ts.Node): boolean {
-    return ts.isCallExpression(node) &&
+function isUpdateExpression(node: ts.Node): ts.CallExpression | null {
+    if (ts.isCallExpression(node) &&
         ts.isIdentifier(node.expression) &&
-        node.expression.text === '_Utils_update';
+            node.expression.text === '_Utils_update') {
+        return node as ts.CallExpression;
+    }
+
+    return null
 }
 
 
 function replaceObjectLiterals(propSet: Set<String>, registry: RecordRegistry, ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
         const visitedNode = ts.visitEachChild(node, visitorHelp, ctx);
-        if (!isRecordLiteral(visitedNode)) {
+        const objectLiteral = isRecordLiteral(visitedNode);
+        if (!objectLiteral) {
             return visitedNode;
         }
 
         // Abort of none of the record properties are used in an update expression
-        const recordPropNames = visitedNode.properties.map((it) => it.name.text);
+        const recordPropNames = objectLiteral.properties.map((it) => (it.name as ts.Identifier).text);
         if (!recordPropNames.some((it) => propSet.has(it))) {
             return visitedNode;
         }
 
-        const recordClassName = registry.register(visitedNode);
+        const recordClassName = registry.register(objectLiteral);
         const recordConstruction = ts.createParen(
             ts.createNew(
                 ts.createIdentifier(recordClassName),
                 undefined,
-                visitedNode.properties.map((it) => it.initializer)
+                objectLiteral.properties.map((it) => (it as ts.PropertyAssignment).initializer)
             )
         );
 
@@ -137,24 +146,26 @@ function replaceObjectLiterals(propSet: Set<String>, registry: RecordRegistry, c
     return visitorHelp;
 }
 
-function isRecordLiteral(node: ts.Node): boolean {
-    return ts.isObjectLiteralExpression(node) &&
-        node.properties.length > 0 &&
-        node.properties[0].name.text !== '$';
+function isRecordLiteral(node: ts.Node): ts.ObjectLiteralExpression | null {
+    if (ts.isObjectLiteralExpression(node) && node.properties[0] && (node.properties[0]?.name as ts.Identifier)?.text !== '$') {
+        return node as ts.ObjectLiteralExpression;
+    }
+
+    return null;
 }
 
 
-function createRecordStatements(registry: RecordRegistry): ts.Node[] {
+function createRecordStatements(registry: RecordRegistry): ts.NodeArray<ts.Statement> {
     const statementString = Array.from(registry.map.entries()).
         map((it) => createRecordStatement(
-            it[1],
+            it[1].valueOf(),
             it[0].split(',')
     )).join('\n');
 
     return astNodes(statementString);
 }
 
-function createRecordStatement(className: String, props: String[]): String {
+function createRecordStatement(className: string, props: string[]): string {
     const propList = props.join(',');
     const propSetters = props.
         map((name) => `this.${name} = ${name};`).
