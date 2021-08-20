@@ -10,6 +10,7 @@ const { version } = require('../package.json');
 import * as BenchInit from './benchmark/init'
 import * as Benchmark from './benchmark/benchmark';
 import * as Reporting from './benchmark/reporting';
+import { readFilesSync } from './fs_util';
 
 program
   .version(version)
@@ -38,8 +39,12 @@ async function run(inputFilePath: string | undefined) {
 
   const replacementDir = hasReplacements(process.argv)
   let replacements = null
-  if (replacementDir){
+  if (replacementDir) {
      replacements = readFilesSync(replacementDir)
+  } else if (program.benchmark) {
+     replacements = benchmarkDefaults.replacements;
+  } else {
+    replacements = toolDefaults.replacements;
   }
 
   if (program.initBenchmark) {
@@ -145,32 +150,6 @@ function hasReplacements(args: string[]){
         }
     }
     return dir
-}
-
-
-function readFilesSync(dir: string): {[key: string]: string} | null {
-  let foundAnything = false
-  const files: {[key: string]: string} = {};
-
-  fs.readdirSync(dir).forEach(filename => {
-    const name = path.parse(filename).name;
-    const ext = path.parse(filename).ext;
-    const filepath = path.resolve(dir, filename);
-    const stat = fs.statSync(filepath);
-    const isFile = stat.isFile();
-
-    if (isFile) {
-         const content = fs.readFileSync(path.join(dir, filename))
-         files[name] = content.toString()
-         foundAnything = true
-    }
-  });
-  if (foundAnything) {
-    return files;
-  } else {
-    return null
-  }
-
 }
 
 run(program.args[0]).catch((e) => console.error(e));
