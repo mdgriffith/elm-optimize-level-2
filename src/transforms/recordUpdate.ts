@@ -5,12 +5,17 @@ export const recordUpdate = (): ts.TransformerFactory<ts.SourceFile> =>
 (context) => (sourceFile) => {
     const registry = new RecordRegistry();
 
-    const propSet = new Set<String>();
-    const replacedUpdates = ts.visitNode(sourceFile, replaceUpdateStatements(propSet, context));
+    const propSet = new Set<string>();
+    const updateSet = new Map<string, number>();
+    ts.visitNode(sourceFile, registerUpdateStatements(propSet, updateSet, context));
+
+    const replacedUpdates = ts.visitNode(sourceFile, replaceUpdateStatements(updateSet, context));
     const replacedLiterals = ts.visitNode(replacedUpdates, replaceObjectLiterals(propSet, registry, context));
 
     const recordStatements = createRecordStatements(registry);
-    const insertedCtors = ts.visitNode(replacedLiterals, insertRecordConstructors(recordStatements, context));
+    const reusableUpdateStatements = createReusableUpdateStatements(updateSet);
+    const statementsToPrepend = recordStatements.concat(reusableUpdateStatements);
+    const insertedCtors = ts.visitNode(replacedLiterals, prependNodes(statementsToPrepend, context));
 
     return insertedCtors;
 }
@@ -18,7 +23,7 @@ export const recordUpdate = (): ts.TransformerFactory<ts.SourceFile> =>
 
 class RecordRegistry {
     counter: number;
-    map: Map<String, String>;
+    map: Map<string, string>;
 
     constructor() {
         this.counter = 0;
@@ -32,7 +37,7 @@ class RecordRegistry {
 
         const possibleShape = this.map.get(shapeId);
         if (possibleShape) {
-            return possibleShape.valueOf();
+            return possibleShape;
         }
 
         const recordId = this.counter + 1;
@@ -45,8 +50,54 @@ class RecordRegistry {
     }
 }
 
+function registerUpdateStatements(propSet: Set<string>, updateSet: Map<string, number>, ctx: ts.TransformationContext) {
+    const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
+        ts.visitEachChild(node, visitorHelp, ctx);
 
-function replaceUpdateStatements(propSet: Set<String>, ctx: ts.TransformationContext) {
+        const updateExpression = isUpdateExpression(node);
+        if (!updateExpression) {
+            return node;
+        }
+
+        const objectLiteral = updateExpression.arguments[1] as ts.ObjectLiteralExpression;
+        const objectProperties = Array.from(objectLiteral.properties);
+        objectProperties.sort(objectLiteralPropertySort);
+
+        // Add updated properties to propSet
+
+        objectProperties.
+            map((it) => (it.name as ts.Identifier).text).
+            forEach((it) => { propSet.add(it); });
+
+        // Register how many times this particular update expression is being used
+
+        const shape = objectProperties.map((it) => (it.name as ts.Identifier).text).join(',');
+
+        let num = updateSet.get(shape) || 0;
+        num += 1
+        updateSet.set(shape, num);
+
+        return node;
+    }
+
+    return visitorHelp;
+}
+
+function objectLiteralPropertySort(a: ts.ObjectLiteralElementLike, b: ts.ObjectLiteralElementLike): number {
+  var nameA = (a.name as ts.Identifier).text;
+  var nameB = (b.name as ts.Identifier).text;
+  if (nameA < nameB) {
+    return -1;
+  }
+
+  if (nameA > nameB) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function replaceUpdateStatements(updateSet: Map<string, number>, ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
         const visitedNode = ts.visitEachChild(node, visitorHelp, ctx);
         const updateExpression = isUpdateExpression(visitedNode);
@@ -55,52 +106,19 @@ function replaceUpdateStatements(propSet: Set<String>, ctx: ts.TransformationCon
         }
 
         const objName = (updateExpression.arguments[0] as ts.Identifier).text;
-        const copyId = ts.createIdentifier('$r');
 
-        const cloneObj = ts.createVariableStatement(
-            undefined,
-            ts.createVariableDeclarationList([
-                ts.createVariableDeclaration(
-                    copyId,
-                    undefined,
-                    ts.createCall(
-                        ts.createPropertyAccess(
-                            ts.createIdentifier(objName),
-                            ts.createIdentifier('$clone')
-                        ),
-                        undefined,
-                        []
-                    )
-                )
-            ])
-        );
-
-        // Add updated properties to propSet
         const objectLiteral = updateExpression.arguments[1] as ts.ObjectLiteralExpression;
+        const objectProperties = Array.from(objectLiteral.properties);
+        objectProperties.sort(objectLiteralPropertySort);
 
-        objectLiteral.properties.
-            map((it) => (it.name as ts.Identifier).text).
-            forEach((it) => { propSet.add(it); });
+        const updateShape = objectProperties.map((it) => (it.name as ts.Identifier).text).join(',');
+        const updatePerformed = updateSet.get(updateShape) || 0;
 
-        const propSetters: ts.Statement[] = objectLiteral.properties.
-            map((it) => ts.createExpressionStatement(
-                ts.createBinary(
-                    ts.createPropertyAccess(
-                        copyId,
-                        it.name as ts.Identifier
-                    ),
-                    ts.createToken(ts.SyntaxKind.EqualsToken),
-                    (it as ts.PropertyAssignment).initializer
-                )
-        ));
+        if (updatePerformed > 1) {
+            return generateCodeForReusableUpdate(objName, updateShape, objectProperties);
+        }
 
-        const retStmt = ts.createReturn(copyId);
-
-        propSetters.push(retStmt);
-
-        const block = [ cloneObj as ts.Statement ].concat(propSetters);
-
-        return ts.createImmediatelyInvokedFunctionExpression(block);
+        return generateCodeForSingleUpdate(objName, objectProperties);
     }
 
     return visitorHelp;
@@ -116,9 +134,69 @@ function isUpdateExpression(node: ts.Node): ts.CallExpression | null {
     return null
 }
 
+function generateCodeForReusableUpdate(objName: string, shape: string, objectProperties: Array<ts.ObjectLiteralElementLike>): ts.Node {
+    const updateFnName = `$$update__${shape.replaceAll(',', '__')}`;
 
-function replaceObjectLiterals(propSet: Set<String>, registry: RecordRegistry, ctx: ts.TransformationContext) {
+    const initialArgs: Array<ts.Expression> = [ ts.createIdentifier(objName)  ];
+    const newValues = objectProperties.map((it) => (it as ts.PropertyAssignment).initializer);
+    const args = initialArgs.concat(newValues);
+
+    return ts.createCall(
+        ts.createIdentifier(updateFnName),
+        undefined,
+        args
+    );
+}
+
+function generateCodeForSingleUpdate(objName: string, objectProperties: Array<ts.ObjectLiteralElementLike>): ts.Node {
+    const copyId = ts.createIdentifier('$r');
+
+    const cloneObj = ts.createVariableStatement(
+        undefined,
+        ts.createVariableDeclarationList([
+            ts.createVariableDeclaration(
+                copyId,
+                undefined,
+                ts.createCall(
+                    ts.createPropertyAccess(
+                        ts.createIdentifier(objName),
+                        ts.createIdentifier('$c')
+                    ),
+                    undefined,
+                    []
+                )
+            )
+        ])
+    );
+
+    const propSetters: ts.Statement[] = objectProperties.
+        map((it) => ts.createExpressionStatement(
+            ts.createBinary(
+                ts.createPropertyAccess(
+                    copyId,
+                    it.name as ts.Identifier
+                ),
+                ts.createToken(ts.SyntaxKind.EqualsToken),
+                (it as ts.PropertyAssignment).initializer
+            )
+    ));
+
+    const retStmt = ts.createReturn(copyId);
+
+    propSetters.push(retStmt);
+
+    const block = [ cloneObj as ts.Statement ].concat(propSetters);
+
+    return ts.createImmediatelyInvokedFunctionExpression(block);
+}
+
+
+function replaceObjectLiterals(propSet: Set<string>, registry: RecordRegistry, ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
+        if (isTupleConstructor(node)) {
+            return node;
+        }
+
         const visitedNode = ts.visitEachChild(node, visitorHelp, ctx);
         const objectLiteral = isRecordLiteral(visitedNode);
         if (!objectLiteral) {
@@ -144,6 +222,11 @@ function replaceObjectLiterals(propSet: Set<String>, registry: RecordRegistry, c
     }
 
     return visitorHelp;
+}
+
+function isTupleConstructor(node: ts.Node): boolean {
+    return ts.isFunctionDeclaration(node) && 
+        (node.name?.text === '_Utils_Tuple2' || node.name?.text === '_Utils_Tuple3');
 }
 
 function isRecordLiteral(node: ts.Node): ts.ObjectLiteralExpression | null {
@@ -179,17 +262,46 @@ function createRecordStatement(className: string, props: string[]): string {
             ${propSetters}
         }
 
-        ${className}.prototype.$clone = function() {
+        ${className}.prototype.$c = function() {
             return new ${className}(${propGetters});
         }
     `;
 }
 
 
-function insertRecordConstructors(ctors: ts.Node[], ctx: ts.TransformationContext) {
+function createReusableUpdateStatements(updateSet: Map<string, number>): ts.Node[] {
+    const statementString = Array.from(updateSet.entries()).
+        filter((it) => it[1] > 1).
+        map((it) => createReusableUpdateStatement(it[0])).
+        join('\n');
+
+    return astNodes(statementString);
+}
+
+function createReusableUpdateStatement(shape: string): string {
+    const updateFnName = `$$update__${shape.replaceAll(',', '__')}`;
+
+    const props = shape.split(',');
+    const propSetters = props.
+        map((name) => `$r.${name} = ${name};`).
+        join(' ');
+
+    const propList = [ 'obj' ].concat(props).join(',');
+
+    return `
+        function ${updateFnName}(${propList}) {
+            var $r = obj.$c();
+            ${propSetters}
+            return $r;
+        }
+    `;
+}
+
+
+function prependNodes(nodes: ts.Node[], ctx: ts.TransformationContext) {
     const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
         if (isFirstFWrapper(node)) {
-            return ctors.concat(node);
+            return nodes.concat(node);
         }
 
         return ts.visitEachChild(node, visitorHelp, ctx);
