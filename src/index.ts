@@ -37,7 +37,7 @@ async function run(inputFilePath: string | undefined) {
   let jsSource: string = '';
   let elmFilePath = undefined;
 
-  const replacementDir = hasReplacements(process.argv)
+  const replacementDir = program.opts().replacements;
   let replacements = null
   if (replacementDir) {
      replacements = readFilesSync(replacementDir)
@@ -135,21 +135,5 @@ async function run(inputFilePath: string | undefined) {
   }
 }
 
-
-function hasReplacements(args: string[]){
-    let flagged = false
-    let dir = null
-    for (const arg of args) {
-        if (flagged) {
-            dir = arg
-            break
-        } else {
-            if (arg == "--replacements"){
-                flagged = true
-            }
-        }
-    }
-    return dir
-}
 
 run(program.args[0]).catch((e) => console.error(e));
