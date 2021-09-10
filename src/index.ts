@@ -30,6 +30,7 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   .option('--init-benchmark <dir>', 'Generate some files to help run benchmarks')
   .option('--benchmark <dir>', 'Run the benchmark in the given directory.')
   .option('--replacements <dir>', 'Replace stuff')
+  .option('-O3, --optimize-speed', 'Enable optimizations that likely increases asset size', false)
   .parse(process.argv);
 
 async function run(inputFilePath: string | undefined) {
@@ -37,15 +38,9 @@ async function run(inputFilePath: string | undefined) {
   let jsSource: string = '';
   let elmFilePath = undefined;
 
-  const replacementDir = program.opts().replacements;
-  let replacements = null
-  if (replacementDir) {
-     replacements = readFilesSync(replacementDir)
-  } else if (program.benchmark) {
-     replacements = benchmarkDefaults.replacements;
-  } else {
-    replacements = toolDefaults.replacements;
-  }
+  const options = program.opts();
+  const replacements = options.replacements;
+  const o3Enabled = options.optimizeSpeed;
 
   if (program.initBenchmark) {
     console.log(`Initializing benchmark ${program.initBenchmark}`)
@@ -64,13 +59,9 @@ async function run(inputFilePath: string | undefined) {
               {
                   browser: Browser.Chrome,
                   headless: true,
-              },
-              {
-                  browser: Browser.V8JitLog,
-                  headless: true,
-              },
+              }
           ],
-          transforms: { ...benchmarkDefaults, ...{replacements: replacements} }
+          transforms: benchmarkDefaults(o3Enabled, replacements),
       };
       const report = await Benchmark.run(options, [
         {
@@ -82,9 +73,7 @@ async function run(inputFilePath: string | undefined) {
       console.log(Reporting.terminal(report));
 //       fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
       process.exit(0)
-
   }
-
 
   if (inputFilePath && inputFilePath.endsWith('.js')) {
     jsSource = fs.readFileSync(inputFilePath, 'utf8');
@@ -117,7 +106,7 @@ async function run(inputFilePath: string | undefined) {
       jsSource,
       elmFilePath,
       false,
-      { ...toolDefaults, ...{replacements: replacements} }
+      toolDefaults(o3Enabled, replacements),
     );
 
     // Make sure all the folders up to the output file exist, if not create them.
