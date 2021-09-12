@@ -4,6 +4,7 @@ module Suite exposing (suite)
 
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Attr
+import TextInput
 import V8.Benchmark.Runner.Json exposing (..)
 
 
