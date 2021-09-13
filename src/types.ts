@@ -73,41 +73,45 @@ export enum Browser {
 
 export const unallowedChars = /[^A-Za-z0-9]/g;
 
-export const toolDefaults: Transforms = {
-  replaceVDomNode: false,
-  variantShapes: true,
-  inlineNumberToString: false,
-  inlineEquality: true,
-  inlineFunctions: true,
-  listLiterals: false,
-  passUnwrappedFunctions: true,
-  arrowFns: false,
-  shorthandObjectLiterals: false,
-  objectUpdate: false,
-  unusedValues: false,
-  replaceListFunctions: false,
-  replaceStringFunctions: false,
-  recordUpdates: false,
-  v8Analysis: false,
-  replacements: readFilesSync(__dirname + '/replacements/faster-function-wrappers')
-};
+export function toolDefaults(o3Enabled: boolean, replacements: { string: string } | null): Transforms {
+    return {
+        replaceVDomNode: false,
+        variantShapes: true,
+        inlineNumberToString: false,
+        inlineEquality: true,
+        inlineFunctions: true,
+        listLiterals: false,
+        passUnwrappedFunctions: true,
+        arrowFns: false,
+        shorthandObjectLiterals: false,
+        objectUpdate: false,
+        unusedValues: false,
+        replaceListFunctions: false,
+        replaceStringFunctions: false,
+        recordUpdates: o3Enabled,
+        v8Analysis: false,
+        replacements: replacements || readFilesSync(__dirname + '/replacements/faster-function-wrappers')
+    };
+}
 
 
-export const benchmarkDefaults: Transforms = {
-  replaceVDomNode: false,
-  variantShapes: true,
-  inlineNumberToString: false,
-  inlineEquality: true,
-  inlineFunctions: true,
-  listLiterals: false,
-  passUnwrappedFunctions: true,
-  arrowFns: false,
-  shorthandObjectLiterals: false,
-  objectUpdate: false,
-  unusedValues: false,
-  replaceListFunctions: true,
-  replaceStringFunctions: true,
-  recordUpdates: false,
-  v8Analysis: true,
-  replacements: readFilesSync(__dirname + '/replacements/faster-function-wrappers')
-};
+export function benchmarkDefaults(o3Enabled: boolean, replacements: { string: string } | null): Transforms {
+    return {
+        replaceVDomNode: false,
+        variantShapes: true,
+        inlineNumberToString: false,
+        inlineEquality: true,
+        inlineFunctions: true,
+        listLiterals: false,
+        passUnwrappedFunctions: true,
+        arrowFns: false,
+        shorthandObjectLiterals: false,
+        objectUpdate: false,
+        unusedValues: false,
+        replaceListFunctions: true,
+        replaceStringFunctions: true,
+        recordUpdates: o3Enabled,
+        v8Analysis: true,
+        replacements: replacements || readFilesSync(__dirname + '/replacements/faster-function-wrappers')
+    };
+}
