@@ -3,6 +3,7 @@ module Suite exposing (suite)
 {-| -}
 
 import Html exposing (Html)
+import Html.Styled
 import V8.Benchmark.Runner.Json exposing (..)
 import View
 
@@ -16,4 +17,4 @@ suite =
 
 view : () -> Html View.Msg
 view _ =
-    View.main
+    Html.Styled.toUnstyled <| View.view "Oslo S" "Oslo Airport"

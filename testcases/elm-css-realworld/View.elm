@@ -14,18 +14,18 @@ type Msg
 
 main : Html Msg
 main =
-    Html.Styled.toUnstyled view
+    Html.Styled.toUnstyled <| view "Oslo S" "Oslo Airport"
 
 
-view : Html.Styled.Html Msg
-view =
+view : String -> String -> Html.Styled.Html Msg
+view fromValue toValue =
     Html.Styled.div
         []
-        [ TextInput.init "From" "Oslo S"
+        [ TextInput.init "From" fromValue
             |> TextInput.withInputType TextInput.TextInput
             |> TextInput.onChange ChangeFromText
             |> TextInput.toHtml
-        , TextInput.init "To" "Oslo Airport"
+        , TextInput.init "To" toValue
             |> TextInput.withInputType TextInput.TextInput
             |> TextInput.onChange ChangeToText
             |> TextInput.toHtml
