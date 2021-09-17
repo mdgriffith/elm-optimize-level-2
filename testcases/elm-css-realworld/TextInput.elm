@@ -3,9 +3,7 @@ module TextInput exposing
     , InputType(..)
     , init
     , isDisabled
-    , onBlur
     , onChange
-    , onFocus
     , toHtml
     , withInputId
     , withInputType
@@ -35,8 +33,6 @@ type alias InternalConfig msg =
     , inputId : String
     , error : Maybe String
     , onChange : Maybe (String -> msg)
-    , onFocus : Maybe msg
-    , onBlur : Maybe msg
     , disabled : Bool
     }
 
@@ -60,8 +56,6 @@ init label value =
         , inputId = labelAsId label
         , error = Nothing
         , onChange = Nothing
-        , onFocus = Nothing
-        , onBlur = Nothing
         , disabled = False
         }
 
@@ -70,20 +64,6 @@ init label value =
 onChange : (String -> msg) -> Config msg -> Config msg
 onChange handler (Config config) =
     Config { config | onChange = Just handler }
-
-
-{-| The message which should be triggered every time the input gains focus.
--}
-onFocus : msg -> Config msg -> Config msg
-onFocus msg (Config config) =
-    Config { config | onFocus = Just msg }
-
-
-{-| The message which should be triggered every time the input loses focus.
--}
-onBlur : msg -> Config msg -> Config msg
-onBlur msg (Config config) =
-    Config { config | onBlur = Just msg }
 
 
 {-| -}
@@ -142,8 +122,15 @@ toHtml (Config config) =
             Css.batch
                 [ Css.paddingTop <| Css.px 24
                 ]
-
-        defaultInputAttributes =
+    in
+    div
+        [ Attributes.css
+            [ Css.position Css.relative
+            , Css.fontSize <| Css.px 20
+            , Css.lineHeight <| Css.px 30
+            ]
+        ]
+        [ Html.input
             [ Attributes.id config.inputId
             , Attributes.type_ (inputTypeToString config.inputType)
             , Attributes.value config.value
@@ -153,6 +140,7 @@ toHtml (Config config) =
                     [ Css.display Css.none ]
                 , Css.pseudoElement "-ms-reveal"
                     [ Css.display Css.none ]
+                , Css.boxSizing Css.borderBox
                 , Css.border Css.zero
                 , Css.outline Css.zero
                 , Css.borderRadius (Css.px 4)
@@ -162,7 +150,7 @@ toHtml (Config config) =
 
                     else
                         borderColor
-                , Css.backgroundColor <| Css.hex "000000"
+                , Css.backgroundColor <| Css.hex "FFFFFFFF"
                 , Css.lineHeight <| Css.rem 1
                 , Css.width <| Css.pct 100
                 , Css.height <| Css.px 60
@@ -170,6 +158,7 @@ toHtml (Config config) =
                 , Css.paddingBottom <| Css.px 8
                 , Css.paddingLeft <| Css.px 12
                 , Css.paddingRight <| Css.px 12
+                , Css.fontSize <| Css.px 20
                 , inputTransitions ToIdle
                 , Css.Global.generalSiblings
                     [ Css.Global.typeSelector "label"
@@ -184,7 +173,7 @@ toHtml (Config config) =
                     Css.batch
                         [ Css.hover
                             [ Css.boxShadow5 Css.zero Css.zero (Css.px 8) Css.zero boxShadowColor
-                            , Css.borderColor <| Css.hex "000000"
+                            , Css.borderColor <| Css.hex "FFFFFFFF"
                             , inputTransitions ToHover
                             ]
                         , Css.focus
@@ -208,25 +197,13 @@ toHtml (Config config) =
                   else
                     Css.batch []
                 ]
-            ]
+            , case config.onChange of
+                Just changeEvent ->
+                    Events.onInput changeEvent
 
-        actualInputAttributes =
-            [ Maybe.map Events.onInput config.onChange
-            , Maybe.map Events.onFocus config.onFocus
-            , Maybe.map Events.onBlur config.onBlur
+                Nothing ->
+                    Attributes.attribute "no_such_attribute" ""
             ]
-                |> List.filterMap identity
-                |> List.append defaultInputAttributes
-    in
-    div
-        [ Attributes.css
-            [ Css.position Css.relative
-            , Css.fontSize <| Css.px 20
-            , Css.lineHeight <| Css.px 30
-            ]
-        ]
-        [ Html.input
-            actualInputAttributes
             []
         , Html.label
             [ Attributes.for config.inputId

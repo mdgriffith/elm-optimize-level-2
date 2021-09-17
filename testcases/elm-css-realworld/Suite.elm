@@ -2,10 +2,9 @@ module Suite exposing (suite)
 
 {-| -}
 
-import Html.Styled as Html exposing (Html)
-import Html.Styled.Attributes as Attr
-import TextInput
+import Html exposing (Html)
 import V8.Benchmark.Runner.Json exposing (..)
+import View
 
 
 suite : Benchmark
@@ -15,13 +14,6 @@ suite =
         ]
 
 
-view : () -> Html a
+view : () -> Html View.Msg
 view _ =
-    Html.div
-        []
-        []
-
-
-
--- BUTTON
--- TEXT INPUT
+    View.main
