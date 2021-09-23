@@ -1,6 +1,7 @@
 
 import ts, { isIdentifier } from 'typescript';
 import { ast, astNodes } from './utils/create';
+import { readFilesSync } from '../fs_util';
 
 export const replace = (
   replacements: { [name: string]: string }
@@ -26,3 +27,13 @@ export const replace = (
         return ts.visitNode(sourceFile, visitor);
     };
 };
+
+
+export const from_file = (path: string) => {
+  const read = readFilesSync(__dirname + path)
+  let replacements = {}
+  if (read) {
+    replacements = read
+  }
+  return replace(replacements)
+}
