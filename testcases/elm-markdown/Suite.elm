@@ -2,11 +2,8 @@ module Suite exposing (suite)
 
 {-| -}
 
-
-import Benchmarks
+import ModifiedBenchmarks
 
 
 suite =
-    Benchmarks.suite
-
-
+    ModifiedBenchmarks.suite
