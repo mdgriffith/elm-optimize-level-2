@@ -1,11 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { Transforms, RunTestcaseOptions, InlineLists, BrowserOptions, Browser } from '../types';
 import * as Visit from './visit';
 import chalk from 'chalk';
-import * as Transform from '../transform';
-import { compileToStringSync } from 'node-elm-compiler';
-import * as Post from '../postprocess';
+
 export interface Stat {
   name: string;
   bytes: number;
