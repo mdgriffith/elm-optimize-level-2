@@ -1,5 +1,4 @@
 import ts from 'typescript';
-// import { matchElmSource } from './patterns';
 
 /*
 
@@ -94,8 +93,11 @@ function reportInlineTransformResult(ctx: InlineContext) {
   console.log(`inlining ${inlined.fromRawFunc} function calls`);
 }
 
+
+
 export const createFunctionInlineTransformer = (
   logOverview: boolean,
+  arityBasedFunctionNames: boolean,
   ignoreTopLevel?: 'for tests'
 ): ts.TransformerFactory<ts.SourceFile> => (context) => {
   return (sourceFile) => {
@@ -106,7 +108,8 @@ export const createFunctionInlineTransformer = (
     const splitter = createSplitterVisitor(
       inlineContext,
       context,
-      ignoreTopLevel === 'for tests'
+      ignoreTopLevel === 'for tests',
+      arityBasedFunctionNames
     );
     const splittedNode = ts.visitNode(sourceFile, splitter);
 
@@ -137,7 +140,8 @@ const isTopLevelScope = (path: ts.Node[]) => {
 const createSplitterVisitor = (
   { splits, partialApplications, functionsThatWrapFunctions }: InlineContext,
   context: ts.TransformationContext,
-  ignoreTopLevel: boolean
+  ignoreTopLevel: boolean,
+  arityBasedFunctionNames: boolean
 ) => {
   const visitor = (path: ts.Node[]) => (
     node: ts.Node
@@ -365,12 +369,23 @@ const createSplitterVisitor = (
               // splits into
               // var f = A2(g, a,b);
               // var f_fn = f.f;
+              let inner_fn_name = 'f'
+
+
+              // arityBasedFunctionNames
+              // Normally the internal function is stored at `.f`
+              // However, when using fastCurriedFns, the internal function is stored at `.a{arity}`
+              if (arityBasedFunctionNames && partialApplication && partialApplication.funcReturnsWrapper && partialApplication.funcReturnsWrapper.resultArity != 1) {
+                inner_fn_name = 'a' + (partialApplication.funcReturnsWrapper.resultArity)
+              }
+                
+
               return [
                 node,
                 ts.createVariableDeclaration(
                   ts.createIdentifier(rawFunName),
                   undefined,
-                  ts.createPropertyAccess(node.name, ts.createIdentifier('f'))
+                  ts.createPropertyAccess(node.name, ts.createIdentifier(inner_fn_name))
                 ),
               ];
             }

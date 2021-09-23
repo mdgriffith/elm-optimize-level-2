@@ -1,4 +1,5 @@
 import { readFilesSync } from './fs_util';
+import * as Replace from './transforms/replace';
 
 export enum Mode {
   Prod = 'prod',
@@ -40,6 +41,7 @@ export type Transforms = {
   replaceStringFunctions: boolean;
   recordUpdates: boolean;
   v8Analysis: boolean;
+  fastCurriedFns: boolean;
   replacements: { [name: string]: string } | null
 };
 
@@ -90,7 +92,8 @@ export function toolDefaults(o3Enabled: boolean, replacements: { string: string 
         replaceStringFunctions: false,
         recordUpdates: o3Enabled,
         v8Analysis: false,
-        replacements: replacements || readFilesSync(__dirname + '/replacements/faster-function-wrappers')
+        fastCurriedFns: true,
+        replacements: replacements
     };
 }
 
@@ -111,7 +114,37 @@ export function benchmarkDefaults(o3Enabled: boolean, replacements: { string: st
         replaceListFunctions: true,
         replaceStringFunctions: true,
         recordUpdates: o3Enabled,
-        v8Analysis: true,
-        replacements: replacements || readFilesSync(__dirname + '/replacements/faster-function-wrappers')
+        v8Analysis: false,
+        fastCurriedFns: true,
+        replacements: replacements
     };
 }
+
+
+export type Previous = {
+  v1: Transforms
+};
+
+
+export const previous: Previous = 
+  { v1:  {
+        replaceVDomNode: false,
+        variantShapes: true,
+        inlineNumberToString: false,
+        inlineEquality: true,
+        inlineFunctions: true,
+        listLiterals: false,
+        passUnwrappedFunctions: true,
+        arrowFns: false,
+        shorthandObjectLiterals: false,
+        objectUpdate: false,
+        unusedValues: false,
+        replaceListFunctions: false,
+        replaceStringFunctions: false,
+        recordUpdates: false,
+        v8Analysis: false,
+        fastCurriedFns: false,
+        replacements: null
+    }
+  }
+

@@ -22,8 +22,6 @@ import { createRemoveUnusedLocalsTransform } from './transforms/removeUnusedLoca
 import { createPassUnwrappedFunctionsTransformer } from './transforms/passUnwrappedFunctions';
 import { replaceVDomNode } from './transforms/adjustVirtualDom';
 import { inlineNumberToString } from './transforms/inlineNumberToString';
-import { replaceListFunctions } from './transforms/replaceListFunctions';
-import { replaceStringFunctions } from './transforms/replaceStringFunctions';
 import { reportFunctionStatusInBenchmarks, v8Debug } from './transforms/analyze';
 import { recordUpdate } from './transforms/recordUpdate';
 import * as Replace from './transforms/replace';
@@ -89,11 +87,12 @@ export const transform = async (
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
     [transforms.replacements != null, replacementTransformer ],
-    [transforms.replaceListFunctions, replaceListFunctions],
-    [transforms.replaceStringFunctions, replaceStringFunctions],
+    [transforms.fastCurriedFns, Replace.from_file('/../replacements/faster-function-wrappers') ],
+    [transforms.replaceListFunctions,  Replace.from_file('/../replacements/list') ],
+    [transforms.replaceStringFunctions, Replace.from_file('/../replacements/string') ],
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
-    [transforms.inlineFunctions, createFunctionInlineTransformer(verbose)],
+    [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
     [transforms.inlineEquality, inlineEquality()],
     [transforms.inlineNumberToString, inlineNumberToString()],
     [

@@ -6,34 +6,13 @@ Compiles all the test cases and runs them via webdriver to summarize the results
 */
 
 import {
-  ObjectUpdate,
-  Transforms,
   Browser,
-  InlineLists,
-  toolDefaults,
 } from '../types';
 import * as Reporting from './reporting';
 import * as Benchmark from './benchmark';
 import * as fs from 'fs';
+import * as Types from '../types'
 
-const defaultOptions: Transforms = {
-  replaceVDomNode: false,
-  variantShapes: true,
-  inlineNumberToString: false,
-  inlineEquality: true,
-  inlineFunctions: true,
-  listLiterals: false,
-  passUnwrappedFunctions: true,
-  arrowFns: false,
-  shorthandObjectLiterals: false,
-  objectUpdate: false,
-  unusedValues: false,
-  replaceListFunctions: true,
-  replaceStringFunctions: true,
-  recordUpdates: false,
-  v8Analysis: true,
-  replacements: null
-};
 
 const options = {
   compile: true,
@@ -44,18 +23,20 @@ const options = {
   runBenchmark: [
     {
       browser: Browser.Chrome,
-      headless: false,
+      headless: true,
     },
-//     {
-//       browser: Browser.Firefox,
-//       headless: true,
-//     },
+    // {
+    //   browser: Browser.Firefox,
+    //   headless: true,
+    // },
 //     {
 //       browser: Browser.Safari,
 //       headless: true,
 //     },
   ],
-  transforms: defaultOptions
+  transforms: 
+    Types.benchmarkDefaults(false, null)
+    // Types.previous.v1
   
 };
 
@@ -72,6 +53,11 @@ async function go() {
     // {
     //   name: 'Elm CSS',
     //   dir: 'testcases/elm-css',
+    //   elmFile: 'V8/Benchmark.elm',
+    // },
+    // {
+    //   name: 'Elm CSS - Realworld',
+    //   dir: 'testcases/elm-css-realworld',
     //   elmFile: 'V8/Benchmark.elm',
     // },
     {
