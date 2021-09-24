@@ -27,10 +27,10 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   )
   .usage('[options] <src/Main.elm>')
   .option('--output <output>', 'the javascript file to create.', 'elm.js')
+  .option('-O3, --optimize-speed', 'Enable optimizations that likely increases asset size', false)
   .option('--init-benchmark <dir>', 'Generate some files to help run benchmarks')
   .option('--benchmark <dir>', 'Run the benchmark in the given directory.')
   .option('--replacements <dir>', 'Replace stuff')
-  .option('-O3, --optimize-speed', 'Enable optimizations that likely increases asset size', false)
   .parse(process.argv);
 
 async function run(inputFilePath: string | undefined) {

@@ -1,8 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Transforms, RunTestcaseOptions, InlineLists, BrowserOptions, Browser } from '../types';
+import { Transforms, RunTestcaseOptions, InlineLists, BrowserOptions, Browser, emptyOpts } from '../types';
 import * as Visit from './visit';
-import chalk from 'chalk';
 import * as Transform from '../transform';
 import { compileToStringSync } from 'node-elm-compiler';
 import * as Post from '../postprocess';
@@ -250,26 +249,6 @@ export const run = async function (
 
 
 
-
-
-const emptyOpts: Transforms = {
-  replaceVDomNode: false,
-  variantShapes: false,
-  inlineNumberToString: false,
-  inlineFunctions: false,
-  inlineEquality: false,
-  listLiterals: false,
-  passUnwrappedFunctions: false,
-  arrowFns: false,
-  shorthandObjectLiterals: false,
-  objectUpdate: false,
-  unusedValues: false,
-  replaceListFunctions: false,
-  replaceStringFunctions: false,
-  recordUpdates: false,
-  v8Analysis: false,
-  replacements: null
-};
 
 const breakdown = function (
   options: Transforms
