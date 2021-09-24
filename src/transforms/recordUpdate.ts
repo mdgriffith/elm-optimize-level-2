@@ -135,7 +135,8 @@ function isUpdateExpression(node: ts.Node): ts.CallExpression | null {
 }
 
 function generateCodeForReusableUpdate(objName: string, shape: string, objectProperties: Array<ts.ObjectLiteralElementLike>): ts.Node {
-    const updateFnName = `$$update__${shape.replaceAll(',', '__')}`;
+ 
+    const updateFnName = `$$update__${shape.replace(/,/g, '__')}`;
 
     const initialArgs: Array<ts.Expression> = [ ts.createIdentifier(objName)  ];
     const newValues = objectProperties.map((it) => (it as ts.PropertyAssignment).initializer);
@@ -279,7 +280,8 @@ function createReusableUpdateStatements(updateSet: Map<string, number>): ts.Node
 }
 
 function createReusableUpdateStatement(shape: string): string {
-    const updateFnName = `$$update__${shape.replaceAll(',', '__')}`;
+
+    const updateFnName = `$$update__${shape.replace(/,/g, '__')}`;
 
     const props = shape.split(',');
     const propSetters = props.
