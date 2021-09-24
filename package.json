@@ -43,7 +43,7 @@
   "devDependencies": {
     "@gfx/zopfli": "^1.0.15",
     "@types/commander": "^2.12.2",
-    "chromedriver": "^94.0.0",
+    "chromedriver": "^93.0.0",
     "copyfiles": "^2.4.1",
     "geckodriver": "^1.20.0",
     "husky": "^4.2.5",
