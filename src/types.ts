@@ -75,6 +75,28 @@ export enum Browser {
 
 export const unallowedChars = /[^A-Za-z0-9]/g;
 
+
+export const emptyOpts: Transforms = {
+  replaceVDomNode: false,
+  variantShapes: false,
+  inlineNumberToString: false,
+  inlineFunctions: false,
+  inlineEquality: false,
+  listLiterals: false,
+  passUnwrappedFunctions: false,
+  arrowFns: false,
+  shorthandObjectLiterals: false,
+  objectUpdate: false,
+  unusedValues: false,
+  replaceListFunctions: false,
+  replaceStringFunctions: false,
+  recordUpdates: false,
+  v8Analysis: false,
+  fastCurriedFns: false,
+  replacements: null
+};
+
+
 export function toolDefaults(o3Enabled: boolean, replacements: { string: string } | null): Transforms {
     return {
         replaceVDomNode: false,
@@ -112,7 +134,7 @@ export function benchmarkDefaults(o3Enabled: boolean, replacements: { string: st
         objectUpdate: false,
         unusedValues: false,
         replaceListFunctions: true,
-        replaceStringFunctions: true,
+        replaceStringFunctions: false,
         recordUpdates: o3Enabled,
         v8Analysis: false,
         fastCurriedFns: true,
