@@ -36,7 +36,7 @@ elm-optimize-level-2 Main.elm
 
 will generate an `elm.js` file.
 
-The only configurable option is what to name the generated js file.
+The first configurable option is what to name the generated js file.
 
 ```
 elm-optimize-level-2 Main.elm --output app.js
@@ -45,6 +45,13 @@ elm-optimize-level-2 Main.elm --output app.js
 **Note** — elm-optimize-level-2 only generates a js file, it doesn't support generating HTML.
 
 **Another Note** — Before deploying your app, you should also minify it and gzip it. `elm-optimize-level-2` does not do that for you. [Check out this doc for a recommended setup.](notes/minification.md)
+
+## The `--optimize-speed` flag
+
+You can also provide `--optimize-speed` (`--O3`) to `elm-optimize-level-2`, which will attempt to generate even faster code at the expense of asset size.
+
+If you enable this option you may experience a ~5% bigger js file, but with significantly faster record updates.
+
 
 ## What's actually happening?
 
