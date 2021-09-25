@@ -110,7 +110,7 @@ export function toolDefaults(o3Enabled: boolean, replacements: { string: string 
         shorthandObjectLiterals: false,
         objectUpdate: false,
         unusedValues: false,
-        replaceListFunctions: false,
+        replaceListFunctions: true,
         replaceStringFunctions: false,
         recordUpdates: o3Enabled,
         v8Analysis: false,
