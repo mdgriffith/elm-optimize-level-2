@@ -2,15 +2,14 @@
 import program from 'commander';
 import * as path from 'path';
 import * as Transform from './transform';
-import { toolDefaults, benchmarkDefaults, Browser} from './types';
+import { toolDefaults } from './types';
 import { compileToStringSync } from 'node-elm-compiler';
 import * as fs from 'fs';
 import chalk from 'chalk';
 const { version } = require('../package.json');
-import * as BenchInit from './benchmark/init'
-import * as Benchmark from './benchmark/benchmark';
-import * as Reporting from './benchmark/reporting';
-import { readFilesSync } from './fs_util';
+// import * as BenchInit from './benchmark/init'
+// import * as Benchmark from './benchmark/benchmark';
+// import * as Reporting from './benchmark/reporting';
 
 program
   .version(version)
@@ -28,9 +27,9 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   .usage('[options] <src/Main.elm>')
   .option('--output <output>', 'the javascript file to create.', 'elm.js')
   .option('-O3, --optimize-speed', 'Enable optimizations that likely increases asset size', false)
-  .option('--init-benchmark <dir>', 'Generate some files to help run benchmarks')
-  .option('--benchmark <dir>', 'Run the benchmark in the given directory.')
-  .option('--replacements <dir>', 'Replace stuff')
+  // .option('--init-benchmark <dir>', 'Generate some files to help run benchmarks')
+  // .option('--benchmark <dir>', 'Run the benchmark in the given directory.')
+  // .option('--replacements <dir>', 'Replace stuff')
   .parse(process.argv);
 
 async function run(inputFilePath: string | undefined) {
@@ -39,41 +38,41 @@ async function run(inputFilePath: string | undefined) {
   let elmFilePath = undefined;
 
   const options = program.opts();
-  const replacements = options.replacements;
+  const replacements = null;
   const o3Enabled = options.optimizeSpeed;
 
-  if (program.initBenchmark) {
-    console.log(`Initializing benchmark ${program.initBenchmark}`)
-    BenchInit.generate(program.initBenchmark)
-    process.exit(0)
-  }
+  // if (program.initBenchmark) {
+  //   console.log(`Initializing benchmark ${program.initBenchmark}`)
+  //   BenchInit.generate(program.initBenchmark)
+  //   process.exit(0)
+  // }
 
-  if (program.benchmark) {
-      const options = {
-          compile: true,
-          gzip: true,
-          minify: true,
-          verbose: true,
-          assetSizes: true,
-          runBenchmark: [
-              {
-                  browser: Browser.Chrome,
-                  headless: true,
-              }
-          ],
-          transforms: benchmarkDefaults(o3Enabled, replacements),
-      };
-      const report = await Benchmark.run(options, [
-        {
-          name: 'Benchmark',
-          dir: program.benchmark,
-          elmFile: 'V8/Benchmark.elm',
-        }
-      ]);
-      console.log(Reporting.terminal(report));
-//       fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
-      process.exit(0)
-  }
+//   if (program.benchmark) {
+//       const options = {
+//           compile: true,
+//           gzip: true,
+//           minify: true,
+//           verbose: true,
+//           assetSizes: true,
+//           runBenchmark: [
+//               {
+//                   browser: Browser.Chrome,
+//                   headless: true,
+//               }
+//           ],
+//           transforms: benchmarkDefaults(o3Enabled, replacements),
+//       };
+//       const report = await Benchmark.run(options, [
+//         {
+//           name: 'Benchmark',
+//           dir: program.benchmark,
+//           elmFile: 'V8/Benchmark.elm',
+//         }
+//       ]);
+//       console.log(Reporting.terminal(report));
+// //       fs.writeFileSync('./results.markdown', Reporting.markdownTable(result));
+//       process.exit(0)
+//   }
 
   if (inputFilePath && inputFilePath.endsWith('.js')) {
     jsSource = fs.readFileSync(inputFilePath, 'utf8');

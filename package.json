@@ -1,7 +1,7 @@
 {
   "name": "elm-optimize-level-2",
   "description": "A second level of optimization for the Javascript that the Elm Compiler produces.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "BSD-3-Clause",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -58,10 +58,10 @@
     "ts-node": "^8.10.2",
     "tslib": "^2.0.0",
     "uglify-js": "^3.10.0",
-    "v8-natives": "^1.2.5"
+    "v8-natives": "^1.2.5",
+    "@types/selenium-webdriver": "^4.0.14"
   },
   "dependencies": {
-    "@types/selenium-webdriver": "^4.0.14",
     "chalk": "^4.1.0",
     "commander": "^6.0.0",
     "node-elm-compiler": "^5.0.4",
