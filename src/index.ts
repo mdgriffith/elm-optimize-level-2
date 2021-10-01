@@ -37,6 +37,14 @@ async function run(options: {
   outputFilePath: string | null,
   optimizeSpeed: boolean
 }) {
+  return runWithLogger(options, console.log.bind(console));
+}
+
+async function runWithLogger(options: {
+  inputFilePath: string | undefined,
+  outputFilePath: string | null,
+  optimizeSpeed: boolean
+}, log: (message?: any, ...optionalParams: any[]) => void) {
   const dirname = process.cwd();
   let jsSource: string = '';
   let elmFilePath = undefined;
@@ -80,7 +88,7 @@ async function run(options: {
 
   if (inputFilePath && inputFilePath.endsWith('.js')) {
     jsSource = fs.readFileSync(inputFilePath, 'utf8');
-    console.log('Optimizing existing JS...');
+    log('Optimizing existing JS...');
   } else if (inputFilePath && inputFilePath.endsWith('.elm')) {
     elmFilePath = inputFilePath;
     jsSource = compileToStringSync([inputFilePath], {
@@ -94,7 +102,7 @@ async function run(options: {
         },
     });
     if (jsSource != '') {
-      console.log('Compiled, optimizing JS...');
+      log('Compiled, optimizing JS...');
     } else {
       process.exit(1)
     }
@@ -120,10 +128,10 @@ async function run(options: {
     }
     fs.writeFileSync(program.output, transformed);
     const fileName = path.basename(inputFilePath);
-    console.log('Success!');
-    console.log('');
-    console.log(`   ${fileName} ───> ${program.output}`);
-    console.log('');
+    log('Success!');
+    log('');
+    log(`   ${fileName} ───> ${program.output}`);
+    log('');
   }
 }
 
