@@ -32,7 +32,7 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   // .option('--replacements <dir>', 'Replace stuff')
   .parse(process.argv);
 
-async function run(options: {
+export async function run(options: {
   inputFilePath: string | undefined,
   outputFilePath: string | null,
   optimizeSpeed: boolean
