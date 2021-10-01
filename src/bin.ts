@@ -37,6 +37,6 @@ run(
   },
   console.log.bind(console),
 ).catch((e) => {
-  console.error(e);
+  console.error(e.toString());
   process.exit(1);
 });
