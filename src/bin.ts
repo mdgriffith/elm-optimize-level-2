@@ -36,6 +36,7 @@ run(
     outputFilePath: output,
     optimizeSpeed,
     verbose,
+    processOpts: { stdio: ['inherit', 'ignore', 'inherit'] },
   },
   console.log.bind(console),
 ).catch((e) => {

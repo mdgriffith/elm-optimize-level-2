@@ -15,6 +15,7 @@ export async function run(
     outputFilePath: string | null,
     optimizeSpeed: boolean,
     verbose: boolean,
+    processOpts: { stdio: [string, string, string] },
   },
   log: (message?: any, ...optionalParams: any[]) => void
 ) {
