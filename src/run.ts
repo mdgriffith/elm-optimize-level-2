@@ -79,9 +79,7 @@ export async function run(
       process.exit(1)
     }
   } else {
-    console.error('Please provide a path to an Elm file.');
-    program.outputHelp();
-    return;
+    throw new Error('Please provide a path to an Elm file.\n' + program.helpInformation());
   }
   if (jsSource != '') {
     const transformed = await Transform.transform(
