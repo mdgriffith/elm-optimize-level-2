@@ -87,27 +87,30 @@ export async function run(
   } else {
     throw new Error(`Please provide a path to an Elm file.\n${helpInformation}`.trim());
   }
-  if (jsSource != '') {
-    const transformed = await Transform.transform(
-      dirname,
-      jsSource,
-      elmFilePath,
-      options.verbose,
-      toolDefaults(o3Enabled, replacements),
-    );
 
-    // Make sure all the folders up to the output file exist, if not create them.
-    // This mirrors elm make behavior.
-    const outputDirectory = path.dirname(options.outputFilePath);
-    if (!fs.existsSync(outputDirectory)) {
-      fs.mkdirSync(outputDirectory, { recursive: true });
-    }
-    fs.writeFileSync(options.outputFilePath, transformed);
-    const fileName = path.basename(inputFilePath);
-    log('Success!');
-    log('');
-    log(`   ${fileName} ───> ${options.outputFilePath}`);
-    log('');
-    return options.outputFilePath;
+  if (jsSource == '') {
+    throw new Error('Target JS file is empty.');
   }
+
+  const transformed = await Transform.transform(
+    dirname,
+    jsSource,
+    elmFilePath,
+    options.verbose,
+    toolDefaults(o3Enabled, replacements),
+  );
+
+  // Make sure all the folders up to the output file exist, if not create them.
+  // This mirrors elm make behavior.
+  const outputDirectory = path.dirname(options.outputFilePath);
+  if (!fs.existsSync(outputDirectory)) {
+    fs.mkdirSync(outputDirectory, { recursive: true });
+  }
+  fs.writeFileSync(options.outputFilePath, transformed);
+  const fileName = path.basename(inputFilePath);
+  log('Success!');
+  log('');
+  log(`   ${fileName} ───> ${options.outputFilePath}`);
+  log('');
+  return options.outputFilePath;
 }
