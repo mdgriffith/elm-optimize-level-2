@@ -19,6 +19,10 @@ export async function run(
   },
   log: (message?: any, ...optionalParams: any[]) => void
 ) {
+  if (!options.outputFilePath) {
+    throw new Error('Missing an output file path');
+  }
+
   const dirname = process.cwd();
   let jsSource: string = '';
   let elmFilePath = undefined;
