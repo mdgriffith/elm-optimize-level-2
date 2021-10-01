@@ -76,7 +76,7 @@ export async function run(
     if (jsSource != '') {
       log('Compiled, optimizing JS...');
     } else {
-      process.exit(1)
+      throw new Error('An error occurred when compiling your application with Elm 0.19.1.');
     }
   } else {
     throw new Error('Please provide a path to an Elm file.\n' + program.helpInformation());
