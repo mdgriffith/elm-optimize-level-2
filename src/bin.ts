@@ -1,11 +1,6 @@
-// tslint:disable-next-line no-require-imports no-var-requires
 import program from 'commander';
-import * as path from 'path';
-import * as Transform from './transform';
-import { toolDefaults } from './types';
-import { compileToStringSync } from 'node-elm-compiler';
-import * as fs from 'fs';
 import chalk from 'chalk';
+import { run } from './index';
 const { version } = require('../package.json');
 // import * as BenchInit from './benchmark/init'
 // import * as Benchmark from './benchmark/benchmark';
@@ -33,9 +28,8 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   .parse(process.argv);
 
 const { output, optimizeSpeed } = program.opts();
-console.log(program.opts());
-// run({
-//   inputFilePath: program.args[0],
-//   outputFilePath: output,
-//   optimizeSpeed
-// }).catch((e) => console.error(e));
+run({
+  inputFilePath: program.args[0],
+  outputFilePath: output,
+  optimizeSpeed
+}).catch((e) => console.error(e));
