@@ -2,7 +2,7 @@ import * as Run from './run';
 
 export async function run(options: {
   inputFilePath: string | undefined,
-  outputFilePath: string | null,
+  outputFilePath: string,
   optimizeSpeed: boolean,
   processOpts: {
     stdio: [string, string, string],

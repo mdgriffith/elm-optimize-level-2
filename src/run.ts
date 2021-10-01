@@ -12,7 +12,7 @@ import * as fs from 'fs';
 export async function run(
   options: {
     inputFilePath: string | undefined,
-    outputFilePath: string | null,
+    outputFilePath: string,
     optimizeSpeed: boolean,
     verbose: boolean,
     processOpts: { stdio: [string, string, string] },
@@ -94,15 +94,16 @@ export async function run(
 
     // Make sure all the folders up to the output file exist, if not create them.
     // This mirrors elm make behavior.
-    const outputDirectory = path.dirname(program.output);
+    const outputDirectory = path.dirname(options.outputFilePath);
     if (!fs.existsSync(outputDirectory)) {
       fs.mkdirSync(outputDirectory, { recursive: true });
     }
-    fs.writeFileSync(program.output, transformed);
+    fs.writeFileSync(options.outputFilePath, transformed);
     const fileName = path.basename(inputFilePath);
     log('Success!');
     log('');
-    log(`   ${fileName} ───> ${program.output}`);
+    log(`   ${fileName} ───> ${options.outputFilePath}`);
     log('');
+    return options.outputFilePath;
   }
 }
