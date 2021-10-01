@@ -1,4 +1,3 @@
-// tslint:disable-next-line no-require-imports no-var-requires
 import program from 'commander';
 import chalk from 'chalk';
 import { run } from './run';

@@ -1,4 +1,3 @@
-// tslint:disable-next-line no-require-imports no-var-requires
 import * as path from 'path';
 import * as Transform from './transform';
 import { toolDefaults } from './types';
