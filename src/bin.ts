@@ -38,6 +38,7 @@ run(
     verbose,
     processOpts: { stdio: ['inherit', 'ignore', 'inherit'] },
   },
+  program.helpInformation(),
   console.log.bind(console),
 ).catch((e) => {
   if (verbose) {

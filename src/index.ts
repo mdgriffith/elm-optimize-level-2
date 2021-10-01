@@ -14,6 +14,7 @@ export async function run(options: {
       verbose: false,
       processOpts: options.processOpts || { stdio: ['inherit', 'ignore', 'inherit'] },
     },
+    '',
     () => { }
   );
 }

@@ -1,5 +1,4 @@
 // tslint:disable-next-line no-require-imports no-var-requires
-import program from 'commander';
 import * as path from 'path';
 import * as Transform from './transform';
 import { toolDefaults } from './types';
@@ -17,6 +16,7 @@ export async function run(
     verbose: boolean,
     processOpts: { stdio: [string, string, string] },
   },
+  helpInformation: string,
   log: (message?: any, ...optionalParams: any[]) => void
 ) {
   if (!options.outputFilePath) {
@@ -85,7 +85,7 @@ export async function run(
       throw new Error('An error occurred when compiling your application with Elm 0.19.1.');
     }
   } else {
-    throw new Error('Please provide a path to an Elm file.\n' + program.helpInformation());
+    throw new Error(`Please provide a path to an Elm file.\n${helpInformation}`.trim());
   }
   if (jsSource != '') {
     const transformed = await Transform.transform(
