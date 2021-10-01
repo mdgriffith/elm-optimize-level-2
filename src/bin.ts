@@ -1,6 +1,7 @@
+// tslint:disable-next-line no-require-imports no-var-requires
 import program from 'commander';
 import chalk from 'chalk';
-import { run } from './index';
+import { run } from './run';
 const { version } = require('../package.json');
 // import * as BenchInit from './benchmark/init'
 // import * as Benchmark from './benchmark/benchmark';
@@ -28,8 +29,11 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   .parse(process.argv);
 
 const { output, optimizeSpeed } = program.opts();
-run({
-  inputFilePath: program.args[0],
-  outputFilePath: output,
-  optimizeSpeed
-}).catch((e) => console.error(e));
+run(
+  {
+    inputFilePath: program.args[0],
+    outputFilePath: output,
+    optimizeSpeed
+  },
+  console.log.bind(console),
+).catch((e) => console.error(e));
