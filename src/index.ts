@@ -32,12 +32,11 @@ Give me an Elm file, I'll compile it behind the scenes using Elm 0.19.1, and the
   // .option('--replacements <dir>', 'Replace stuff')
   .parse(process.argv);
 
-async function run(inputFilePath: string | undefined) {
+async function run(inputFilePath: string | undefined, options: { output: string | null, optimizeSpeed: boolean }) {
   const dirname = process.cwd();
   let jsSource: string = '';
   let elmFilePath = undefined;
 
-  const options = program.opts();
   const replacements = null;
   const o3Enabled = options.optimizeSpeed;
 
@@ -123,5 +122,5 @@ async function run(inputFilePath: string | undefined) {
   }
 }
 
-
-run(program.args[0]).catch((e) => console.error(e));
+const { output, optimizeSpeed } = program.opts();
+run(program.args[0], { output, optimizeSpeed }).catch((e) => console.error(e));
