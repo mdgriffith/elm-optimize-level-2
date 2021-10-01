@@ -37,14 +37,20 @@ async function run(options: {
   outputFilePath: string | null,
   optimizeSpeed: boolean
 }) {
-  return runWithLogger(options, console.log.bind(console));
+  return runWithLogger(
+    options,
+    console.log.bind(console)
+  );
 }
 
-async function runWithLogger(options: {
-  inputFilePath: string | undefined,
-  outputFilePath: string | null,
-  optimizeSpeed: boolean
-}, log: (message?: any, ...optionalParams: any[]) => void) {
+async function runWithLogger(
+  options: {
+    inputFilePath: string | undefined,
+    outputFilePath: string | null,
+    optimizeSpeed: boolean
+  },
+  log: (message?: any, ...optionalParams: any[]) => void
+) {
   const dirname = process.cwd();
   let jsSource: string = '';
   let elmFilePath = undefined;
