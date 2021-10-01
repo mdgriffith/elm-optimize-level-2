@@ -6,7 +6,7 @@ export async function run(options: {
   optimizeSpeed: boolean
 }) {
   return Run.run(
-    options,
+    { ...options, verbose: false },
     () => { }
   );
 }

@@ -34,7 +34,8 @@ run(
   {
     inputFilePath: program.args[0],
     outputFilePath: output,
-    optimizeSpeed
+    optimizeSpeed,
+    verbose,
   },
   console.log.bind(console),
 ).catch((e) => {

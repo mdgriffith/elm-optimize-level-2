@@ -13,7 +13,8 @@ export async function run(
   options: {
     inputFilePath: string | undefined,
     outputFilePath: string | null,
-    optimizeSpeed: boolean
+    optimizeSpeed: boolean,
+    verbose: boolean,
   },
   log: (message?: any, ...optionalParams: any[]) => void
 ) {
@@ -86,7 +87,7 @@ export async function run(
       dirname,
       jsSource,
       elmFilePath,
-      false,
+      options.verbose,
       toolDefaults(o3Enabled, replacements),
     );
 
