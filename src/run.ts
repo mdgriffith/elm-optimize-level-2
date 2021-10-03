@@ -99,13 +99,11 @@ export async function run(
     toolDefaults(o3Enabled, replacements),
   );
 
-  if (inputFilePath !== options.outputFilePath) {
-    // Make sure all the folders up to the output file exist, if not create them.
-    // This mirrors elm make behavior.
-    const outputDirectory = path.dirname(options.outputFilePath);
-    if (!fs.existsSync(outputDirectory)) {
-      fs.mkdirSync(outputDirectory, { recursive: true });
-    }
+  // Make sure all the folders up to the output file exist, if not create them.
+  // This mirrors elm make behavior.
+  const outputDirectory = path.dirname(options.outputFilePath);
+  if (path.dirname(inputFilePath) !== outputDirectory && !fs.existsSync(outputDirectory)) {
+    fs.mkdirSync(outputDirectory, { recursive: true });
   }
 
   fs.writeFileSync(options.outputFilePath, transformed);
