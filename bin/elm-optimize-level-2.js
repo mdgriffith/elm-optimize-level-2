@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-const index = require('../dist/bin.js');
+require('../dist/bin.js');
