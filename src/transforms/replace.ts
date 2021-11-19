@@ -28,7 +28,7 @@ export const replace = (
     };
 };
 
-export const fromFiles = (paths: string[]) => {
+export const fromFiles = (paths: string[]) : ts.TransformerFactory<ts.SourceFile> => {
   const foundReplacements = paths.reduce((res, path) => {
     return Object.assign(res, readFilesSync(__dirname + path));
   }, {});
