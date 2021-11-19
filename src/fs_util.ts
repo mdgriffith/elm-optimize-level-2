@@ -1,8 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export function readFilesSync(dir: string): {[key: string]: string} | null {
-  let foundAnything = false
+export function readFilesSync(dir: string): {[key: string]: string} {
   const files: {[key: string]: string} = {};
 
   fs.readdirSync(dir).forEach(filename => {
@@ -14,14 +13,8 @@ export function readFilesSync(dir: string): {[key: string]: string} | null {
     if (isFile) {
          const content = fs.readFileSync(path.join(dir, filename))
          files[name] = content.toString()
-         foundAnything = true
     }
   });
 
-  if (foundAnything) {
-    return files;
-  } else {
-    return null
-  }
-
+  return files;
 }

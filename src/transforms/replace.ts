@@ -30,11 +30,7 @@ export const replace = (
 
 export const fromFiles = (paths: string[]) => {
   const foundReplacements = paths.reduce((res, path) => {
-    const read = readFilesSync(__dirname + path);
-    if (read) {
-      return Object.assign(res, read);
-    }
-    return res;
+    return Object.assign(res, readFilesSync(__dirname + path));
   }, {});
 
   return replace(foundReplacements);
