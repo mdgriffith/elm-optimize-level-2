@@ -28,16 +28,6 @@ export const replace = (
     };
 };
 
-
-export const from_file = (path: string) => {
-  const read = readFilesSync(__dirname + path)
-  let replacements = {}
-  if (read) {
-    replacements = read
-  }
-  return replace(replacements)
-}
-
 export const fromFiles = (paths: string[]) => {
   const foundReplacements = paths.reduce((res, path) => {
     const read = readFilesSync(__dirname + path);
