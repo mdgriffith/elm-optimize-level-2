@@ -45,7 +45,7 @@ export const fromFiles = (paths: string[]) => {
       return Object.assign(res, read);
     }
     return res;
-  }, Object.create(null));
+  }, {});
 
   return replace(foundReplacements);
 }

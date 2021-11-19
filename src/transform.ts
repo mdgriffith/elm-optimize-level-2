@@ -83,13 +83,16 @@ export const transform = async (
     replacementTransformer = Replace.replace(transforms.replacements)
   }
 
+  const replacements = removeDisabled([
+    [transforms.fastCurriedFns, '/../replacements/faster-function-wrappers'],
+    [transforms.replaceListFunctions, '/../replacements/list'],
+    [transforms.replaceStringFunctions, '/../replacements/string'],
+  ]);
 
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
     [transforms.replacements != null, replacementTransformer ],
-    [transforms.fastCurriedFns, Replace.from_file('/../replacements/faster-function-wrappers') ],
-    [transforms.replaceListFunctions,  Replace.from_file('/../replacements/list') ],
-    [transforms.replaceStringFunctions, Replace.from_file('/../replacements/string') ],
+    [true, Replace.fromFiles(replacements)],
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
