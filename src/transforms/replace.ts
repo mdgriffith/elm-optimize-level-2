@@ -37,3 +37,15 @@ export const from_file = (path: string) => {
   }
   return replace(replacements)
 }
+
+export const fromFiles = (paths: string[]) => {
+  const foundReplacements = paths.reduce((res, path) => {
+    const read = readFilesSync(__dirname + path);
+    if (read) {
+      return Object.assign(res, read);
+    }
+    return res;
+  }, Object.create(null));
+
+  return replace(foundReplacements);
+}
