@@ -78,11 +78,6 @@ export const transform = async (
     source = results.transformed[0];
   }
 
-  let replacementTransformer = inlineEquality()
-  if (transforms.replacements != null){
-    replacementTransformer = Replace.replace(transforms.replacements)
-  }
-
   const replacements = removeDisabled([
     [transforms.fastCurriedFns, '/../replacements/faster-function-wrappers'],
     [transforms.replaceListFunctions, '/../replacements/list'],
@@ -91,8 +86,7 @@ export const transform = async (
 
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
-    [transforms.replacements != null, replacementTransformer ],
-    [true, Replace.fromFiles(replacements)],
+    [transforms.replacements != null || replacements.length > 0, Replace.fromFiles(transforms.replacements || {}, replacements)],
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],

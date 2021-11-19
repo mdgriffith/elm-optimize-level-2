@@ -28,10 +28,10 @@ export const replace = (
     };
 };
 
-export const fromFiles = (paths: string[]) : ts.TransformerFactory<ts.SourceFile> => {
+export const fromFiles = (existingReplacements: {[key: string]: string}, paths: string[]) : ts.TransformerFactory<ts.SourceFile> => {
   const foundReplacements = paths.reduce((res, path) => {
     return Object.assign(res, readFilesSync(__dirname + path));
-  }, {});
+  }, existingReplacements);
 
   return replace(foundReplacements);
 }
