@@ -1,7 +1,7 @@
 
 import ts, { isIdentifier } from 'typescript';
 import { ast, astNodes } from './utils/create';
-import { readFilesSync } from '../fs_util';
+import { readFiles } from '../fs_util';
 
 export const replace = (
   replacements: { [name: string]: string }
@@ -28,10 +28,14 @@ export const replace = (
     };
 };
 
-export const fromFiles = (existingReplacements: {[key: string]: string}, paths: string[]) : ts.TransformerFactory<ts.SourceFile> => {
-  const foundReplacements = paths.reduce((res, path) => {
-    return Object.assign(res, readFilesSync(__dirname + path));
-  }, existingReplacements);
+export const fromFiles = async (existingReplacements: {[key: string]: string}, paths: string[]) : Promise<ts.TransformerFactory<ts.SourceFile>> => {
+  const fileObjects = await Promise.all(paths.map(path => readFiles(__dirname + path)));
+
+  const foundReplacements = fileObjects
+      .reduce(
+        (a, b) => Object.assign(a, b),
+        Object.assign({}, existingReplacements)
+      );
 
   return replace(foundReplacements);
 }

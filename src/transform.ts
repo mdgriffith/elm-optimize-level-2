@@ -86,7 +86,7 @@ export const transform = async (
 
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
-    [transforms.replacements != null || replacements.length > 0, Replace.fromFiles(transforms.replacements || {}, replacements)],
+    [transforms.replacements != null || replacements.length > 0, await Replace.fromFiles(transforms.replacements || {}, replacements)],
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
