@@ -15,7 +15,7 @@ We track both benchmark performance and minified+gzipped asset size.
 
 Also, every time we do a release, we run the benchmark using the old transformations and again using the new ones.
 
-This is so we can get comparable results. So, compare `current/results.md` to `current/results.previous.v1.md`.
+This is so we can get comparable results. So, compare [`current/results.md`](current/results.md) to [`current/results.previous.v1.md`](current/results.previous.v1.md).
 
-We also run the benchmark suite with `--O3` enabled, which is the option that sacrifices asset size for speed.
+We also run the benchmark suite with `--O3` enabled, which is the option that sacrifices asset size for speed, whose results are in [`current/results.o3.md`](current/results.o3.md).
 
