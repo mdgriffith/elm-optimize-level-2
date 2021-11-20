@@ -4,9 +4,9 @@ function createJestConfig(_, rootDir = __dirname) {
       '.(ts|tsx)$': 'ts-jest'
     },
     transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    moduleFileExtensions: ['ts', 'js'],
     collectCoverageFrom: ['src/**/*.{ts,tsx,js,jsx}'],
-    testMatch: ['<rootDir>/**/*.(spec|test).{ts,tsx,js,jsx}'],
+    testMatch: ['<rootDir>/test/*.(spec|test).ts'],
     testURL: 'http://localhost',
     rootDir,
     watchPlugins: [
