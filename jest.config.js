@@ -1,8 +1,7 @@
 function createJestConfig(_, rootDir = __dirname) {
   const config = {
     transform: {
-      '.(ts|tsx)$': 'ts-jest',
-      '.(js|jsx)$': require.resolve('babel-jest'),
+      '.(ts|tsx)$': 'ts-jest'
     },
     transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
