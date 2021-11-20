@@ -129,12 +129,12 @@
 | Calling a function with a 6 record arg            | final          | firefox | 50,357,360  | (100%)   |
 | Calling a function with a 6 record arg            |                | chrome  | 110,629,757 |          |
 | Calling a function with a 6 record arg            | final          | chrome  | 110,441,425 | (100%)   |
-| Calling a function with 6 argsl                   |                | safari  | 36,097,431  |          |
-| Calling a function with 6 argsl                   | final          | safari  | 54,665,740  | (151%)   |
-| Calling a function with 6 argsl                   |                | firefox | 44,263,702  |          |
-| Calling a function with 6 argsl                   | final          | firefox | 50,269,406  | (114%)   |
-| Calling a function with 6 argsl                   |                | chrome  | 110,629,402 |          |
-| Calling a function with 6 argsl                   | final          | chrome  | 109,036,995 | (99%)    |
+| Calling a function with 6 args                   |                | safari  | 36,097,431  |          |
+| Calling a function with 6 args                   | final          | safari  | 54,665,740  | (151%)   |
+| Calling a function with 6 args                   |                | firefox | 44,263,702  |          |
+| Calling a function with 6 args                   | final          | firefox | 50,269,406  | (114%)   |
+| Calling a function with 6 args                   |                | chrome  | 110,629,402 |          |
+| Calling a function with 6 args                   | final          | chrome  | 109,036,995 | (99%)    |
 | Encode string                                     |                | safari  | 3,882,470   |          |
 | Encode string                                     | final          | safari  | 4,015,708   | (103%)   |
 | Encode string                                     |                | firefox | 4,864,571   |          |

@@ -212,24 +212,24 @@
 | Calling a function with a 6 record arg  |without object update         |chrome    |   171,115,448|  (101%) |
 | Calling a function with a 6 record arg  |without passing unwrapped functions|chrome    |   171,148,007|  (101%) |
 | Calling a function with a 6 record arg  |without variant shapes        |chrome    |   169,639,231|  (100%) |
-| Calling a function with 6 argsl         |                              |firefox   |    62,532,455|         |
-| Calling a function with 6 argsl         |final                         |firefox   |    79,392,031|  (127%) |
-| Calling a function with 6 argsl         |without arrowize functions    |firefox   |    78,415,888|  (125%) |
-| Calling a function with 6 argsl         |without inline equality       |firefox   |    74,025,228|  (118%) |
-| Calling a function with 6 argsl         |without inline functions      |firefox   |    62,047,229|   (99%) |
-| Calling a function with 6 argsl         |without inline number-to-string|firefox   |    76,661,342|  (123%) |
-| Calling a function with 6 argsl         |without object update         |firefox   |    78,547,693|  (126%) |
-| Calling a function with 6 argsl         |without passing unwrapped functions|firefox   |    74,417,748|  (119%) |
-| Calling a function with 6 argsl         |without variant shapes        |firefox   |    80,092,631|  (128%) |
-| Calling a function with 6 argsl         |                              |chrome    |   170,998,454|         |
-| Calling a function with 6 argsl         |final                         |chrome    |   167,568,568|   (98%) |
-| Calling a function with 6 argsl         |without arrowize functions    |chrome    |   168,271,385|   (98%) |
-| Calling a function with 6 argsl         |without inline equality       |chrome    |   169,263,651|   (99%) |
-| Calling a function with 6 argsl         |without inline functions      |chrome    |   172,337,627|  (101%) |
-| Calling a function with 6 argsl         |without inline number-to-string|chrome    |   168,050,795|   (98%) |
-| Calling a function with 6 argsl         |without object update         |chrome    |   168,154,388|   (98%) |
-| Calling a function with 6 argsl         |without passing unwrapped functions|chrome    |   167,986,051|   (98%) |
-| Calling a function with 6 argsl         |without variant shapes        |chrome    |   170,693,043|  (100%) |
+| Calling a function with 6 args         |                              |firefox   |    62,532,455|         |
+| Calling a function with 6 args         |final                         |firefox   |    79,392,031|  (127%) |
+| Calling a function with 6 args         |without arrowize functions    |firefox   |    78,415,888|  (125%) |
+| Calling a function with 6 args         |without inline equality       |firefox   |    74,025,228|  (118%) |
+| Calling a function with 6 args         |without inline functions      |firefox   |    62,047,229|   (99%) |
+| Calling a function with 6 args         |without inline number-to-string|firefox   |    76,661,342|  (123%) |
+| Calling a function with 6 args         |without object update         |firefox   |    78,547,693|  (126%) |
+| Calling a function with 6 args         |without passing unwrapped functions|firefox   |    74,417,748|  (119%) |
+| Calling a function with 6 args         |without variant shapes        |firefox   |    80,092,631|  (128%) |
+| Calling a function with 6 args         |                              |chrome    |   170,998,454|         |
+| Calling a function with 6 args         |final                         |chrome    |   167,568,568|   (98%) |
+| Calling a function with 6 args         |without arrowize functions    |chrome    |   168,271,385|   (98%) |
+| Calling a function with 6 args         |without inline equality       |chrome    |   169,263,651|   (99%) |
+| Calling a function with 6 args         |without inline functions      |chrome    |   172,337,627|  (101%) |
+| Calling a function with 6 args         |without inline number-to-string|chrome    |   168,050,795|   (98%) |
+| Calling a function with 6 args         |without object update         |chrome    |   168,154,388|   (98%) |
+| Calling a function with 6 args         |without passing unwrapped functions|chrome    |   167,986,051|   (98%) |
+| Calling a function with 6 args         |without variant shapes        |chrome    |   170,693,043|  (100%) |
 | Encode string                           |                              |firefox   |     5,358,363|         |
 | Encode string                           |final                         |firefox   |     5,858,638|  (109%) |
 | Encode string                           |without arrowize functions    |firefox   |     5,739,032|  (107%) |
