@@ -90,13 +90,13 @@ export const createPassUnwrappedFunctionsTransformer = (
         if (funcToModify && funcToModify !== 'bail_out') {
           let bailOut = false;
           const modifyFunction = (
-            nodeInModfifyFunc: ts.Node
+            nodeInModifyFunc: ts.Node
           ): ts.VisitResult<ts.Node> => {
             if (
-              ts.isCallExpression(nodeInModfifyFunc) &&
-              ts.isIdentifier(nodeInModfifyFunc.expression)
+              ts.isCallExpression(nodeInModifyFunc) &&
+              ts.isIdentifier(nodeInModifyFunc.expression)
             ) {
-              const match = matchWrappedInvocation(nodeInModfifyFunc);
+              const match = matchWrappedInvocation(nodeInModifyFunc);
               if (
                 match &&
                 match.calleeName.text === funcToModify.parameterName &&
@@ -111,13 +111,13 @@ export const createPassUnwrappedFunctionsTransformer = (
                 );
               }
 
-              const calledFuncIdentifier = nodeInModfifyFunc.expression;
+              const calledFuncIdentifier = nodeInModifyFunc.expression;
 
               // can be a curried version of callee name in the same body
               // example: A2(func, a,b) and func(c)
               if (
                 calledFuncIdentifier.text === funcToModify.parameterName &&
-                nodeInModfifyFunc.arguments.length === 1 &&
+                nodeInModifyFunc.arguments.length === 1 &&
                 funcToModify.arity !== 1
               ) {
                 // means that we have an invocation that is not uniform with expected arity
@@ -130,7 +130,7 @@ export const createPassUnwrappedFunctionsTransformer = (
                 return ts.createCall(
                   ts.createIdentifier(deriveNewFuncName(funcToModify.funcName)),
                   undefined,
-                  nodeInModfifyFunc.arguments.map((arg) =>
+                  nodeInModifyFunc.arguments.map((arg) =>
                     ts.visitNode(arg, modifyFunction)
                   )
                 );
@@ -140,7 +140,7 @@ export const createPassUnwrappedFunctionsTransformer = (
               // that is now unwrapped
               // thus check if we have an unwrapped version
               if (
-                nodeInModfifyFunc.arguments.some(
+                nodeInModifyFunc.arguments.some(
                   (arg) =>
                     ts.isIdentifier(arg) &&
                     arg.text === funcToModify.parameterName
@@ -166,7 +166,7 @@ export const createPassUnwrappedFunctionsTransformer = (
                     deriveNewFuncName(calledFuncIdentifier.text)
                   ),
                   undefined,
-                  nodeInModfifyFunc.arguments.map((arg) =>
+                  nodeInModifyFunc.arguments.map((arg) =>
                     ts.visitNode(arg, modifyFunction)
                   )
                 );
@@ -174,7 +174,7 @@ export const createPassUnwrappedFunctionsTransformer = (
             }
 
             return ts.visitEachChild(
-              nodeInModfifyFunc,
+              nodeInModifyFunc,
               modifyFunction,
               context
             );
