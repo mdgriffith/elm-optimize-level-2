@@ -19,7 +19,6 @@ var right = A2($elm$core$Basics$composeR, $f1, $f2);
 
 */
 
-// TODO Support things like `f >> List.map (g >> h)` (Create unique identifiers for _a0 etc.?)
 // TODO Transform `(f << g) >> (h >> i)` to function(_a0) { return i(h(f(g(_a0)))); }
 // TODO Transform `f >> .name` to `function(_a0) { return f(_a0).name; }
 // TODO Transform `.name >> f` to `function(_a0) { return f(_a0.name); }
@@ -66,8 +65,8 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
 
 function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Node {
-  // TODO Increment counter as necessary
-  const lambdaArgName = "_a0";
+  const lambdaArgName = ts.createUniqueName("_a");
+
   return ts.createFunctionExpression(
     undefined, //modifiers
     undefined, //asteriskToken
@@ -91,7 +90,7 @@ function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond
           [ts.createCall(
             functionToApplyFirst,
             undefined,
-            [ts.createIdentifier(lambdaArgName)]
+            [lambdaArgName]
           )]
         )
       ),
