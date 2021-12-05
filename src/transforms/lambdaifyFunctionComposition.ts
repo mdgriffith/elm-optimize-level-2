@@ -19,6 +19,15 @@ var right = A2($elm$core$Basics$composeR, $f1, $f2);
 
 */
 
+// TODO Support things like `f >> List.map (g >> h)` (Create unique identifiers for _a0 etc.?)
+// TODO Transform `(f << g) >> (h >> i)` to function(_a0) { return i(h(f(g(_a0)))); }
+// TODO Transform `f >> .name` to `function(_a0) { return f(_a0).name; }
+// TODO Transform `.name >> f` to `function(_a0) { return f(_a0.name); }
+// TODO Transform `g << .name << f` to `function(_a0) { return g(f(_a0).name); }
+// TODO Transform `g >> .name >> f` to `function(_a0) { return f(g(_a0).name); }
+// TODO Support `a |> (f >> g)` (uses A3 instead of A2)
+
+
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
@@ -92,6 +101,7 @@ function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond
 
 
 function insertFunctionCall(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression, context: Context) : ts.Node {
+  // TODO Use ts.updateFunctionExpression instead?
   const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
     if (ts.isReturnStatement(node) || ts.isFunctionExpression(node) || ts.isBlock(node)) {
       return ts.visitEachChild(node, visitor, context);
