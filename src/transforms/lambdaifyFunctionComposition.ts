@@ -33,6 +33,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
         if (ts.isIdentifier(fn)
           && (fn.text == COMPOSE_LEFT || fn.text == COMPOSE_RIGHT)
         ) {
+            const lambdaArgName = "_a1";
             node = ts.createFunctionExpression(
               undefined, // modifiers
               undefined, //asteriskToken
@@ -43,7 +44,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
                 undefined,
                 undefined,
                 // TODO Increment counter as necessary
-                "_a1",
+                lambdaArgName,
                 undefined,
                 undefined,
                 undefined
@@ -57,7 +58,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
                     [ts.createCall(
                       secondArg,
                       undefined,
-                      [ts.createIdentifier("_a1")]
+                      [ts.createIdentifier(lambdaArgName)]
                     )]
                   )
                 ),
