@@ -4,6 +4,7 @@ import { transformCode } from './helpers/transformCode';
 import { lambdaifyFunctionComposition } from '../src/transforms/lambdaifyFunctionComposition';
 
 test('it can replace << by an anonymous function', () => {
+  // Corresponds to f1 << f2
   const initialCode = `
   var fn = A2($elm$core$Basics$composeL, $f1, $f2);
   `;
@@ -22,6 +23,7 @@ test('it can replace << by an anonymous function', () => {
 });
 
 test('it can replace >> by an anonymous function', () => {
+  // Corresponds to f1 >> f2
   const initialCode = `
   var fn = A2($elm$core$Basics$composeR, $f1, $f2);
   `;
