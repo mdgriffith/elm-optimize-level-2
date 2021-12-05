@@ -34,10 +34,12 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
         if (ts.isIdentifier(fn)
           && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
         ) {
-            if (fn.text === COMPOSE_RIGHT) {
-              [secondArg, firstArg] = [firstArg, secondArg]
-            }
-            return createLambda(firstArg, secondArg);
+            const [functionToApplyFirst, functionToApplySecond] =
+              fn.text === COMPOSE_RIGHT
+                ? [secondArg, firstArg]
+                : [firstArg, secondArg];
+
+            return createLambda(functionToApplySecond, functionToApplyFirst);
         }
       }
       return node;
@@ -48,7 +50,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 };
 
 
-function createLambda(firstArg: ts.Expression, secondArg: ts.Expression) : ts.Node {
+function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Node {
   const lambdaArgName = "_a0";
   return ts.createFunctionExpression(
     undefined, //modifiers
@@ -69,10 +71,10 @@ function createLambda(firstArg: ts.Expression, secondArg: ts.Expression) : ts.No
     ts.createBlock([
       ts.createReturn(
         ts.createCall(
-          firstArg,
+          functionToApplySecond,
           undefined,
           [ts.createCall(
-            secondArg,
+            functionToApplyFirst,
             undefined,
             [ts.createIdentifier(lambdaArgName)]
           )]
