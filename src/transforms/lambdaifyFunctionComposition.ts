@@ -27,15 +27,18 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isCallExpression(node)
         && ts.isIdentifier(node.expression)
-        && node.expression.text == "A2"
+        && node.expression.text === "A2"
       ) {
-        const [fn, firstArg, secondArg] = node.arguments;
+        let [fn, firstArg, secondArg] = node.arguments;
         if (ts.isIdentifier(fn)
-          && (fn.text == COMPOSE_LEFT || fn.text == COMPOSE_RIGHT)
+          && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
         ) {
             const lambdaArgName = "_a0";
+            if (fn.text === COMPOSE_LEFT) {
+              [secondArg, firstArg] = [firstArg, secondArg]
+            }
             node = ts.createFunctionExpression(
-              undefined, // modifiers
+              undefined, //modifiers
               undefined, //asteriskToken
               undefined, //name
               undefined, //typeParameters
