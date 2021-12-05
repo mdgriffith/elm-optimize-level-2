@@ -24,7 +24,8 @@ const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
 export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context) => {
   return (sourceFile) => {
-    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+    const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
+      const node = ts.visitEachChild(originalNode, visitor, context);
       if (ts.isCallExpression(node)
         && ts.isIdentifier(node.expression)
         && node.expression.text === "A2"
@@ -37,7 +38,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
             if (fn.text === COMPOSE_RIGHT) {
               [secondArg, firstArg] = [firstArg, secondArg]
             }
-            node = ts.createFunctionExpression(
+            return ts.createFunctionExpression(
               undefined, //modifiers
               undefined, //asteriskToken
               undefined, //name
@@ -69,7 +70,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
             );
         }
       }
-      return ts.visitEachChild(node, visitor, context);
+      return node;
     };
 
     return ts.visitNode(sourceFile, visitor);
