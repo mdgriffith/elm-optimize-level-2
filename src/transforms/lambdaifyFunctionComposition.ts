@@ -19,10 +19,53 @@ var right = A2($elm$core$Basics$composeR, $f1, $f2);
 
 */
 
+const COMPOSE_LEFT = "$elm$core$Basics$composeL";
+const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
+
 export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context) => {
   return (sourceFile) => {
-    const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
-      return ts.visitEachChild(originalNode, visitor, context);
+    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      if (ts.isCallExpression(node)
+        && ts.isIdentifier(node.expression)
+        && node.expression.text == "A2"
+      ) {
+        const [fn, firstArg, secondArg] = node.arguments;
+        if (ts.isIdentifier(fn)
+          && (fn.text == COMPOSE_LEFT || fn.text == COMPOSE_RIGHT)
+        ) {
+            node = ts.createFunctionExpression(
+              undefined, // modifiers
+              undefined, //asteriskToken
+              undefined, //name
+              undefined, //typeParameters
+              [ts.createParameter(
+                undefined,
+                undefined,
+                undefined,
+                // TODO Increment counter as necessary
+                "_a1",
+                undefined,
+                undefined,
+                undefined
+              )],
+              undefined, //type
+              ts.createBlock([
+                ts.createReturn(
+                  ts.createCall(
+                    firstArg,
+                    undefined,
+                    [ts.createCall(
+                      secondArg,
+                      undefined,
+                      [ts.createIdentifier("_a1")]
+                    )]
+                  )
+                ),
+              ])
+            );
+        }
+      }
+      return ts.visitEachChild(node, visitor, context);
     };
 
     return ts.visitNode(sourceFile, visitor);
