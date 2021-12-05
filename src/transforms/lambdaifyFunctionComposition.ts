@@ -36,10 +36,10 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
         ) {
             const [functionToApplyFirst, functionToApplySecond] =
               fn.text === COMPOSE_RIGHT
-                ? [secondArg, firstArg]
-                : [firstArg, secondArg];
+                ? [firstArg, secondArg]
+                : [secondArg, firstArg];
 
-            return createLambda(functionToApplySecond, functionToApplyFirst);
+            return createLambda(functionToApplyFirst, functionToApplySecond);
         }
       }
       return node;
@@ -51,6 +51,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
 
 function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Node {
+  // TODO Increment counter as necessary
   const lambdaArgName = "_a0";
   return ts.createFunctionExpression(
     undefined, //modifiers
@@ -61,7 +62,6 @@ function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond
       undefined,
       undefined,
       undefined,
-      // TODO Increment counter as necessary
       lambdaArgName,
       undefined,
       undefined,
