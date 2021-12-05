@@ -34,7 +34,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
           && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
         ) {
             const lambdaArgName = "_a0";
-            if (fn.text === COMPOSE_LEFT) {
+            if (fn.text === COMPOSE_RIGHT) {
               [secondArg, firstArg] = [firstArg, secondArg]
             }
             node = ts.createFunctionExpression(
