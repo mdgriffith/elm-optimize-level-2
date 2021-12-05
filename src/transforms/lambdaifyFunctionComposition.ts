@@ -34,40 +34,10 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
         if (ts.isIdentifier(fn)
           && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
         ) {
-            const lambdaArgName = "_a0";
             if (fn.text === COMPOSE_RIGHT) {
               [secondArg, firstArg] = [firstArg, secondArg]
             }
-            return ts.createFunctionExpression(
-              undefined, //modifiers
-              undefined, //asteriskToken
-              undefined, //name
-              undefined, //typeParameters
-              [ts.createParameter(
-                undefined,
-                undefined,
-                undefined,
-                // TODO Increment counter as necessary
-                lambdaArgName,
-                undefined,
-                undefined,
-                undefined
-              )],
-              undefined, //type
-              ts.createBlock([
-                ts.createReturn(
-                  ts.createCall(
-                    firstArg,
-                    undefined,
-                    [ts.createCall(
-                      secondArg,
-                      undefined,
-                      [ts.createIdentifier(lambdaArgName)]
-                    )]
-                  )
-                ),
-              ])
-            );
+            return createLambda(firstArg, secondArg);
         }
       }
       return node;
@@ -76,3 +46,38 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
     return ts.visitNode(sourceFile, visitor);
   };
 };
+
+
+function createLambda(firstArg: ts.Expression, secondArg: ts.Expression) : ts.Node {
+  const lambdaArgName = "_a0";
+  return ts.createFunctionExpression(
+    undefined, //modifiers
+    undefined, //asteriskToken
+    undefined, //name
+    undefined, //typeParameters
+    [ts.createParameter(
+      undefined,
+      undefined,
+      undefined,
+      // TODO Increment counter as necessary
+      lambdaArgName,
+      undefined,
+      undefined,
+      undefined
+    )],
+    undefined, //type
+    ts.createBlock([
+      ts.createReturn(
+        ts.createCall(
+          firstArg,
+          undefined,
+          [ts.createCall(
+            secondArg,
+            undefined,
+            [ts.createIdentifier(lambdaArgName)]
+          )]
+        )
+      ),
+    ])
+  );
+}
