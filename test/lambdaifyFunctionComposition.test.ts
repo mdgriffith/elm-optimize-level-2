@@ -10,8 +10,8 @@ test('it can replace a List.map on a "_List_fromArray" by a native map', () => {
   `;
 
   const expectedOutputCode = `
-  var left = function (_a1) { return $f2($f1(_a1)) };
-  var right = function (_a1) { return $f1($f2(_a1)) };
+  var left = function (_a0) { return $f2($f1(_a0)) };
+  var right = function (_a0) { return $f1($f2(_a0)) };
   `;
 
   const { actual, expected } = transformCode(

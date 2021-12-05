@@ -33,7 +33,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
         if (ts.isIdentifier(fn)
           && (fn.text == COMPOSE_LEFT || fn.text == COMPOSE_RIGHT)
         ) {
-            const lambdaArgName = "_a1";
+            const lambdaArgName = "_a0";
             node = ts.createFunctionExpression(
               undefined, // modifiers
               undefined, //asteriskToken
