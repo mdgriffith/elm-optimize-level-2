@@ -22,7 +22,9 @@ var right = A2($elm$core$Basics$composeR, $f1, $f2);
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
-export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context) => {
+type Context = any;
+
+export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context: Context) => {
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
       const node = ts.visitEachChild(originalNode, visitor, context);
@@ -38,6 +40,10 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
               fn.text === COMPOSE_RIGHT
                 ? [firstArg, secondArg]
                 : [secondArg, firstArg];
+
+            if (ts.isFunctionExpression(functionToApplySecond)) {
+              return insertFunctionCall(functionToApplyFirst, functionToApplySecond, context);
+            }
 
             return createLambda(functionToApplyFirst, functionToApplySecond);
         }
@@ -82,4 +88,36 @@ function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond
       ),
     ])
   );
+}
+
+
+function insertFunctionCall(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression, context: Context) : ts.Node {
+  const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+    if (ts.isReturnStatement(node) || ts.isFunctionExpression(node) || ts.isBlock(node)) {
+      return ts.visitEachChild(node, visitor, context);
+    }
+
+    if (ts.isCallExpression(node)) {
+      return ts.createCall(
+        node.expression,
+        undefined,
+        [
+          ...node.arguments.slice(0, -1),
+          ...[ts.visitNode(node.arguments[node.arguments.length - 1], visitor, context)]
+        ]
+      );
+    }
+
+    if (ts.isIdentifier(node)) {
+      return ts.createCall(
+        functionToApplyFirst,
+        undefined,
+        [node]
+      );
+    }
+
+    return node;
+  };
+
+  return ts.visitNode(functionToApplySecond, visitor, context);
 }
