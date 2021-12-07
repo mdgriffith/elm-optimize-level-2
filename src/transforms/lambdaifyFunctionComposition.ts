@@ -75,11 +75,11 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
                 ? [firstArg, secondArg]
                 : [secondArg, firstArg];
 
-            // if (ts.isCallExpression(functionToApplyFirst)) {
-            //   const identifier : ts.Identifier = ts.createUniqueName("_b");
-            //   variablesToInsert.push({ identifier: identifier, value: functionToApplyFirst});
-            //   functionToApplyFirst = identifier;
-            // }
+            if (ts.isCallExpression(functionToApplyFirst)) {
+              const identifier : ts.Identifier = ts.createUniqueName("_b");
+              variablesToInsert.push({ identifier: identifier, value: functionToApplyFirst});
+              functionToApplyFirst = identifier;
+            }
 
             if (ts.isCallExpression(functionToApplySecond)) {
               const identifier : ts.Identifier = ts.createUniqueName("_b");

@@ -129,7 +129,56 @@ test("When multiple new variables are introduced, they don't share the same name
   expect(actual).toBe(expected);
 });
 
-test("should extract function calls to variables (>>)", () => {
+test("should extract function calls to variables (first arg)", () => {
+  // Corresponds to: List.map (f2 >> f3) >> f1
+  const initialCode = `
+  (function() {
+    var fn = A2(
+      $elm$core$Basics$composeR,
+      $elm$core$List$map(
+        A2($elm$core$Basics$composeR, f2, f3)),
+      f1);
+  })()
+  `;
+
+  /* The reason we want to extract the expression to its own variable
+  is because we may have code like this:
+
+      fn = expensiveFunction 1 >> f1
+
+      expensiveFunction n =
+        let x = <super expensive function> n
+        in
+        \y -> x + y
+
+  In this case, if we changed the code to
+
+      var fn = function (_a_1) { return f1(A2(expensiveFunction, 1, _a_2)); };
+
+  then we would be paying the penalty of computive the expensive part multiple times,
+  and that might not be what the developer expects either.
+
+  An optimization would be to check whether `expensiveFunction` is defined as a FX function where X
+  is bigger than the number of arguments we are passing to it, in which case, we could use the AX functions.
+  */
+  const expectedOutputCode = `
+  (function() {
+    var _b_1 = $elm$core$List$map(function (_a_1) { return f3(f2(_a_1)); });
+    var fn = function (_a_2) { return f1(_b_1(_a_2)); };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
+
+
+test("should extract function calls to variables (second arg)", () => {
   // Corresponds to: f1 >> List.map (f2 >> f3)
   const initialCode = `
   (function() {
@@ -141,26 +190,6 @@ test("should extract function calls to variables (>>)", () => {
   })()
   `;
 
-  /* The reason we want to extract the expression to its own variable
-  is because we may have code like this:
-
-      fn = f1 >> expensiveFunction 1
-
-      expensiveFunction n =
-        let x = <super expensive function> n
-        in
-        \y -> x + y
-
-  In this case, if we changed the code to
-
-      var fn = function (_a_1) { return A2(expensiveFunction, 1, f1(_a_2)); };
-
-  then we would be paying the penalty of computive the expensive part multiple times,
-  and that might not be what the developer expects either.
-
-  An optimization would be to check whether `expensiveFunction` is defined as a FX function where X
-  is bigger than the number of arguments we are passing to it, in which case, we could use the AX functions.
-  */
   const expectedOutputCode = `
   (function() {
     var _b_1 = $elm$core$List$map(function (_a_1) { return f3(f2(_a_1)); });
