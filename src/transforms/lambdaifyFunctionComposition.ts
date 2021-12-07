@@ -34,14 +34,30 @@ type Context = any;
 
 
 export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context: Context) => {
-  let blocks : ts.Node[] = [];
+  let variablesToInsert : ts.Statement[] = [
+    ts.createVariableStatement(
+      [],
+      ts.createVariableDeclarationList(
+        [
+          ts.createVariableDeclaration(
+            'path',
+            ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+            ts.createLiteral("ok"),
+          ),
+        ],
+        ts.NodeFlags.Let,
+      ),
+    )
+  ];
 
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isBlock(originalNode)) {
-        blocks.push(originalNode);
         const node = ts.visitEachChild(originalNode, visitor, context);
-        return blocks.pop();
+        return ts.updateBlock(
+          node,
+          variablesToInsert.concat(node.statements)
+        );
       }
 
       const node = ts.visitEachChild(originalNode, visitor, context);
