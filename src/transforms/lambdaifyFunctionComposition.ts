@@ -36,7 +36,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
   let variablesToInsert: Array<{identifier: ts.Identifier, value : ts.Expression }> = [];
 
   function extractToVariableIfNecessary(value : ts.Expression) {
-    if (ts.isCallExpression(value)) {
+    if (ts.isCallExpression(value) || ts.isFunctionExpression(value)) {
       const identifier : ts.Identifier = ts.createUniqueName("_b");
       variablesToInsert.push({ identifier, value });
       return identifier;
