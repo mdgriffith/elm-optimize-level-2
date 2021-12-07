@@ -32,10 +32,20 @@ const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
 type Context = any;
 
+
 export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context: Context) => {
+  let blocks : ts.Node[] = [];
+
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
+      if (ts.isBlock(originalNode)) {
+        blocks.push(originalNode);
+        const node = ts.visitEachChild(originalNode, visitor, context);
+        return blocks.pop();
+      }
+
       const node = ts.visitEachChild(originalNode, visitor, context);
+
       if (ts.isCallExpression(node)
         && ts.isIdentifier(node.expression)
         && node.expression.text === "A2"
