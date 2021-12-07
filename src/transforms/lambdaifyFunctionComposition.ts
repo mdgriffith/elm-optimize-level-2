@@ -1,5 +1,4 @@
-import ts, { Identifier, SourceFile } from 'typescript';
-import { ast } from './utils/create';
+import ts from 'typescript';
 
 /*
 
