@@ -130,13 +130,12 @@ test("When multiple new variables are introduced, they don't share the same name
 });
 
 test("should extract function calls to variables (first arg)", () => {
-  // Corresponds to: List.map (f2 >> f3) >> f1
+  // Corresponds to: f2 x >> f1
   const initialCode = `
   (function() {
     var fn = A2(
       $elm$core$Basics$composeR,
-      $elm$core$List$map(
-        A2($elm$core$Basics$composeR, f2, f3)),
+      f2(x),
       f1);
   })()
   `;
@@ -163,8 +162,8 @@ test("should extract function calls to variables (first arg)", () => {
   */
   const expectedOutputCode = `
   (function() {
-    var _b_1 = $elm$core$List$map(function (_a_1) { return f3(f2(_a_1)); });
-    var fn = function (_a_2) { return f1(_b_1(_a_2)); };
+    var _b_1 = f2(x);
+    var fn = function (_a_1) { return f1(_b_1(_a_1)); };
   })()
   `;
 
@@ -179,21 +178,20 @@ test("should extract function calls to variables (first arg)", () => {
 
 
 test("should extract function calls to variables (second arg)", () => {
-  // Corresponds to: f1 >> List.map (f2 >> f3)
+  // Corresponds to: f1 >> f2 x
   const initialCode = `
   (function() {
     var fn = A2(
       $elm$core$Basics$composeR,
       f1,
-      $elm$core$List$map(
-        A2($elm$core$Basics$composeR, f2, f3)));
+      f2(x));
   })()
   `;
 
   const expectedOutputCode = `
   (function() {
-    var _b_1 = $elm$core$List$map(function (_a_1) { return f3(f2(_a_1)); });
-    var fn = function (_a_2) { return _b_1(f1(_a_2)); };
+    var _b_1 = f2(x);
+    var fn = function (_a_1) { return _b_1(f1(_a_1)); };
   })()
   `;
 
