@@ -1,4 +1,4 @@
-import ts, { SourceFile } from 'typescript';
+import ts, { Identifier, SourceFile } from 'typescript';
 import { ast } from './utils/create';
 
 /*
@@ -34,9 +34,7 @@ type Context = any;
 
 
 export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context: Context) => {
-  let variablesToInsert = [
-    { identifier : ts.createUniqueName("_b"), value: ts.createStringLiteral('42') }
-  ];
+  let variablesToInsert: Array<{identifier: ts.Identifier, value : ts.Expression }> = [];
 
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
@@ -72,10 +70,22 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
         if (ts.isIdentifier(fn)
           && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
         ) {
-            const [functionToApplyFirst, functionToApplySecond] =
+            let [functionToApplyFirst, functionToApplySecond] =
               fn.text === COMPOSE_RIGHT
                 ? [firstArg, secondArg]
                 : [secondArg, firstArg];
+
+            // if (ts.isCallExpression(functionToApplyFirst)) {
+            //   const identifier : ts.Identifier = ts.createUniqueName("_b");
+            //   variablesToInsert.push({ identifier: identifier, value: functionToApplyFirst});
+            //   functionToApplyFirst = identifier;
+            // }
+
+            if (ts.isCallExpression(functionToApplySecond)) {
+              const identifier : ts.Identifier = ts.createUniqueName("_b");
+              variablesToInsert.push({ identifier: identifier, value: functionToApplySecond});
+              functionToApplySecond = identifier;
+            }
 
             if (ts.isFunctionExpression(functionToApplySecond)) {
               return insertFunctionCall(functionToApplyFirst, functionToApplySecond, context);
@@ -93,7 +103,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
 
 function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Node {
-  const lambdaArgName = ts.createUniqueName("_a");
+  const lambdaArgName : ts.Identifier = ts.createUniqueName("_a");
 
   return ts.createFunctionExpression(
     undefined, //modifiers
