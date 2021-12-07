@@ -9,13 +9,13 @@ This only shows benefit with the `createFuncInlineTransformer`, which will detec
 
 initial
 
-var left = A2($elm$core$Basics$composeL, $f1, $f2);
-var right = A2($elm$core$Basics$composeR, $f1, $f2);
+var left = A2($elm$core$Basics$composeL, f1, f2);
+var right = A2($elm$core$Basics$composeR, f1, f2);
 
 transformed
 
-var left = function(_a1) { return } A2($f1, $f2);
-var right = A2($elm$core$Basics$composeR, $f1, $f2);
+var left = function (_a_1) { return f1(f2(_a_1)) };
+var right = function (_a_1) { return f2(f1(_a_1)) };
 
 */
 
