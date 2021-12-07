@@ -110,7 +110,6 @@ test("When multiple new variables are introduced, they don't share the same name
   })()
   `;
 
-  // TODO Output for this could probably be improved
   const expectedOutputCode = `
   (function() {
     var _b_1 = $elm$core$List$map(function (_a_1) { return f3(f2(_a_1)); });
