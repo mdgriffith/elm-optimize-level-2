@@ -29,8 +29,8 @@ var right = function (_a_1) { return f2(f1(_a_1)) };
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
-const PREFIX_FOR_ARGUMENTS = "param";
-const PREFIX_FOR_DECLARATION = "decl";
+const PREFIX_FOR_ARGUMENTS = "_param";
+const PREFIX_FOR_DECLARATION = "_decl";
 
 type Context = any;
 

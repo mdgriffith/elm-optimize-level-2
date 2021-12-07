@@ -13,7 +13,7 @@ test('it can replace << by an anonymous function', () => {
 
   const expectedOutputCode = `
   (function() {
-    var fn = function (param_1) { return f1(f2(param_1)) };
+    var fn = function (_param_1) { return f1(f2(_param_1)) };
   })()
   `;
 
@@ -36,7 +36,7 @@ test('it can replace >> by an anonymous function', () => {
 
   const expectedOutputCode = `
   (function() {
-    var fn = function (param_1) { return f2(f1(param_1)) };
+    var fn = function (_param_1) { return f2(f1(_param_1)) };
   })()
   `;
 
@@ -59,7 +59,7 @@ test('it can replace nested function compositions with >>', () => {
 
   const expectedOutputCode = `
   (function() {
-    var fn = function (param_1) { return f3(f2(f1(param_1))); };
+    var fn = function (_param_1) { return f3(f2(f1(_param_1))); };
   })()
   `;
 
@@ -85,7 +85,7 @@ test('it can replace nested function compositions with << 2', () => {
 
   const expectedOutputCode = `
   (function() {
-    var fn = function (param_1) { return f4(f3(f2(f1(param_1)))); };
+    var fn = function (_param_1) { return f4(f3(f2(f1(_param_1)))); };
   })()
   `;
 
@@ -111,7 +111,7 @@ test('it can replace nested function compositions with <<', () => {
 
   const expectedOutputCode = `
   (function() {
-    var fn = function (param_1) { return f3(f2(f1(param_1))); };
+    var fn = function (_param_1) { return f3(f2(f1(_param_1))); };
   })()
   `;
 
@@ -147,7 +147,7 @@ test("should extract function calls to variables (first arg)", () => {
 
   In this case, if we changed the code to
 
-      var fn = function (param_1) { return f1(A2(expensiveFunction, 1, param_2)); };
+      var fn = function (_param_1) { return f1(A2(expensiveFunction, 1, _param_2)); };
 
   then we would be paying the penalty of computive the expensive part multiple times,
   and that might not be what the developer expects either.
@@ -157,8 +157,8 @@ test("should extract function calls to variables (first arg)", () => {
   */
   const expectedOutputCode = `
   (function() {
-    var decl_1 = f2(x);
-    var fn = function (param_1) { return f1(decl_1(param_1)); };
+    var _decl_1 = f2(x);
+    var fn = function (_param_1) { return f1(_decl_1(_param_1)); };
   })()
   `;
 
@@ -185,8 +185,8 @@ test("should extract function calls to variables (second arg)", () => {
 
   const expectedOutputCode = `
   (function() {
-    var decl_1 = f2(x);
-    var fn = function (param_1) { return decl_1(f1(param_1)); };
+    var _decl_1 = f2(x);
+    var fn = function (_param_1) { return _decl_1(f1(_param_1)); };
   })()
   `;
 
@@ -214,10 +214,10 @@ test("should extract functions (not from this transformation) to variables", () 
 
   const expectedOutputCode = `
   (function() {
-    var decl_1 = function (f2) {
-      return function (param_1) { return f3(f2(param_1)); };
+    var _decl_1 = function (f2) {
+      return function (_param_1) { return f3(f2(_param_1)); };
     };
-    var fn = function (param_2) { return decl_1(f1(param_2)); };
+    var fn = function (_param_2) { return _decl_1(f1(_param_2)); };
   })()
   `;
 
