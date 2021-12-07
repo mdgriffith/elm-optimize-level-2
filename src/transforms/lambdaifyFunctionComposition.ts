@@ -18,7 +18,6 @@ var right = function (_a_1) { return f2(f1(_a_1)) };
 
 */
 
-// TODO Transform `(f << g) >> (h >> i)` to function(_a0) { return i(h(f(g(_a0)))); }
 // TODO Transform `f >> .name` to `function(_a0) { return f(_a0).name; }
 // TODO Transform `.name >> f` to `function(_a0) { return f(_a0.name); }
 // TODO Transform `g << .name << f` to `function(_a0) { return g(f(_a0).name); }
@@ -178,11 +177,21 @@ function insertFunctionCall(functionToApplyFirst: ts.Expression, functionToApply
 }
 
 function mergeFunctionCalls(functionToApplyFirst: ts.FunctionExpression, functionToApplySecond: ts.FunctionExpression, context: Context) : ts.Node {
-  // TODO add all declarations from both functions
-  // TODO Extract body from functionToApplySecond
-  // TODO Replace paramX in that body by the body from functionToApplyFirst
   const extract1 = extractStatementsAndReturnValue(functionToApplyFirst);
   const extract2 = extractStatementsAndReturnValue(functionToApplySecond);
+
+  const replaceParamVisitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+    if (ts.isIdentifier(node) && node.text.startsWith(PREFIX_FOR_ARGUMENTS)) {
+      return extract1.returnValue;
+    }
+    return ts.visitEachChild(node, replaceParamVisitor, context);
+  };
+  const returnStatement = ts.createReturn(
+    ts.visitNode(extract2.returnValue, replaceParamVisitor, context)
+  );
+  const body = ts.createBlock(
+    extract1.statements.concat(extract2.statements).concat(returnStatement)
+  )
   return ts.updateFunctionExpression(
     functionToApplyFirst,
     undefined,
@@ -191,37 +200,8 @@ function mergeFunctionCalls(functionToApplyFirst: ts.FunctionExpression, functio
     undefined,
     functionToApplyFirst.parameters,
     undefined,
-    functionToApplyFirst.body
+    body
   );
-
-  const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
-    if (ts.isReturnStatement(node) || ts.isFunctionExpression(node) || ts.isBlock(node)) {
-      return ts.visitEachChild(node, visitor, context);
-    }
-
-    if (ts.isCallExpression(node)) {
-      return ts.createCall(
-        node.expression,
-        undefined,
-        [
-          ...node.arguments.slice(0, -1),
-          ...[ts.visitNode(node.arguments[node.arguments.length - 1], visitor, context)]
-        ]
-      );
-    }
-
-    if (ts.isIdentifier(node)) {
-      return ts.createCall(
-        functionToApplyFirst,
-        undefined,
-        [node]
-      );
-    }
-
-    return node;
-  };
-
-  return ts.visitNode(functionToApplySecond, visitor, context);
 }
 
 function extractStatementsAndReturnValue(fn: ts.FunctionExpression) {
