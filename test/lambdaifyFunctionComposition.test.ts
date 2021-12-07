@@ -97,6 +97,7 @@ test('it can replace nested function compositions with <<', () => {
 
   expect(actual).toBe(expected);
 });
+
 test("should extract function calls to variables (first arg)", () => {
   // Corresponds to: f2 x >> f1
   const initialCode = `
