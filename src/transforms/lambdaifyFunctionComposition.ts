@@ -30,6 +30,7 @@ const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
 const PREFIX_FOR_ARGUMENTS = "param";
+const PREFIX_FOR_DECLARATION = "decl";
 
 type Context = any;
 
@@ -39,7 +40,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
   function extractToVariableIfNecessary(value : ts.Expression) {
     if (ts.isCallExpression(value) || isANativeFunction(value)) {
-      const identifier : ts.Identifier = ts.createUniqueName("_b");
+      const identifier : ts.Identifier = ts.createUniqueName(PREFIX_FOR_DECLARATION);
       variablesToInsert.push({ identifier, value });
       return identifier;
     }

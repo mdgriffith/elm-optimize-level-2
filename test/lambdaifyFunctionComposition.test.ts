@@ -130,8 +130,8 @@ test("should extract function calls to variables (first arg)", () => {
   */
   const expectedOutputCode = `
   (function() {
-    var _b_1 = f2(x);
-    var fn = function (param_1) { return f1(_b_1(param_1)); };
+    var decl_1 = f2(x);
+    var fn = function (param_1) { return f1(decl_1(param_1)); };
   })()
   `;
 
@@ -158,8 +158,8 @@ test("should extract function calls to variables (second arg)", () => {
 
   const expectedOutputCode = `
   (function() {
-    var _b_1 = f2(x);
-    var fn = function (param_1) { return _b_1(f1(param_1)); };
+    var decl_1 = f2(x);
+    var fn = function (param_1) { return decl_1(f1(param_1)); };
   })()
   `;
 
@@ -187,10 +187,10 @@ test("should extract functions (not from this transformation) to variables", () 
 
   const expectedOutputCode = `
   (function() {
-    var _b_1 = function (f2) {
+    var decl_1 = function (f2) {
       return function (param_1) { return f3(f2(param_1)); };
     };
-    var fn = function (param_2) { return _b_1(f1(param_2)); };
+    var fn = function (param_2) { return decl_1(f1(param_2)); };
   })()
   `;
 
