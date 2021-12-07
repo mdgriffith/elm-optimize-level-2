@@ -29,6 +29,8 @@ var right = function (_a_1) { return f2(f1(_a_1)) };
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
+const PREFIX_FOR_ARGUMENTS = "_a";
+
 type Context = any;
 
 
@@ -99,7 +101,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
 
 function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Node {
-  const lambdaArgName : ts.Identifier = ts.createUniqueName("_a");
+  const lambdaArgName : ts.Identifier = ts.createUniqueName(PREFIX_FOR_ARGUMENTS);
 
   return ts.createFunctionExpression(
     undefined, //modifiers
