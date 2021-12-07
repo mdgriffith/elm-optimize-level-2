@@ -94,7 +94,8 @@ test("When multiple new variables are introduced, they don't share the same name
 
   // TODO Output for this could probably be improved
   const expectedOutputCode = `
-  var fn = function (_a_1) { return $elm$core$List$map(function (_a_2) { return f3(f2(_a_2)); })(f1(_a_1)); };
+  var _b_1 = $elm$core$List$map(function (_a_2) { return f3(f2(_a_2)); });
+  var fn = function (_a_1) { return _b_1(f1(_a_1)); };
   `;
 
   const { actual, expected } = transformCode(
