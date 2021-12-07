@@ -72,6 +72,32 @@ test('it can replace nested function compositions with >>', () => {
   expect(actual).toBe(expected);
 });
 
+test('it can replace nested function compositions with << 2', () => {
+  // Corresponds to: (f2 << f1) >> (f3 >> f4)
+  const initialCode = `
+  (function() {
+  var fn = A2(
+    $elm$core$Basics$composeR,
+    A2($elm$core$Basics$composeL, f2, f1),
+    A2($elm$core$Basics$composeR, f3, f4));
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = function (param_1) { return f4(f3(f2(f1(param_1)))); };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('it can replace nested function compositions with <<', () => {
   // Corresponds to: f3 << f2 << f1
   const initialCode = `
