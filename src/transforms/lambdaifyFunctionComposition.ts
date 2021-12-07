@@ -94,6 +94,9 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
                 : [extractToVariableIfNecessary(secondArg), extractToVariableIfNecessary(firstArg)];
 
             if (ts.isFunctionExpression(functionToApplySecond)) {
+              if (ts.isFunctionExpression(functionToApplyFirst)) {
+                return mergeFunctionCalls(functionToApplyFirst, functionToApplySecond, context);
+              }
               return insertFunctionCall(functionToApplyFirst, functionToApplySecond, context);
             }
 
@@ -172,4 +175,60 @@ function insertFunctionCall(functionToApplyFirst: ts.Expression, functionToApply
   };
 
   return ts.visitNode(functionToApplySecond, visitor, context);
+}
+
+function mergeFunctionCalls(functionToApplyFirst: ts.FunctionExpression, functionToApplySecond: ts.FunctionExpression, context: Context) : ts.Node {
+  // TODO add all declarations from both functions
+  // TODO Extract body from functionToApplySecond
+  // TODO Replace paramX in that body by the body from functionToApplyFirst
+  const extract1 = extractStatementsAndReturnValue(functionToApplyFirst);
+  const extract2 = extractStatementsAndReturnValue(functionToApplySecond);
+  return ts.updateFunctionExpression(
+    functionToApplyFirst,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    functionToApplyFirst.parameters,
+    undefined,
+    functionToApplyFirst.body
+  );
+
+  const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+    if (ts.isReturnStatement(node) || ts.isFunctionExpression(node) || ts.isBlock(node)) {
+      return ts.visitEachChild(node, visitor, context);
+    }
+
+    if (ts.isCallExpression(node)) {
+      return ts.createCall(
+        node.expression,
+        undefined,
+        [
+          ...node.arguments.slice(0, -1),
+          ...[ts.visitNode(node.arguments[node.arguments.length - 1], visitor, context)]
+        ]
+      );
+    }
+
+    if (ts.isIdentifier(node)) {
+      return ts.createCall(
+        functionToApplyFirst,
+        undefined,
+        [node]
+      );
+    }
+
+    return node;
+  };
+
+  return ts.visitNode(functionToApplySecond, visitor, context);
+}
+
+function extractStatementsAndReturnValue(fn: ts.FunctionExpression) {
+  const returnStatement = fn.body.statements[fn.body.statements.length - 1];
+  const returnValue = (returnStatement as ts.ReturnStatement).expression;
+  return {
+    statements: fn.body.statements.slice(0, -1),
+    returnValue
+  };
 }
