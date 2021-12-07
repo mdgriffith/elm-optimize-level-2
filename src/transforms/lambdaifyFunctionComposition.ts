@@ -144,7 +144,6 @@ function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond
 
 
 function insertFunctionCall(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression, context: Context) : ts.Node {
-  // TODO Use ts.updateFunctionExpression instead?
   const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
     if (ts.isReturnStatement(node) || ts.isFunctionExpression(node) || ts.isBlock(node)) {
       return ts.visitEachChild(node, visitor, context);
