@@ -38,12 +38,19 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
   let variablesToInsert: Array<{identifier: ts.Identifier, value : ts.Expression }> = [];
 
   function extractToVariableIfNecessary(value : ts.Expression) {
-    if (ts.isCallExpression(value) || ts.isFunctionExpression(value)) {
+    if (ts.isCallExpression(value) || isANativeFunction(value)) {
       const identifier : ts.Identifier = ts.createUniqueName("_b");
       variablesToInsert.push({ identifier, value });
       return identifier;
     }
     return value;
+  }
+
+  function isANativeFunction(node : ts.Expression) {
+    return ts.isFunctionExpression(node)
+      && node.parameters.length === 1
+      && ts.isIdentifier(node.parameters[0].name)
+      && !node.parameters[0].name.text.startsWith(PREFIX_FOR_ARGUMENTS);
   }
 
   return (sourceFile) => {
