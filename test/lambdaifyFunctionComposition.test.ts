@@ -129,7 +129,7 @@ test("When multiple new variables are introduced, they don't share the same name
   expect(actual).toBe(expected);
 });
 
-test("When multiple new variables are introduced, they don't share the same name", () => {
+test("should extract function calls to variables (>>)", () => {
   // Corresponds to: f1 >> List.map (f2 >> f3)
   const initialCode = `
   (function() {
