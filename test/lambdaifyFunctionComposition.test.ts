@@ -99,7 +99,7 @@ test('it can replace nested function compositions with <<', () => {
 });
 
 test("When multiple new variables are introduced, they don't share the same name", () => {
-  // Corresponds to: f >> List.map (g >> h)
+  // Corresponds to: f1 >> List.map (f2 >> f3)
   const initialCode = `
   (function() {
     var fn = A2(
