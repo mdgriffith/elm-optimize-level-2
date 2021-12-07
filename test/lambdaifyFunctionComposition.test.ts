@@ -97,38 +97,6 @@ test('it can replace nested function compositions with <<', () => {
 
   expect(actual).toBe(expected);
 });
-
-test("When multiple new variables are introduced, they don't share the same name", () => {
-  // Corresponds to: f1 >> (\f2 -> f2 >> f3)
-  const initialCode = `
-  (function() {
-    var fn = A2(
-      $elm$core$Basics$composeR,
-      f1,
-      function (f2) {
-        return A2($elm$core$Basics$composeR, f2, f3);
-      });
-    })()
-    `;
-    
-  // TODO This is not what want
-  const expectedOutputCode = `
-  (function() {
-      var fn = function (f2) {
-          return function (_a_1) { return f3(f2(f1(_a_1))); };
-      };
-  })()
-  `;
-
-  const { actual, expected } = transformCode(
-    initialCode,
-    expectedOutputCode,
-    lambdaifyFunctionComposition
-  );
-
-  expect(actual).toBe(expected);
-});
-
 test("should extract function calls to variables (first arg)", () => {
   // Corresponds to: f2 x >> f1
   const initialCode = `
@@ -192,6 +160,37 @@ test("should extract function calls to variables (second arg)", () => {
   (function() {
     var _b_1 = f2(x);
     var fn = function (_a_1) { return _b_1(f1(_a_1)); };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test("should extract functions (not from this transformation) to variables", () => {
+  // Corresponds to: f1 >> (\f2 -> f2 >> f3)
+  const initialCode = `
+  (function() {
+    var fn = A2(
+      $elm$core$Basics$composeR,
+      f1,
+      function (f2) {
+        return A2($elm$core$Basics$composeR, f2, f3);
+      });
+    })()
+    `;
+
+  const expectedOutputCode = `
+  (function() {
+    var _b_1 = function (f2) {
+      return function (_a_1) { return f3(f2(_a_1)); };
+    };
+    var fn = function (_a_2) { return _b_1(f1(_a_2)); };
   })()
   `;
 
