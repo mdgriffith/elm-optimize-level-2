@@ -290,3 +290,41 @@ test("should extract functions to the closest parent block", () => {
 
   expect(actual).toBe(expected);
 });
+
+
+test("should extract functions to the closest parent block", () => {
+  /* Corresponds to:
+
+    fn arg =
+        f2 arg << f1
+
+  */
+  const initialCode = `
+  (function() {
+    var fn = F3(
+      function (arg) {
+        return A2(
+          $elm$core$Basics$composeL,
+          f2(arg),
+          f1);
+      });
+    })()
+    `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = F3(function (arg) {
+      var _decl_1 = f2(arg);
+      return function (_param_1) { return _decl_1(f1(_param_1)); };
+    });
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});

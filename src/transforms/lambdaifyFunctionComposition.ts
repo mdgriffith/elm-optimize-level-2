@@ -23,8 +23,6 @@ var right = function (_a_1) { return f2(f1(_a_1)) };
 // TODO Transform `g << .name << f` to `function(_a0) { return g(f(_a0).name); }
 // TODO Transform `g >> .name >> f` to `function(_a0) { return f(g(_a0).name); }
 // TODO Support `a |> (f >> g)` (uses A3 instead of A2)
-// TODO Insert declarations right before their usage, as they may reference functions that have yet to be defined.
-// TODO Insert declarations after "use strict" if it's there (maybe solved by previous TODO)
 
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
@@ -69,6 +67,25 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
             node,
             newDeclarations.concat(node.declarations)
           );
+        }
+        return node;
+      }
+
+      if (ts.isReturnStatement(originalNode)) {
+        variablesToInsertStack.push([]);
+        const node = ts.visitEachChild(originalNode, visitor, context);
+        const variablesToInsert = variablesToInsertStack.pop();
+        if (variablesToInsert && variablesToInsert.length > 0) {
+          const declarationsStatement : ts.Statement =
+            ts.createVariableStatement(
+              [],
+              ts.createVariableDeclarationList(
+                variablesToInsert.map(({identifier, value}) =>
+                  ts.createVariableDeclaration(identifier, undefined, value)
+                )
+              )
+            );
+          return [declarationsStatement, node];
         }
         return node;
       }
