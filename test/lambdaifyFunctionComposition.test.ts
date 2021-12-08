@@ -229,3 +229,64 @@ test("should extract functions (not from this transformation) to variables", () 
 
   expect(actual).toBe(expected);
 });
+
+test("should extract functions to the closest parent block", () => {
+  /* Corresponds to:
+
+  let
+      forSpacing =
+          (\x -> x /= Nothing) << findSpacing
+
+      clearfix allAttrs =
+          case layout of
+              Internal.TextLayout _ ->
+                  1
+
+              _ ->
+                  0
+  in
+  ...
+  */
+  const initialCode = `
+  (function() {
+    var forSpacing = A2(
+      $elm$core$Basics$composeL,
+      function (x) {
+        return !_Utils_eq(x, $elm$core$Maybe$Nothing);
+      },
+      findSpacing);
+    var clearfix = function (allAttrs) {
+      if (!layout.$) {
+        return 1;
+      } else {
+        return 0;
+      }
+    };
+    })()
+    `;
+
+  const expectedOutputCode = `
+  (function() {
+    var _decl_1 = function (x) {
+        return !_Utils_eq(x, $elm$core$Maybe$Nothing);
+    };
+    var forSpacing = function (_param_1) { return _decl_1(findSpacing(_param_1)); };
+    var clearfix = function (allAttrs) {
+        if (!layout.$) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});

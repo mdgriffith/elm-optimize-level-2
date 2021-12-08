@@ -35,12 +35,12 @@ type Context = any;
 
 
 export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context: Context) => {
-  let variablesToInsert: Array<{identifier: ts.Identifier, value : ts.Expression }> = [];
+  let variablesToInsertStack: Array<Array<{identifier: ts.Identifier, value : ts.Expression }>> = [];
 
   function extractToVariableIfNecessary(value : ts.Expression) {
     if (ts.isCallExpression(value) || isANativeFunction(value)) {
       const identifier : ts.Identifier = ts.createUniqueName(PREFIX_FOR_DECLARATION);
-      variablesToInsert.push({ identifier, value });
+      variablesToInsertStack[variablesToInsertStack.length - 1].push({ identifier, value });
       return identifier;
     }
     return value;
@@ -56,8 +56,10 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isBlock(originalNode)) {
+        variablesToInsertStack.push([]);
         const node = ts.visitEachChild(originalNode, visitor, context);
-        if (variablesToInsert.length > 0) {
+        const variablesToInsert = variablesToInsertStack.pop();
+        if (variablesToInsert && variablesToInsert.length > 0) {
           const newStatement : ts.Statement =
             ts.createVariableStatement(
               [],
@@ -68,7 +70,6 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
               )
             );
 
-          variablesToInsert = [];
           return ts.updateBlock(
             node,
             [newStatement].concat(node.statements)
