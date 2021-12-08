@@ -56,24 +56,18 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
-      if (ts.isBlock(originalNode)) {
+      if (ts.isVariableDeclarationList(originalNode)) {
         variablesToInsertStack.push([]);
         const node = ts.visitEachChild(originalNode, visitor, context);
         const variablesToInsert = variablesToInsertStack.pop();
         if (variablesToInsert && variablesToInsert.length > 0) {
-          const newStatement : ts.Statement =
-            ts.createVariableStatement(
-              [],
-              ts.createVariableDeclarationList(
-                variablesToInsert.map(({identifier, value}) =>
-                  ts.createVariableDeclaration(identifier, undefined, value)
-                )
-              )
+          const newDeclarations =
+            variablesToInsert.map(({identifier, value}) =>
+              ts.createVariableDeclaration(identifier, undefined, value)
             );
-
-          return ts.updateBlock(
+          return ts.updateVariableDeclarationList(
             node,
-            [newStatement].concat(node.statements)
+            newDeclarations.concat(node.declarations)
           );
         }
         return node;

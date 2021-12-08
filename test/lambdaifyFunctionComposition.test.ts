@@ -157,8 +157,8 @@ test("should extract function calls to variables (first arg)", () => {
   */
   const expectedOutputCode = `
   (function() {
-    var _decl_1 = f2(x);
-    var fn = function (_param_1) { return f1(_decl_1(_param_1)); };
+    var _decl_1 = f2(x),
+        fn = function (_param_1) { return f1(_decl_1(_param_1)); };
   })()
   `;
 
@@ -185,8 +185,8 @@ test("should extract function calls to variables (second arg)", () => {
 
   const expectedOutputCode = `
   (function() {
-    var _decl_1 = f2(x);
-    var fn = function (_param_1) { return _decl_1(f1(_param_1)); };
+    var _decl_1 = f2(x),
+        fn = function (_param_1) { return _decl_1(f1(_param_1)); };
   })()
   `;
 
@@ -216,8 +216,8 @@ test("should extract functions (not from this transformation) to variables", () 
   (function() {
     var _decl_1 = function (f2) {
       return function (_param_1) { return f3(f2(_param_1)); };
-    };
-    var fn = function (_param_2) { return _decl_1(f1(_param_2)); };
+    },
+        fn = function (_param_2) { return _decl_1(f1(_param_2)); };
   })()
   `;
 
@@ -269,8 +269,8 @@ test("should extract functions to the closest parent block", () => {
   (function() {
     var _decl_1 = function (x) {
         return !_Utils_eq(x, $elm$core$Maybe$Nothing);
-    };
-    var forSpacing = function (_param_1) { return _decl_1(findSpacing(_param_1)); };
+    }, forSpacing = function (_param_1) { return _decl_1(findSpacing(_param_1)); };
+    
     var clearfix = function (allAttrs) {
         if (!layout.$) {
             return 1;
