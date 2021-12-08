@@ -327,3 +327,39 @@ test("should extract functions to the closest parent block", () => {
 
   expect(actual).toBe(expected);
 });
+
+test("should extract functions even if they have multiple arguments", () => {
+  /* Corresponds to:
+
+    fn arg1 =
+        f2 arg1 arg2 << f1
+
+  */
+  const initialCode = `
+  (function() {
+    var fn = F2(function (arg1, arg2) {
+      return A2(
+        $elm$core$Basics$composeL,
+        A2(f2, arg1, arg2),
+        f1);
+    });
+    })()
+    `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = F2(function (arg1, arg2) {
+      var _decl_1 = A2(f2, arg1, arg2);
+      return function (_param_1) { return _decl_1(f1(_param_1)); };
+    });
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
