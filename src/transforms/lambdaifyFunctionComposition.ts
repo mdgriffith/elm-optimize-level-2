@@ -45,20 +45,6 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
     return value;
   }
 
-  /* Detects function expressions that were not introduced by this rule. */
-  function isANativeFunction(node : ts.Expression) {
-    // detects "function(...) { [...] }
-    if (ts.isFunctionExpression(node)) {
-      const isFunctionWeCreated =
-        node.parameters.length === 1
-        && ts.isIdentifier(node.parameters[0].name)
-        // detects "function(a) { [...] } where "a" is not a unique argument we created.
-        && node.parameters[0].name.text.startsWith(PREFIX_FOR_ARGUMENTS);
-      return !isFunctionWeCreated;
-    }
-    return false;
-  }
-
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclarationList(originalNode)) {
@@ -231,4 +217,18 @@ function extractStatementsAndReturnValue(fn: ts.FunctionExpression) {
     statements: fn.body.statements.slice(0, -1),
     returnValue
   };
+}
+
+/* Detects function expressions that were not introduced by this rule. */
+function isANativeFunction(node : ts.Expression) {
+  // detects "function(...) { [...] }
+  if (ts.isFunctionExpression(node)) {
+    const isFunctionWeCreated =
+      node.parameters.length === 1
+      && ts.isIdentifier(node.parameters[0].name)
+      // detects "function(a) { [...] } where "a" is not a unique argument we created.
+      && node.parameters[0].name.text.startsWith(PREFIX_FOR_ARGUMENTS);
+    return !isFunctionWeCreated;
+  }
+  return false;
 }
