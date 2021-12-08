@@ -301,22 +301,21 @@ test("should extract functions to the closest parent block", () => {
   */
   const initialCode = `
   (function() {
-    var fn = F3(
-      function (arg) {
-        return A2(
-          $elm$core$Basics$composeL,
-          f2(arg),
-          f1);
-      });
+    var fn = function (arg) {
+      return A2(
+        $elm$core$Basics$composeL,
+        f2(arg),
+        f1);
+    };
     })()
     `;
 
   const expectedOutputCode = `
   (function() {
-    var fn = F3(function (arg) {
+    var fn = function (arg) {
       var _decl_1 = f2(arg);
       return function (_param_1) { return _decl_1(f1(_param_1)); };
-    });
+    };
   })()
   `;
 
