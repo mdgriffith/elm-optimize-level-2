@@ -199,7 +199,7 @@ test("should extract function calls to variables (second arg)", () => {
   expect(actual).toBe(expected);
 });
 
-test("should extract functions (not from this transformation) to variables", () => {
+test("should extract function calls (not from this transformation) to variables", () => {
   // Corresponds to: f1 >> (\f2 -> f2 >> f3)
   const initialCode = `
   (function() {
@@ -230,7 +230,7 @@ test("should extract functions (not from this transformation) to variables", () 
   expect(actual).toBe(expected);
 });
 
-test("should extract functions to the closest parent block", () => {
+test("should extract function calls to the closest parent block", () => {
   /* Corresponds to:
 
   let
@@ -292,7 +292,7 @@ test("should extract functions to the closest parent block", () => {
 });
 
 
-test("should extract functions to the closest parent block", () => {
+test("should extract function calls to the closest parent block", () => {
   /* Corresponds to:
 
     fn arg =
@@ -328,7 +328,7 @@ test("should extract functions to the closest parent block", () => {
   expect(actual).toBe(expected);
 });
 
-test("should extract functions even if they have multiple arguments", () => {
+test("should extract function calls even if they have multiple arguments", () => {
   /* Corresponds to:
 
     fn arg1 =
