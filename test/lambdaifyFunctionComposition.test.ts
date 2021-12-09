@@ -399,3 +399,49 @@ test("should extract function calls on a property access", () => {
 
   expect(actual).toBe(expected);
 });
+
+test('it can replace A3 calls by the expression without compose (>>)', () => {
+  // Corresponds to: x |> (f1 >> f2)
+  const initialCode = `
+  (function() {
+    var value = A3($elm$core$Basics$composeR, f1, f2, x);
+  })()
+  `;
+  
+  const expectedOutputCode = `
+  (function() {
+    var value = f2(f1(x));
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('it can replace A3 calls by the expression without compose (<<)', () => {
+  // Corresponds to: x |> (f2 << f1)
+  const initialCode = `
+  (function() {
+    var value = A3($elm$core$Basics$composeL, f2, f1, x);
+  })()
+  `;
+  
+  const expectedOutputCode = `
+  (function() {
+    var value = f2(f1(x));
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
