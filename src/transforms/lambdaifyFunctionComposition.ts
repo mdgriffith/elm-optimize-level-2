@@ -18,6 +18,7 @@ var right = function (_a_1) { return f2(f1(_a_1)) };
 
 */
 
+// TODO Remove $elm$core$Basics$composeL and $elm$core$Basics$composeR
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
