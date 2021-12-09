@@ -86,25 +86,26 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
       if (ts.isCallExpression(node)
         && ts.isIdentifier(node.expression)
-        && node.expression.text === "A2"
       ) {
-        let [fn, firstArg, secondArg] = node.arguments;
-        if (ts.isIdentifier(fn)
-          && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
-        ) {
-            const [functionToApplyFirst, functionToApplySecond] =
-              fn.text === COMPOSE_RIGHT
-                ? [extractToVariableIfNecessary(firstArg), extractToVariableIfNecessary(secondArg)]
-                : [extractToVariableIfNecessary(secondArg), extractToVariableIfNecessary(firstArg)];
+        if (node.expression.text === "A2") {
+          let [fn, firstArg, secondArg] = node.arguments;
+          if (ts.isIdentifier(fn)
+            && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
+          ) {
+              const [functionToApplyFirst, functionToApplySecond] =
+                fn.text === COMPOSE_RIGHT
+                  ? [extractToVariableIfNecessary(firstArg), extractToVariableIfNecessary(secondArg)]
+                  : [extractToVariableIfNecessary(secondArg), extractToVariableIfNecessary(firstArg)];
 
-            if (ts.isFunctionExpression(functionToApplySecond)) {
-              if (ts.isFunctionExpression(functionToApplyFirst)) {
-                return mergeFunctionCalls(functionToApplyFirst, functionToApplySecond, context);
+              if (ts.isFunctionExpression(functionToApplySecond)) {
+                if (ts.isFunctionExpression(functionToApplyFirst)) {
+                  return mergeFunctionCalls(functionToApplyFirst, functionToApplySecond, context);
+                }
+                return insertFunctionCall(functionToApplyFirst, functionToApplySecond, context);
               }
-              return insertFunctionCall(functionToApplyFirst, functionToApplySecond, context);
-            }
-  
-            return createLambda(createUniqueParamName(), functionToApplyFirst, functionToApplySecond);
+
+              return createLambda(createUniqueParamName(), functionToApplyFirst, functionToApplySecond);
+          }
         }
       }
       return node;
