@@ -363,3 +363,39 @@ test("should extract function calls even if they have multiple arguments", () =>
 
   expect(actual).toBe(expected);
 });
+
+test("should extract function calls on a property access", () => {
+  /* Corresponds to:
+
+    fn arg =
+        x.f2 arg << f1
+
+  */
+  const initialCode = `
+  (function() {
+    var fn = function (arg) {
+      return A2(
+        $elm$core$Basics$composeL,
+        x.f2(arg),
+        f1);
+    };
+  })()
+    `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = function (arg) {
+      var _decl_1 = x.f2(arg);
+      return function (_param_1) { return _decl_1(f1(_param_1)); };
+    };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
