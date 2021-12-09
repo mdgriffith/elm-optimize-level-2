@@ -107,6 +107,20 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
               return createLambda(createUniqueParamName(), functionToApplyFirst, functionToApplySecond);
           }
         }
+
+        if (node.expression.text === "A3") {
+          let [fn, firstArg, secondArg, value] = node.arguments;
+          if (ts.isIdentifier(fn)
+            && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
+          ) {
+              const [functionToApplyFirst, functionToApplySecond] =
+                fn.text === COMPOSE_RIGHT
+                  ? [extractToVariableIfNecessary(firstArg), extractToVariableIfNecessary(secondArg)]
+                  : [extractToVariableIfNecessary(secondArg), extractToVariableIfNecessary(firstArg)];
+
+              return createCompositionCall(functionToApplyFirst, functionToApplySecond, value);
+          }
+        }
       }
       return node;
     };
@@ -116,7 +130,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 };
 
 
-function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Node {
+function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Expression {
   return ts.createFunctionExpression(
     undefined, //modifiers
     undefined, //asteriskToken
@@ -134,17 +148,21 @@ function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Ex
     undefined, //type
     ts.createBlock([
       ts.createReturn(
-        ts.createCall(
-          functionToApplySecond,
-          undefined,
-          [ts.createCall(
-            functionToApplyFirst,
-            undefined,
-            [lambdaArgName]
-          )]
-        )
-      ),
+        createCompositionCall(functionToApplyFirst, functionToApplySecond, lambdaArgName)
+      )
     ])
+  );
+}
+
+function createCompositionCall(functionToApplyFirst : ts.Expression, functionToApplySecond : ts.Expression, value : ts.Expression) : ts.Expression {
+  return ts.createCall(
+    functionToApplySecond,
+    undefined,
+    [ts.createCall(
+      functionToApplyFirst,
+      undefined,
+      [value]
+    )]
   );
 }
 
