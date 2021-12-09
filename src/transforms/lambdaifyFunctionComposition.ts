@@ -88,39 +88,31 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
         && ts.isIdentifier(node.expression)
         && (node.expression.text === "A2" || node.expression.text === "A3")
       ) {
+        let [fn, firstArg, secondArg, value] = node.arguments;
+        if (!ts.isIdentifier(fn)
+          || !(fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
+        ) {
+          return node;
+        }
+
+        const [functionToApplyFirst, functionToApplySecond] =
+          fn.text === COMPOSE_RIGHT
+            ? [extractToVariableIfNecessary(firstArg), extractToVariableIfNecessary(secondArg)]
+            : [extractToVariableIfNecessary(secondArg), extractToVariableIfNecessary(firstArg)];
+
         if (node.expression.text === "A2") {
-          let [fn, firstArg, secondArg] = node.arguments;
-          if (ts.isIdentifier(fn)
-            && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
-          ) {
-              const [functionToApplyFirst, functionToApplySecond] =
-                fn.text === COMPOSE_RIGHT
-                  ? [extractToVariableIfNecessary(firstArg), extractToVariableIfNecessary(secondArg)]
-                  : [extractToVariableIfNecessary(secondArg), extractToVariableIfNecessary(firstArg)];
-
-              if (ts.isFunctionExpression(functionToApplySecond)) {
-                if (ts.isFunctionExpression(functionToApplyFirst)) {
-                  return mergeFunctionCalls(functionToApplyFirst, functionToApplySecond, context);
-                }
-                return insertFunctionCall(functionToApplyFirst, functionToApplySecond, context);
-              }
-
-              return createLambda(createUniqueParamName(), functionToApplyFirst, functionToApplySecond);
+          if (ts.isFunctionExpression(functionToApplySecond)) {
+            if (ts.isFunctionExpression(functionToApplyFirst)) {
+              return mergeFunctionCalls(functionToApplyFirst, functionToApplySecond, context);
+            }
+            return insertFunctionCall(functionToApplyFirst, functionToApplySecond, context);
           }
+
+          return createLambda(createUniqueParamName(), functionToApplyFirst, functionToApplySecond);
         }
         
         // A3 call
-        let [fn, firstArg, secondArg, value] = node.arguments;
-        if (ts.isIdentifier(fn)
-          && (fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
-        ) {
-            const [functionToApplyFirst, functionToApplySecond] =
-              fn.text === COMPOSE_RIGHT
-                ? [extractToVariableIfNecessary(firstArg), extractToVariableIfNecessary(secondArg)]
-                : [extractToVariableIfNecessary(secondArg), extractToVariableIfNecessary(firstArg)];
-
-            return createCompositionCall(functionToApplyFirst, functionToApplySecond, value);
-        }
+        return createCompositionCall(functionToApplyFirst, functionToApplySecond, value);
       }
       return node;
     };
