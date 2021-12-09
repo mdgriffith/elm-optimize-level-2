@@ -18,11 +18,7 @@ var right = function (_a_1) { return f2(f1(_a_1)) };
 
 */
 
-// TODO Transform `f >> .name` to `function(_a0) { return f(_a0).name; }
-// TODO Transform `.name >> f` to `function(_a0) { return f(_a0.name); }
-// TODO Transform `g << .name << f` to `function(_a0) { return g(f(_a0).name); }
-// TODO Transform `g >> .name >> f` to `function(_a0) { return f(g(_a0).name); }
-// TODO Support `a |> (f >> g)` (uses A3 instead of A2)
+// TODO Support `a |> (f1 >> f2)` (uses A3 instead of A2)
 
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
