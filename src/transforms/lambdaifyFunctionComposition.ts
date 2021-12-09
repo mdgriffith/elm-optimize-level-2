@@ -34,11 +34,16 @@ type Context = any;
 
 
 export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile> = (context: Context) => {
+  let paramCount = 1;
+  let declCount = 1;
+  const createUniqueParamName = () => ts.createIdentifier(PREFIX_FOR_ARGUMENTS + "_" + paramCount++);
+  const createUniqueDeclarationName = () => ts.createIdentifier(PREFIX_FOR_DECLARATION + "_" + declCount++);
+  
   let variablesToInsertStack: Array<Array<{identifier: ts.Identifier, value : ts.Expression }>> = [];
 
   function extractToVariableIfNecessary(value : ts.Expression) {
     if (ts.isCallExpression(value) || isANativeFunction(value)) {
-      const identifier : ts.Identifier = ts.createUniqueName(PREFIX_FOR_DECLARATION);
+      const identifier : ts.Identifier = createUniqueDeclarationName();
       variablesToInsertStack[variablesToInsertStack.length - 1].push({ identifier, value });
       return identifier;
     }
@@ -104,8 +109,8 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
               }
               return insertFunctionCall(functionToApplyFirst, functionToApplySecond, context);
             }
-
-            return createLambda(functionToApplyFirst, functionToApplySecond);
+  
+            return createLambda(createUniqueParamName(), functionToApplyFirst, functionToApplySecond);
         }
       }
       return node;
@@ -116,9 +121,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 };
 
 
-function createLambda(functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Node {
-  const lambdaArgName : ts.Identifier = ts.createUniqueName(PREFIX_FOR_ARGUMENTS);
-
+function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Node {
   return ts.createFunctionExpression(
     undefined, //modifiers
     undefined, //asteriskToken
