@@ -166,17 +166,18 @@ function createCompositionCall(functionToApplyFirst : ts.Expression, functionToA
 function createFunctionCall(fn : ts.Expression, value : ts.Expression) : ts.Expression {
   // TODO Support other number of arguments
   // TODO Don't do this when we know that the current number of arguments is the optimal one.
-  if (ts.isCallExpression(fn)) {
+  if (!ts.isCallExpression(fn)) {
     return ts.createCall(
-      ts.createIdentifier("A2"),
+      fn,
       undefined,
-      [fn.expression, ...fn.arguments, value]
+      [value]
     );
   }
+
   return ts.createCall(
-    fn,
+    ts.createIdentifier("A2"),
     undefined,
-    [value]
+    [fn.expression, ...fn.arguments, value]
   );
 }
 
