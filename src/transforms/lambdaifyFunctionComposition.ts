@@ -141,7 +141,15 @@ function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Ex
     undefined, //type
     ts.createBlock([
       ts.createReturn(
-        createCompositionCall(functionToApplyFirst, functionToApplySecond, lambdaArgName)
+        ts.createCall(
+          functionToApplySecond,
+          undefined,
+          [ts.createCall(
+            functionToApplyFirst,
+            undefined,
+            [lambdaArgName]
+          )]
+        )
       )
     ])
   );
