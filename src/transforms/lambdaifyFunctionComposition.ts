@@ -25,6 +25,11 @@ const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 const PREFIX_FOR_ARGUMENTS = "_param";
 const PREFIX_FOR_DECLARATION = "_decl";
 
+// Copied from inlineWrappedFunctions
+// TODO Extract to module
+const invocationRegex = /^A(?<arity>[1-9]+[0-9]*)$/;
+const wrapperRegex = /^F(?<arity>[1-9]+[0-9]*)$/;
+
 type Context = any;
 
 
@@ -33,7 +38,8 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
   let declCount = 1;
   const createUniqueParamName = () => ts.createIdentifier(PREFIX_FOR_ARGUMENTS + "_" + paramCount++);
   const createUniqueDeclarationName = () => ts.createIdentifier(PREFIX_FOR_DECLARATION + "_" + declCount++);
-  
+  const functionArityDict : Map<string, number> = new Map();
+
   let variablesToInsertStack: Array<Array<{identifier: ts.Identifier, value : ts.Expression }>> = [];
 
   function extractToVariableIfNecessary(value : ts.Expression) {
@@ -47,6 +53,10 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
+      if (ts.isVariableDeclaration(originalNode)) {
+        registerFunctionArity(functionArityDict, originalNode);
+      }
+
       if (ts.isVariableDeclarationList(originalNode)) {
         variablesToInsertStack.push([]);
         const node = ts.visitEachChild(originalNode, visitor, context);
@@ -116,7 +126,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
         }
 
         // A3 call
-        return createCompositionCall(functionToApplyFirst, functionToApplySecond, value);
+        return createCompositionCall(functionArityDict, functionToApplyFirst, functionToApplySecond, value);
       }
       return node;
     };
@@ -124,6 +134,26 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
     return ts.visitNode(sourceFile, visitor);
   };
 };
+
+function registerFunctionArity(functionArityDict : Map<string, number>, declaration : ts.VariableDeclaration) : void {
+  if (!declaration.initializer
+    || !ts.isIdentifier(declaration.name)) {
+    return;
+  }
+
+  const functionName = declaration.name.text;
+
+  if (ts.isCallExpression(declaration.initializer)
+    && ts.isIdentifier(declaration.initializer.expression)
+  ) {
+    const wrapperMatch = declaration.initializer.expression.text.match(wrapperRegex)
+    if (wrapperMatch && wrapperMatch.groups) {
+      const arity = Number(wrapperMatch.groups.arity);
+      functionArityDict.set(functionName, arity);
+    }
+    return;
+  }
+}
 
 
 function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Expression, functionToApplySecond: ts.Expression) : ts.Expression {
@@ -158,18 +188,12 @@ function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Ex
   );
 }
 
-function createCompositionCall(functionToApplyFirst : ts.Expression, functionToApplySecond : ts.Expression, value : ts.Expression) : ts.Expression {
-  const argumentToSecondFunction = createFunctionCall(functionToApplyFirst, value);
-  return createFunctionCall(functionToApplySecond, argumentToSecondFunction);
+function createCompositionCall(functionArityDict : Map<string, number>, functionToApplyFirst : ts.Expression, functionToApplySecond : ts.Expression, value : ts.Expression) : ts.Expression {
+  const argumentToSecondFunction = createFunctionCall(functionArityDict, functionToApplyFirst, value);
+  return createFunctionCall(functionArityDict, functionToApplySecond, argumentToSecondFunction);
 }
 
-// Copied from inlineWrappedFunctions
-// TODO Extract to module
-const invocationRegex = /^A(?<arity>[1-9]+[0-9]*)$/;
-
-function createFunctionCall(fn : ts.Expression, value : ts.Expression) : ts.Expression {
-  // TODO Support other number of arguments
-  // TODO Don't do this when we know that the current number of arguments is the optimal one.
+function createFunctionCall(functionArityDict : Map<string, number>, fn : ts.Expression, value : ts.Expression) : ts.Expression {
   if (!ts.isCallExpression(fn)) {
     return ts.createCall(
       fn,
@@ -183,13 +207,21 @@ function createFunctionCall(fn : ts.Expression, value : ts.Expression) : ts.Expr
     // detects A123(...)
     if (maybeMatch && maybeMatch.groups) {
       const arity = Number(maybeMatch.groups.arity);
-      if (arity < 9) {
+      const functionToCall : ts.Expression = fn.arguments[0];
+      const functionName = ts.isIdentifier(functionToCall) ? functionToCall.text : "";
+      if (functionArityDict.get(functionName) !== arity && arity < 9) {
         return ts.createCall(
           ts.createIdentifier("A" + (arity + 1)),
           undefined,
           [...fn.arguments, value]
         );
       }
+
+      return ts.createCall(
+        fn,
+        undefined,
+        [value]
+      );
     }
   }
 
