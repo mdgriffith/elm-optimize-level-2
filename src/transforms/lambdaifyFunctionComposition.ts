@@ -1,21 +1,84 @@
 import ts from 'typescript';
 import { invocationRegex, wrapperRegex } from './utils/wrappers';
 
-/*
+/* Transform function compositions to anonymous functions.
 
-Split out function definitions so that the raw version of the function can be called.
+### Function composition
 
-This only shows benefit with the `createFuncInlineTransformer`, which will detect when an F3 is being called with 3 arguments and skip the F3 call
-
-initial
-
-var left = A2($elm$core$Basics$composeL, f1, f2);
+```js
+// Before
+var left = A2($elm$core$Basics$composeL, f2, f1);
 var right = A2($elm$core$Basics$composeR, f1, f2);
-
-transformed
-
-var left = function (_a_1) { return f1(f2(_a_1)) };
+// After
+var left = function (_a_1) { return f2(f1(_a_1)) };
 var right = function (_a_1) { return f2(f1(_a_1)) };
+```
+
+It supports compositions of composed functions:
+
+```js
+// Before
+var fn1 = A2($elm$core$Basics$composeR, f1, A2($elm$core$Basics$composeR, f2, f3));
+var fn2 = A2(
+    $elm$core$Basics$composeR,
+    A2($elm$core$Basics$composeL, f2, f1),
+    A2($elm$core$Basics$composeR, f3, f4));
+// After
+var fn1 = function (_param_1) { return f3(f2(f1(_param_1))); };
+var fn2 = function (_param_1) { return f4(f3(f2(f1(_param_1)))); };
+```
+
+---
+
+Function calls are extracted into variables to avoid having parts of the function re-evaluated at every call of the function.
+
+```js
+// Before
+var fn = A2($elm$core$Basics$composeL, f2(x), f1);
+// After
+var _decl_1 = f2(x),
+    fn = function (_param_1) { return _decl_1(f1(_param_1)); };
+```
+
+
+### Direct calls
+
+This transform also turns direct calls to a composed function into chained direct calls
+
+```js
+// Before
+var left = A3($elm$core$Basics$composeL, f2, f1, x);
+var right = A3($elm$core$Basics$composeR, f1, f2, x);
+// After
+var left = f2(f1(x));
+var right = f2(f1(x));
+```
+
+When one of the composed functions is a function call (or a AX call), then we make it an AX call (or use the AX+1 version)
+
+```js
+// Before
+var a = A3($elm$core$Basics$composeL, f2(y), f1, x);
+var b = A3($elm$core$Basics$composeL, A2(f2, y, z), f1, x);
+// After
+var a = A2(f2, y, f1(x));
+var b = A3(f2, y, z, f1(x));
+```
+
+Except when we know that the function is already using the ideal AX wrapper function,
+which we detect by collecting the function arities, in which it becomes a simple
+function call of the expression we had before.
+
+```js
+// Before
+var someFunc = F2(function(a1, a2) {
+  const p = a1 + a2;
+  return function(a3) { return p + a3; };
+});
+var a = A3($elm$core$Basics$composeL, A2(someFunc, y, z), f1, x);
+// After
+var a = A2(someFunc, y, z)(f1(x));
+```
 
 */
 
