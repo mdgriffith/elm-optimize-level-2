@@ -162,21 +162,7 @@ function createCompositionCall(functionToApplyFirst : ts.Expression, functionToA
   // TODO Support other number of arguments
   // TODO Don't do this when we know that the current number of arguments is the optimal one.
   const argumentToSecondFunction = createFunctionCall(functionToApplyFirst, value);
-
-  if (ts.isCallExpression(functionToApplySecond)) {
-    // TODO Support other number of arguments
-    return ts.createCall(
-      ts.createIdentifier("A2"),
-      undefined,
-      [functionToApplySecond.expression, ...functionToApplySecond.arguments, argumentToSecondFunction]
-    );
-  }
-
-  return ts.createCall(
-    functionToApplySecond,
-    undefined,
-    [argumentToSecondFunction]
-  );
+  return createFunctionCall(functionToApplySecond, argumentToSecondFunction);
 }
 
 function createFunctionCall(fn : ts.Expression, value : ts.Expression) : ts.Expression {
