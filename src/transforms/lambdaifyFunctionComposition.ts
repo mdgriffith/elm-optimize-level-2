@@ -1,4 +1,5 @@
-import ts, { createIdentifier } from 'typescript';
+import ts from 'typescript';
+import { invocationRegex, wrapperRegex } from './utils/wrappers';
 
 /*
 
@@ -23,11 +24,6 @@ const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
 const PREFIX_FOR_ARGUMENTS = "_param";
 const PREFIX_FOR_DECLARATION = "_decl";
-
-// Copied from inlineWrappedFunctions
-// TODO Extract to module
-const invocationRegex = /^A(?<arity>[1-9]+[0-9]*)$/;
-const wrapperRegex = /^F(?<arity>[1-9]+[0-9]*)$/;
 
 type Context = any;
 
