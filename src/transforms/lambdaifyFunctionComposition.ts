@@ -159,13 +159,13 @@ function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Ex
 }
 
 function createCompositionCall(functionToApplyFirst : ts.Expression, functionToApplySecond : ts.Expression, value : ts.Expression) : ts.Expression {
-  // TODO Support other number of arguments
-  // TODO Don't do this when we know that the current number of arguments is the optimal one.
   const argumentToSecondFunction = createFunctionCall(functionToApplyFirst, value);
   return createFunctionCall(functionToApplySecond, argumentToSecondFunction);
 }
 
 function createFunctionCall(fn : ts.Expression, value : ts.Expression) : ts.Expression {
+  // TODO Support other number of arguments
+  // TODO Don't do this when we know that the current number of arguments is the optimal one.
   if (ts.isCallExpression(fn)) {
     return ts.createCall(
       ts.createIdentifier("A2"),
