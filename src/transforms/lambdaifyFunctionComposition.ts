@@ -96,12 +96,15 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
           return node;
         }
 
-        const [functionToApplyFirst, functionToApplySecond] =
+        let [functionToApplyFirst, functionToApplySecond] =
           fn.text === COMPOSE_RIGHT
-            ? [extractToVariableIfNecessary(firstArg), extractToVariableIfNecessary(secondArg)]
-            : [extractToVariableIfNecessary(secondArg), extractToVariableIfNecessary(firstArg)];
+            ? [firstArg, secondArg]
+            : [secondArg, firstArg];
 
         if (node.expression.text === "A2") {
+          functionToApplyFirst = extractToVariableIfNecessary(functionToApplyFirst);
+          functionToApplySecond = extractToVariableIfNecessary(functionToApplySecond);
+
           if (ts.isFunctionExpression(functionToApplySecond)) {
             if (ts.isFunctionExpression(functionToApplyFirst)) {
               return mergeFunctionCalls(functionToApplyFirst, functionToApplySecond, context);
@@ -111,7 +114,7 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
           return createLambda(createUniqueParamName(), functionToApplyFirst, functionToApplySecond);
         }
-        
+
         // A3 call
         return createCompositionCall(functionToApplyFirst, functionToApplySecond, value);
       }
