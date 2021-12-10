@@ -174,7 +174,15 @@ function createCompositionCall(functionToApplyFirst : ts.Expression, functionToA
         [value]
       );
 
-  // TODO Support wrapping the second function in an AX function
+  if (ts.isCallExpression(functionToApplySecond)) {
+    // TODO Support other number of arguments
+    return ts.createCall(
+      ts.createIdentifier("A2"),
+      undefined,
+      [functionToApplySecond.expression, ...functionToApplySecond.arguments, argumentToSecondFunction]
+    );
+  }
+
   return ts.createCall(
     functionToApplySecond,
     undefined,
