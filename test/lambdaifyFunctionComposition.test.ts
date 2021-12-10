@@ -532,3 +532,32 @@ test('it can replace A3 calls when one of the functions is a AX function call ex
 
   expect(actual).toBe(expected);
 });
+
+test('it can replace A3 calls when one of the functions is a AX function call expression (second function)', () => {
+  // Corresponds to: x |> (f1 1 2 3 4 5 6 >> f2 1)
+  const initialCode = `
+  (function() {
+    var f2 = F7(g);
+    var value = A3(
+      $elm$core$Basics$composeR,
+      f1,
+      A6(f2, 1, 2, 3, 4, 5, 6),
+      x);
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var f2 = F7(g);
+    var value = A7(f2, 1, 2, 3, 4, 5, 6, f1(x));
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
