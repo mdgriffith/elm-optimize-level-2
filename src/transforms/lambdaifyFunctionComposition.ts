@@ -18,7 +18,6 @@ var right = function (_a_1) { return f2(f1(_a_1)) };
 
 */
 
-// TODO Remove $elm$core$Basics$composeL and $elm$core$Basics$composeR
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
@@ -53,8 +52,20 @@ export const lambdaifyFunctionComposition : ts.TransformerFactory<ts.SourceFile>
 
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
+      // Register the arity, useful for createFunctionCall
       if (ts.isVariableDeclaration(originalNode)) {
         registerFunctionArity(functionArityDict, originalNode);
+      }
+
+      // Remove definitions of composeL and composeR
+      if (ts.isVariableStatement(originalNode)) {
+        if (ts.isIdentifier(originalNode.declarationList.declarations[0].name)
+          && (originalNode.declarationList.declarations[0].name.text === COMPOSE_LEFT
+            || originalNode.declarationList.declarations[0].name.text === COMPOSE_RIGHT
+          )
+        ) {
+          return undefined;
+        }
       }
 
       if (ts.isVariableDeclarationList(originalNode)) {

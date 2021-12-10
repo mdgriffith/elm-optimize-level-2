@@ -590,3 +590,46 @@ test("it can replace A3 calls but doesn't increment the AX function when it alre
 
   expect(actual).toBe(expected);
 });
+
+test("should remove composeL and composeR definitions", () => {
+  // Corresponds to: x |> (f1 >> f2 1 2 3 4 5 6)
+  const initialCode = `
+  (function() {
+    var $elm$core$Basics$composeL = F3(
+      function (g, f, x) {
+        return g(
+          f(x));
+      });
+    var $elm$core$Basics$composeR = F3(
+      function (f, g, x) {
+        return g(
+          f(x));
+      });
+
+    var somethingElse = F3(
+      function (f, g, x) {
+        return g(
+          f(x));
+      });
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var somethingElse = F3(
+      function (f, g, x) {
+        return g(
+          f(x));
+      });
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
+
