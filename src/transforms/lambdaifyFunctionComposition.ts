@@ -163,6 +163,10 @@ function createCompositionCall(functionToApplyFirst : ts.Expression, functionToA
   return createFunctionCall(functionToApplySecond, argumentToSecondFunction);
 }
 
+// Copied from inlineWrappedFunctions
+// TODO Extract to module
+const invocationRegex = /^A(?<arity>[1-9]+[0-9]*)$/;
+
 function createFunctionCall(fn : ts.Expression, value : ts.Expression) : ts.Expression {
   // TODO Support other number of arguments
   // TODO Don't do this when we know that the current number of arguments is the optimal one.
