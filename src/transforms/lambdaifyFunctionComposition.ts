@@ -178,6 +178,21 @@ function createFunctionCall(fn : ts.Expression, value : ts.Expression) : ts.Expr
     );
   }
 
+  if (ts.isIdentifier(fn.expression)) {
+    const maybeMatch = fn.expression.text.match(invocationRegex);
+    // detects A123(...)
+    if (maybeMatch && maybeMatch.groups) {
+      const arity = Number(maybeMatch.groups.arity);
+      if (arity < 9) {
+        return ts.createCall(
+          ts.createIdentifier("A" + (arity + 1)),
+          undefined,
+          [...fn.arguments, value]
+        );
+      }
+    }
+  }
+
   return ts.createCall(
     ts.createIdentifier("A2"),
     undefined,

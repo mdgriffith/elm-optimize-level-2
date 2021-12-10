@@ -508,19 +508,19 @@ test('it can replace A3 calls when one of the functions is a AX function call ex
   // Corresponds to: x |> (f1 1 2 3 4 5 6 >> f2 1)
   const initialCode = `
   (function() {
-    var f2 = F2(g);
+    var f1 = F7(g);
     var value = A3(
       $elm$core$Basics$composeR,
       A6(f1, 1, 2, 3, 4, 5, 6),
-      f2
+      f2,
       x);
   })()
   `;
 
   const expectedOutputCode = `
   (function() {
-    var f2 = F2(g);
-    var value = A2(f2, 1, A7(f1, 1, 2, 3, 4, 5, 6, x));
+    var f1 = F7(g);
+    var value = f2(A7(f1, 1, 2, 3, 4, 5, 6, x));
   })()
   `;
 
