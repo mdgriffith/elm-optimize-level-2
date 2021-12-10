@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts, { createIdentifier } from 'typescript';
 
 /*
 
@@ -161,18 +161,7 @@ function createLambda(lambdaArgName : ts.Identifier, functionToApplyFirst: ts.Ex
 function createCompositionCall(functionToApplyFirst : ts.Expression, functionToApplySecond : ts.Expression, value : ts.Expression) : ts.Expression {
   // TODO Support other number of arguments
   // TODO Don't do this when we know that the current number of arguments is the optimal one.
-  const argumentToSecondFunction =
-    ts.isCallExpression(functionToApplyFirst)
-      ? ts.createCall(
-        ts.createIdentifier("A2"),
-        undefined,
-        [functionToApplyFirst.expression, ...functionToApplyFirst.arguments, value]
-      )
-      : ts.createCall(
-        functionToApplyFirst,
-        undefined,
-        [value]
-      );
+  const argumentToSecondFunction = createFunctionCall(functionToApplyFirst, value);
 
   if (ts.isCallExpression(functionToApplySecond)) {
     // TODO Support other number of arguments
@@ -187,6 +176,21 @@ function createCompositionCall(functionToApplyFirst : ts.Expression, functionToA
     functionToApplySecond,
     undefined,
     [argumentToSecondFunction]
+  );
+}
+
+function createFunctionCall(fn : ts.Expression, value : ts.Expression) : ts.Expression {
+  if (ts.isCallExpression(fn)) {
+    return ts.createCall(
+      ts.createIdentifier("A2"),
+      undefined,
+      [fn.expression, ...fn.arguments, value]
+    );
+  }
+  return ts.createCall(
+    fn,
+    undefined,
+    [value]
   );
 }
 
