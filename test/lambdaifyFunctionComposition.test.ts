@@ -446,7 +446,7 @@ test('it can replace A3 calls by the expression without compose (<<)', () => {
   expect(actual).toBe(expected);
 });
 
-test('it can replace A3 calls when one of the functions is a function call expression', () => {
+test('it can replace A3 calls when one of the functions is a function call expression (first function)', () => {
   // Corresponds to: x |> (f1 1 >> f2)
   const initialCode = `
   (function() {
