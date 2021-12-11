@@ -223,6 +223,13 @@ function registerFunctionArity(functionArityDict : Map<string, number>, declarat
     }
     return;
   }
+
+  if (ts.isFunctionExpression(declaration.initializer)) {
+    // All functions that are accessible from pure Elm code that are written
+    // using function expressions only have a single argument.
+    // This is only true before applying the inlineWrappedFunctions transform.
+    functionArityDict.set(functionName, 1);
+  }
 }
 
 
@@ -272,33 +279,47 @@ function createFunctionCall(functionArityDict : Map<string, number>, fn : ts.Exp
     );
   }
 
-  if (ts.isIdentifier(fn.expression)) {
-    const maybeMatch = fn.expression.text.match(invocationRegex);
-    // detects A123(...)
-    if (maybeMatch && maybeMatch.groups) {
-      const arity = Number(maybeMatch.groups.arity);
-      const functionToCall : ts.Expression = fn.arguments[0];
-      const functionName = ts.isIdentifier(functionToCall) ? functionToCall.text : "";
-      if (functionArityDict.get(functionName) !== arity && arity < 9) {
-        return ts.createCall(
-          ts.createIdentifier("A" + (arity + 1)),
-          undefined,
-          [...fn.arguments, value]
-        );
-      }
+  if (!ts.isIdentifier(fn.expression)) {
+    return ts.createCall(
+      ts.createIdentifier("A2"),
+      undefined,
+      [fn.expression, ...fn.arguments, value]
+    );
+  }
 
+  const maybeMatch = fn.expression.text.match(invocationRegex);
+  // detects A123(...)
+  if (maybeMatch && maybeMatch.groups) {
+    const arity = Number(maybeMatch.groups.arity);
+    const functionToCall : ts.Expression = fn.arguments[0];
+    const functionName = ts.isIdentifier(functionToCall) ? functionToCall.text : "";
+    if (functionArityDict.get(functionName) !== arity && arity < 9) {
       return ts.createCall(
-        fn,
+        ts.createIdentifier("A" + (arity + 1)),
         undefined,
-        [value]
+        [...fn.arguments, value]
       );
     }
+
+    return ts.createCall(
+      fn,
+      undefined,
+      [value]
+    );
+  }
+
+  if (functionArityDict.get(fn.expression.text) !== 1) {
+    return ts.createCall(
+      ts.createIdentifier("A2"),
+      undefined,
+      [fn.expression, ...fn.arguments, value]
+    );
   }
 
   return ts.createCall(
-    ts.createIdentifier("A2"),
+    fn,
     undefined,
-    [fn.expression, ...fn.arguments, value]
+    [value]
   );
 }
 

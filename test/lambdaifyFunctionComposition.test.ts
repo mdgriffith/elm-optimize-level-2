@@ -562,7 +562,36 @@ test('it can replace A3 calls when one of the functions is a AX function call ex
   expect(actual).toBe(expected);
 });
 
-test("it can replace A3 calls but doesn't increment the AX function when it already has the perfect number of arguments", () => {
+test("it can replace A3 calls but doesn't increment the AX function when it already has the perfect number of arguments (simple function call)", () => {
+  // Corresponds to: x |> (f1 >> f2 1 2 3 4 5 6)
+  const initialCode = `
+  (function() {
+    var f2 = function(a) { return function(b) { return a + b; } };
+    var value = A3(
+      $elm$core$Basics$composeR,
+      f1,
+      f2(1),
+      x);
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var f2 = function(a) { return function(b) { return a + b; } };
+    var value = f2(1)(f1(x));
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    lambdaifyFunctionComposition
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test("it can replace A3 calls but doesn't increment the AX function when it already has the perfect number of arguments (AX call)", () => {
   // Corresponds to: x |> (f1 >> f2 1 2 3 4 5 6)
   const initialCode = `
   (function() {
