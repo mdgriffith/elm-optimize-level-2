@@ -17,20 +17,25 @@ var right = function (_a_1) { return f2(f1(_a_1)) };
 It supports compositions of composed functions:
 
 ```js
+// Elm: f1 >> f2 >> f3
 // Before
 var fn1 = A2($elm$core$Basics$composeR, f1, A2($elm$core$Basics$composeR, f2, f3));
+// After
+var fn1 = function (_param_1) { return f3(f2(f1(_param_1))); };
+
+// Elm: (f2 << f1) >> (f3 >> f4)
+// Before
 var fn2 = A2(
     $elm$core$Basics$composeR,
     A2($elm$core$Basics$composeL, f2, f1),
     A2($elm$core$Basics$composeR, f3, f4));
 // After
-var fn1 = function (_param_1) { return f3(f2(f1(_param_1))); };
 var fn2 = function (_param_1) { return f4(f3(f2(f1(_param_1)))); };
 ```
 
 ---
 
-Function calls are extracted into variables to avoid having parts of the function re-evaluated at every call of the function.
+(Partial) function calls are extracted into variables to avoid having parts of the function re-evaluated at every call of the function.
 
 ```js
 // Before
@@ -43,12 +48,12 @@ var _decl_1 = f2(x),
 
 ### Direct calls
 
-This transform also turns direct calls to a composed function into chained direct calls
+This transform also turns direct calls to a composed function into chained direct calls.
 
 ```js
 // Before
-var left = A3($elm$core$Basics$composeL, f2, f1, x);
-var right = A3($elm$core$Basics$composeR, f1, f2, x);
+var left = A3($elm$core$Basics$composeL, f2, f1, x); // (f2 << f1) x
+var right = A3($elm$core$Basics$composeR, f1, f2, x); // (f1 >> f2) x
 // After
 var left = f2(f1(x));
 var right = f2(f1(x));
@@ -58,8 +63,8 @@ When one of the composed functions is a function call (or a AX call), then we ma
 
 ```js
 // Before
-var a = A3($elm$core$Basics$composeL, f2(y), f1, x);
-var b = A3($elm$core$Basics$composeL, A2(f2, y, z), f1, x);
+var a = A3($elm$core$Basics$composeL, f2(y), f1, x); // (f2 y << f1) x
+var b = A3($elm$core$Basics$composeL, A2(f2, y, z), f1, x); // (f2 y z << f1) x
 // After
 var a = A2(f2, y, f1(x));
 var b = A3(f2, y, z, f1(x));
@@ -70,6 +75,12 @@ which we detect by collecting the function arities, in which it becomes a simple
 function call of the expression we had before.
 
 ```js
+// Elm
+someFunc a1 a2 =
+  let p = a1 + a2
+  in \a3 -> p + a3
+a = (someFunc y z << f1) x
+
 // Before
 var someFunc = F2(function(a1, a2) {
   const p = a1 + a2;

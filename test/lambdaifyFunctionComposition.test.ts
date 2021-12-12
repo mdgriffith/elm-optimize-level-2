@@ -4,16 +4,16 @@ import { transformCode } from './helpers/transformCode';
 import { lambdaifyFunctionComposition } from '../src/transforms/lambdaifyFunctionComposition';
 
 test('it can replace << by an anonymous function', () => {
-  // Corresponds to: f1 << f2
+  // Corresponds to: f2 << f1
   const initialCode = `
   (function() {
-    var fn = A2($elm$core$Basics$composeL, f1, f2);
+    var fn = A2($elm$core$Basics$composeL, f2, f1);
   })()
   `;
 
   const expectedOutputCode = `
   (function() {
-    var fn = function (_param_1) { return f1(f2(_param_1)) };
+    var fn = function (_param_1) { return f2(f1(_param_1)) };
   })()
   `;
 
