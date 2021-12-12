@@ -151,13 +151,13 @@ test('it can replace nested function compositions with <<', () => {
 });
 
 test("should extract function calls to variables (first arg)", () => {
-  // Corresponds to: f2 x >> f1
+  // Corresponds to: f1 x >> f2
   const initialCode = `
   (function() {
     var fn = A2(
       $elm$core$Basics$composeR,
-      f2(x),
-      f1);
+      f1(x),
+      f2);
   })()
   `;
 
@@ -183,8 +183,8 @@ test("should extract function calls to variables (first arg)", () => {
   */
   const expectedOutputCode = `
   (function() {
-    var _decl_1 = f2(x),
-        fn = function (_param_1) { return f1(_decl_1(_param_1)); };
+    var _decl_1 = f1(x),
+        fn = function (_param_1) { return f2(_decl_1(_param_1)); };
   })()
   `;
 
@@ -196,7 +196,6 @@ test("should extract function calls to variables (first arg)", () => {
 
   expect(actual).toBe(expected);
 });
-
 
 test("should extract function calls to variables (second arg)", () => {
   // Corresponds to: f1 >> f2 x
