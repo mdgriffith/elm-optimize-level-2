@@ -18,7 +18,7 @@
     "node": ">=12"
   },
   "bin": {
-    "elm-optimize-level-2": "./bin/elm-optimize-level-2.js"
+    "elm-optimize-level-2": "./bin/elm-optimize-level-2"
   },
   "scripts": {
     "test": "jest",
