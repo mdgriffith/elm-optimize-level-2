@@ -1,7 +1,7 @@
 import { transformCode } from './helpers/transformCode';
 import { operationsFusion } from '../src/transforms/operationsFusion';
 
-test('it can fuse together List.map calls', () => {
+test('should fuse consecutive List.map calls', () => {
   // Corresponds to: f2 << f1
   const initialCode = `
   (function() {
@@ -28,7 +28,7 @@ test('it can fuse together List.map calls', () => {
   expect(actual).toBe(expected);
 });
 
-test('it can fuse together List.filter calls', () => {
+test('should fuse consecutive List.filter calls', () => {
   // Corresponds to: f2 << f1
   const initialCode = `
   (function() {
