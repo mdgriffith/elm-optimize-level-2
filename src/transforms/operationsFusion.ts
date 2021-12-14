@@ -47,10 +47,10 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
 
       if (!ts.isCallExpression(node)) { return node; }
 
-      const outerCallExtract = extractMapCall(node);
+      const outerCallExtract = extractCall(node);
       if (!outerCallExtract) { return node; }
 
-      const innerCallExtract = extractMapCall(outerCallExtract.dataArg);
+      const innerCallExtract = extractCall(outerCallExtract.dataArg);
       if (!innerCallExtract) { return node; }
 
       return ts.createCall(
@@ -77,7 +77,7 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
 };
 
 
-function extractMapCall(node: ts.Expression) : { fnArg : ts.Expression, dataArg : ts.Expression } | null {
+function extractCall(node: ts.Expression) : { fnArg : ts.Expression, dataArg : ts.Expression } | null {
   if (ts.isCallExpression(node)
     && ts.isIdentifier(node.expression)
     && node.expression.text === "A2"
