@@ -54,3 +54,22 @@ test('should fuse consecutive List.filter calls', () => {
 
   expect(actual).toBe(expected);
 });
+
+test('should not fuse consecutive List.filter then List.map calls', () => {
+  // Corresponds to: f2 << f1
+  const code = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$List$map, f2, A2($elm$core$List$filter, f1, x));
+    };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    code,
+    code,
+    operationsFusion
+  );
+
+  expect(actual).toBe(expected);
+});
