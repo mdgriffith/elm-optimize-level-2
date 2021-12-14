@@ -63,3 +63,19 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
     return ts.visitNode(sourceFile, visitor);
   };
 };
+
+
+function extractMapCall(node: ts.Expression) : { fnArg : ts.Expression, dataArg : ts.Expression } | null {
+  if (ts.isCallExpression(node)
+    && ts.isIdentifier(node.expression)
+    && node.expression.text === "A2"
+    && ts.isIdentifier(node.arguments[0])
+    && node.arguments[0].text === LIST_MAP
+  ) {
+    return {
+      fnArg: node.arguments[1],
+      dataArg: node.arguments[2]
+    };
+  }
+  return null;
+} 
