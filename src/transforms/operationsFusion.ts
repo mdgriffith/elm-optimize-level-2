@@ -53,9 +53,11 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
       if (!outerCallExtract) { return node; }
 
       const innerCallExtract = extractCall(outerCallExtract.dataArg);
-      if (!innerCallExtract) { return node; }
-
-      if (outerCallExtract.operation.text !== innerCallExtract.operation.text) { return node; }
+      if (!innerCallExtract
+        || outerCallExtract.operation.text !== innerCallExtract.operation.text
+      ) {
+        return node;
+      }
 
       return ts.createCall(
         ts.createIdentifier("A2"),
