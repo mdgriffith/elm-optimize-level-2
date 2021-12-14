@@ -103,4 +103,25 @@ function extractCall(node: ts.Expression) : { operation: ts.Identifier, fnArg : 
   }
 
   return null;
+}
+
+
+function extractComposition(node: ts.Expression) : { operation: ts.Identifier, fnArg : ts.Expression, dataArg : ts.Expression } | null {
+  if (ts.isCallExpression(node)
+    && ts.isIdentifier(node.expression)
+    && node.expression.text === "A2"
+  ) {
+    const [operation, fnArg, dataArg] = node.arguments;
+    if (ts.isIdentifier(operation)
+      && supportedFusions.includes(operation.text)
+    ) {
+      return {
+        operation,
+        fnArg,
+        dataArg
+      };
+    }
+  }
+
+  return null;
 } 
