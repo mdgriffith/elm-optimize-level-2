@@ -35,6 +35,9 @@ The list of functions that are currently supported are:
 
 */
 
+const COMPOSE_LEFT = "$elm$core$Basics$composeL";
+const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
+
 const supportedFusions = [
   "$elm$core$List$map",
   "$elm$core$List$filter",
@@ -47,7 +50,9 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
 
       if (!ts.isCallExpression(node)) { return node; }
 
-      return fuse(node) || node;
+      return fuse(node)
+        || extractComposition(node)
+        || node;
     };
 
     return ts.visitNode(sourceFile, visitor);
@@ -74,7 +79,7 @@ function fuse(node: ts.CallExpression) : ts.CallExpression | null {
         node.expression,
         undefined,
         [
-          ts.createIdentifier("$elm$core$Basics$composeR"),
+          ts.createIdentifier(COMPOSE_RIGHT),
           innerCallExtract.fnArg,
           outerCallExtract.fnArg
         ]
@@ -106,22 +111,61 @@ function extractCall(node: ts.Expression) : { operation: ts.Identifier, fnArg : 
 }
 
 
-function extractComposition(node: ts.Expression) : { operation: ts.Identifier, fnArg : ts.Expression, dataArg : ts.Expression } | null {
+function extractComposition(node: ts.CallExpression) : ts.CallExpression | null {
   if (ts.isCallExpression(node)
     && ts.isIdentifier(node.expression)
     && node.expression.text === "A2"
   ) {
-    const [operation, fnArg, dataArg] = node.arguments;
-    if (ts.isIdentifier(operation)
-      && supportedFusions.includes(operation.text)
+    const [fn, firstArg, secondArg] = node.arguments;
+    if (!ts.isIdentifier(fn)
+      || !(fn.text === COMPOSE_LEFT || fn.text === COMPOSE_RIGHT)
     ) {
-      return {
-        operation,
-        fnArg,
-        dataArg
-      };
+      return node;
     }
+
+    const [fn1, fn2] =
+      fn.text === COMPOSE_RIGHT
+        ? [firstArg, secondArg]
+        : [secondArg, firstArg];
+
+    const firstArgExtract = extractCompositionCall(fn1);
+    if (!firstArgExtract) { return null; }
+
+    const secondArgExtract = extractCompositionCall(fn2);
+    if (!secondArgExtract || firstArgExtract.operation !== secondArgExtract.operation) {
+      return null;
+    }
+
+    return ts.createCall(
+      ts.createIdentifier(secondArgExtract.operation),
+      undefined,
+      [
+        ts.createCall(
+          ts.createIdentifier("A2"),
+          undefined,
+          [
+            ts.createIdentifier(COMPOSE_RIGHT),
+            firstArgExtract.arg,
+            secondArgExtract.arg
+          ]
+        ),
+      ]
+    );
+  }
+  return null;
+}
+
+
+function extractCompositionCall(node: ts.Expression) : { operation: string, arg : ts.Expression } | null {
+  if (ts.isCallExpression(node)
+    && ts.isIdentifier(node.expression)
+    && supportedFusions.includes(node.expression.text)
+  ) {
+    return {
+      operation: node.expression.text,
+      arg: node.arguments[0]
+    };
   }
 
   return null;
-} 
+}
