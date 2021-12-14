@@ -82,13 +82,13 @@ function extractCall(node: ts.Expression) : { fnArg : ts.Expression, dataArg : t
     && ts.isIdentifier(node.expression)
     && node.expression.text === "A2"
   ) {
-    const arg = node.arguments[0];
+    const [arg, fnArg, dataArg] = node.arguments;
     if (ts.isIdentifier(arg)
       && arg.text === LIST_MAP
     ) {
       return {
-        fnArg: node.arguments[1],
-        dataArg: node.arguments[2]
+        fnArg,
+        dataArg
       };
     }
   }
