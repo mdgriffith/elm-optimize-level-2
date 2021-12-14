@@ -2,7 +2,7 @@ import { transformCode } from './helpers/transformCode';
 import { operationsFusion } from '../src/transforms/operationsFusion';
 
 test('should fuse consecutive List.map calls', () => {
-  // Corresponds to: f2 << f1
+  // Corresponds to: x |> List.map f1 |> List.map f2
   const initialCode = `
   (function() {
     var fn = function (x) {
@@ -29,7 +29,7 @@ test('should fuse consecutive List.map calls', () => {
 });
 
 test('should fuse consecutive List.filter calls', () => {
-  // Corresponds to: f2 << f1
+  // Corresponds to: x |> List.filter f1 |> List.filter f2
   const initialCode = `
   (function() {
     var fn = function (x) {
@@ -56,7 +56,7 @@ test('should fuse consecutive List.filter calls', () => {
 });
 
 test('should not fuse consecutive List.filter then List.map calls', () => {
-  // Corresponds to: f2 << f1
+  // Corresponds to: x |> List.filter f1 |> List.map f2
   const code = `
   (function() {
     var fn = function (x) {
