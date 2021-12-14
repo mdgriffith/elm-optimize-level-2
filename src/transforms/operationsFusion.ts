@@ -47,38 +47,42 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
 
       if (!ts.isCallExpression(node)) { return node; }
 
-      const outerCallExtract = extractCall(node);
-      if (!outerCallExtract) { return node; }
-
-      const innerCallExtract = extractCall(outerCallExtract.dataArg);
-      if (!innerCallExtract
-        || outerCallExtract.operation.text !== innerCallExtract.operation.text
-      ) {
-        return node;
-      }
-
-      return ts.createCall(
-        ts.createIdentifier("A2"),
-        undefined,
-        [
-          innerCallExtract.operation,
-          ts.createCall(
-            node.expression,
-            undefined,
-            [
-              ts.createIdentifier("$elm$core$Basics$composeR"),
-              innerCallExtract.fnArg,
-              outerCallExtract.fnArg
-            ]
-          ),
-          innerCallExtract.dataArg
-        ]
-      );
+      return fuse(node) || node;
     };
 
     return ts.visitNode(sourceFile, visitor);
   };
 };
+
+function fuse(node: ts.CallExpression) : ts.CallExpression | null {
+  const outerCallExtract = extractCall(node);
+  if (!outerCallExtract) { return null; }
+
+  const innerCallExtract = extractCall(outerCallExtract.dataArg);
+  if (!innerCallExtract
+    || outerCallExtract.operation.text !== innerCallExtract.operation.text
+  ) {
+    return null;
+  }
+
+  return ts.createCall(
+    ts.createIdentifier("A2"),
+    undefined,
+    [
+      innerCallExtract.operation,
+      ts.createCall(
+        node.expression,
+        undefined,
+        [
+          ts.createIdentifier("$elm$core$Basics$composeR"),
+          innerCallExtract.fnArg,
+          outerCallExtract.fnArg
+        ]
+      ),
+      innerCallExtract.dataArg
+    ]
+  );
+}
 
 
 function extractCall(node: ts.Expression) : { operation: ts.Identifier, fnArg : ts.Expression, dataArg : ts.Expression } | null {
