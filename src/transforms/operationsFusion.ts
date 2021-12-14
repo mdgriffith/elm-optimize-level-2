@@ -45,19 +45,31 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
       const node = ts.visitEachChild(originalNode, visitor, context);
 
-      if (ts.isCallExpression(node)
-        && ts.isIdentifier(node.expression)
-        && node.expression.text === "A2"
-      ) {
-        const [fn, arg1, arg2] = node.arguments;
-        if (ts.isIdentifier(fn)
-          && fn.text === LIST_MAP
-        ) {
-          return node;
-        }
-      }
+      if (!ts.isCallExpression(node)) { return node; }
 
-      return node;
+      const foo = extractMapCall(node);
+      if (!foo) { return node; }
+
+      const bar = extractMapCall(foo.dataArg);
+      if (!bar) { return node; }
+
+      return ts.createCall(
+        ts.createIdentifier("A2"),
+        undefined,
+        [
+          ts.createIdentifier(LIST_MAP),
+          ts.createCall(
+            node.expression,
+            undefined,
+            [
+              ts.createIdentifier("$elm$core$Basics$composeR"),
+              bar.fnArg,
+              foo.fnArg
+            ]
+          ),
+          bar.dataArg
+        ]
+      );
     };
 
     return ts.visitNode(sourceFile, visitor);
@@ -69,13 +81,17 @@ function extractMapCall(node: ts.Expression) : { fnArg : ts.Expression, dataArg 
   if (ts.isCallExpression(node)
     && ts.isIdentifier(node.expression)
     && node.expression.text === "A2"
-    && ts.isIdentifier(node.arguments[0])
-    && node.arguments[0].text === LIST_MAP
   ) {
-    return {
-      fnArg: node.arguments[1],
-      dataArg: node.arguments[2]
-    };
+    const arg = node.arguments[0];
+    if (ts.isIdentifier(arg)
+      && arg.text === LIST_MAP
+    ) {
+      return {
+        fnArg: node.arguments[1],
+        dataArg: node.arguments[2]
+      };
+    }
   }
+
   return null;
 } 
