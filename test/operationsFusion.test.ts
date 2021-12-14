@@ -74,11 +74,34 @@ test('should not fuse consecutive List.filter then List.map calls', () => {
   expect(actual).toBe(expected);
 });
 
-test('should fuse composed List.map functions', () => {
+test('should fuse composed List.map functions (>>)', () => {
   // Corresponds to: List.map f1 >> List.map f2
   const initialCode = `
   (function() {
     var fn = A2($elm$core$Basics$composeR, $elm$core$List$map(f1), $elm$core$List$map(f2));
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = $elm$core$List$map(A2($elm$core$Basics$composeR, f1, f2));
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    operationsFusion
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should fuse composed List.map functions (<<)', () => {
+  // Corresponds to: List.map f2 << List.map f1
+  const initialCode = `
+  (function() {
+    var fn = A2($elm$core$Basics$composeL, $elm$core$List$map(f2), $elm$core$List$map(f1));
   })()
   `;
 
