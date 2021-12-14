@@ -47,11 +47,11 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
 
       if (!ts.isCallExpression(node)) { return node; }
 
-      const foo = extractMapCall(node);
-      if (!foo) { return node; }
+      const outerCallExtract = extractMapCall(node);
+      if (!outerCallExtract) { return node; }
 
-      const bar = extractMapCall(foo.dataArg);
-      if (!bar) { return node; }
+      const innerCallExtract = extractMapCall(outerCallExtract.dataArg);
+      if (!innerCallExtract) { return node; }
 
       return ts.createCall(
         ts.createIdentifier("A2"),
@@ -63,11 +63,11 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
             undefined,
             [
               ts.createIdentifier("$elm$core$Basics$composeR"),
-              bar.fnArg,
-              foo.fnArg
+              innerCallExtract.fnArg,
+              outerCallExtract.fnArg
             ]
           ),
-          bar.dataArg
+          innerCallExtract.dataArg
         ]
       );
     };
