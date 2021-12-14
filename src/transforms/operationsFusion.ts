@@ -37,10 +37,12 @@ The list of functions that are currently supported are:
 
 const LIST_MAP = "$elm$core$List$map";
 
-type Context = any;
+const supportedFusions = [
+  "$elm$core$List$map",
+  "$elm$core$List$filter",
+];
 
-
-export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context: Context) => {
+export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context: any) => {
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
       const node = ts.visitEachChild(originalNode, visitor, context);
@@ -53,11 +55,13 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
       const innerCallExtract = extractCall(outerCallExtract.dataArg);
       if (!innerCallExtract) { return node; }
 
+      // if (outerCallExtract.operation.text !== innerCallExtract.operation.text) { return node; }
+
       return ts.createCall(
         ts.createIdentifier("A2"),
         undefined,
         [
-          ts.createIdentifier(LIST_MAP),
+          innerCallExtract.operation,
           ts.createCall(
             node.expression,
             undefined,
@@ -77,16 +81,17 @@ export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context:
 };
 
 
-function extractCall(node: ts.Expression) : { fnArg : ts.Expression, dataArg : ts.Expression } | null {
+function extractCall(node: ts.Expression) : { operation: ts.Identifier, fnArg : ts.Expression, dataArg : ts.Expression } | null {
   if (ts.isCallExpression(node)
     && ts.isIdentifier(node.expression)
     && node.expression.text === "A2"
   ) {
-    const [arg, fnArg, dataArg] = node.arguments;
-    if (ts.isIdentifier(arg)
-      && arg.text === LIST_MAP
+    const [operation, fnArg, dataArg] = node.arguments;
+    if (ts.isIdentifier(operation)
+      && supportedFusions.includes(operation.text)
     ) {
       return {
+        operation,
         fnArg,
         dataArg
       };
