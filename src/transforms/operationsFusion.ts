@@ -35,8 +35,6 @@ The list of functions that are currently supported are:
 
 */
 
-const LIST_MAP = "$elm$core$List$map";
-
 const supportedFusions = [
   "$elm$core$List$map",
   "$elm$core$List$filter",
