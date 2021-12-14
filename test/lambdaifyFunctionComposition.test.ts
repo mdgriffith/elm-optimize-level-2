@@ -1,5 +1,3 @@
-import ts from 'typescript';
-
 import { transformCode } from './helpers/transformCode';
 import { lambdaifyFunctionComposition } from '../src/transforms/lambdaifyFunctionComposition';
 
