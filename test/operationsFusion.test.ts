@@ -1,7 +1,7 @@
 import { transformCode } from './helpers/transformCode';
 import { operationsFusion } from '../src/transforms/operationsFusion';
 
-test('it can replace << by an anonymous function', () => {
+test('it can fuse together List.map calls', () => {
   // Corresponds to: f2 << f1
   const initialCode = `
   (function() {
