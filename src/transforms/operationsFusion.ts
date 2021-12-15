@@ -27,14 +27,13 @@ A2($elm$core$Basics$composeR, $elm$core$List$map(f1), $elm$core$List$map(f2))
 $elm$core$List$map(A2($elm$core$Basics$composeR, f1, f2))
 ```
 
----
-
-The list of functions that are currently supported are:
-- List.map
-- List.filter
-- List.filterMap
-
 */
+
+// Potential improvements:
+// - Should we support moving List.take and List.drop functions to before List.map (not before List.filter)?
+// - Should we support combining `x |> List.take a |> List.take b` into `x |> List.take (Math.min a b)`?
+// - Should we support combining `x |> List.drop a |> List.drop b` into `x |> List.drop (a + b)`?
+// - Should we support combining `x |> Dict.map f |> Dict.map g` into `x |> Dict.map (\index a -> g index (f index a))`?
 
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
