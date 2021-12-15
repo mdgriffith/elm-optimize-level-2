@@ -28,6 +28,33 @@ test('should fuse consecutive List.map calls', () => {
   expect(actual).toBe(expected);
 });
 
+test('should fuse consecutive Array.map calls', () => {
+  // Corresponds to: x |> Array.map f1 |> Array.map f2
+  const initialCode = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$Array$map, f2, A2($elm$core$Array$map, f1, x));
+    };
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$Array$map, A2($elm$core$Basics$composeR, f1, f2), x);
+    };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    operationsFusion
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('should fuse consecutive Set.map calls', () => {
   // Corresponds to: x |> Set.map f1 |> Set.map f2
   const initialCode = `
