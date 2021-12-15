@@ -1,5 +1,4 @@
 import ts from 'typescript';
-import { invocationRegex, wrapperRegex } from './utils/wrappers';
 
 /* Combine operations into one, such as successive List.map calls.
 
@@ -38,10 +37,10 @@ The list of functions that are currently supported are:
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
-const supportedFusions = [
-  "$elm$core$List$map",
-  "$elm$core$List$filter",
-];
+const supportedFusions : Record<string, CompositionFn> = {
+  "$elm$core$List$map": composeFunctions,
+  "$elm$core$List$filter": composeFunctions,
+};
 
 export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context: any) => {
   return (sourceFile) => {
@@ -75,31 +74,23 @@ function fuse(node: ts.CallExpression) : ts.CallExpression | null {
     undefined,
     [
       innerCallExtract.operation,
-      ts.createCall(
-        node.expression,
-        undefined,
-        [
-          ts.createIdentifier(COMPOSE_RIGHT),
-          innerCallExtract.fnArg,
-          outerCallExtract.fnArg
-        ]
-      ),
+      outerCallExtract.compositionFn(innerCallExtract.fnArg, outerCallExtract.fnArg),
       innerCallExtract.dataArg
     ]
   );
 }
 
-
-function extractCall(node: ts.Expression) : { operation: ts.Identifier, fnArg : ts.Expression, dataArg : ts.Expression } | null {
+function extractCall(node: ts.Expression) : { compositionFn : CompositionFn, operation: ts.Identifier, fnArg : ts.Expression, dataArg : ts.Expression } | null {
   if (ts.isCallExpression(node)
     && ts.isIdentifier(node.expression)
     && node.expression.text === "A2"
   ) {
     const [operation, fnArg, dataArg] = node.arguments;
     if (ts.isIdentifier(operation)
-      && supportedFusions.includes(operation.text)
+      && supportedFusions.hasOwnProperty(operation.text)
     ) {
       return {
+        compositionFn: supportedFusions[operation.text],
         operation,
         fnArg,
         dataArg
@@ -139,33 +130,38 @@ function extractComposition(node: ts.CallExpression) : ts.CallExpression | null 
     return ts.createCall(
       ts.createIdentifier(secondArgExtract.operation),
       undefined,
-      [
-        ts.createCall(
-          ts.createIdentifier("A2"),
-          undefined,
-          [
-            ts.createIdentifier(COMPOSE_RIGHT),
-            firstArgExtract.arg,
-            secondArgExtract.arg
-          ]
-        ),
-      ]
+      [ secondArgExtract.compositionFn(firstArgExtract.arg, secondArgExtract.arg) ]
     );
   }
   return null;
 }
 
 
-function extractCompositionCall(node: ts.Expression) : { operation: string, arg : ts.Expression } | null {
+function extractCompositionCall(node: ts.Expression) : { compositionFn : CompositionFn, operation: string, arg : ts.Expression } | null {
   if (ts.isCallExpression(node)
     && ts.isIdentifier(node.expression)
-    && supportedFusions.includes(node.expression.text)
+    && supportedFusions.hasOwnProperty(node.expression.text)
   ) {
     return {
+      compositionFn: supportedFusions[node.expression.text],
       operation: node.expression.text,
       arg: node.arguments[0]
     };
   }
 
   return null;
+}
+
+type CompositionFn = (x: ts.Expression, y: ts.Expression) => ts.CallExpression;
+
+function composeFunctions(functionToApplyFirst : ts.Expression, functionToApplySecond : ts.Expression) : ts.CallExpression {
+  return ts.createCall(
+    ts.createIdentifier("A2"),
+    undefined,
+    [
+      ts.createIdentifier(COMPOSE_RIGHT),
+      functionToApplyFirst,
+      functionToApplySecond
+    ]
+  );
 }
