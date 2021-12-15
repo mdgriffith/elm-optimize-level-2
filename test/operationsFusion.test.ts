@@ -29,6 +29,33 @@ describe("Map fusion", () => {
   
     expect(actual).toBe(expected);
   });
+
+  test('should fuse multiple consecutive List.map calls', () => {
+    // Corresponds to: x |> List.map f1 |> List.map f2 |> List.map f3
+    const initialCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$core$List$map, f3, A2($elm$core$List$map, f2, A2($elm$core$List$map, f1, x)));
+      };
+    })()
+    `;
+
+    const expectedOutputCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$core$List$map, A2($elm$core$Basics$composeR, A2($elm$core$Basics$composeR, f1, f2), f3), x);
+      };
+    })()
+    `;
+
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+
+    expect(actual).toBe(expected);
+  });
   
   test('should fuse consecutive Array.map calls', () => {
     // Corresponds to: x |> Array.map f1 |> Array.map f2
