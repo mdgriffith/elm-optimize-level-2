@@ -109,6 +109,33 @@ test('should fuse consecutive Set.map calls', () => {
   expect(actual).toBe(expected);
 });
 
+test('should fuse consecutive Set.filter calls', () => {
+  // Corresponds to: x |> Set.filter f1 |> Set.filter f2
+  const initialCode = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$Set$filter, f2, A2($elm$core$Set$filter, f1, x));
+    };
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$Set$filter, A2($elm$core$Basics$composeR, f1, f2), x);
+    };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    operationsFusion
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('should fuse consecutive List.filter calls', () => {
   // Corresponds to: x |> List.filter f1 |> List.filter f2
   const initialCode = `

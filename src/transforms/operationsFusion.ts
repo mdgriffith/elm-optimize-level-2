@@ -44,6 +44,7 @@ const supportedFusions : Record<string, CompositionFn> = {
   "$elm$core$List$filter": composeFunctions,
   "$elm$core$List$filterMap": filterMapComposition,
   "$elm$core$Set$map": composeFunctions,
+  "$elm$core$Set$filter": composeFunctions,
   "$elm$core$Array$map": composeFunctions,
   "$elm$core$Array$filter": composeFunctions,
 };
