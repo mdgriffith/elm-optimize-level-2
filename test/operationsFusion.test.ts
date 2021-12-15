@@ -119,3 +119,30 @@ test('should fuse composed List.map functions (<<)', () => {
 
   expect(actual).toBe(expected);
 });
+
+test('should fuse consecutive List.filterMap calls', () => {
+  // Corresponds to: x |> List.filter f1 |> List.filter f2
+  const initialCode = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$List$filterMap, f2, A2($elm$core$List$filterMap, f1, x));
+    };
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$List$filterMap, A2($elm$core$Basics$composeR, f1, $elm$core$Maybe$andThen(f2)), x);
+    };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    operationsFusion
+  );
+
+  expect(actual).toBe(expected);
+});

@@ -31,6 +31,8 @@ $elm$core$List$map(A2($elm$core$Basics$composeR, f1, f2))
 
 The list of functions that are currently supported are:
 - List.map
+- List.filter
+- List.filterMap
 
 */
 
@@ -40,6 +42,7 @@ const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 const supportedFusions : Record<string, CompositionFn> = {
   "$elm$core$List$map": composeFunctions,
   "$elm$core$List$filter": composeFunctions,
+  "$elm$core$List$filterMap": filterMapComposition,
 };
 
 export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context: any) => {
@@ -162,6 +165,21 @@ function composeFunctions(functionToApplyFirst : ts.Expression, functionToApplyS
       ts.createIdentifier(COMPOSE_RIGHT),
       functionToApplyFirst,
       functionToApplySecond
+    ]
+  );
+}
+function filterMapComposition(functionToApplyFirst : ts.Expression, functionToApplySecond : ts.Expression) : ts.CallExpression {
+  return ts.createCall(
+    ts.createIdentifier("A2"),
+    undefined,
+    [
+      ts.createIdentifier(COMPOSE_RIGHT),
+      functionToApplyFirst,
+      ts.createCall(
+        ts.createIdentifier("$elm$core$Maybe$andThen"),
+        undefined,
+        [functionToApplySecond]
+      )
     ]
   );
 }
