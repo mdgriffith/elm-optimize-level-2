@@ -45,6 +45,7 @@ const supportedFusions : Record<string, CompositionFn> = {
   "$elm$core$List$filterMap": filterMapComposition,
   "$elm$core$Set$map": composeFunctions,
   "$elm$core$Array$map": composeFunctions,
+  "$elm$core$Array$filter": composeFunctions,
 };
 
 export const operationsFusion : ts.TransformerFactory<ts.SourceFile> = (context: any) => {

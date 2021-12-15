@@ -55,6 +55,33 @@ test('should fuse consecutive Array.map calls', () => {
   expect(actual).toBe(expected);
 });
 
+test('should fuse consecutive Array.filter calls', () => {
+  // Corresponds to: x |> Array.filter f1 |> Array.filter f2
+  const initialCode = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$Array$filter, f2, A2($elm$core$Array$filter, f1, x));
+    };
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$Array$filter, A2($elm$core$Basics$composeR, f1, f2), x);
+    };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    operationsFusion
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('should fuse consecutive Set.map calls', () => {
   // Corresponds to: x |> Set.map f1 |> Set.map f2
   const initialCode = `
