@@ -183,6 +183,52 @@ describe("Map fusion", () => {
   
     expect(actual).toBe(expected);
   });
+
+  test('should fuse multiple composed List.map functions (>>)', () => {
+    // Corresponds to: List.map f1 >> List.map f2 >> List.map f3
+    const initialCode = `
+    (function() {
+      var fn = A2($elm$core$Basics$composeR, $elm$core$List$map(f1), A2($elm$core$Basics$composeR, $elm$core$List$map(f2), $elm$core$List$map(f3)));
+    })()
+    `;
+
+    const expectedOutputCode = `
+    (function() {
+      var fn = $elm$core$List$map(A2($elm$core$Basics$composeR, f1, A2($elm$core$Basics$composeR, f2, f3)));
+    })()
+    `;
+
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+
+    expect(actual).toBe(expected);
+  });
+
+  test('should fuse multiple composed List.map functions (<<)', () => {
+    // Corresponds to: List.map f3 << List.map f2 << List.map f1
+    const initialCode = `
+    (function() {
+      var fn = A2($elm$core$Basics$composeL, A2($elm$core$Basics$composeL, $elm$core$List$map(f3), $elm$core$List$map(f2)), $elm$core$List$map(f1))
+    })()
+    `;
+
+    const expectedOutputCode = `
+    (function() {
+      var fn = $elm$core$List$map(A2($elm$core$Basics$composeR, f1, A2($elm$core$Basics$composeR, f2, f3)));
+    })()
+    `;
+
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+
+    expect(actual).toBe(expected);
+  });
 });
 
 test('should fuse consecutive List.filterMap calls', () => {

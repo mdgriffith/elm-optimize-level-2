@@ -146,7 +146,6 @@ function extractCall(node: ts.Expression) : { compositionFn : CompositionFn, ope
   return null;
 }
 
-
 function extractComposition(node: ts.CallExpression) : ts.CallExpression | null {
   if (ts.isCallExpression(node)
     && ts.isIdentifier(node.expression)
@@ -181,7 +180,6 @@ function extractComposition(node: ts.CallExpression) : ts.CallExpression | null 
   return null;
 }
 
-
 function extractCompositionCall(node: ts.Expression) : { compositionFn : CompositionFn, operation: string, arg : ts.Expression } | null {
   if (ts.isCallExpression(node)
     && ts.isIdentifier(node.expression)
@@ -210,6 +208,7 @@ function composeFunctions(functionToApplyFirst : ts.Expression, functionToApplyS
     ]
   );
 }
+
 function filterMapComposition(functionToApplyFirst : ts.Expression, functionToApplySecond : ts.Expression) : ts.CallExpression {
   return ts.createCall(
     ts.createIdentifier("A2"),
