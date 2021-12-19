@@ -35,6 +35,47 @@ $elm$core$List$map(A2($elm$core$Basics$composeR, f1, f2))
 // - Should we support combining `x |> List.drop a |> List.drop b` into `x |> List.drop (a + b)`?
 // - Should we support combining `x |> Dict.map f |> Dict.map g` into `x |> Dict.map (\index a -> g index (f index a))`?
 
+
+
+/* Notes on supporting this for custom functions by user and libraries.
+
+For `elm-optimize-level-2`, users could specify a configuration for the tool where
+they'd list which functions could support their optimization.
+
+For the compiler, functions could include keywords in their documentation to indicate
+what optimizations to apply.
+
+{-| Maps from a to b.
+
+@optimation fusion(map)
+
+-- Or alternatively
+@optimation fusion(filter)
+@optimation fusion(filterMap)
+
+-}
+map : (a -> b) -> X a -> X b
+
+and then the compiler could also apply this optimization for all of the chains that contain this function call.
+
+The bigger question is how to make sure that the compiler doesn't blindly trust that this optimization can be applied.
+
+map : (a -> b) -> X a -> X b
+map fn (X a) =
+  X { a
+      | apply = a.apply >> fn
+      , mapCount = a.mapCount + 1
+    }
+
+For instance fusing 2 applications of the function above would lead to different results than having them
+applied multiple times (because `mapCount` would be incremented once instead of twice).
+
+I don't know if there is a way for the compiler to prove or find out that `map f >> map g` is the same
+as `map (f >> g)`. Maybe the compiler could try doing this and report an error when it could not
+determine this to be true (or when it actively knows it's different).
+
+*/
+
 const COMPOSE_LEFT = "$elm$core$Basics$composeL";
 const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
