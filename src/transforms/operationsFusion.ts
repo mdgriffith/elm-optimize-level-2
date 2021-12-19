@@ -2,6 +2,9 @@ import ts from 'typescript';
 
 /* Combine operations into one, such as successive List.map calls.
 
+Indirectly inspired by https://hackage.haskell.org/package/stream-fusion-0.1.2.5/docs/Data-List-Stream.html
+which can be a source of inspiration for more fusion transforms.
+
 ```js
 // Elm
 x |> List.map f1 |> List.map f2
