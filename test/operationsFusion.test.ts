@@ -185,26 +185,6 @@ describe("Map fusion", () => {
   });
 });
 
-
-test('should not fuse consecutive List.filter then List.map calls', () => {
-  // Corresponds to: x |> List.filter f1 |> List.map f2
-  const code = `
-  (function() {
-    var fn = function (x) {
-      return A2($elm$core$List$map, f2, A2($elm$core$List$filter, f1, x));
-    };
-  })()
-  `;
-
-  const { actual, expected } = transformCode(
-    code,
-    code,
-    operationsFusion
-  );
-
-  expect(actual).toBe(expected);
-});
-
 test('should fuse consecutive List.filterMap calls', () => {
   // Corresponds to: x |> List.filter f1 |> List.filter f2
   const initialCode = `
@@ -226,6 +206,25 @@ test('should fuse consecutive List.filterMap calls', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
+    operationsFusion
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should not fuse consecutive List.filterMap then List.map calls', () => {
+  // Corresponds to: x |> List.filter f1 |> List.map f2
+  const code = `
+  (function() {
+    var fn = function (x) {
+      return A2($elm$core$List$map, f2, A2($elm$core$List$filterMap, f1, x));
+    };
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    code,
+    code,
     operationsFusion
   );
 
