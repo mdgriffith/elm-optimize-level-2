@@ -258,6 +258,29 @@ test('should fuse consecutive List.filterMap calls', () => {
   expect(actual).toBe(expected);
 });
 
+test('should fuse combined List.filterMap functions', () => {
+  // Corresponds to: List.filterMap f1 >> List.filterMap f2 >> List.filterMap f3
+  const initialCode = `
+  (function() {
+    var fn = A2($elm$core$Basics$composeR, $elm$core$List$filterMap(f1), A2($elm$core$Basics$composeR, $elm$core$List$filterMap(f2), $elm$core$List$filterMap(f3)));
+  })()
+  `;
+
+  const expectedOutputCode = `
+  (function() {
+    var fn = $elm$core$List$filterMap(A2($elm$core$Basics$composeR, f1, $elm$core$Maybe$andThen(A2($elm$core$Basics$composeR, f2, $elm$core$Maybe$andThen(f3)))));
+  })()
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    operationsFusion
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('should not fuse consecutive List.filterMap then List.map calls', () => {
   // Corresponds to: x |> List.filterMap f1 |> List.map f2
   const code = `
