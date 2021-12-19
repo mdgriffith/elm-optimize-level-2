@@ -186,7 +186,7 @@ describe("Map fusion", () => {
 });
 
 test('should fuse consecutive List.filterMap calls', () => {
-  // Corresponds to: x |> List.filter f1 |> List.filter f2
+  // Corresponds to: x |> List.filterMap f1 |> List.filterMap f2
   const initialCode = `
   (function() {
     var fn = function (x) {
@@ -213,7 +213,7 @@ test('should fuse consecutive List.filterMap calls', () => {
 });
 
 test('should not fuse consecutive List.filterMap then List.map calls', () => {
-  // Corresponds to: x |> List.filter f1 |> List.map f2
+  // Corresponds to: x |> List.filterMap f1 |> List.map f2
   const code = `
   (function() {
     var fn = function (x) {
