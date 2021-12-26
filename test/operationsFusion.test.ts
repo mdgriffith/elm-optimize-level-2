@@ -155,13 +155,40 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
+    expect(actual).toBe(expected);
+  });
+
+  test('should fuse consecutive String.map calls', () => {
+    // Corresponds to: x |> String.map f1 |> String.map f2
+    const initialCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$core$String$map, f2, A2($elm$core$String$map, f1, x));
+      };
+    })()
+    `;
+
+    const expectedOutputCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$core$String$map, A2($elm$core$Basics$composeR, f1, f2), x);
+      };
+    })()
+    `;
+
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+
     expect(actual).toBe(expected);
   });
 

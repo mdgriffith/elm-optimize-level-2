@@ -84,6 +84,7 @@ const COMPOSE_RIGHT = "$elm$core$Basics$composeR";
 
 const supportedFusions : Record<string, CompositionFn> = {
   "$elm$core$List$map": composeFunctions,
+  "$elm$core$String$map": composeFunctions,
   "$elm$core$List$filterMap": filterMapComposition,
   "$elm$core$Set$map": composeFunctions,
   "$elm$core$Array$map": composeFunctions,
