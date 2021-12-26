@@ -111,6 +111,60 @@ describe("Map fusion", () => {
     expect(actual).toBe(expected);
   });
 
+  test('should fuse consecutive elm/parser Parser.map calls', () => {
+    // Corresponds to: x |> Parser.map f1 |> Parser.map f2
+    const initialCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$parser$Parser$map, f2, A2($elm$parser$Parser$map, f1, x));
+      };
+    })()
+    `;
+  
+    const expectedOutputCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$parser$Parser$map, A2($elm$core$Basics$composeR, f1, f2), x);
+      };
+    })()
+    `;
+  
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+  
+    expect(actual).toBe(expected);
+  });
+
+  test('should fuse consecutive elm/parser Parser.Advanced.map calls', () => {
+    // Corresponds to: x |> Parser.Advanced.map f1 |> Parser.Advanced.map f2
+    const initialCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$parser$Parser$Advanced$map, f2, A2($elm$parser$Parser$Advanced$map, f1, x));
+      };
+    })()
+    `;
+  
+    const expectedOutputCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$parser$Parser$Advanced$map, A2($elm$core$Basics$composeR, f1, f2), x);
+      };
+    })()
+    `;
+  
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+  
+    expect(actual).toBe(expected);
+  });
+
   test('should fuse composed List.map functions (>>)', () => {
     // Corresponds to: List.map f1 >> List.map f2
     const initialCode = `
