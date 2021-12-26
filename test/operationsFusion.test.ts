@@ -431,6 +431,33 @@ describe("Map fusion", () => {
     expect(actual).toBe(expected);
   });
 
+  test('should fuse consecutive Html.Attributes.map calls', () => {
+    // Corresponds to: x |> Html.Attributes.map f1 |> Html.Attributes.map f2
+    const initialCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$html$Html$Attributes$map, f2, A2($elm$html$Html$Attributes$map, f1, x));
+      };
+    })()
+    `;
+
+    const expectedOutputCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$html$Html$Attributes$map, A2($elm$core$Basics$composeR, f1, f2), x);
+      };
+    })()
+    `;
+
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+
+    expect(actual).toBe(expected);
+  });
+
   test('should fuse composed List.map functions (<<)', () => {
     // Corresponds to: List.map f2 << List.map f1
     const initialCode = `

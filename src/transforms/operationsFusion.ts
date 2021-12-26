@@ -94,6 +94,7 @@ const supportedFusions : Record<string, CompositionFn> = {
   "$elm$core$Platform$Cmd$map": composeFunctions,
   "$elm$core$Platform$Sub$map": composeFunctions,
   "$elm$html$Html$map": composeFunctions,
+  "$elm$html$Html$Attributes$map": composeFunctions,
   "$elm$json$Json$Decode$map": composeFunctions,
   "$elm$bytes$Bytes$Decode$map": composeFunctions,
   "$elm$parser$Parser$map": composeFunctions,
