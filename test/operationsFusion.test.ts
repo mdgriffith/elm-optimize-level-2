@@ -138,6 +138,33 @@ describe("Map fusion", () => {
     expect(actual).toBe(expected);
   });
 
+  test('should fuse consecutive Result.map calls', () => {
+    // Corresponds to: x |> Result.map f1 |> Result.map f2
+    const initialCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$core$Result$map, f2, A2($elm$core$Result$map, f1, x));
+      };
+    })()
+    `;
+  
+    const expectedOutputCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$core$Result$map, A2($elm$core$Basics$composeR, f1, f2), x);
+      };
+    })()
+    `;
+  
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+  
+    expect(actual).toBe(expected);
+  });
+
   test('should fuse consecutive Cmd.map calls', () => {
     // Corresponds to: x |> Cmd.map f1 |> Cmd.map f2
     const initialCode = `
