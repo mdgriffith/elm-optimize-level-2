@@ -12,7 +12,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -20,13 +20,13 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -56,7 +56,7 @@ describe("Map fusion", () => {
 
     expect(actual).toBe(expected);
   });
-  
+
   test('should fuse consecutive Array.map calls', () => {
     // Corresponds to: x |> Array.map f1 |> Array.map f2
     const initialCode = `
@@ -66,7 +66,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -74,13 +74,13 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -93,7 +93,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -101,13 +101,13 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -120,7 +120,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -128,13 +128,13 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -147,7 +147,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -201,7 +201,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -209,13 +209,13 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -228,7 +228,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -236,13 +236,13 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -282,7 +282,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -290,13 +290,13 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -309,7 +309,7 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = function (x) {
@@ -317,13 +317,13 @@ describe("Map fusion", () => {
       };
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -334,19 +334,19 @@ describe("Map fusion", () => {
       var fn = A2($elm$core$Basics$composeR, $elm$core$List$map(f1), $elm$core$List$map(f2));
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = $elm$core$List$map(A2($elm$core$Basics$composeR, f1, f2));
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
@@ -384,19 +384,19 @@ describe("Map fusion", () => {
       var fn = A2($elm$core$Basics$composeL, $elm$core$List$map(f2), $elm$core$List$map(f1));
     })()
     `;
-  
+
     const expectedOutputCode = `
     (function() {
       var fn = $elm$core$List$map(A2($elm$core$Basics$composeR, f1, f2));
     })()
     `;
-  
+
     const { actual, expected } = transformCode(
       initialCode,
       expectedOutputCode,
       operationsFusion
     );
-  
+
     expect(actual).toBe(expected);
   });
 
