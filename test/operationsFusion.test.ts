@@ -300,6 +300,33 @@ describe("Map fusion", () => {
     expect(actual).toBe(expected);
   });
 
+  test('should fuse consecutive elm/bytes Bytes.Decode.map calls', () => {
+    // Corresponds to: x |> Bytes.Decode.map f1 |> Bytes.Decode.map f2
+    const initialCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$bytes$Bytes$Decode$map, f2, A2($elm$bytes$Bytes$Decode$map, f1, x));
+      };
+    })()
+    `;
+
+    const expectedOutputCode = `
+    (function() {
+      var fn = function (x) {
+        return A2($elm$bytes$Bytes$Decode$map, A2($elm$core$Basics$composeR, f1, f2), x);
+      };
+    })()
+    `;
+
+    const { actual, expected } = transformCode(
+      initialCode,
+      expectedOutputCode,
+      operationsFusion
+    );
+
+    expect(actual).toBe(expected);
+  });
+
   test('should fuse consecutive elm/parser Parser.map calls', () => {
     // Corresponds to: x |> Parser.map f1 |> Parser.map f2
     const initialCode = `
