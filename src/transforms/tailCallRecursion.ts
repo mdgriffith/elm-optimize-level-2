@@ -28,6 +28,12 @@ but this version doesn't (because of the additional `<|`):
 
 */
 
+// TODO Enable TCO when it should have been enabled but not triggered because of `<|` or `|>`
+// TODO Re-use the existing loop and goto label if there is already one
+// TODO Enable TCO for tail recursion modulo cons
+// TODO Enable TCO for code like `rec n = if ... then False else condition n && rec (n - 1)`, using `&&` or `||`
+// TODO Enable TCO for other kinds of data constructors 
+
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : any) => {
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
