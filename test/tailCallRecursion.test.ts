@@ -18,6 +18,22 @@ test("it doesn't affect functions that are not recursive", () => {
   expect(actual).toBe(expected);
 });
 
+test("it doesn't affect functions that are not tail-call recursive", () => {
+  const initialCode = `
+  var factorial = function (n) {
+	return mult(n, factorial(n - 1));
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    initialCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('it can turn a function that is tail-call recursive into a while loop', () => {
   const initialCode = `
   var something$recursiveFunction = F3(
