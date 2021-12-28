@@ -2,6 +2,22 @@ import ts from 'typescript';
 
 import { createTailCallRecursionTransformer } from '../src/transforms/tailCallRecursion';
 
+test("it doesn't affect functions that are not recursive", () => {
+  const initialCode = `
+  var $elm$core$Basics$identity = function (x) {
+	return x;
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    initialCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('it can turn a function that is tail-call recursive into a while loop', () => {
   const initialCode = `
   var something$recursiveFunction = F3(
