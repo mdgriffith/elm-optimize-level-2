@@ -35,6 +35,14 @@ test("it doesn't affect functions that are not tail-call recursive", () => {
 });
 
 test('it can turn a function that is tail-call recursive into a while loop', () => {
+  // Corresponds to the following Elm code
+  // recursiveFunction : (a -> b) -> List a -> List b -> List b
+  // recursiveFunction mapper list acc =
+  //     case list of
+  //         [] ->
+  //             acc
+  //         x :: xs ->
+  //             recursiveFunction mapper xs <| (mapper x :: acc)
   const initialCode = `
   var something$recursiveFunction = F3(
 	function (mapper, list, acc) {
@@ -55,6 +63,14 @@ test('it can turn a function that is tail-call recursive into a while loop', () 
 	});
   `;
 
+  // Corresponds to the following TCO-ed Elm code
+  // recursiveFunction : (a -> b) -> List a -> List b -> List b
+  // recursiveFunction mapper list acc =
+  //     case list of
+  //         [] ->
+  //             acc
+  //         x :: xs ->
+  //             recursiveFunction mapper xs (mapper x :: acc)
   const expectedOutputCode = `
   var something$recursiveFunction = F3(
 	function (mapper, list, acc) {
