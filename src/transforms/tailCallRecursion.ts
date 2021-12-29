@@ -50,7 +50,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
               return ts.isIdentifier(param.name) ? param.name.text : '';
             });
             const newBody = updateFunctionBody(functionsToBeMadeRecursive, node.name.text, parameterNames, fn.body, context);
-            if (!functionsToBeMadeRecursive[node.name.text]) {
+            if (functionsToBeMadeRecursive[node.name.text] !== true) {
               return node;
             }
             const newFn = ts.createFunctionExpression(
