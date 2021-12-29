@@ -42,6 +42,9 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
         && ts.isCallExpression(node.initializer)) {
           const fn = isFCall(node.initializer);
           if (fn) {
+            if (ts.isIdentifier(node.name)) {
+              console.log(node.name.text)
+            }
             const initializer = ts.updateCall(
               node.initializer,
               node.initializer.expression,
