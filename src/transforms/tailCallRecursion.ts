@@ -45,7 +45,10 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
         && ts.isCallExpression(node.initializer)) {
           const fn = isFCall(node.initializer);
           if (fn) {
-            const newBody = updateFunctionBody(node.name.text, fn.body, context);
+            const parameterNames : Array<string> = fn.parameters.map(param => {
+              return ts.isIdentifier(param.name) ? param.name.text : '';
+            });
+            const newBody = updateFunctionBody(node.name.text, parameterNames, fn.body, context);
             const newFn = ts.createFunctionExpression(
               fn.modifiers,
               undefined,
@@ -95,7 +98,7 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
   return null;
 }
 
-function updateFunctionBody(functionName : string, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
