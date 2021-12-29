@@ -42,6 +42,7 @@ export type Transforms = {
   recordUpdates: boolean;
   v8Analysis: boolean;
   fastCurriedFns: boolean;
+  tailCallRecursion: boolean;
   replacements: { [name: string]: string } | null
 };
 
@@ -93,6 +94,7 @@ export const emptyOpts: Transforms = {
   recordUpdates: false,
   v8Analysis: false,
   fastCurriedFns: false,
+  tailCallRecursion: true,
   replacements: null
 };
 
@@ -115,6 +117,7 @@ export function toolDefaults(o3Enabled: boolean, replacements: { string: string 
         recordUpdates: o3Enabled,
         v8Analysis: false,
         fastCurriedFns: true,
+        tailCallRecursion: true,
         replacements: replacements
     };
 }
@@ -138,6 +141,7 @@ export function benchmarkDefaults(o3Enabled: boolean, replacements: { string: st
         recordUpdates: o3Enabled,
         v8Analysis: false,
         fastCurriedFns: true,
+        tailCallRecursion: true,
         replacements: replacements
     };
 }
@@ -166,6 +170,7 @@ export const previous: Previous =
         recordUpdates: false,
         v8Analysis: false,
         fastCurriedFns: false,
+        tailCallRecursion: true,
         replacements: null
     }
   }
