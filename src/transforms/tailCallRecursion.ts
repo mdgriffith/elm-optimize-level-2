@@ -104,6 +104,16 @@ function updateFunctionBody(functionName : string, body : ts.Block, context : Co
     if (ts.isBlock(node)) {
       return ts.visitEachChild(body, updateRecursiveCallVisitor, context);
     }
+
+    if (ts.isIfStatement(node)) {
+      return ts.updateIf(
+        node,
+        node.expression,
+        ts.visitNode(node.thenStatement, updateRecursiveCallVisitor, context),
+        ts.visitNode(node.elseStatement, updateRecursiveCallVisitor, context)
+      )
+    }
+
     return node;
   }
 
