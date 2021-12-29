@@ -108,15 +108,7 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
 
   function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
-    if (ts.isBlock(node)) {
-      return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
-    }
-
-    if (ts.isLabeledStatement(node)) {
-      return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
-    }
-
-    if (ts.isWhileStatement(node)) {
+    if (ts.isBlock(node) || ts.isLabeledStatement(node) || ts.isWhileStatement(node)) {
       return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
     }
 
