@@ -38,14 +38,22 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
   return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
-        && node.initializer) {
+        && node.initializer
+        && ts.isCallExpression(node.initializer)) {
           const fn = isFCall(node.initializer);
           if (fn) {
+            const initializer = ts.updateCall(
+              node.initializer,
+              node.initializer.expression,
+              undefined,
+              [fn]
+            );
+
             return ts.updateVariableDeclaration(
-                node,
-                node.name,
-                undefined,
-                node.initializer
+              node,
+              node.name,
+              undefined,
+              initializer
             );
           }
       }
@@ -57,9 +65,8 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
   };
 };
 
-function isFCall(node: ts.Expression): ts.Expression | null {
-  if (ts.isCallExpression(node)
-    && ts.isIdentifier(node.expression)
+function isFCall(node: ts.CallExpression): ts.Expression | null {
+  if (ts.isIdentifier(node.expression)
     && node.expression.text.startsWith('F')) {
     return node.arguments[0];
   }
