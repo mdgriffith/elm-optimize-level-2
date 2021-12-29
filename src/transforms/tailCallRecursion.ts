@@ -34,7 +34,7 @@ but this version doesn't (because of the additional `<|`):
 // TODO Enable TCO for code like `rec n = if ... then False else condition n && rec (n - 1)`, using `&&` or `||`
 // TODO Enable TCO for other kinds of data constructors 
 
-export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : any) => {
+export const createTailCallRecursionTransformer = (forTests: boolean): ts.TransformerFactory<ts.SourceFile> => (context) => {
   return (sourceFile) => {
     const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
       const node = ts.visitEachChild(originalNode, visitor, context);
