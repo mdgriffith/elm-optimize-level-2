@@ -96,8 +96,10 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
 function updateFunctionBody(functionName : string, body : ts.Block) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
+  const updatedBlock = updateRecursiveCalls(body);
+
   return ts.createBlock(
-    [ts.createLabel(label, ts.createWhile(ts.createTrue(), updateRecursiveCalls(body)))]
+    [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
   );
 }
 
