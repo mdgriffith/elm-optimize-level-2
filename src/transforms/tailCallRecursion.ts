@@ -36,9 +36,8 @@ but this version doesn't (because of the additional `<|`):
 
 export const createTailCallRecursionTransformer = (forTests: boolean): ts.TransformerFactory<ts.SourceFile> => (context) => {
   return (sourceFile) => {
-    const visitor = (originalNode: ts.Node): ts.VisitResult<ts.Node> => {
-      const node = ts.visitEachChild(originalNode, visitor, context);
-      return node;
+    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      return ts.visitEachChild(node, visitor, context);
     };
     console.log(forTests);
 
