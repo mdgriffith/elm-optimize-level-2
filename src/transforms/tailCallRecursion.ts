@@ -51,7 +51,7 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
               undefined,
               fn.parameters,
               undefined,
-              fn.body
+              newBody
             );
 
             const initializer = ts.updateCall(
