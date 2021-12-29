@@ -108,7 +108,7 @@ test('it can turn a function that is tail-call recursive into a while loop', () 
 export function transformCode(
   initialCode: string,
   expectedCode: string,
-  transformer: (forTests: boolean) => ts.TransformerFactory<ts.SourceFile>
+  transformer: ts.TransformerFactory<ts.SourceFile>
 ): {
   actual: string;
   expected: string;
@@ -121,7 +121,7 @@ export function transformCode(
 
   const printer = ts.createPrinter();
 
-  const [output] = ts.transform(source, [transformer(true)]).transformed;
+  const [output] = ts.transform(source, [transformer]).transformed;
 
   const expectedOutput = printer.printFile(
     ts.createSourceFile('elm.js', expectedCode, ts.ScriptTarget.ES2018)
