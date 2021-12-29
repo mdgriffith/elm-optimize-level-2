@@ -36,7 +36,7 @@ but this version doesn't (because of the additional `<|`):
 
 type Context = any;
 
-export const createTailCallRecursionTransformer = (forTests: boolean): ts.TransformerFactory<ts.SourceFile> => (context : Context) => {
+export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
   return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
@@ -76,7 +76,6 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
       }
       return ts.visitEachChild(node, visitor, context);
     };
-    console.log(forTests);
 
     return ts.visitNode(sourceFile, visitor);
   };
