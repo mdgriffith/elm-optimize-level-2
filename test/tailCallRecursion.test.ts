@@ -232,6 +232,60 @@ test('should not change non-recursive functions', () => {
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that cons (::) on the result of recursive calls', () => {
+  // Corresponds to the following Elm code
+  // map fn list =
+  //   case list of
+  //   [] -> []
+  //   x :: xs -> fn x :: map fn xs
+  const initialCode = `
+  var $something F2(
+	function (fn, list) {
+		if (!list.b) {
+			return _List_Nil;
+		} else {
+			var x = list.a;
+			var xs = list.b;
+			return A2(
+				$elm$core$List$cons,
+				fn(x),
+				A2($something$map, fn, xs));
+		}
+	});
+  `;
+
+  const expectedOutputCode = `
+  var something$map = F2(
+	function (fn, list) {
+        var tmp = _List_Cons(undefined, _List_Nil);
+        var end = tmp;
+		map:
+		while (true) {
+			if (!list.b) {
+				end.b = acc;
+				return tmp.b;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				var $temp$fn = fn,
+					$temp$list = xs;
+				fn = $temp$fn;
+				list = $temp$list;
+				continue map;
+			}
+		}
+	});
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
