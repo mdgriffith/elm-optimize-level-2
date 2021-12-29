@@ -150,9 +150,17 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
     return node;
   }
 
-  return ts.createBlock(
-    [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
-  );
+  if (functionsToBeMadeRecursive[functionName] !== true) {
+    return body;
+  }
+
+  if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+    return ts.createBlock(
+      [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
+    );
+  }
+
+  return updatedBlock;
 }
 
 function extractCallTo(functionName : string, node : ts.CallExpression) : Array<ts.Expression> | null {
