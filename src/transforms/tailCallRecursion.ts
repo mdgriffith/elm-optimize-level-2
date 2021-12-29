@@ -112,6 +112,10 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
       return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
     }
 
+    if (ts.isLabeledStatement(node)) {
+      return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
+    }
+
     if (ts.isIfStatement(node)) {
       return ts.updateIf(
         node,
@@ -147,7 +151,7 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
         ts.createContinue(label)
       ];
     }
-
+    console.log(node.kind)
     return node;
   }
 
