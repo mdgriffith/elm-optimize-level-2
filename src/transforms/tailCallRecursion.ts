@@ -38,13 +38,12 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
   return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
+        && ts.isIdentifier(node.name)
         && node.initializer
         && ts.isCallExpression(node.initializer)) {
           const fn = isFCall(node.initializer);
           if (fn) {
-            if (ts.isIdentifier(node.name)) {
-              console.log(node.name.text)
-            }
+            console.log(node.name.text)
             const initializer = ts.updateCall(
               node.initializer,
               node.initializer.expression,
