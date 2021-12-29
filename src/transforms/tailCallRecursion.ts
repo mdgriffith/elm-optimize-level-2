@@ -94,7 +94,9 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
 }
 
 function updateFunctionBody(functionName : string, body : ts.Block) : ts.Block {
+  const labelSplits = functionName.split("$");
+  const label = labelSplits[labelSplits.length - 1] || functionName;
   return ts.createBlock(
-    [ts.createLabel(functionName, ts.createWhile(ts.createTrue(), body))]
+    [ts.createLabel(label, ts.createWhile(ts.createTrue(), body))]
   );
 }
