@@ -94,6 +94,7 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
 }
 
 function updateFunctionBody(functionName : string, body : ts.Block) : ts.Block {
-  console.log(functionName)
-  return body;
+  return ts.createBlock(
+    [ts.createLabel(functionName, ts.createWhile(ts.createTrue(), body))]
+  );
 }
