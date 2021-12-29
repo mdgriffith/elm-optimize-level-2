@@ -34,7 +34,9 @@ but this version doesn't (because of the additional `<|`):
 // TODO Enable TCO for code like `rec n = if ... then False else condition n && rec (n - 1)`, using `&&` or `||`
 // TODO Enable TCO for other kinds of data constructors 
 
-export const createTailCallRecursionTransformer = (forTests: boolean): ts.TransformerFactory<ts.SourceFile> => (context) => {
+type Context = any;
+
+export const createTailCallRecursionTransformer = (forTests: boolean): ts.TransformerFactory<ts.SourceFile> => (context : Context) => {
   return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
@@ -43,7 +45,7 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
         && ts.isCallExpression(node.initializer)) {
           const fn = isFCall(node.initializer);
           if (fn) {
-            const newBody = updateFunctionBody(node.name.text, fn.body);
+            const newBody = updateFunctionBody(node.name.text, fn.body, context);
             const newFn = ts.createFunctionExpression(
               fn.modifiers,
               undefined,
@@ -93,16 +95,17 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
   return null;
 }
 
-function updateFunctionBody(functionName : string, body : ts.Block) : ts.Block {
+function updateFunctionBody(functionName : string, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
-  const updatedBlock = updateRecursiveCalls(body);
+  const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
 
   return ts.createBlock(
     [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
   );
 }
 
-function updateRecursiveCalls(node : ts.Statement) : ts.Statement {
+
+function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
   return node;
 }
