@@ -37,6 +37,11 @@ but this version doesn't (because of the additional `<|`):
 export const createTailCallRecursionTransformer = (forTests: boolean): ts.TransformerFactory<ts.SourceFile> => (context) => {
   return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      if (ts.isVariableDeclaration(node)
+        && node.initializer
+        && ts.isCallExpression(node.initializer)) {
+          return ts.createLiteral("ok");
+      }
       return ts.visitEachChild(node, visitor, context);
     };
     console.log(forTests);
