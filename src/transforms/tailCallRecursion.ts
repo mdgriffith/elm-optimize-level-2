@@ -53,6 +53,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
             if (functionsToBeMadeRecursive[node.name.text] !== true) {
               return node;
             }
+            functionsToBeMadeRecursive[node.name.text] = false;
             const newFn = ts.createFunctionExpression(
               fn.modifiers,
               undefined,
