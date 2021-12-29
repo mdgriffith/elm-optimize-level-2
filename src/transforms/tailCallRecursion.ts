@@ -43,6 +43,7 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
         && ts.isCallExpression(node.initializer)) {
           const fn = isFCall(node.initializer);
           if (fn) {
+            const newBody = updateFunctionBody(fn.body);
             const newFn = ts.createFunctionExpression(
               fn.modifiers,
               undefined,
@@ -91,4 +92,8 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
   }
 
   return null;
+}
+
+function updateFunctionBody(body : ts.Block) : ts.Block {
+  return body;
 }
