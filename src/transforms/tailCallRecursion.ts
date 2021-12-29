@@ -102,7 +102,7 @@ function updateFunctionBody(functionName : string, body : ts.Block, context : Co
 
   function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
     if (ts.isBlock(node)) {
-      return ts.visitEachChild(body, updateRecursiveCallVisitor, context);
+      return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
     }
 
     if (ts.isIfStatement(node)) {
@@ -114,10 +114,42 @@ function updateFunctionBody(functionName : string, body : ts.Block, context : Co
       )
     }
 
+    if (ts.isReturnStatement(node)
+      && node.expression
+      && ts.isCallExpression(node.expression)
+    ) {
+      const newArguments = extractCallTo(functionName, node.expression);
+      return [
+        ts.createContinue(label)
+      ];
+    }
+
     return node;
   }
 
   return ts.createBlock(
     [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
   );
+}
+
+function extractCallTo(functionName : string, node : ts.CallExpression) : Array<ts.Expression> | null {
+  if (!ts.isIdentifier(node.expression)) {
+    return null;
+  }
+
+  // Is "fn(...)"
+  if (node.expression.text === functionName) {
+    return [...node.arguments];
+  }
+
+  // Is "AX(fn, ...)"
+  const firstArg = node.arguments[0];
+  if (node.expression.text.startsWith("A")
+    && ts.isIdentifier(firstArg)
+    && firstArg.text === functionName
+  ) {
+    return node.arguments.slice(1);
+  }
+
+  return null;
 }
