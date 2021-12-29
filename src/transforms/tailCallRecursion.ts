@@ -122,7 +122,13 @@ function updateFunctionBody(functionName : string, parameterNames : Array<string
       && ts.isCallExpression(node.expression)
     ) {
       const newArguments = extractCallTo(functionName, node.expression);
+      if (!newArguments) {
+        return node;
+      }
       return [
+        ...parameterNames.map((name, index) =>
+          ts.createAssignment(ts.createIdentifier(name), newArguments[index])
+        ),
         ts.createContinue(label)
       ];
     }
