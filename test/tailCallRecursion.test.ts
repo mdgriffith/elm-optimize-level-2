@@ -81,13 +81,11 @@ test('it can turn a function that is tail-call recursive into a while loop', () 
 			} else {
 				var x = list.a;
 				var xs = list.b;
-				var $temp$mapper = mapper,
-					$temp$list = xs,
+				var $temp$list = xs,
 					$temp$acc = A2(
 					$elm$core$List$cons,
 					mapper(x),
 					acc);
-				mapper = $temp$mapper;
 				list = $temp$list;
 				acc = $temp$acc;
 				continue recursiveFunction;
