@@ -100,12 +100,14 @@ function updateFunctionBody(functionName : string, body : ts.Block, context : Co
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
 
+  function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
+    if (ts.isBlock(node)) {
+      return ts.visitEachChild(body, updateRecursiveCallVisitor, context);
+    }
+    return node;
+  }
+
   return ts.createBlock(
     [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
   );
-}
-
-
-function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
-  return node;
 }
