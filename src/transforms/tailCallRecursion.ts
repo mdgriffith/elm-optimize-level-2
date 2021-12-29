@@ -28,7 +28,7 @@ but this version doesn't (because of the additional `<|`):
 
 */
 
-// TODO Enable TCO when it should have been enabled but not triggered because of `<|` or `|>`
+// TODO Don't update non-TCO-able recursive functions
 // TODO Re-use the existing loop and goto label if there is already one
 // TODO Enable TCO for tail recursion modulo cons
 // TODO Enable TCO for code like `rec n = if ... then False else condition n && rec (n - 1)`, using `&&` or `||`
