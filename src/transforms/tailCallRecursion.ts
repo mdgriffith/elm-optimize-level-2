@@ -130,21 +130,7 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
       }
 
       functionsToBeMadeRecursive[functionName] = true;
-      return [
-        ts.createVariableDeclarationList(
-          parameterNames.map((name, index) =>
-            ts.createVariableDeclaration(
-              `$temp$${name}`,
-              undefined,
-              newArguments[index]
-            )
-          )
-        ),
-        ...parameterNames.map(name =>
-          ts.createAssignment(ts.createIdentifier(name), ts.createIdentifier(`$temp$${name}`))
-        ),
-        ts.createContinue(label)
-      ];
+      return createContinuation(label, parameterNames, newArguments);
     }
     console.log(node.kind)
     return node;
@@ -183,4 +169,38 @@ function extractCallTo(functionName : string, node : ts.CallExpression) : Array<
   }
 
   return null;
+}
+
+function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  let assignments : Array<ts.VariableDeclaration> = [];
+  let reassignments : Array<ts.BinaryExpression> = [];
+
+  parameterNames.forEach((name, index) => {
+    const correspondingArg : ts.Expression = newArguments[index];
+    if (ts.isIdentifier(correspondingArg)
+      && name === correspondingArg.text
+    ) {
+      return;
+    }
+    const tempName = `$temp$${name}`;
+    assignments.push(
+      ts.createVariableDeclaration(
+        tempName,
+        undefined,
+        newArguments[index]
+      )
+    );
+    reassignments.push(
+      ts.createAssignment(
+        ts.createIdentifier(name),
+        ts.createIdentifier(tempName)
+      )
+    );
+  });
+
+  return [
+    ts.createVariableDeclarationList(assignments),
+    ...reassignments,
+    ts.createContinue(label)
+  ];
 }
