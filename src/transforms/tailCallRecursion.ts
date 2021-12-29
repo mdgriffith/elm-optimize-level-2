@@ -116,6 +116,10 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
       return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
     }
 
+    if (ts.isWhileStatement(node)) {
+      return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
+    }
+
     if (ts.isIfStatement(node)) {
       return ts.updateIf(
         node,
