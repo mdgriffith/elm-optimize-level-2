@@ -39,7 +39,7 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
         && node.initializer
-        && ts.isCallExpression(node.initializer)) {
+        && isFCall(node.initializer)) {
           return ts.createLiteral("ok");
       }
       return ts.visitEachChild(node, visitor, context);
@@ -49,3 +49,9 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
     return ts.visitNode(sourceFile, visitor);
   };
 };
+
+function isFCall(node: ts.Expression): boolean {
+  return ts.isCallExpression(node)
+    && ts.isIdentifier(node.expression)
+    && node.expression.text.startsWith('F');
+}
