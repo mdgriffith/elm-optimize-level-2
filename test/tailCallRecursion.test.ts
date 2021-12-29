@@ -105,6 +105,36 @@ test('it can turn a function that is tail-call recursive into a while loop', () 
   expect(actual).toBe(expected);
 });
 
+test('should not change non-recursive functions', () => {
+  const initialCode = `
+  var something$recursiveFunction = F3(
+	function (mapper, list, acc) {
+		if (!list.b) {
+			return acc;
+		} else {
+			var x = list.a;
+			var xs = list.b;
+			return A3(
+				something$else,
+				mapper,
+				xs,
+				A2(
+					$elm$core$List$cons,
+					mapper(x),
+					acc));
+		}
+	});
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    initialCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,

@@ -28,7 +28,6 @@ but this version doesn't (because of the additional `<|`):
 
 */
 
-// TODO Don't update non-TCO-able recursive functions
 // TODO Re-use the existing loop and goto label if there is already one
 // TODO Enable TCO for tail recursion modulo cons
 // TODO Enable TCO for code like `rec n = if ... then False else condition n && rec (n - 1)`, using `&&` or `||`
@@ -38,6 +37,8 @@ type Context = any;
 
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
   return (sourceFile) => {
+    const functionsToBeMadeRecursive : Record<string, boolean> = {};
+
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
         && ts.isIdentifier(node.name)
@@ -48,7 +49,10 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
             const parameterNames : Array<string> = fn.parameters.map(param => {
               return ts.isIdentifier(param.name) ? param.name.text : '';
             });
-            const newBody = updateFunctionBody(node.name.text, parameterNames, fn.body, context);
+            const newBody = updateFunctionBody(functionsToBeMadeRecursive, node.name.text, parameterNames, fn.body, context);
+            if (!functionsToBeMadeRecursive[node.name.text]) {
+              return node;
+            }
             const newFn = ts.createFunctionExpression(
               fn.modifiers,
               undefined,
@@ -97,7 +101,7 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
   return null;
 }
 
-function updateFunctionBody(functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
@@ -124,6 +128,8 @@ function updateFunctionBody(functionName : string, parameterNames : Array<string
       if (!newArguments) {
         return node;
       }
+
+      functionsToBeMadeRecursive[functionName] = true;
       return [
         ts.createVariableDeclarationList(
           parameterNames.map((name, index) =>
