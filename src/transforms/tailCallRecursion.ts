@@ -125,8 +125,17 @@ function updateFunctionBody(functionName : string, parameterNames : Array<string
         return node;
       }
       return [
-        ...parameterNames.map((name, index) =>
-          ts.createAssignment(ts.createIdentifier(name), newArguments[index])
+        ts.createVariableDeclarationList(
+          parameterNames.map((name, index) =>
+            ts.createVariableDeclaration(
+              `$temp$${name}`,
+              undefined,
+              newArguments[index]
+            )
+          )
+        ),
+        ...parameterNames.map(name =>
+          ts.createAssignment(ts.createIdentifier(name), ts.createIdentifier(`$temp$${name}`))
         ),
         ts.createContinue(label)
       ];
