@@ -97,6 +97,10 @@ function updateFunctionBody(functionName : string, body : ts.Block) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   return ts.createBlock(
-    [ts.createLabel(label, ts.createWhile(ts.createTrue(), body))]
+    [ts.createLabel(label, ts.createWhile(ts.createTrue(), updateRecursiveCalls(body)))]
   );
+}
+
+function updateRecursiveCalls(node : ts.Statement) : ts.Statement {
+  return node;
 }
