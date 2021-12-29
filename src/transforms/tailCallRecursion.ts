@@ -41,7 +41,12 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
         && node.initializer) {
           const fn = isFCall(node.initializer);
           if (fn) {
-            return ts.createLiteral("ok");
+            return ts.updateVariableDeclaration(
+                node,
+                node.name,
+                undefined,
+                node.initializer
+            );
           }
       }
       return ts.visitEachChild(node, visitor, context);
