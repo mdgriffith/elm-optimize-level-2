@@ -40,6 +40,7 @@ export const createTailCallRecursionTransformer = (forTests: boolean): ts.Transf
       const node = ts.visitEachChild(originalNode, visitor, context);
       return node;
     };
+    console.log(forTests);
 
     return ts.visitNode(sourceFile, visitor);
   };
