@@ -232,7 +232,7 @@ test('should not change non-recursive functions', () => {
   expect(actual).toBe(expected);
 });
 
-test('should optimize a function that cons (::) on the result of recursive calls', () => {
+test.only('should optimize a function that cons (::) on the result of recursive calls', () => {
   // Corresponds to the following Elm code
   // map fn list =
   //   case list of
