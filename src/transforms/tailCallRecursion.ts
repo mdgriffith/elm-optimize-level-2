@@ -122,11 +122,13 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
 
     if (ts.isLabeledStatement(node)) {
       recursionType = RecursionType.PlainRecursion;
+      nodesToVisit.unshift(node.statement);
       continue loop;
     }
 
     if (ts.isWhileStatement(node)) {
       recursionType = RecursionType.PlainRecursion;
+      nodesToVisit.unshift(node.expression);
       continue loop;
     }
 
