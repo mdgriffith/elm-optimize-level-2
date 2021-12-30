@@ -239,7 +239,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
   //   [] -> []
   //   x :: xs -> fn x :: map fn xs
   const initialCode = `
-  var $something F2(
+  var $something$map = F2(
 	function (fn, list) {
 		if (!list.b) {
 			return _List_Nil;
@@ -255,7 +255,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
   `;
 
   const expectedOutputCode = `
-  var something$map = F2(
+  var $something$map = F2(
 	function (fn, list) {
         var tmp = _List_Cons(undefined, _List_Nil);
         var end = tmp;
