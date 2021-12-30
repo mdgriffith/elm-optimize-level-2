@@ -44,39 +44,41 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
         && node.initializer
         && ts.isCallExpression(node.initializer)) {
           const fn = isFCall(node.initializer);
-          if (fn) {
-            const parameterNames : Array<string> = fn.parameters.map(param => {
-              return ts.isIdentifier(param.name) ? param.name.text : '';
-            });
-            const newBody = updateFunctionBody(functionsToBeMadeRecursive, node.name.text, parameterNames, fn.body, context);
-            if (functionsToBeMadeRecursive[node.name.text] !== true) {
-              return node;
-            }
-            functionsToBeMadeRecursive[node.name.text] = false;
-            const newFn = ts.createFunctionExpression(
-              fn.modifiers,
-              undefined,
-              fn.name,
-              undefined,
-              fn.parameters,
-              undefined,
-              newBody
-            );
-
-            const initializer = ts.updateCall(
-              node.initializer,
-              node.initializer.expression,
-              undefined,
-              [newFn]
-            );
-
-            return ts.updateVariableDeclaration(
-              node,
-              node.name,
-              undefined,
-              initializer
-            );
+          if (!fn) {
+            return ts.visitEachChild(node, visitor, context);
           }
+
+          const parameterNames : Array<string> = fn.parameters.map(param => {
+            return ts.isIdentifier(param.name) ? param.name.text : '';
+          });
+          const newBody = updateFunctionBody(functionsToBeMadeRecursive, node.name.text, parameterNames, fn.body, context);
+          if (functionsToBeMadeRecursive[node.name.text] !== true) {
+            return node;
+          }
+          functionsToBeMadeRecursive[node.name.text] = false;
+          const newFn = ts.createFunctionExpression(
+            fn.modifiers,
+            undefined,
+            fn.name,
+            undefined,
+            fn.parameters,
+            undefined,
+            newBody
+          );
+
+          const initializer = ts.updateCall(
+            node.initializer,
+            node.initializer.expression,
+            undefined,
+            [newFn]
+          );
+
+          return ts.updateVariableDeclaration(
+            node,
+            node.name,
+            undefined,
+            initializer
+          );
       }
       return ts.visitEachChild(node, visitor, context);
     };
