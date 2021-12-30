@@ -212,17 +212,21 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
   }
 
   // Is "AX(fn, ...)"
-  const firstArg = node.arguments[0];
+  const [firstArg, , thirdArg] = node.arguments;
   if (!node.expression.text.startsWith("A")
     || !ts.isIdentifier(firstArg)
   ) {
     return RecursionType.NotRecursive;
   }
 
-  
-
   if (firstArg.text === functionName) {
     return RecursionType.PlainRecursion;
+  }
+
+  if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
+    if (extractRecursionKindFromReturn(functionName, thirdArg)) {
+      return RecursionType.PlainRecursion;
+    }
   }
 
   return RecursionType.NotRecursive;
