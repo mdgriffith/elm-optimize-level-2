@@ -201,6 +201,33 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
   return updatedBlock;
 }
 
+function extractRecursionKindFromReturn(functionName : string, node : ts.CallExpression) : RecursionType {
+  if (!ts.isIdentifier(node.expression)) {
+    return RecursionType.NotRecursive;
+  }
+
+  // Is "fn(...)"
+  if (node.expression.text === functionName) {
+    return RecursionType.PlainRecursion;
+  }
+
+  // Is "AX(fn, ...)"
+  const firstArg = node.arguments[0];
+  if (!node.expression.text.startsWith("A")
+    || !ts.isIdentifier(firstArg)
+  ) {
+    return RecursionType.NotRecursive;
+  }
+
+  
+
+  if (firstArg.text === functionName) {
+    return RecursionType.PlainRecursion;
+  }
+
+  return RecursionType.NotRecursive;
+}
+
 function extractCallTo(functionName : string, node : ts.CallExpression) : Array<ts.Expression> | null {
   if (!ts.isIdentifier(node.expression)) {
     return null;
