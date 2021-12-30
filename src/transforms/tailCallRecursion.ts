@@ -56,7 +56,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
           const parameterNames : Array<string> = fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
-          const newBody = updateFunctionBody(functionsToBeMadeRecursive, node.name.text, parameterNames, fn.body, context);
+          const newBody = updateFunctionBody(recursionType, functionsToBeMadeRecursive, node.name.text, parameterNames, fn.body, context);
 
           const newFn = ts.createFunctionExpression(
             fn.modifiers,
@@ -191,7 +191,7 @@ const consDeclarations =
     )
   ];
 
-function updateFunctionBody(functionsToBeMadeRecursive : Record<string, RecursionType>, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(recursionType : RecursionType, functionsToBeMadeRecursive : Record<string, RecursionType>, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
@@ -235,14 +235,11 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, Recursio
     return node;
   }
 
-  const kind = functionsToBeMadeRecursive[functionName];
-  delete functionsToBeMadeRecursive[functionName];
-
-  if (kind === undefined || kind === RecursionType.NotRecursive) {
+  if (recursionType === RecursionType.NotRecursive) {
     return body;
   }
 
-  if (kind === RecursionType.PlainRecursion) {
+  if (recursionType === RecursionType.PlainRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
         [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
@@ -252,7 +249,7 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, Recursio
     return updatedBlock;
   }
 
-  if (kind === RecursionType.ConsRecursion) {
+  if (recursionType === RecursionType.ConsRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
         [ ...consDeclarations
