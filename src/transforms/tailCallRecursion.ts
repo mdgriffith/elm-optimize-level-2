@@ -185,13 +185,18 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
       && node.expression
       && ts.isCallExpression(node.expression)
     ) {
-      const newArguments = extractCallTo(functionName, node.expression);
-      if (!newArguments) {
-        return node;
-      }
+      const extract = extractRecursionKindFromReturn(functionName, node.expression);
+      functionsToBeMadeRecursive[functionName] = functionsToBeMadeRecursive[functionName] || extract.kind !== RecursionType.NotRecursive;
 
-      functionsToBeMadeRecursive[functionName] = true;
-      return createContinuation(label, parameterNames, newArguments);
+      switch (extract.kind) {
+        case RecursionType.NotRecursive: {
+          return node;
+        }
+
+        case RecursionType.PlainRecursion: {
+          return createContinuation(label, parameterNames, extract.arguments);
+        }
+      }
     }
 
     return node;
