@@ -226,7 +226,7 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
 
   if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
     if (extractRecursionKindFromReturn(functionName, thirdArg)) {
-      return RecursionType.PlainRecursion;
+      return RecursionType.ConsRecursion;
     }
   }
 
