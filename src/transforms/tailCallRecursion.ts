@@ -132,7 +132,7 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
       functionsToBeMadeRecursive[functionName] = true;
       return createContinuation(label, parameterNames, newArguments);
     }
-    console.log(node.kind)
+
     return node;
   }
 
