@@ -224,6 +224,7 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
     return RecursionType.PlainRecursion;
   }
 
+  // TODO Add explanation
   if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
     if (extractRecursionKindFromReturn(functionName, thirdArg)) {
       return RecursionType.ConsRecursion;
@@ -232,6 +233,9 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
 
   return RecursionType.NotRecursive;
 }
+
+// TODO Change extractCallTo to return a custom type that contains the kind of recursion
+// plus the necessary data. And then re-use this function instead of extractRecursionKindFromReturn
 
 function extractCallTo(functionName : string, node : ts.CallExpression) : Array<ts.Expression> | null {
   if (!ts.isIdentifier(node.expression)) {
