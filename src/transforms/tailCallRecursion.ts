@@ -210,21 +210,22 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
 
     if (ts.isReturnStatement(node)
       && node.expression
-      && ts.isCallExpression(node.expression)
     ) {
-      const extract = extractRecursionKindFromReturn(functionName, node.expression);
+      if (ts.isCallExpression(node.expression)) {
+        const extract = extractRecursionKindFromReturn(functionName, node.expression);
 
-      switch (extract.kind) {
-        case RecursionType.NotRecursive: {
-          return node;
-        }
+        switch (extract.kind) {
+          case RecursionType.NotRecursive: {
+            return node;
+          }
 
-        case RecursionType.PlainRecursion: {
-          return createContinuation(label, parameterNames, extract.arguments);
-        }
+          case RecursionType.PlainRecursion: {
+            return createContinuation(label, parameterNames, extract.arguments);
+          }
 
-        case RecursionType.ConsRecursion: {
-          return createConsContinuation(label, parameterNames, extract.element, extract.arguments);
+          case RecursionType.ConsRecursion: {
+            return createConsContinuation(label, parameterNames, extract.element, extract.arguments);
+          }
         }
       }
     }
