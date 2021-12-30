@@ -180,13 +180,11 @@ test('should re-use the label and while loop if there already is one', () => {
             } else {
 				var x = list.a;
 				var xs = list.b;
-				var $temp$mapper = mapper,
-					$temp$list = xs,
+				var $temp$list = xs,
 					$temp$acc = A2(
 					$elm$core$List$cons,
 					mapper(x),
 					acc);
-				mapper = $temp$mapper;
 				list = $temp$list;
 				acc = $temp$acc;
 				continue recursiveFunction;
