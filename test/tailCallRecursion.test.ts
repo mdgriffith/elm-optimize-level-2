@@ -266,9 +266,8 @@ test('should optimize a function that cons (::) on the result of recursive calls
 			} else {
 				var x = list.a;
 				var xs = list.b;
-                var next = _List_Cons(fn(x), _List_Nil);
-                end.b = next;
-                end = next;
+                end.b = _List_Cons(fn(x), _List_Nil);
+                end = end.b;
 				var $temp$list = xs;
 				list = $temp$list;
 				continue map;
