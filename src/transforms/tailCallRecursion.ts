@@ -113,6 +113,7 @@ enum RecursionType {
 type Recursion
   = { kind: RecursionType.NotRecursive }
   | { kind: RecursionType.PlainRecursion, arguments : Array<ts.Expression> }
+  // Could hold a Recursion as data
   | { kind: RecursionType.ConsRecursion, element : ts.Expression, arguments : Array<ts.Expression> }
 
 function determineRecursionType(functionName : string, body : ts.Node) : RecursionType {
@@ -207,36 +208,49 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
   return updatedBlock;
 }
 
-function extractRecursionKindFromReturn(functionName : string, node : ts.CallExpression) : RecursionType {
+function extractRecursionKindFromReturn(functionName : string, node : ts.CallExpression) : Recursion {
   if (!ts.isIdentifier(node.expression)) {
-    return RecursionType.NotRecursive;
+    return { kind: RecursionType.NotRecursive };
   }
 
   // Is "fn(...)"
   if (node.expression.text === functionName) {
-    return RecursionType.PlainRecursion;
+    return {
+      kind: RecursionType.PlainRecursion,
+      arguments: [...node.arguments]
+    };
   }
 
   // Is "AX(fn, ...)"
-  const [firstArg, , thirdArg] = node.arguments;
+  const [firstArg, secondArg, thirdArg] = node.arguments;
   if (!node.expression.text.startsWith("A")
     || !ts.isIdentifier(firstArg)
   ) {
-    return RecursionType.NotRecursive;
+    return { kind: RecursionType.NotRecursive };
   }
 
   if (firstArg.text === functionName) {
-    return RecursionType.PlainRecursion;
+    return {
+      kind: RecursionType.PlainRecursion,
+      arguments: node.arguments.slice(1)
+    };
   }
 
-  // TODO Add explanation
+  // Elm: Is x :: <recursive call>
+  // JS: Is A2($elm$core$List$cons, x, <recursive call>)
   if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
-    if (extractRecursionKindFromReturn(functionName, thirdArg)) {
-      return RecursionType.ConsRecursion;
+    const thirdArgExtract = extractRecursionKindFromReturn(functionName, thirdArg);
+    if (thirdArgExtract.kind === RecursionType.PlainRecursion) {
+      // TODO Support multiple conses
+      return {
+        kind: RecursionType.ConsRecursion,
+        element: secondArg,
+        arguments: thirdArgExtract.arguments
+      };
     }
   }
 
-  return RecursionType.NotRecursive;
+  return { kind: RecursionType.NotRecursive };
 }
 
 // TODO Change extractCallTo to return a custom type that contains the kind of recursion
