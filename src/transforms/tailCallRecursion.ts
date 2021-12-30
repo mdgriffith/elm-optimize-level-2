@@ -215,7 +215,7 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, Recursio
       && ts.isCallExpression(node.expression)
     ) {
       const extract = extractRecursionKindFromReturn(functionName, node.expression);
-      functionsToBeMadeRecursive[functionName] = Math.max(functionsToBeMadeRecursive[functionName], extract.kind);
+      functionsToBeMadeRecursive[functionName] = Math.max(functionsToBeMadeRecursive[functionName] || RecursionType.NotRecursive, extract.kind);
 
       switch (extract.kind) {
         case RecursionType.NotRecursive: {
