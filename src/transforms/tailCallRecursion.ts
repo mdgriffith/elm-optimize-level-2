@@ -163,6 +163,34 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
   return recursionType;
 }
 
+const consDeclarations =
+  [
+    ts.createVariableStatement(
+      undefined,
+      [ts.createVariableDeclaration(
+        "tmp",
+        undefined,
+        ts.createCall(
+          ts.createIdentifier("_List_Cons"),
+          undefined,
+          [
+            ts.createIdentifier("undefined"),
+            ts.createIdentifier("_List_Nil")
+          ]
+        )
+      )]
+    ),
+    ts.createVariableStatement(
+      undefined,
+      [ ts.createVariableDeclaration(
+          "end",
+          undefined,
+          ts.createIdentifier("tmp")
+        )
+      ]
+    )
+  ];
+
 function updateFunctionBody(functionsToBeMadeRecursive : Record<string, RecursionType>, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
@@ -227,11 +255,17 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, Recursio
   if (kind === RecursionType.ConsRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
-        [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
+        [ ...consDeclarations
+        , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+        ]
       );
     }
 
-    return updatedBlock;
+    return ts.createBlock(
+      [ ...consDeclarations
+      , updatedBlock
+      ]
+    );
   }
 
   return updatedBlock;
