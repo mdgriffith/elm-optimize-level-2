@@ -36,7 +36,7 @@ type Context = any;
 
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
   return (sourceFile) => {
-    const functionsToBeMadeRecursive : Record<string, boolean> = {};
+    const functionsToBeMadeRecursive : Record<string, RecursionType> = {};
 
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
@@ -162,7 +162,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
   return recursionType;
 }
 
-function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(functionsToBeMadeRecursive : Record<string, RecursionType>, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
@@ -186,7 +186,7 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
       && ts.isCallExpression(node.expression)
     ) {
       const extract = extractRecursionKindFromReturn(functionName, node.expression);
-      functionsToBeMadeRecursive[functionName] = functionsToBeMadeRecursive[functionName] || extract.kind !== RecursionType.NotRecursive;
+      functionsToBeMadeRecursive[functionName] = Math.max(functionsToBeMadeRecursive[functionName], extract.kind);
 
       switch (extract.kind) {
         case RecursionType.NotRecursive: {
@@ -206,7 +206,7 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
     return node;
   }
 
-  if (functionsToBeMadeRecursive[functionName] !== true) {
+  if (functionsToBeMadeRecursive[functionName]) {
     return body;
   }
 
