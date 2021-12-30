@@ -378,7 +378,14 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
           ts.createIdentifier("end"),
           "b"
         ),
-        element
+        ts.createCall(
+          ts.createIdentifier("_List_Cons"),
+          undefined,
+          [
+            element,
+            ts.createIdentifier("_List_Nil")
+          ]
+        )
       )
     ),
     ts.createExpressionStatement(
