@@ -107,6 +107,7 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
 enum RecursionType {
   NotRecursive = 0,
   PlainRecursion = 1,
+  ConsRecursion = 2,
 };
 
 function determineRecursionType(functionName : string, body : ts.Node) : RecursionType {
