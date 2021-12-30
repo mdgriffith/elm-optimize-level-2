@@ -207,14 +207,31 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, Recursio
     return node;
   }
 
-  if (functionsToBeMadeRecursive[functionName]) {
+  const kind = functionsToBeMadeRecursive[functionName];
+  delete functionsToBeMadeRecursive[functionName];
+
+  if (kind === undefined || kind === RecursionType.NotRecursive) {
     return body;
   }
 
-  if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-    return ts.createBlock(
-      [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
-    );
+  if (kind === RecursionType.PlainRecursion) {
+    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+      return ts.createBlock(
+        [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
+      );
+    }
+
+    return updatedBlock;
+  }
+
+  if (kind === RecursionType.ConsRecursion) {
+    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+      return ts.createBlock(
+        [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
+      );
+    }
+
+    return updatedBlock;
   }
 
   return updatedBlock;
