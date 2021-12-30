@@ -131,7 +131,10 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
     }
 
     if (ts.isIfStatement(node)) {
-      [node.thenStatement, node.elseStatement, ...nodesToVisit]
+      if (node.elseStatement) {
+        nodesToVisit.unshift(node.elseStatement);
+      }
+      nodesToVisit.unshift(node.thenStatement);
       continue loop;
     }
 
