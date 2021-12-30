@@ -101,6 +101,49 @@ function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
   return null;
 }
 
+enum RecursionType {
+  NotRecursive = 0,
+  PlainRecursion = 1,
+};
+
+function determineRecursionType(functionName : string, body : ts.Node) : RecursionType {
+  let recursionType : RecursionType = RecursionType.NotRecursive;
+  let nodesToVisit : Array<ts.Node> = [body];
+  let node : ts.Node | undefined;
+
+  loop: while (recursionType <= 1 && (node = nodesToVisit.shift())) {
+    if (ts.isBlock(node)) {
+      nodesToVisit = [...node.statements, ...nodesToVisit];
+      continue loop;
+    }
+
+    if (ts.isLabeledStatement(node)) {
+      recursionType = RecursionType.PlainRecursion;
+      continue loop;
+    }
+
+    if (ts.isWhileStatement(node)) {
+      recursionType = RecursionType.PlainRecursion;
+      continue loop;
+    }
+
+    if (ts.isIfStatement(node)) {
+      [node.thenStatement, node.elseStatement, ...nodesToVisit]
+      continue loop;
+    }
+    if (ts.isReturnStatement(node)
+      && node.expression
+      && ts.isCallExpression(node.expression)
+      && extractCallTo(functionName, node.expression) !== null
+    ) {
+      recursionType = RecursionType.PlainRecursion;
+      continue loop;
+    }
+  }
+
+  return recursionType;
+}
+
 function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
