@@ -228,6 +228,17 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
           }
         }
       }
+
+      if (recursionType === RecursionType.ConsRecursion) {
+        return [
+          ts.createReturn(
+            ts.createPropertyAccess(
+              ts.createIdentifier("tmp"),
+              "b"
+            )
+          )
+        ];
+      }
     }
 
     return node;
