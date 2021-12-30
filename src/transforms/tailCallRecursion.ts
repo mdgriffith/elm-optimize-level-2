@@ -372,22 +372,7 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
   });
 
   return [
-    ts.createExpressionStatement(
-      ts.createAssignment(
-        ts.createPropertyAccess(
-          ts.createIdentifier("end"),
-          "b"
-        ),
-        ts.createCall(
-          ts.createIdentifier("_List_Cons"),
-          undefined,
-          [
-            element,
-            ts.createIdentifier("_List_Nil")
-          ]
-        )
-      )
-    ),
+    addToEnd(element),
     ts.createExpressionStatement(
       ts.createAssignment(
         ts.createIdentifier("end"),
@@ -401,4 +386,23 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
     ...reassignments,
     ts.createContinue(label)
   ];
+}
+
+function addToEnd(element : ts.Expression) : ts.Statement {
+  return ts.createExpressionStatement(
+    ts.createAssignment(
+      ts.createPropertyAccess(
+        ts.createIdentifier("end"),
+        "b"
+      ),
+      ts.createCall(
+        ts.createIdentifier("_List_Cons"),
+        undefined,
+        [
+          element,
+          ts.createIdentifier("_List_Nil")
+        ]
+      )
+    )
+  );
 }
