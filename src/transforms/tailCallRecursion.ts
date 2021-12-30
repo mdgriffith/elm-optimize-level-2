@@ -37,8 +37,6 @@ type Context = any;
 
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
   return (sourceFile) => {
-    const functionsToBeMadeRecursive : Record<string, RecursionType> = {};
-
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
         && ts.isIdentifier(node.name)
@@ -56,7 +54,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
           const parameterNames : Array<string> = fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
-          const newBody = updateFunctionBody(recursionType, functionsToBeMadeRecursive, node.name.text, parameterNames, fn.body, context);
+          const newBody = updateFunctionBody(recursionType, node.name.text, parameterNames, fn.body, context);
 
           const newFn = ts.createFunctionExpression(
             fn.modifiers,
@@ -191,7 +189,7 @@ const consDeclarations =
     )
   ];
 
-function updateFunctionBody(recursionType : RecursionType, functionsToBeMadeRecursive : Record<string, RecursionType>, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(recursionType : RecursionType, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
@@ -215,7 +213,6 @@ function updateFunctionBody(recursionType : RecursionType, functionsToBeMadeRecu
       && ts.isCallExpression(node.expression)
     ) {
       const extract = extractRecursionKindFromReturn(functionName, node.expression);
-      functionsToBeMadeRecursive[functionName] = Math.max(functionsToBeMadeRecursive[functionName] || RecursionType.NotRecursive, extract.kind);
 
       switch (extract.kind) {
         case RecursionType.NotRecursive: {
