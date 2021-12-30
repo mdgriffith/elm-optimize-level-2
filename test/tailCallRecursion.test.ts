@@ -232,7 +232,7 @@ test('should not change non-recursive functions', () => {
   expect(actual).toBe(expected);
 });
 
-test('should optimize a function that cons (::) on the result of recursive calls', () => {
+test('should optimize a function that cons (::) on the result of recursive calls (List.map)', () => {
   // Corresponds to the following Elm code
   // map fn list =
   //   case list of
@@ -271,6 +271,82 @@ test('should optimize a function that cons (::) on the result of recursive calls
 				var $temp$list = xs;
 				list = $temp$list;
 				continue map;
+			}
+		}
+	});
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should optimize a function that cons (::) on the result of recursive calls (List.filter)', () => {
+  // Corresponds to the following Elm code
+  // filter : (a -> Bool) -> List a -> List a
+  // filter predicate list =
+  //     case list of
+  //         [] ->
+  //             []
+  //
+  //         x :: xs ->
+  //             if predicate x then
+  //                 x :: filter predicate xs
+  //
+  //             else
+  //                 filter predicate xs
+  const initialCode = `
+  var $something$filter = F2(
+	function (predicate, list) {
+		filter:
+		while (true) {
+			if (!list.b) {
+				return _List_Nil;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (predicate(x)) {
+					return A2(
+						$elm$core$List$cons,
+						x,
+						A2($something$filter, predicate, xs));
+				} else {
+					var $temp$list = xs;
+					list = $temp$list;
+					continue filter;
+				}
+			}
+		}
+	});
+  `;
+
+  const expectedOutputCode = `
+  var $something$filter = F2(
+	function (predicate, list) {
+        var tmp = _List_Cons(undefined, _List_Nil);
+        var end = tmp;
+		filter:
+		while (true) {
+			if (!list.b) {
+				return tmp.b;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (predicate(x)) {
+                    end.b = _List_Cons(x, _List_Nil);
+                    end = end.b;
+                    var $temp$list = xs;
+                    list = $temp$list;
+                    continue filter;
+				} else {
+					var $temp$list = xs;
+					list = $temp$list;
+					continue filter;
+				}
 			}
 		}
 	});
