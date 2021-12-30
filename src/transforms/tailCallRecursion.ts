@@ -196,6 +196,10 @@ function updateFunctionBody(functionsToBeMadeRecursive : Record<string, boolean>
         case RecursionType.PlainRecursion: {
           return createContinuation(label, parameterNames, extract.arguments);
         }
+
+        case RecursionType.ConsRecursion: {
+          return createConsContinuation(label, parameterNames, extract.element, extract.arguments);
+        }
       }
     }
 
@@ -261,6 +265,41 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
 }
 
 function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  let assignments : Array<ts.VariableDeclaration> = [];
+  let reassignments : Array<ts.BinaryExpression> = [];
+
+  parameterNames.forEach((name, index) => {
+    const correspondingArg : ts.Expression = newArguments[index];
+    if (ts.isIdentifier(correspondingArg)
+      && name === correspondingArg.text
+    ) {
+      return;
+    }
+    const tempName = `$temp$${name}`;
+    assignments.push(
+      ts.createVariableDeclaration(
+        tempName,
+        undefined,
+        newArguments[index]
+      )
+    );
+    reassignments.push(
+      ts.createAssignment(
+        ts.createIdentifier(name),
+        ts.createIdentifier(tempName)
+      )
+    );
+  });
+
+  return [
+    ts.createVariableDeclarationList(assignments),
+    ...reassignments,
+    ts.createContinue(label)
+  ];
+}
+
+function createConsContinuation(label : string, parameterNames : Array<string>, element : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  console.log(element)
   let assignments : Array<ts.VariableDeclaration> = [];
   let reassignments : Array<ts.BinaryExpression> = [];
 
