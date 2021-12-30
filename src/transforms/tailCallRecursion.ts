@@ -346,7 +346,7 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
 
 function createConsContinuation(label : string, parameterNames : Array<string>, element : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   let assignments : Array<ts.VariableDeclaration> = [];
-  let reassignments : Array<ts.BinaryExpression> = [];
+  let reassignments : Array<ts.ExpressionStatement> = [];
 
   parameterNames.forEach((name, index) => {
     const correspondingArg : ts.Expression = newArguments[index];
@@ -364,9 +364,11 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
       )
     );
     reassignments.push(
-      ts.createAssignment(
-        ts.createIdentifier(name),
-        ts.createIdentifier(tempName)
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          ts.createIdentifier(name),
+          ts.createIdentifier(tempName)
+        )
       )
     );
   });
