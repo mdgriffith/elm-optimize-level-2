@@ -110,6 +110,11 @@ enum RecursionType {
   ConsRecursion = 2,
 };
 
+type Recursion
+  = { kind: RecursionType.NotRecursive }
+  | { kind: RecursionType.PlainRecursion, arguments : Array<ts.Expression> }
+  | { kind: RecursionType.ConsRecursion, element : ts.Expression, arguments : Array<ts.Expression> }
+
 function determineRecursionType(functionName : string, body : ts.Node) : RecursionType {
   let recursionType : RecursionType = RecursionType.NotRecursive;
   let nodesToVisit : Array<ts.Node> = [body];
