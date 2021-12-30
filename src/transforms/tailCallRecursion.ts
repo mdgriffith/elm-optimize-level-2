@@ -231,6 +231,15 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
 
       if (recursionType === RecursionType.ConsRecursion) {
         return [
+          ts.createExpressionStatement(
+            ts.createAssignment(
+              ts.createPropertyAccess(
+                ts.createIdentifier("end"),
+                "b"
+              ),
+              node.expression
+            )
+          ),
           ts.createReturn(
             ts.createPropertyAccess(
               ts.createIdentifier("tmp"),
