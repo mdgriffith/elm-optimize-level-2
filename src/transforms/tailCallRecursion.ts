@@ -47,15 +47,16 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
           if (!fn) {
             return ts.visitEachChild(node, visitor, context);
           }
+          const recursionType : RecursionType = determineRecursionType(node.name.text, fn.body);
+          if (recursionType === RecursionType.NotRecursive) {
+            return ts.visitEachChild(node, visitor, context);
+          }
 
           const parameterNames : Array<string> = fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
           const newBody = updateFunctionBody(functionsToBeMadeRecursive, node.name.text, parameterNames, fn.body, context);
-          if (functionsToBeMadeRecursive[node.name.text] !== true) {
-            return node;
-          }
-          functionsToBeMadeRecursive[node.name.text] = false;
+
           const newFn = ts.createFunctionExpression(
             fn.modifiers,
             undefined,
@@ -133,6 +134,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
       [node.thenStatement, node.elseStatement, ...nodesToVisit]
       continue loop;
     }
+
     if (ts.isReturnStatement(node)
       && node.expression
       && ts.isCallExpression(node.expression)
