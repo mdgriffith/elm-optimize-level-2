@@ -133,7 +133,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
 
     if (ts.isWhileStatement(node)) {
       recursionType = RecursionType.PlainRecursion;
-      nodesToVisit.unshift(node.expression);
+      nodesToVisit.unshift(node.statement);
       continue loop;
     }
 
