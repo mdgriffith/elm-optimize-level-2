@@ -150,9 +150,11 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
     if (ts.isReturnStatement(node)
       && node.expression
       && ts.isCallExpression(node.expression)
-      && extractCallTo(functionName, node.expression) !== null
     ) {
-      recursionType = RecursionType.PlainRecursion;
+      recursionType = Math.max(
+        extractRecursionKindFromReturn(functionName, node.expression).kind,
+        recursionType
+      );
       continue loop;
     }
   }
