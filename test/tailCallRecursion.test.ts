@@ -266,12 +266,10 @@ test.only('should optimize a function that cons (::) on the result of recursive 
 			} else {
 				var x = list.a;
 				var xs = list.b;
-				var $temp$fn = fn,
-					$temp$list = xs;
                 var next = _List_Cons(fn(x), _List_Nil);
                 end.b = next;
                 end = next;
-				fn = $temp$fn;
+				var $temp$list = xs;
 				list = $temp$list;
 				continue map;
 			}
