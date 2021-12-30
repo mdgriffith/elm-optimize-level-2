@@ -260,31 +260,6 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
   return { kind: RecursionType.NotRecursive };
 }
 
-// TODO Change extractCallTo to return a custom type that contains the kind of recursion
-// plus the necessary data. And then re-use this function instead of extractRecursionKindFromReturn
-
-function extractCallTo(functionName : string, node : ts.CallExpression) : Array<ts.Expression> | null {
-  if (!ts.isIdentifier(node.expression)) {
-    return null;
-  }
-
-  // Is "fn(...)"
-  if (node.expression.text === functionName) {
-    return [...node.arguments];
-  }
-
-  // Is "AX(fn, ...)"
-  const firstArg = node.arguments[0];
-  if (node.expression.text.startsWith("A")
-    && ts.isIdentifier(firstArg)
-    && firstArg.text === functionName
-  ) {
-    return node.arguments.slice(1);
-  }
-
-  return null;
-}
-
 function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   let assignments : Array<ts.VariableDeclaration> = [];
   let reassignments : Array<ts.BinaryExpression> = [];
