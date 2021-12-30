@@ -230,6 +230,17 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
       }
 
       if (recursionType === RecursionType.ConsRecursion) {
+        const returnStatement = ts.createReturn(
+          ts.createPropertyAccess(
+            ts.createIdentifier("tmp"),
+            "b"
+          )
+        );
+
+        if (ts.isIdentifier(node.expression) && node.expression.text === "_List_Nil") {
+          return returnStatement;
+        }
+
         return [
           ts.createExpressionStatement(
             ts.createAssignment(
@@ -240,12 +251,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
               node.expression
             )
           ),
-          ts.createReturn(
-            ts.createPropertyAccess(
-              ts.createIdentifier("tmp"),
-              "b"
-            )
-          )
+          returnStatement
         ];
       }
     }
