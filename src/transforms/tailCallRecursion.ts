@@ -281,9 +281,10 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
       );
     }
 
-    return ts.createBlock(
+    return ts.updateBlock(
+      updatedBlock,
       [ ...consDeclarations
-      , updatedBlock
+      , ...updatedBlock.statements
       ]
     );
   }
