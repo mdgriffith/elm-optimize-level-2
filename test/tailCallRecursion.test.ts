@@ -361,6 +361,61 @@ test('should optimize a function that cons (::) on the result of recursive calls
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that cons (::) on the result of recursive calls (List.map)', () => {
+  // Corresponds to the following Elm code
+  // doubleItems list =
+  //   case list of
+  //   [] -> []
+  //   _ :: xs -> 1 :: 2 :: doubleItems xs
+  const initialCode = `
+  var $something$doubleItems = function (list) {
+      if (!list.b) {
+          return _List_Nil;
+      } else {
+          var xs = list.b;
+          return A2(
+              $elm$core$List$cons,
+              1,
+              A2(
+                $elm$core$List$cons,
+                2,
+                $something$doubleItems(xs)));
+      }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$doubleItems = function (list) {
+      var tmp = _List_Cons(undefined, _List_Nil);
+      var end = tmp;
+      doubleItems:
+      while (true) {
+        if (!list.b) {
+            return tmp.b;
+        } else {
+            var x = list.a;
+            var xs = list.b;
+            end.b = _List_Cons(2, _List_Nil);
+            end = end.b;
+            end.b = _List_Cons(1, _List_Nil);
+            end = end.b;
+            var $temp$list = xs;
+            list = $temp$list;
+            continue doubleItems;
+        }
+      }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,

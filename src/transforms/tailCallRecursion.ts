@@ -37,46 +37,31 @@ type Context = any;
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
   return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      // Is `var x = FX(function(...) {})`
       if (ts.isVariableDeclaration(node)
         && ts.isIdentifier(node.name)
         && node.initializer
-        && ts.isCallExpression(node.initializer)) {
-          const fn = isFCall(node.initializer);
-          if (!fn) {
+      ) {
+          const foundFunction = findFunction(node.initializer);
+          if (!foundFunction) {
             return ts.visitEachChild(node, visitor, context);
           }
-          const recursionType : RecursionType = determineRecursionType(node.name.text, fn.body);
+
+          const recursionType : RecursionType = determineRecursionType(node.name.text, foundFunction.fn.body);
           if (recursionType === RecursionType.NotRecursive) {
             return ts.visitEachChild(node, visitor, context);
           }
 
-          const parameterNames : Array<string> = fn.parameters.map(param => {
+          const parameterNames : Array<string> = foundFunction.fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
-          const newBody = updateFunctionBody(recursionType, node.name.text, parameterNames, fn.body, context);
-
-          const newFn = ts.createFunctionExpression(
-            fn.modifiers,
-            undefined,
-            fn.name,
-            undefined,
-            fn.parameters,
-            undefined,
-            newBody
-          );
-
-          const initializer = ts.updateCall(
-            node.initializer,
-            node.initializer.expression,
-            undefined,
-            [newFn]
-          );
+          const newBody = updateFunctionBody(recursionType, node.name.text, parameterNames, foundFunction.fn.body, context);
 
           return ts.updateVariableDeclaration(
             node,
             node.name,
             undefined,
-            initializer
+            foundFunction.update(newBody)
           );
       }
       return ts.visitEachChild(node, visitor, context);
@@ -86,7 +71,60 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
   };
 };
 
-function isFCall(node: ts.CallExpression): ts.FunctionExpression | null {
+function findFunction(node : ts.Node) {
+  // Multiple-argument function wrapped in FX function
+  if (ts.isCallExpression(node)) {
+    var fn = extractFCall(node);
+    if (!fn) {
+      return null;
+    }
+    const {name, parameters, modifiers} = fn;
+
+    return {
+      fn: fn,
+      update: (body : ts.Block) => {
+        const newFn = ts.createFunctionExpression(
+          modifiers,
+          undefined,
+          name,
+          undefined,
+          parameters,
+          undefined,
+          body
+        );
+
+        return ts.updateCall(
+          node,
+          node.expression,
+          undefined,
+          [newFn]
+        );
+      }
+    }
+  }
+
+  // Single-argument function not wrapped in FX
+  if (ts.isFunctionExpression(node)) {
+    return {
+      fn: node,
+      update: (body : ts.Block) => {
+        return ts.createFunctionExpression(
+          node.modifiers,
+          undefined,
+          node.name,
+          undefined,
+          node.parameters,
+          undefined,
+          body
+        );
+      }
+    }
+  }
+
+  return null;
+}
+
+function extractFCall(node: ts.CallExpression): ts.FunctionExpression | null {
   if (ts.isIdentifier(node.expression)
     && node.expression.text.startsWith('F')
     && node.arguments.length > 0
@@ -112,7 +150,7 @@ type Recursion
   = { kind: RecursionType.NotRecursive }
   | { kind: RecursionType.PlainRecursion, arguments : Array<ts.Expression> }
   // Could hold a Recursion as data
-  | { kind: RecursionType.ConsRecursion, element : ts.Expression, arguments : Array<ts.Expression> }
+  | { kind: RecursionType.ConsRecursion, elements : ts.Expression[], arguments : Array<ts.Expression> }
 
 function determineRecursionType(functionName : string, body : ts.Node) : RecursionType {
   let recursionType : RecursionType = RecursionType.NotRecursive;
@@ -223,7 +261,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
           }
 
           case RecursionType.ConsRecursion: {
-            return createConsContinuation(label, parameterNames, extract.element, extract.arguments);
+            return createConsContinuation(label, parameterNames, extract.elements, extract.arguments);
           }
         }
       }
@@ -325,12 +363,16 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
   if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
     const thirdArgExtract = extractRecursionKindFromReturn(functionName, thirdArg);
     if (thirdArgExtract.kind === RecursionType.PlainRecursion) {
-      // TODO Support multiple conses
       return {
         kind: RecursionType.ConsRecursion,
-        element: secondArg,
+        elements: [secondArg],
         arguments: thirdArgExtract.arguments
       };
+    }
+
+    if (thirdArgExtract.kind === RecursionType.ConsRecursion) {
+      thirdArgExtract.elements.push(secondArg);
+      return thirdArgExtract;
     }
   }
 
@@ -371,7 +413,7 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
   ];
 }
 
-function createConsContinuation(label : string, parameterNames : Array<string>, element : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Node> {
   let assignments : Array<ts.VariableDeclaration> = [];
   let reassignments : Array<ts.ExpressionStatement> = [];
 
@@ -401,7 +443,7 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
   });
 
   return [
-    addToEnd(element),
+    ...elements.map(addToEnd),
     ts.createExpressionStatement(
       ts.createAssignment(
         ts.createIdentifier("end"),
