@@ -34,6 +34,9 @@ but this version doesn't (because of the additional `<|`):
 
 type Context = any;
 
+const LIST_CONS = "_List_Cons";
+const EMPTY_LIST = "_List_Nil";
+
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
   return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
@@ -209,11 +212,11 @@ const consDeclarations =
         START,
         undefined,
         ts.createCall(
-          ts.createIdentifier("_List_Cons"),
+          ts.createIdentifier(LIST_CONS),
           undefined,
           [
             ts.createIdentifier("undefined"),
-            ts.createIdentifier("_List_Nil")
+            ts.createIdentifier(EMPTY_LIST)
           ]
         )
       )]
@@ -277,7 +280,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
           )
         );
 
-        if (ts.isIdentifier(node.expression) && node.expression.text === "_List_Nil") {
+        if (ts.isIdentifier(node.expression) && node.expression.text === EMPTY_LIST) {
           return returnStatement;
         }
 
@@ -383,22 +386,58 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
 }
 
 function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  return [
+    ...paramReassignments(parameterNames, newArguments),
+    ts.createContinue(label)
+  ];
+}
+
+function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  return [
+    ...elements.map(addToEnd),
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        END,
+        ts.createPropertyAccess(
+          END,
+          "b"
+        )
+      )
+    ),
+    ...paramReassignments(parameterNames, newArguments),
+    ts.createContinue(label)
+  ];
+}
+
+function paramReassignments(parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   let assignments : Array<ts.VariableDeclaration> = [];
   let reassignments : Array<ts.BinaryExpression> = [];
+  const filteredParameters : Array<{ name: string; value: ts.Expression; }> = [];
 
   parameterNames.forEach((name, index) => {
-    const correspondingArg : ts.Expression = newArguments[index];
-    if (ts.isIdentifier(correspondingArg)
-      && name === correspondingArg.text
-    ) {
+    const value : ts.Expression = newArguments[index];
+    if (ts.isIdentifier(value) && name === value.text) {
       return;
     }
+    filteredParameters.push({name, value});
+  });
+
+  if (filteredParameters.length === 1) {
+    return [
+      ts.createAssignment(
+        ts.createIdentifier(filteredParameters[0].name),
+        filteredParameters[0].value
+      )
+    ];
+  }
+
+  filteredParameters.forEach(({name, value}) => {
     const tempName = `$temp$${name}`;
     assignments.push(
       ts.createVariableDeclaration(
         tempName,
         undefined,
-        newArguments[index]
+        value
       )
     );
     reassignments.push(
@@ -411,54 +450,7 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
 
   return [
     ts.createVariableDeclarationList(assignments),
-    ...reassignments,
-    ts.createContinue(label)
-  ];
-}
-
-function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Node> {
-  let assignments : Array<ts.VariableDeclaration> = [];
-  let reassignments : Array<ts.ExpressionStatement> = [];
-
-  parameterNames.forEach((name, index) => {
-    const correspondingArg : ts.Expression = newArguments[index];
-    if (ts.isIdentifier(correspondingArg)
-      && name === correspondingArg.text
-    ) {
-      return;
-    }
-    const tempName = `$temp$${name}`;
-    assignments.push(
-      ts.createVariableDeclaration(
-        tempName,
-        undefined,
-        newArguments[index]
-      )
-    );
-    reassignments.push(
-      ts.createExpressionStatement(
-        ts.createAssignment(
-          ts.createIdentifier(name),
-          ts.createIdentifier(tempName)
-        )
-      )
-    );
-  });
-
-  return [
-    ...elements.map(addToEnd),
-    ts.createExpressionStatement(
-      ts.createAssignment(
-        END,
-        ts.createPropertyAccess(
-          END,
-          "b"
-        )
-      )
-    ),
-    ts.createVariableDeclarationList(assignments),
-    ...reassignments,
-    ts.createContinue(label)
+    ...reassignments
   ];
 }
 
@@ -470,11 +462,11 @@ function addToEnd(element : ts.Expression) : ts.Statement {
         "b"
       ),
       ts.createCall(
-        ts.createIdentifier("_List_Cons"),
+        ts.createIdentifier(LIST_CONS),
         undefined,
         [
           element,
-          ts.createIdentifier("_List_Nil")
+          ts.createIdentifier(EMPTY_LIST)
         ]
       )
     )
