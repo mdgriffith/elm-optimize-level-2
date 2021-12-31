@@ -198,12 +198,15 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
   return recursionType;
 }
 
+const START = ts.createIdentifier("$start");
+const END = ts.createIdentifier("$end");
+
 const consDeclarations =
   [
     ts.createVariableStatement(
       undefined,
       [ts.createVariableDeclaration(
-        "tmp",
+        START,
         undefined,
         ts.createCall(
           ts.createIdentifier("_List_Cons"),
@@ -218,9 +221,9 @@ const consDeclarations =
     ts.createVariableStatement(
       undefined,
       [ ts.createVariableDeclaration(
-          "end",
+          END,
           undefined,
-          ts.createIdentifier("tmp")
+          START
         )
       ]
     )
@@ -269,7 +272,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
       if (recursionType === RecursionType.ConsRecursion) {
         const returnStatement = ts.createReturn(
           ts.createPropertyAccess(
-            ts.createIdentifier("tmp"),
+            START,
             "b"
           )
         );
@@ -282,7 +285,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
           ts.createExpressionStatement(
             ts.createAssignment(
               ts.createPropertyAccess(
-                ts.createIdentifier("end"),
+                END,
                 "b"
               ),
               node.expression
@@ -446,9 +449,9 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
     ...elements.map(addToEnd),
     ts.createExpressionStatement(
       ts.createAssignment(
-        ts.createIdentifier("end"),
+        END,
         ts.createPropertyAccess(
-          ts.createIdentifier("end"),
+          END,
           "b"
         )
       )
@@ -463,7 +466,7 @@ function addToEnd(element : ts.Expression) : ts.Statement {
   return ts.createExpressionStatement(
     ts.createAssignment(
       ts.createPropertyAccess(
-        ts.createIdentifier("end"),
+        END,
         "b"
       ),
       ts.createCall(
