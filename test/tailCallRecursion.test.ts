@@ -268,8 +268,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
 				var xs = list.b;
                 $end.b = _List_Cons(fn(x), _List_Nil);
                 $end = $end.b;
-				var $temp$list = xs;
-				list = $temp$list;
+				list = xs;
 				continue map;
 			}
 		}
@@ -339,8 +338,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
 				if (predicate(x)) {
                     $end.b = _List_Cons(x, _List_Nil);
                     $end = $end.b;
-                    var $temp$list = xs;
-                    list = $temp$list;
+                    list = xs;
                     continue filter;
 				} else {
 					var $temp$list = xs;
