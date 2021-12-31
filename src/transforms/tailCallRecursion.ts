@@ -30,7 +30,7 @@ but this version doesn't (because of the additional `<|`):
 
 // TODO Enable TCO for code like `rec n = if ... then False else condition n && rec (n - 1)`, using `&&` or `||`
 // TODO Enable TCO for other kinds of data constructors 
-// TODO Enable TCO for let declarations
+// TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
 
 type Context = any;
 
