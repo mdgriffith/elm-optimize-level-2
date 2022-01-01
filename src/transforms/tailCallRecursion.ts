@@ -244,6 +244,32 @@ const consDeclarations =
     )
   ];
 
+function constructorDeclarations(property : string) {
+  return [
+    // `var $start = { property : null };`
+    ts.createVariableStatement(
+      undefined,
+      [ts.createVariableDeclaration(
+        START,
+        undefined,
+        ts.createObjectLiteral([
+          ts.createPropertyAssignment(property, ts.createNull())
+        ])
+      )]
+    ),
+    // `var $end = $start;`
+    ts.createVariableStatement(
+      undefined,
+      [ ts.createVariableDeclaration(
+          END,
+          undefined,
+          START
+        )
+      ]
+    )
+  ];
+}
+
 function updateFunctionBody(recursionType : RecursionType, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
@@ -300,6 +326,24 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
     return ts.updateBlock(
       updatedBlock,
       [ ...consDeclarations
+      , ...updatedBlock.statements
+      ]
+    );
+  }
+
+  if (recursionType === RecursionType.DataConstructionRecursion) {
+    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+      return ts.createBlock(
+        [ ...constructorDeclarations("c")
+        // `<label>: while (true) { <updatedBlock> }`
+        , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+        ]
+      );
+    }
+
+    return ts.updateBlock(
+      updatedBlock,
+      [ ...constructorDeclarations("c")
       , ...updatedBlock.statements
       ]
     );
