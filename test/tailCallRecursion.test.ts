@@ -471,6 +471,80 @@ test('should optimize a function that does "x && <recursive call>"', () => {
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that wraps the result in a constructor', () => {
+  // Corresponds to the following Elm code
+  // type Pairs
+  //   = Nil
+  //   | Cons Int Int Pairs
+  //
+  // swap : Pairs -> Pairs
+  // swap pairs =
+  //   case pairs of
+  //       Nil ->
+  //           Nil
+  //
+  //       Cons x y ps ->
+  //           Cons y x (swap ps)
+  const initialCode = `
+  var $something$Nil = {$: 0};
+  var $something$Cons = F3(
+    function (a, b, c) {
+      return {$: 1, a: a, b: b, c: c};
+    });
+
+  var $something$swap = function (pairs) {
+    if (!pairs.$) {
+      return $something$Nil;
+    } else {
+      var x = pairs.a;
+      var y = pairs.b;
+      var ps = pairs.c;
+      return A3(
+        $something$Cons,
+        y,
+        x,
+        $something$swap(ps));
+    }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$Nil = {$: 0};
+  var $something$Cons = F3(
+    function (a, b, c) {
+      return {$: 1, a: a, b: b, c: c};
+    });
+
+  var $something$swap = function (pairs) {
+    var $start = { c: null };
+    var $end = $start;
+    swap:
+    while (true) {
+      if (!pairs.$) {
+        $end.c = $something$Nil;
+        return $start.c;
+      } else {
+        var x = pairs.a;
+        var y = pairs.b;
+        var ps = pairs.c;
+        $end.c = A3($something$Cons, y, x, null);
+        $end = $end.c;
+        pairs = ps;
+        continue swap;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
