@@ -510,7 +510,7 @@ function createBooleanContinuation(label : string, parameterNames : Array<string
 
 function paramReassignments(parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   let assignments : Array<ts.VariableDeclaration> = [];
-  let reassignments : Array<ts.BinaryExpression> = [];
+  let reassignments : Array<ts.Statement> = [];
   const filteredParameters : Array<{ name: string; value: ts.Expression; }> = [];
 
   parameterNames.forEach((name, index) => {
@@ -524,9 +524,11 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
   if (filteredParameters.length === 1) {
     // `<param> = <new param value>;`
     return [
-      ts.createAssignment(
-        ts.createIdentifier(filteredParameters[0].name),
-        filteredParameters[0].value
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          ts.createIdentifier(filteredParameters[0].name),
+          filteredParameters[0].value
+        )
       )
     ];
   }
@@ -543,9 +545,11 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
     );
     reassignments.push(
       // `<param> = $temp$<param>;`
-      ts.createAssignment(
-        ts.createIdentifier(name),
-        ts.createIdentifier(tempName)
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          ts.createIdentifier(name),
+          ts.createIdentifier(tempName)
+        )
       )
     );
   });
