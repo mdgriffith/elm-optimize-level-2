@@ -385,7 +385,7 @@ function updateReturnStatementForCons(extract : Recursion, label : string, param
     return createConsContinuation(label, parameterNames, extract.elements, extract.arguments);
   }
 
-  // End of the cons recursion, add the value to the head of the list and return it.
+  // End of the recursion, add the value to the end of the list and return the start.
 
   // `return $end.b`
   const returnStatement = ts.createReturn(
