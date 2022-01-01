@@ -555,7 +555,10 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
   });
 
   return [
-    ts.createVariableDeclarationList(assignments),
+    ts.createVariableStatement(
+      undefined,
+      ts.createVariableDeclarationList(assignments)
+    ),
     ...reassignments
   ];
 }
