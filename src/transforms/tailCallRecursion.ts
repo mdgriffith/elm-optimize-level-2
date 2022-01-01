@@ -359,6 +359,10 @@ function updateReturnStatement(recursionType : RecursionType, functionName : str
     return updateReturnStatementForCons(extract, label, parameterNames, expression);
   }
 
+  if (recursionType === RecursionType.DataConstructionRecursion) {
+    return updateReturnStatementForDataConstruction(extract, label, parameterNames, expression);
+  }
+
   switch (extract.kind) {
     case RecursionType.NotRecursive: {
       return null;
@@ -407,6 +411,48 @@ function updateReturnStatementForCons(extract : Recursion, label : string, param
         ts.createPropertyAccess(
           END,
           "b"
+        ),
+        expression
+      )
+    ),
+    returnStatement
+  ];
+}
+
+function updateReturnStatementForDataConstruction(extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+  // TODO Move
+  const property : string = "c";
+
+  if (extract.kind === RecursionType.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionType.DataConstructionRecursion) {
+    return createDataConstructionContinuation(label, property, parameterNames, extract.expression, extract.arguments);
+  }
+
+  // End of the recursion, add the value to the $end and return the start.
+
+  // `return $end.<property>`
+  const returnStatement = ts.createReturn(
+    ts.createPropertyAccess(
+      START,
+      property
+    )
+  );
+
+  if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
+    // The end of the list is already an empty list, setting it would be useless.
+    return returnStatement;
+  }
+
+  return [
+    // `$end.<property> = <expression>;`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        ts.createPropertyAccess(
+          END,
+          property
         ),
         expression
       )
@@ -532,6 +578,25 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
   ];
 }
 
+function createDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  return [
+    assignToDataProperty(property, expression),
+    // `end = end.<property>;`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        END,
+        ts.createPropertyAccess(
+          END,
+          property
+        )
+      )
+    ),
+    ...paramReassignments(parameterNames, newArguments),
+    // `continue <label>;`
+    ts.createContinue(label)
+  ];
+}
+
 function createBooleanContinuation(label : string, parameterNames : Array<string>, mainOperator: BooleanKind, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   const ifExpr =
     mainOperator === BooleanKind.Or
@@ -629,6 +694,19 @@ function addToEnd(element : ts.Expression) : ts.Statement {
           ts.createIdentifier(EMPTY_LIST)
         ]
       )
+    )
+  );
+}
+
+function assignToDataProperty(property : string, expression : ts.Expression) : ts.Statement {
+  // `end.b = <expression where recursive call has been replaced by null>;`
+  return ts.createExpressionStatement(
+    ts.createAssignment(
+      ts.createPropertyAccess(
+        END,
+        property
+      ),
+      expression
     )
   );
 }
