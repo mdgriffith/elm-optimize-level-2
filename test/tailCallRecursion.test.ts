@@ -117,36 +117,40 @@ test('should re-use the label and while loop if there already is one', () => {
   //                recursiveFunction mapper xs <| (mapper x :: acc)
   const initialCode = `
   var something$recursiveFunction = F3(
-	function (mapper, list, acc) {
-		recursiveFunction:
-		while (true) {
-			if (!list.b) {
-				return acc;
-			} else if (cond) {
-				var x = list.a;
-				var xs = list.b;
-				var $temp$mapper = mapper,
-					$temp$list = xs,
-					$temp$acc = A2(
-					$elm$core$List$cons,
-					mapper(x),
-					acc);
-				mapper = $temp$mapper;
-				list = $temp$list;
-				acc = $temp$acc;
-				continue recursiveFunction;
-            } else {
-                return A3(
-                    something$recursiveFunction,
-                    mapper,
-                    xs,
-                    A2(
-                        $elm$core$List$cons,
-                        mapper(x),
-                        acc));
-            }
-		}
-	});
+  function (mapper, list, acc) {
+    recursiveFunction:
+    while (true) {
+      if (!list.b) {
+        return acc;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        if (cond) {
+          var x = list.a;
+          var xs = list.b;
+          var $temp$mapper = mapper,
+            $temp$list = xs,
+            $temp$acc = A2(
+              $elm$core$List$cons,
+              mapper(x),
+              acc);
+          mapper = $temp$mapper;
+          list = $temp$list;
+          acc = $temp$acc;
+          continue recursiveFunction;
+        } else {
+          return A3(
+            something$recursiveFunction,
+            mapper,
+            xs,
+            A2(
+              $elm$core$List$cons,
+              mapper(x),
+              acc));
+        }
+      }
+    }
+  });
   `;
 
   // Corresponds to the following TCO-ed Elm code
@@ -159,38 +163,40 @@ test('should re-use the label and while loop if there already is one', () => {
   //             recursiveFunction mapper xs (mapper x :: acc)
   const expectedOutputCode = `
   var something$recursiveFunction = F3(
-	function (mapper, list, acc) {
-		recursiveFunction:
-		while (true) {
-			if (!list.b) {
-				return acc;
-			} else if (cond) {
-				var x = list.a;
-				var xs = list.b;
-				var $temp$mapper = mapper,
-					$temp$list = xs,
-					$temp$acc = A2(
-					$elm$core$List$cons,
-					mapper(x),
-					acc);
-				mapper = $temp$mapper;
-				list = $temp$list;
-				acc = $temp$acc;
-				continue recursiveFunction;
-            } else {
-				var x = list.a;
-				var xs = list.b;
-				var $temp$list = xs,
-					$temp$acc = A2(
-					$elm$core$List$cons,
-					mapper(x),
-					acc);
-				list = $temp$list;
-				acc = $temp$acc;
-				continue recursiveFunction;
-            }
-		}
-	});
+  function (mapper, list, acc) {
+    recursiveFunction:
+    while (true) {
+      if (!list.b) {
+        return acc;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        if (cond) {
+          var x = list.a;
+          var xs = list.b;
+          var $temp$mapper = mapper,
+            $temp$list = xs,
+            $temp$acc = A2(
+            $elm$core$List$cons,
+            mapper(x),
+            acc);
+          mapper = $temp$mapper;
+          list = $temp$list;
+          acc = $temp$acc;
+          continue recursiveFunction;
+        } else {
+          var $temp$list = xs,
+            $temp$acc = A2(
+            $elm$core$List$cons,
+            mapper(x),
+            acc);
+          list = $temp$list;
+          acc = $temp$acc;
+          continue recursiveFunction;
+        }
+      }
+    }
+  });
   `;
 
   const { actual, expected } = transformCode(
@@ -235,9 +241,10 @@ test('should not change non-recursive functions', () => {
 test('should optimize a function that cons (::) on the result of recursive calls (List.map)', () => {
   // Corresponds to the following Elm code
   // map fn list =
-  //   case list of
-  //   [] -> []
-  //   x :: xs -> fn x :: map fn xs
+  //     case list of
+  //         [] -> []
+  //         x :: xs ->
+  //             fn x :: map fn xs
   const initialCode = `
   var $something$map = F2(
 	function (fn, list) {
@@ -325,30 +332,30 @@ test('should optimize a function that cons (::) on the result of recursive calls
 
   const expectedOutputCode = `
   var $something$filter = F2(
-	function (predicate, list) {
-        var $start = _List_Cons(undefined, _List_Nil);
-        var $end = $start;
-		filter:
-		while (true) {
-			if (!list.b) {
+  function (predicate, list) {
+    var $start = _List_Cons(undefined, _List_Nil);
+    var $end = $start;
+    filter:
+    while (true) {
+      if (!list.b) {
         $end.b = something(0);
-				return $start.b;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (predicate(x)) {
-                    $end.b = _List_Cons(x, _List_Nil);
-                    $end = $end.b;
-                    list = xs;
-                    continue filter;
-				} else {
-					var $temp$list = xs;
-					list = $temp$list;
-					continue filter;
-				}
-			}
-		}
-	});
+        return $start.b;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        if (predicate(x)) {
+          $end.b = _List_Cons(x, _List_Nil);
+          $end = $end.b;
+          list = xs;
+          continue filter;
+        } else {
+          var $temp$list = xs;
+          list = $temp$list;
+          continue filter;
+        }
+      }
+    }
+  });
   `;
 
   const { actual, expected } = transformCode(
