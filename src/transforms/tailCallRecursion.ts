@@ -214,6 +214,7 @@ const END = ts.createIdentifier("$end");
 
 const consDeclarations =
   [
+    // `var $start = _List_Cons(undefined, _List_Nil);`
     ts.createVariableStatement(
       undefined,
       [ts.createVariableDeclaration(
@@ -229,6 +230,7 @@ const consDeclarations =
         )
       )]
     ),
+    // `var $end = $start;`
     ts.createVariableStatement(
       undefined,
       [ ts.createVariableDeclaration(
@@ -275,6 +277,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
   if (recursionType === RecursionType.PlainRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
+        // `<label>: while (true) { <updatedBlock> }`
         [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
       );
     }
@@ -286,6 +289,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
         [ ...consDeclarations
+        // `<label>: while (true) { <updatedBlock> }`
         , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
         ]
       );
@@ -330,7 +334,7 @@ function updateReturnStatement(recursionType : RecursionType, functionName : str
     }
 
     return [
-      // `$end.b = <expression>`
+      // `$end.b = <expression>;`
       ts.createExpressionStatement(
         ts.createAssignment(
           ts.createPropertyAccess(
@@ -443,6 +447,7 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
   }
 
   if (extract.kind === RecursionType.BooleanRecursion) {
+    // `<node.left> && <expressions from node.right>` (operation can be either && or ||)
     extract.expression = ts.createBinary(node.left, node.operatorToken, extract.expression);
     return extract;
   }
@@ -453,6 +458,7 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
 function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   return [
     ...paramReassignments(parameterNames, newArguments),
+    // `continue <label>;`
     ts.createContinue(label)
   ];
 }
@@ -460,6 +466,7 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
 function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Node> {
   return [
     ...elements.map(addToEnd),
+    // `end = end.b;`
     ts.createExpressionStatement(
       ts.createAssignment(
         END,
@@ -470,6 +477,7 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
       )
     ),
     ...paramReassignments(parameterNames, newArguments),
+    // `continue <label>;`
     ts.createContinue(label)
   ];
 }
@@ -495,6 +503,7 @@ function createBooleanContinuation(label : string, parameterNames : Array<string
   return [
     ifExpr,
     ...paramReassignments(parameterNames, newArguments),
+    // `continue <label>;`
     ts.createContinue(label)
   ];
 }
@@ -513,6 +522,7 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
   });
 
   if (filteredParameters.length === 1) {
+    // `<param> = <new param value>;`
     return [
       ts.createAssignment(
         ts.createIdentifier(filteredParameters[0].name),
@@ -524,6 +534,7 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
   filteredParameters.forEach(({name, value}) => {
     const tempName = `$temp$${name}`;
     assignments.push(
+      // `$temp$<param> = <new param value>;`
       ts.createVariableDeclaration(
         tempName,
         undefined,
@@ -531,6 +542,7 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
       )
     );
     reassignments.push(
+      // `<param> = $temp$<param>;`
       ts.createAssignment(
         ts.createIdentifier(name),
         ts.createIdentifier(tempName)
@@ -545,7 +557,7 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
 }
 
 function addToEnd(element : ts.Expression) : ts.Statement {
-  // `return end.b = _List_Cons(element, _List_Nil);`
+  // `end.b = _List_Cons(element, _List_Nil);`
   return ts.createExpressionStatement(
     ts.createAssignment(
       ts.createPropertyAccess(
