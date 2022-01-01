@@ -147,6 +147,7 @@ enum RecursionType {
   PlainRecursion = 1,
   ConsRecursion = 2,
   BooleanRecursion = 3,
+  DataConstructionRecursion = 4,
 };
 
 enum BooleanKind {
@@ -160,6 +161,7 @@ type Recursion
   // Could hold a Recursion as data
   | { kind: RecursionType.ConsRecursion, elements : ts.Expression[], arguments : Array<ts.Expression> }
   | { kind: RecursionType.BooleanRecursion, expression: ts.Expression, mainOperator: BooleanKind, arguments : Array<ts.Expression> }
+  | { kind: RecursionType.DataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
 
 function determineRecursionType(functionName : string, body : ts.Node) : RecursionType {
   let recursionType : RecursionType = RecursionType.NotRecursive;
