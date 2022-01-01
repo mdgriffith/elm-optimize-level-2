@@ -356,42 +356,7 @@ function updateReturnStatement(recursionType : RecursionType, functionName : str
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
   if (recursionType === RecursionType.ConsRecursion) {
-    if (extract.kind === RecursionType.PlainRecursion) {
-      return createContinuation(label, parameterNames, extract.arguments);
-    }
-
-    if (extract.kind === RecursionType.ConsRecursion) {
-      return createConsContinuation(label, parameterNames, extract.elements, extract.arguments);
-    }
-
-    // End of the cons recursion, add the value to the head of the list and return it.
-
-    // `return $end.b`
-    const returnStatement = ts.createReturn(
-      ts.createPropertyAccess(
-        START,
-        "b"
-      )
-    );
-
-    if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
-      // The end of the list is already an empty list, setting it would be useless.
-      return returnStatement;
-    }
-
-    return [
-      // `$end.b = <expression>;`
-      ts.createExpressionStatement(
-        ts.createAssignment(
-          ts.createPropertyAccess(
-            END,
-            "b"
-          ),
-          expression
-        )
-      ),
-      returnStatement
-    ];
+    return updateReturnStatementForCons(extract, label, parameterNames, expression);
   }
 
   switch (extract.kind) {
@@ -409,6 +374,45 @@ function updateReturnStatement(recursionType : RecursionType, functionName : str
   }
 
   return null;
+}
+
+function updateReturnStatementForCons(extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+  if (extract.kind === RecursionType.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionType.ConsRecursion) {
+    return createConsContinuation(label, parameterNames, extract.elements, extract.arguments);
+  }
+
+  // End of the cons recursion, add the value to the head of the list and return it.
+
+  // `return $end.b`
+  const returnStatement = ts.createReturn(
+    ts.createPropertyAccess(
+      START,
+      "b"
+    )
+  );
+
+  if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
+    // The end of the list is already an empty list, setting it would be useless.
+    return returnStatement;
+  }
+
+  return [
+    // `$end.b = <expression>;`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        ts.createPropertyAccess(
+          END,
+          "b"
+        ),
+        expression
+      )
+    ),
+    returnStatement
+  ];
 }
 
 function extractRecursionKindFromExpression(functionName : string, node : ts.Expression) : Recursion {
