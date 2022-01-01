@@ -290,7 +290,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
   // filter predicate list =
   //     case list of
   //         [] ->
-  //             []
+  //             something 0
   //
   //         x :: xs ->
   //             if predicate x then
@@ -304,7 +304,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
 		filter:
 		while (true) {
 			if (!list.b) {
-				return _List_Nil;
+				return something(0);
 			} else {
 				var x = list.a;
 				var xs = list.b;
@@ -331,6 +331,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
 		filter:
 		while (true) {
 			if (!list.b) {
+        $end.b = something(0);
 				return $start.b;
 			} else {
 				var x = list.a;
@@ -345,6 +346,110 @@ test('should optimize a function that cons (::) on the result of recursive calls
 					list = $temp$list;
 					continue filter;
 				}
+			}
+		}
+	});
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should optimize a function that does "x || <recursive call>"', () => {
+  // Corresponds to the following Elm code
+  //  naiveAny : (a -> Bool) -> List a -> Bool
+  //  naiveAny isOkay list =
+  //      case list of
+  //          [] ->
+  //              False
+  //
+  //          x :: xs ->
+  //              isOkay x || False || naiveAny isOkay xs
+  const initialCode = `
+  var $something$naiveAny = F2(
+	function (isOkay, list) {
+		if (!list.b) {
+			return false;
+		} else {
+			var x = list.a;
+			var xs = list.b;
+			return isOkay(x) || (false || A2($something$naiveAny, isOkay, xs));
+		}
+	});
+  `;
+
+  const expectedOutputCode = `
+  var $something$naiveAny = F2(
+	function (isOkay, list) {
+		naiveAny:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+        var x = list.a;
+        var xs = list.b;
+        if (isOkay(x) || false) {
+          return true;
+        }
+        list = xs;
+        continue naiveAny;
+			}
+		}
+	});
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should optimize a function that does "x && <recursive call>"', () => {
+  // Corresponds to the following Elm code
+  //  naiveAll : (a -> Bool) -> List a -> Bool
+  //  naiveAll isOkay list =
+  //      case list of
+  //          [] ->
+  //              True
+  //
+  //          x :: xs ->
+  //              isOkay x && True && naiveAll isOkay xs
+  const initialCode = `
+  var $something$naiveAll = F2(
+    function (isOkay, list) {
+      if (!list.b) {
+        return true;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        return isOkay(x) && (true && A2($something$naiveAll, isOkay, xs));
+      }
+    });
+  `;
+
+  const expectedOutputCode = `
+  var $something$naiveAll = F2(
+	function (isOkay, list) {
+		naiveAll:
+		while (true) {
+			if (!list.b) {
+				return true;
+			} else {
+        var x = list.a;
+        var xs = list.b;
+        if (!(isOkay(x) && true)) {
+          return false;
+        }
+        list = xs;
+        continue naiveAll;
 			}
 		}
 	});

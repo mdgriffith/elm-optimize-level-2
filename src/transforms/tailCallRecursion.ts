@@ -28,7 +28,6 @@ but this version doesn't (because of the additional `<|`):
 
 */
 
-// TODO Enable TCO for code like `rec n = if ... then False else condition n && rec (n - 1)`, using `&&` or `||`
 // TODO Enable TCO for other kinds of data constructors 
 // TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
 
@@ -147,6 +146,12 @@ enum RecursionType {
   NotRecursive = 0,
   PlainRecursion = 1,
   ConsRecursion = 2,
+  BooleanRecursion = 3,
+};
+
+enum BooleanKind {
+  And,
+  Or,
 };
 
 type Recursion
@@ -154,6 +159,7 @@ type Recursion
   | { kind: RecursionType.PlainRecursion, arguments : Array<ts.Expression> }
   // Could hold a Recursion as data
   | { kind: RecursionType.ConsRecursion, elements : ts.Expression[], arguments : Array<ts.Expression> }
+  | { kind: RecursionType.BooleanRecursion, expression: ts.Expression, mainOperator: BooleanKind, arguments : Array<ts.Expression> }
 
 function determineRecursionType(functionName : string, body : ts.Node) : RecursionType {
   let recursionType : RecursionType = RecursionType.NotRecursive;
@@ -161,6 +167,11 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
   let node : ts.Node | undefined;
 
   loop: while (recursionType <= 1 && (node = nodesToVisit.shift())) {
+    if (ts.isParenthesizedExpression(node)) {
+      nodesToVisit = [node.expression, ...nodesToVisit];
+      continue loop;
+    }
+
     if (ts.isBlock(node)) {
       nodesToVisit = [...node.statements, ...nodesToVisit];
       continue loop;
@@ -186,12 +197,9 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
       continue loop;
     }
 
-    if (ts.isReturnStatement(node)
-      && node.expression
-      && ts.isCallExpression(node.expression)
-    ) {
+    if (ts.isReturnStatement(node) && node.expression) {
       recursionType = Math.max(
-        extractRecursionKindFromReturn(functionName, node.expression).kind,
+        extractRecursionKindFromExpression(functionName, node.expression).kind,
         recursionType
       );
       continue loop;
@@ -254,49 +262,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
     if (ts.isReturnStatement(node)
       && node.expression
     ) {
-      if (ts.isCallExpression(node.expression)) {
-        const extract = extractRecursionKindFromReturn(functionName, node.expression);
-
-        switch (extract.kind) {
-          case RecursionType.NotRecursive: {
-            return node;
-          }
-
-          case RecursionType.PlainRecursion: {
-            return createContinuation(label, parameterNames, extract.arguments);
-          }
-
-          case RecursionType.ConsRecursion: {
-            return createConsContinuation(label, parameterNames, extract.elements, extract.arguments);
-          }
-        }
-      }
-
-      if (recursionType === RecursionType.ConsRecursion) {
-        const returnStatement = ts.createReturn(
-          ts.createPropertyAccess(
-            START,
-            "b"
-          )
-        );
-
-        if (ts.isIdentifier(node.expression) && node.expression.text === EMPTY_LIST) {
-          return returnStatement;
-        }
-
-        return [
-          ts.createExpressionStatement(
-            ts.createAssignment(
-              ts.createPropertyAccess(
-                END,
-                "b"
-              ),
-              node.expression
-            )
-          ),
-          returnStatement
-        ];
-      }
+      return updateReturnStatement(recursionType, functionName, label, parameterNames, node.expression) || node;
     }
 
     return node;
@@ -336,7 +302,82 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
   return updatedBlock;
 }
 
-function extractRecursionKindFromReturn(functionName : string, node : ts.CallExpression) : Recursion {
+function updateReturnStatement(recursionType : RecursionType, functionName : string, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+  const extract = extractRecursionKindFromExpression(functionName, expression);
+
+  if (recursionType === RecursionType.ConsRecursion) {
+    if (extract.kind === RecursionType.PlainRecursion) {
+      return createContinuation(label, parameterNames, extract.arguments);
+    }
+
+    if (extract.kind === RecursionType.ConsRecursion) {
+      return createConsContinuation(label, parameterNames, extract.elements, extract.arguments);
+    }
+
+    // End of the cons recursion, add the value to the head of the list and return it.
+
+    // `return $end.b`
+    const returnStatement = ts.createReturn(
+      ts.createPropertyAccess(
+        START,
+        "b"
+      )
+    );
+
+    if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
+      // The end of the list is already an empty list, setting it would be useless.
+      return returnStatement;
+    }
+
+    return [
+      // `$end.b = <expression>`
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          ts.createPropertyAccess(
+            END,
+            "b"
+          ),
+          expression
+        )
+      ),
+      returnStatement
+    ];
+  }
+
+  switch (extract.kind) {
+    case RecursionType.NotRecursive: {
+      return null;
+    }
+
+    case RecursionType.PlainRecursion: {
+      return createContinuation(label, parameterNames, extract.arguments);
+    }
+
+    case RecursionType.BooleanRecursion: {
+      return createBooleanContinuation(label, parameterNames, extract.mainOperator, extract.expression, extract.arguments);
+    }
+  }
+
+  return null;
+}
+
+function extractRecursionKindFromExpression(functionName : string, node : ts.Expression) : Recursion {
+  if (ts.isParenthesizedExpression(node)) {
+    return extractRecursionKindFromExpression(functionName, node.expression);
+  }
+
+  if (ts.isCallExpression(node)) {
+    return extractRecursionKindFromCallExpression(functionName, node);
+  }
+
+  if (ts.isBinaryExpression(node) && node.operatorToken) {
+    return extractRecursionKindFromBinaryExpression(functionName, node);
+  }
+
+  return { kind: RecursionType.NotRecursive };
+}
+
+function extractRecursionKindFromCallExpression(functionName : string, node : ts.CallExpression) : Recursion {
   if (!ts.isIdentifier(node.expression)) {
     return { kind: RecursionType.NotRecursive };
   }
@@ -367,7 +408,7 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
   // Elm: Is x :: <recursive call>
   // JS: Is A2($elm$core$List$cons, x, <recursive call>)
   if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
-    const thirdArgExtract = extractRecursionKindFromReturn(functionName, thirdArg);
+    const thirdArgExtract = extractRecursionKindFromExpression(functionName, thirdArg);
     if (thirdArgExtract.kind === RecursionType.PlainRecursion) {
       return {
         kind: RecursionType.ConsRecursion,
@@ -380,6 +421,30 @@ function extractRecursionKindFromReturn(functionName : string, node : ts.CallExp
       thirdArgExtract.elements.push(secondArg);
       return thirdArgExtract;
     }
+  }
+
+  return { kind: RecursionType.NotRecursive };
+}
+
+function extractRecursionKindFromBinaryExpression(functionName : string, node : ts.BinaryExpression) : Recursion {
+  if (node.operatorToken.kind !== ts.SyntaxKind.BarBarToken && node.operatorToken.kind !== ts.SyntaxKind.AmpersandAmpersandToken) {
+    return { kind: RecursionType.NotRecursive };
+  }
+
+  const extract = extractRecursionKindFromExpression(functionName, node.right);
+
+  if (extract.kind === RecursionType.PlainRecursion) {
+    return {
+      kind: RecursionType.BooleanRecursion,
+      expression: node.left,
+      mainOperator: node.operatorToken.kind === ts.SyntaxKind.BarBarToken ? BooleanKind.Or : BooleanKind.And,
+      arguments: extract.arguments
+    };
+  }
+
+  if (extract.kind === RecursionType.BooleanRecursion) {
+    extract.expression = ts.createBinary(node.left, node.operatorToken, extract.expression);
+    return extract;
   }
 
   return { kind: RecursionType.NotRecursive };
@@ -404,6 +469,31 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
         )
       )
     ),
+    ...paramReassignments(parameterNames, newArguments),
+    ts.createContinue(label)
+  ];
+}
+
+function createBooleanContinuation(label : string, parameterNames : Array<string>, mainOperator: BooleanKind, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  const ifExpr =
+    mainOperator === BooleanKind.Or
+      ? // if (<condition>) { return true; }
+        ts.createIf(
+          expression,
+          ts.createBlock([
+            ts.createReturn(ts.createTrue())
+          ])
+        )
+      : // if (!<condition>) { return false; }
+        ts.createIf(
+          ts.createLogicalNot(expression),
+          ts.createBlock([
+            ts.createReturn(ts.createFalse())
+          ])
+        );
+
+  return [
+    ifExpr,
     ...paramReassignments(parameterNames, newArguments),
     ts.createContinue(label)
   ];
@@ -455,6 +545,7 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
 }
 
 function addToEnd(element : ts.Expression) : ts.Statement {
+  // `return end.b = _List_Cons(element, _List_Nil);`
   return ts.createExpressionStatement(
     ts.createAssignment(
       ts.createPropertyAccess(
