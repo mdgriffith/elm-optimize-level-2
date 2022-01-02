@@ -170,7 +170,13 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
   let nodesToVisit : Array<ts.Node> = [body];
   let node : ts.Node | undefined;
 
-  loop: while (recursionType <= 1 && (node = nodesToVisit.shift())) {
+  loop: while (
+    (recursionType === RecursionType.NotRecursive
+      || recursionType === RecursionType.PlainRecursion
+      || recursionType === RecursionType.DataConstructionRecursion
+    )
+    && (node = nodesToVisit.shift())
+  ) {
     if (ts.isParenthesizedExpression(node)) {
       nodesToVisit = [node.expression, ...nodesToVisit];
       continue loop;
