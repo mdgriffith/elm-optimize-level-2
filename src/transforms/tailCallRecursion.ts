@@ -159,7 +159,6 @@ enum BooleanKind {
 type Recursion
   = { kind: RecursionType.NotRecursive }
   | { kind: RecursionType.PlainRecursion, arguments : Array<ts.Expression> }
-  // Could hold a Recursion as data
   | { kind: RecursionType.ConsRecursion, elements : ts.Expression[], arguments : Array<ts.Expression> }
   | { kind: RecursionType.BooleanRecursion, expression: ts.Expression, mainOperator: BooleanKind, arguments : Array<ts.Expression> }
   | { kind: RecursionType.DataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
