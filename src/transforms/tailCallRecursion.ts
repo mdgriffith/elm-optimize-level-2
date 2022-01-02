@@ -428,7 +428,7 @@ function updateReturnStatementForDataConstruction(extract : Recursion, label : s
   }
 
   if (extract.kind === RecursionType.DataConstructionRecursion) {
-    return createDataConstructionContinuation(label, property, parameterNames, extract.expression, extract.arguments);
+    return createDataConstructionContinuation(label, extract.property, parameterNames, extract.expression, extract.arguments);
   }
 
   // End of the recursion, add the value to the $end and return the start.
