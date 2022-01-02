@@ -523,7 +523,47 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
     }
   }
 
+  // Is constructor call
+  // Elm: `type X = Y <args> X <args> | ... ; Y <...> <recursive call> <...>
+  // JS: `return AX(Y, ..., <recursive call>, ...);
+  if (isDataConstructor(firstArg.text)) {
+    let extract : Recursion = { kind: RecursionType.NotRecursive };
+
+    for (let i = 1; extract.kind === RecursionType.NotRecursive && i < node.arguments.length; i++) {
+      const argExtract = extractRecursionKindFromExpression(functionName, node.arguments[i]);
+      // TODO Support nested data construction
+      if (argExtract.kind === RecursionType.PlainRecursion) {
+        // TODO Use arguments from node.arguments and replace recursive one with hole.
+        const argumentsWithHole : ts.Expression[] = [];
+        extract = {
+          kind: RecursionType.DataConstructionRecursion,
+          // TODO Only works for custom types, not record type alias constructors or other functions
+          property: "abcdefghijklmnopqrstuvwxyz"[i - 1],
+          expression: ts.updateCall(
+            node,
+            node.expression,
+            undefined,
+            argumentsWithHole
+          ),
+          arguments: argExtract.arguments
+        };
+      }
+    }
+
+    return extract;
+  }
+
   return { kind: RecursionType.NotRecursive };
+}
+
+function isDataConstructor(functionName : string) {
+  // Checks whether the function name is a native data constructor by checking
+  // whether the name starts with an upper case.
+  // TODO Include non-custom type constructors, but then we need to be more careful about validating the property name.
+  // TODO This actively doesn't work for record type aliases, so support needs to be improved or actively removed
+  const splits = functionName.split("$");
+  const last = splits[splits.length - 1];
+  return last && last[0] === last[0].toUpperCase();
 }
 
 function extractRecursionKindFromBinaryExpression(functionName : string, node : ts.BinaryExpression) : Recursion {
