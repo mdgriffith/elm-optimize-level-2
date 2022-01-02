@@ -219,7 +219,9 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
       const nodeRecursionType : RecursionType = extractRecursionKindFromExpression(functionName, node.expression).kind;
       if (recursionType === RecursionType.DataConstructionRecursion && nodeRecursionType === RecursionType.DataConstructionRecursion) {
         recursionType = RecursionType.MultipleDataConstructionRecursion;
+        continue loop;
       }
+
       recursionType = Math.max(recursionType, nodeRecursionType);
       continue loop;
     }
