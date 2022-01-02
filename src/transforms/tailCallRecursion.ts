@@ -391,6 +391,18 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
     return updatedBlock;
   }
 
+  if (recursionType.kind === RecursionType.BooleanRecursion) {
+    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+      return ts.createBlock(
+        [ // `<label>: while (true) { <updatedBlock> }`
+        ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+        ]
+      );
+    }
+
+    return updatedBlock;
+  }
+
   if (recursionType.kind === RecursionType.ConsRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
