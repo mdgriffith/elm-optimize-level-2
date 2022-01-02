@@ -246,7 +246,7 @@ const consDeclarations =
 
 function constructorDeclarations(property : string) {
   return [
-    // `var $start = { property : null };`
+    // `var $start = { <property> : null };`
     ts.createVariableStatement(
       undefined,
       [ts.createVariableDeclaration(
