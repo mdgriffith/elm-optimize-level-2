@@ -148,8 +148,8 @@ function extractFCall(node: ts.CallExpression): ts.FunctionExpression | null {
 enum RecursionType {
   NotRecursive = 0,
   PlainRecursion = 1,
-  ConsRecursion = 2,
-  BooleanRecursion = 3,
+  BooleanRecursion = 2,
+  ConsRecursion = 3,
   DataConstructionRecursion = 4,
   MultipleDataConstructionRecursion = 5,
 };
