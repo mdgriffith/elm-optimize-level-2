@@ -230,6 +230,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
 
 const START = ts.createIdentifier("$start");
 const END = ts.createIdentifier("$end");
+const FIELD = ts.createIdentifier("$field");
 
 const consDeclarations =
   [
@@ -260,6 +261,41 @@ const consDeclarations =
       ]
     )
   ];
+
+const multipleConstructorDeclarations =
+[
+  // `var $start = { a: null };`
+  ts.createVariableStatement(
+    undefined,
+    [ts.createVariableDeclaration(
+      START,
+      undefined,
+      ts.createObjectLiteral([
+        ts.createPropertyAssignment("a", ts.createNull())
+      ])
+    )]
+  ),
+  // `var $end = $start;`
+  ts.createVariableStatement(
+    undefined,
+    [ ts.createVariableDeclaration(
+        END,
+        undefined,
+        START
+      )
+    ]
+  ),
+  // `var $field = 'a';`
+  ts.createVariableStatement(
+    undefined,
+    [ ts.createVariableDeclaration(
+        FIELD,
+        undefined,
+        ts.createLiteral('a')
+      )
+    ]
+  )
+];
 
 function constructorDeclarations(property : string) {
   return [
@@ -361,6 +397,24 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
     return ts.updateBlock(
       updatedBlock,
       [ ...constructorDeclarations("c")
+      , ...updatedBlock.statements
+      ]
+    );
+  }
+
+  if (recursionType === RecursionType.MultipleDataConstructionRecursion) {
+    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+      return ts.createBlock(
+        [ ...multipleConstructorDeclarations
+        // `<label>: while (true) { <updatedBlock> }`
+        , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+        ]
+      );
+    }
+
+    return ts.updateBlock(
+      updatedBlock,
+      [ ...multipleConstructorDeclarations
       , ...updatedBlock.statements
       ]
     );
