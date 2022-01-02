@@ -201,6 +201,14 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
       continue loop;
     }
 
+    if (ts.isSwitchStatement(node)) {
+      nodesToVisit = [
+        ...node.caseBlock.clauses.flatMap(clause => [...clause.statements]),
+        ...nodesToVisit
+      ];
+      continue loop;
+    }
+
     if (ts.isReturnStatement(node) && node.expression) {
       recursionType = Math.max(
         extractRecursionKindFromExpression(functionName, node.expression).kind,
