@@ -516,11 +516,6 @@ function updateReturnStatementForDataConstruction(extract : Recursion, label : s
     )
   );
 
-  if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
-    // The end of the list is already an empty list, setting it would be useless.
-    return returnStatement;
-  }
-
   return [
     // `$end.<property> = <expression>;`
     ts.createExpressionStatement(
