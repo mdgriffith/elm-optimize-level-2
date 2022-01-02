@@ -39,7 +39,7 @@ const EMPTY_LIST = "_List_Nil";
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
   return (sourceFile) => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
-      // Is `var x = FX(function(...) {})`
+      // Is `var x = FX(function(...) { ... })` or `var x = function(...) { ... }`
       if (ts.isVariableDeclaration(node)
         && ts.isIdentifier(node.name)
         && node.initializer
