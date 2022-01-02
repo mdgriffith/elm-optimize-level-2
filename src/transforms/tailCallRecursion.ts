@@ -49,15 +49,15 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
             return ts.visitEachChild(node, visitor, context);
           }
 
-          const recursionType : RecursionType = determineRecursionType(node.name.text, foundFunction.fn.body);
-          if (recursionType === RecursionType.NotRecursive) {
+          const functionRecursionType : FunctionRecursion = determineRecursionType(node.name.text, foundFunction.fn.body);
+          if (functionRecursionType.kind === RecursionType.NotRecursive) {
             return ts.visitEachChild(node, visitor, context);
           }
 
           const parameterNames : Array<string> = foundFunction.fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
-          const newBody = updateFunctionBody(recursionType, node.name.text, parameterNames, foundFunction.fn.body, context);
+          const newBody = updateFunctionBody(functionRecursionType, node.name.text, parameterNames, foundFunction.fn.body, context);
 
           return ts.updateVariableDeclaration(
             node,
@@ -172,15 +172,15 @@ type Recursion
   | { kind: RecursionType.DataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
   | { kind: RecursionType.MultipleDataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> };
 
-function determineRecursionType(functionName : string, body : ts.Node) : RecursionType {
-  let recursionType : RecursionType = RecursionType.NotRecursive;
+function determineRecursionType(functionName : string, body : ts.Node) : FunctionRecursion {
+  let recursionType : FunctionRecursion = { kind: RecursionType.NotRecursive };
   let nodesToVisit : Array<ts.Node> = [body];
   let node : ts.Node | undefined;
 
   loop: while (
-    (recursionType === RecursionType.NotRecursive
-      || recursionType === RecursionType.PlainRecursion
-      || recursionType === RecursionType.DataConstructionRecursion
+    (recursionType.kind === RecursionType.NotRecursive
+      || recursionType.kind === RecursionType.PlainRecursion
+      || recursionType.kind === RecursionType.DataConstructionRecursion
     )
     && (node = nodesToVisit.shift())
   ) {
@@ -205,7 +205,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
     }
 
     if (ts.isContinueStatement(node) && node.label) {
-      recursionType = RecursionType.PlainRecursion;
+      recursionType = { kind: RecursionType.PlainRecursion };
       continue loop;
     }
 
@@ -226,13 +226,16 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
     }
 
     if (ts.isReturnStatement(node) && node.expression) {
-      const nodeRecursionType : RecursionType = extractRecursionKindFromExpression(functionName, node.expression).kind;
-      if (recursionType === RecursionType.DataConstructionRecursion && nodeRecursionType === RecursionType.DataConstructionRecursion) {
-        recursionType = RecursionType.MultipleDataConstructionRecursion;
+      const expressionRecursion : FunctionRecursion = toFunctionRecursion(extractRecursionKindFromExpression(functionName, node.expression));
+      if (recursionType.kind === RecursionType.DataConstructionRecursion && expressionRecursion.kind === RecursionType.DataConstructionRecursion) {
+        recursionType = { kind: RecursionType.MultipleDataConstructionRecursion };
         continue loop;
       }
 
-      recursionType = Math.max(recursionType, nodeRecursionType);
+      if (recursionType.kind < expressionRecursion.kind) {
+        recursionType = expressionRecursion;
+      }
+      
       continue loop;
     }
   }
@@ -335,7 +338,7 @@ function constructorDeclarations(property : string) {
   ];
 }
 
-function updateFunctionBody(recursionType : RecursionType, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(recursionType : FunctionRecursion, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
@@ -370,11 +373,11 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
     return node;
   }
 
-  if (recursionType === RecursionType.NotRecursive) {
+  if (recursionType.kind === RecursionType.NotRecursive) {
     return body;
   }
 
-  if (recursionType === RecursionType.PlainRecursion) {
+  if (recursionType.kind === RecursionType.PlainRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
         // `<label>: while (true) { <updatedBlock> }`
@@ -385,7 +388,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
     return updatedBlock;
   }
 
-  if (recursionType === RecursionType.ConsRecursion) {
+  if (recursionType.kind === RecursionType.ConsRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
         [ ...consDeclarations
@@ -403,7 +406,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
     );
   }
 
-  if (recursionType === RecursionType.DataConstructionRecursion) {
+  if (recursionType.kind === RecursionType.DataConstructionRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
         [ ...constructorDeclarations("c")
@@ -421,7 +424,7 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
     );
   }
 
-  if (recursionType === RecursionType.MultipleDataConstructionRecursion) {
+  if (recursionType.kind === RecursionType.MultipleDataConstructionRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
         [ ...multipleConstructorDeclarations
@@ -442,18 +445,18 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
   return updatedBlock;
 }
 
-function updateReturnStatement(recursionType : RecursionType, functionName : string, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+function updateReturnStatement(recursionType : FunctionRecursion, functionName : string, label : string, parameterNames : Array<string>, expression : ts.Expression) {
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
-  if (recursionType === RecursionType.ConsRecursion) {
+  if (recursionType.kind === RecursionType.ConsRecursion) {
     return updateReturnStatementForCons(extract, label, parameterNames, expression);
   }
 
-  if (recursionType === RecursionType.DataConstructionRecursion) {
-    return updateReturnStatementForDataConstruction(extract, label, parameterNames, expression);
+  if (recursionType.kind === RecursionType.DataConstructionRecursion) {
+    return updateReturnStatementForDataConstruction(recursionType.property, extract, label, parameterNames, expression);
   }
 
-  if (recursionType === RecursionType.MultipleDataConstructionRecursion) {
+  if (recursionType.kind === RecursionType.MultipleDataConstructionRecursion) {
     return updateReturnStatementForMultipleDataConstruction(extract, label, parameterNames, expression)
   }
 
@@ -513,10 +516,7 @@ function updateReturnStatementForCons(extract : Recursion, label : string, param
   ];
 }
 
-function updateReturnStatementForDataConstruction(extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
-  // TODO Move
-  const property : string = "c";
-
+function updateReturnStatementForDataConstruction(property : string, extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
   if (extract.kind === RecursionType.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
@@ -579,6 +579,23 @@ function updateReturnStatementForMultipleDataConstruction(extract : Recursion, l
       )
     )
   ];
+}
+
+function toFunctionRecursion(recursion : Recursion) : FunctionRecursion {
+  switch (recursion.kind) {
+    case RecursionType.NotRecursive:
+      return { kind: RecursionType.NotRecursive };
+    case RecursionType.PlainRecursion:
+      return { kind: RecursionType.PlainRecursion };
+    case RecursionType.ConsRecursion:
+      return { kind: RecursionType.ConsRecursion };
+    case RecursionType.BooleanRecursion:
+      return { kind: RecursionType.BooleanRecursion };
+    case RecursionType.DataConstructionRecursion:
+      return { kind: RecursionType.DataConstructionRecursion, property: recursion.property };
+    case RecursionType.MultipleDataConstructionRecursion:
+      return { kind: RecursionType.MultipleDataConstructionRecursion };
+  }
 }
 
 function extractRecursionKindFromExpression(functionName : string, node : ts.Expression) : Recursion {
