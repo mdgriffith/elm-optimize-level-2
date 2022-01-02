@@ -545,6 +545,128 @@ test('should optimize a function that wraps the result in a constructor', () => 
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that wraps the result in a constructors with different properties', () => {
+  // Corresponds to the following Elm code
+  // type Tree
+  //   = Node Int
+  //   | SingleChild Tree Int
+  //   | TwoChildren Int Tree Tree
+  //
+  // map : (Int -> Int) -> Tree -> Tree
+  // map fn tree =
+  //   case tree of
+  //       Node value ->
+  //           Node (fn value)
+  //
+  //       SingleChild value subTree ->
+  //           SingleChild (fn value) (map fn subTree)
+  //
+  //       TwoChildren left right value ->
+  //           TwoChildren (map fn left) (map fn right) (fn value)
+  const initialCode = `
+  var $something$TreeWrapping$Node = function (a) {
+    return {$: 0, a: a};
+  };
+  var $something$TreeWrapping$SingleChild = F2(
+    function (a, b) {
+      return {$: 1, a: a, b: b};
+    });
+  var $something$TreeWrapping$TwoChildren = F3(
+    function (a, b, c) {
+      return {$: 2, a: a, b: b, c: c};
+    });
+
+  var $something$TreeWrapping$map = F2(
+    function (fn, tree) {
+      switch (tree.$) {
+        case 0:
+          var value = tree.a;
+          return $something$TreeWrapping$Node(
+            fn(value));
+        case 1:
+          var subTree = tree.a;
+          var value = tree.b;
+          return A2(
+            $something$TreeWrapping$SingleChild,
+            A2($something$TreeWrapping$map, fn, subTree),
+            fn(value));
+        default:
+          var value = tree.a;
+          var left = tree.b;
+          var right = tree.c;
+          return A3(
+            $something$TreeWrapping$TwoChildren,
+            fn(value),
+            A2($something$TreeWrapping$map, fn, left),
+            A2($something$TreeWrapping$map, fn, right));
+      }
+    });
+  `;
+
+  const expectedOutputCode = `
+  var $something$TreeWrapping$Node = function (a) {
+    return {$: 0, a: a};
+  };
+  var $something$TreeWrapping$SingleChild = F2(
+    function (a, b) {
+      return {$: 1, a: a, b: b};
+    });
+  var $something$TreeWrapping$TwoChildren = F3(
+    function (a, b, c) {
+      return {$: 2, a: a, b: b, c: c};
+    });
+
+  var $something$TreeWrapping$map = F2(
+    function (fn, tree) {
+      var $start = { a: null };
+      var $end = $start;
+      var $field = 'a';
+      map:
+      while (true) {
+        switch (tree.$) {
+          case 0:
+            var value = tree.a;
+            $end[$field] = $something$TreeWrapping$Node(
+              fn(value));
+            return $start.a;
+          case 1:
+            var subTree = tree.a;
+            var value = tree.b;
+            $end[$field] = A2(
+              $something$TreeWrapping$SingleChild,
+              null,
+              fn(value));
+            $end = $end[$field];
+            $field = 'a';
+            tree = subTree;
+            continue map;
+          default:
+            var value = tree.a;
+            var left = tree.b;
+            var right = tree.c;
+            $end[$field] = A3(
+              $something$TreeWrapping$TwoChildren,
+              fn(value),
+              null,
+              A2($something$TreeWrapping$map, fn, right));
+            $end = $end[$field];
+            $field = 'b';
+            tree = left;
+            continue map;
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
