@@ -438,6 +438,10 @@ function updateReturnStatement(recursionType : RecursionType, functionName : str
     return updateReturnStatementForDataConstruction(extract, label, parameterNames, expression);
   }
 
+  if (recursionType === RecursionType.MultipleDataConstructionRecursion) {
+    return updateReturnStatementForMultipleDataConstruction(extract, label, parameterNames, expression)
+  }
+
   switch (extract.kind) {
     case RecursionType.NotRecursive: {
       return null;
@@ -528,6 +532,37 @@ function updateReturnStatementForDataConstruction(extract : Recursion, label : s
       )
     ),
     returnStatement
+  ];
+}
+
+function updateReturnStatementForMultipleDataConstruction(extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+  if (extract.kind === RecursionType.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionType.DataConstructionRecursion) {
+    return createMultipleDataConstructionContinuation(label, extract.property, parameterNames, extract.expression, extract.arguments);
+  }
+
+  // End of the recursion, add the value to the $end and return the start.
+  return [
+    // `$end[$field] = <expression>;`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        ts.createElementAccess(
+          END,
+          FIELD
+        ),
+        expression
+      )
+    ),
+    // `return $start.a;`
+    ts.createReturn(
+      ts.createPropertyAccess(
+        START,
+        ts.createIdentifier("a")
+      )
+    )
   ];
 }
 
@@ -708,6 +743,32 @@ function createDataConstructionContinuation(label : string, property : string, p
   ];
 }
 
+function createMultipleDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  return [
+    assignToDynamicDataProperty(expression),
+    // `$end = $end[$field];`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        END,
+        ts.createElementAccess(
+          END,
+          FIELD
+        )
+      )
+    ),
+    // `$field = '<property>';`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        FIELD,
+        ts.createLiteral(property)
+      )
+    ),
+    ...paramReassignments(parameterNames, newArguments),
+    // `continue <label>;`
+    ts.createContinue(label)
+  ];
+}
+
 function createBooleanContinuation(label : string, parameterNames : Array<string>, mainOperator: BooleanKind, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   const ifExpr =
     mainOperator === BooleanKind.Or
@@ -816,6 +877,19 @@ function assignToStaticDataProperty(property : string, expression : ts.Expressio
       ts.createPropertyAccess(
         END,
         property
+      ),
+      expression
+    )
+  );
+}
+
+function assignToDynamicDataProperty(expression : ts.Expression) : ts.Statement {
+  // `end[$field] = <expression where recursive call has been replaced by null>;`
+  return ts.createExpressionStatement(
+    ts.createAssignment(
+      ts.createElementAccess(
+        END,
+        FIELD
       ),
       expression
     )
