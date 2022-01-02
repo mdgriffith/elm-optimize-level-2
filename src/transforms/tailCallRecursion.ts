@@ -409,7 +409,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   if (recursionType.kind === RecursionType.DataConstructionRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
-        [ ...constructorDeclarations("c")
+        [ ...constructorDeclarations(recursionType.property)
         // `<label>: while (true) { <updatedBlock> }`
         , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
         ]
@@ -418,7 +418,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
 
     return ts.updateBlock(
       updatedBlock,
-      [ ...constructorDeclarations("c")
+      [ ...constructorDeclarations(recursionType.property)
       , ...updatedBlock.statements
       ]
     );
