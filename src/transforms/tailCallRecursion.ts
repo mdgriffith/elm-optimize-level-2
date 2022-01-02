@@ -696,7 +696,7 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
 
 function createDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   return [
-    assignToDataProperty(property, expression),
+    assignToStaticDataProperty(property, expression),
     // `end = end.<property>;`
     ts.createExpressionStatement(
       ts.createAssignment(
@@ -814,7 +814,7 @@ function addToEnd(element : ts.Expression) : ts.Statement {
   );
 }
 
-function assignToDataProperty(property : string, expression : ts.Expression) : ts.Statement {
+function assignToStaticDataProperty(property : string, expression : ts.Expression) : ts.Statement {
   // `end.b = <expression where recursive call has been replaced by null>;`
   return ts.createExpressionStatement(
     ts.createAssignment(
