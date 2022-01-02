@@ -216,10 +216,11 @@ function determineRecursionType(functionName : string, body : ts.Node) : Recursi
     }
 
     if (ts.isReturnStatement(node) && node.expression) {
-      recursionType = Math.max(
-        extractRecursionKindFromExpression(functionName, node.expression).kind,
-        recursionType
-      );
+      const nodeRecursionType : RecursionType = extractRecursionKindFromExpression(functionName, node.expression).kind;
+      if (recursionType === RecursionType.DataConstructionRecursion && nodeRecursionType === RecursionType.DataConstructionRecursion) {
+        recursionType = RecursionType.MultipleDataConstructionRecursion;
+      }
+      recursionType = Math.max(recursionType, nodeRecursionType);
       continue loop;
     }
   }
