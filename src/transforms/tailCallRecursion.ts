@@ -466,7 +466,7 @@ function updateReturnStatementForCons(extract : Recursion, label : string, param
 
   // End of the recursion, add the value to the end of the list and return the start.
 
-  // `return $end.b`
+  // `return $end.b;`
   const returnStatement = ts.createReturn(
     ts.createPropertyAccess(
       START,
@@ -508,7 +508,7 @@ function updateReturnStatementForDataConstruction(extract : Recursion, label : s
 
   // End of the recursion, add the value to the $end and return the start.
 
-  // `return $end.<property>`
+  // `return $start.<property>;`
   const returnStatement = ts.createReturn(
     ts.createPropertyAccess(
       START,
@@ -678,7 +678,7 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
 function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Node> {
   return [
     ...elements.map(addToEnd),
-    // `end = end.b;`
+    // `$end = $end.b;`
     ts.createExpressionStatement(
       ts.createAssignment(
         END,
@@ -697,7 +697,7 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
 function createDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   return [
     assignToStaticDataProperty(property, expression),
-    // `end = end.<property>;`
+    // `$end = $end.<property>;`
     ts.createExpressionStatement(
       ts.createAssignment(
         END,
