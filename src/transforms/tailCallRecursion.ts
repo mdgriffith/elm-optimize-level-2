@@ -156,6 +156,14 @@ enum BooleanKind {
   Or,
 };
 
+type FunctionRecursion
+  = { kind: RecursionType.NotRecursive }
+  | { kind: RecursionType.PlainRecursion }
+  | { kind: RecursionType.ConsRecursion }
+  | { kind: RecursionType.BooleanRecursion }
+  | { kind: RecursionType.DataConstructionRecursion, property: string }
+  | { kind: RecursionType.MultipleDataConstructionRecursion };
+
 type Recursion
   = { kind: RecursionType.NotRecursive }
   | { kind: RecursionType.PlainRecursion, arguments : Array<ts.Expression> }
