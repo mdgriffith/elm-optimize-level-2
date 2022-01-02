@@ -533,8 +533,9 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
       const argExtract = extractRecursionKindFromExpression(functionName, node.arguments[i]);
       // TODO Support nested data construction
       if (argExtract.kind === RecursionType.PlainRecursion) {
-        // TODO Use arguments from node.arguments and replace recursive one with hole.
-        const argumentsWithHole : ts.Expression[] = [];
+        const argumentsWithHole : ts.Expression[] = [...node.arguments];
+        argumentsWithHole[i] = ts.createNull();
+
         extract = {
           kind: RecursionType.DataConstructionRecursion,
           // TODO Only works for custom types, not record type alias constructors or other functions
