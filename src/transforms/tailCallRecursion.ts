@@ -333,7 +333,14 @@ function updateFunctionBody(recursionType : RecursionType, functionName : string
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
 
   function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
-    if (ts.isBlock(node) || ts.isLabeledStatement(node) || ts.isWhileStatement(node)) {
+    if (ts.isBlock(node)
+     || ts.isLabeledStatement(node)
+     || ts.isWhileStatement(node)
+     || ts.isSwitchStatement(node)
+     || ts.isCaseClause(node)
+     || ts.isCaseBlock(node)
+     || ts.isDefaultClause(node)
+    ) {
       return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
     }
 
