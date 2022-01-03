@@ -28,9 +28,6 @@ but this version doesn't (because of the additional `<|`):
 
 */
 
-// TODO Fix TCO for record type alias constructors
-// TODO Enable TCO for record literals
-// TODO Enable TCO for tuples
 // TODO Enable TCO for nested data constructions
 // TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
 
