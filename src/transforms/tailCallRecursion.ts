@@ -30,6 +30,16 @@ but this version doesn't (because of the additional `<|`):
 
 // TODO Enable TCO for nested data constructions
 // TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
+// TODO Optimize functions like
+// naiveMap : (a -> b) -> List a -> List b
+// naiveMap =
+//     \fn list ->
+//         case list of
+//             [] ->
+//                 []
+//             x :: xs ->
+//                 fn x :: naiveMap fn xs
+
 
 type Context = any;
 
