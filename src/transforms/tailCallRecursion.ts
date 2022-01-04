@@ -28,6 +28,9 @@ but this version doesn't (because of the additional `<|`):
 
 */
 
+// TODO Enable TCO for sum recursions
+//   TODO Figure out whether the values are strings or numbers to set the initial value
+// TODO Enable TCO for product recursions
 // TODO Enable TCO for nested data constructions
 // TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
 // TODO Optimize functions like
@@ -581,6 +584,7 @@ function updateReturnStatementForArithmeticOperation(extract : Recursion, label 
   }
 
   // End of the recursion, return the result combined with the return value
+  // TODO Compare with 0
   if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
     // The end of the list is already an empty list, setting it would be useless.
     // `return $result;`
