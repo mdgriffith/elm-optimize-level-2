@@ -740,6 +740,10 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
     return extractRecursionKindFromBooleanExpression(functionName, node);
   }
 
+  if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+    return extractRecursionKindFromArithmeticExpression(functionName, node);
+  }
+
   return { kind: RecursionType.NotRecursive };
 }
 
@@ -761,6 +765,31 @@ function extractRecursionKindFromBooleanExpression(functionName : string, node :
     return extract;
   }
 
+  return { kind: RecursionType.NotRecursive };
+}
+
+function extractRecursionKindFromArithmeticExpression(functionName : string, node : ts.BinaryExpression) : Recursion {
+  const extract = extractRecursionKindFromExpression(functionName, node.right);
+  // TODO Support more
+  const operator = ArithmeticOperator.Add;
+
+  if (extract.kind === RecursionType.PlainRecursion) {
+    return {
+      kind: RecursionType.ArithmeticRecursion,
+      // TODO Support right?
+      expression: node.left,
+      operator: operator,
+      arguments: extract.arguments
+    };
+  }
+
+  if (extract.kind === RecursionType.ArithmeticRecursion && extract.operator === operator) {
+    // `<node.left> + <expressions from node.right>`
+    extract.expression = ts.createBinary(node.left, node.operatorToken, extract.expression);
+    return extract;
+  }
+
+  // TODO If the function is otherwise plain recursive in other places, then we should still make this function plain recursive.
   return { kind: RecursionType.NotRecursive };
 }
 
