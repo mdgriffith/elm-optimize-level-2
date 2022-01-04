@@ -727,10 +727,14 @@ function isDataConstructor(functionName : string) {
 }
 
 function extractRecursionKindFromBinaryExpression(functionName : string, node : ts.BinaryExpression) : Recursion {
-  if (node.operatorToken.kind !== ts.SyntaxKind.BarBarToken && node.operatorToken.kind !== ts.SyntaxKind.AmpersandAmpersandToken) {
-    return { kind: RecursionType.NotRecursive };
+  if (node.operatorToken.kind === ts.SyntaxKind.BarBarToken || node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
+    return extractRecursionKindFromBooleanExpression(functionName, node);
   }
 
+  return { kind: RecursionType.NotRecursive };
+}
+
+function extractRecursionKindFromBooleanExpression(functionName : string, node : ts.BinaryExpression) : Recursion {
   const extract = extractRecursionKindFromExpression(functionName, node.right);
 
   if (extract.kind === RecursionType.PlainRecursion) {
