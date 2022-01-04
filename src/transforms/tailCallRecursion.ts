@@ -511,6 +511,10 @@ function updateReturnStatement(recursionType : FunctionRecursion, functionName :
     return updateReturnStatementForMultipleDataConstruction(extract, label, parameterNames, expression)
   }
 
+  if (recursionType.kind === RecursionType.ArithmeticRecursion) {
+    return updateReturnStatementForArithmeticOperation(extract, label, parameterNames, expression);
+  }
+
   switch (extract.kind) {
     case RecursionType.NotRecursive: {
       return null;
@@ -565,6 +569,32 @@ function updateReturnStatementForCons(extract : Recursion, label : string, param
     ),
     returnStatement
   ];
+}
+
+function updateReturnStatementForArithmeticOperation(extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+  if (extract.kind === RecursionType.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionType.ArithmeticRecursion) {
+    return createArithmeticContinuation(label, parameterNames, extract.expression, extract.arguments);
+  }
+
+  // End of the recursion, return the result combined with the return value
+  if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
+    // The end of the list is already an empty list, setting it would be useless.
+    // `return $result;`
+    return ts.createReturn(RESULT);
+  }
+
+  return ts.createReturn(
+    ts.createBinary(
+      RESULT,
+      // TODO Support more
+      ts.SyntaxKind.PlusToken,
+      expression
+    )
+  );
 }
 
 function updateReturnStatementForDataConstruction(property : string, extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
@@ -834,6 +864,22 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
           END,
           "b"
         )
+      )
+    ),
+    ...paramReassignments(parameterNames, newArguments),
+    // `continue <label>;`
+    ts.createContinue(label)
+  ];
+}
+
+function createArithmeticContinuation(label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+  return [
+    // `$result += <expression>;`
+    ts.createExpressionStatement(
+      ts.createBinary(
+        RESULT,
+        ts.SyntaxKind.PlusEqualsToken,
+        expression
       )
     ),
     ...paramReassignments(parameterNames, newArguments),
