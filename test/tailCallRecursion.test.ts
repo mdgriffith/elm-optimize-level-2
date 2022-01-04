@@ -667,6 +667,53 @@ test('should optimize a function that wraps the result in a constructors with di
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that adds values to the result of recursive calls (List.sum-like)', () => {
+  // Corresponds to the following Elm code
+  // sumPlus1 : List number -> number
+  // sumPlus1 list =
+  //     case list of
+  //         [] ->
+  //             1
+  //         x :: xs ->
+  //             x + sumPlus1 xs
+  const initialCode = `
+  var $something$sumPlus1 = function (list) {
+    if (!list.b) {
+      return 1;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return x + $something$sumPlus1(xs);
+    }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$sumPlus1 = function (list) {
+    var $result = 0;
+    sumPlus1: while (true) {
+      if (!list.b) {
+        return $result + 1;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        $result += x;
+        list = xs;
+        constinue sumPlus1;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
