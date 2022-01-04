@@ -159,6 +159,7 @@ enum RecursionType {
   ConsRecursion = 3,
   DataConstructionRecursion = 4,
   MultipleDataConstructionRecursion = 5,
+  ArithmeticRecursion = 6,
 };
 
 enum BooleanKind {
@@ -166,13 +167,18 @@ enum BooleanKind {
   Or,
 };
 
+enum ArithmeticOperator {
+  Add,
+}
+
 type FunctionRecursion
   = { kind: RecursionType.NotRecursive }
   | { kind: RecursionType.PlainRecursion }
   | { kind: RecursionType.ConsRecursion }
   | { kind: RecursionType.BooleanRecursion }
   | { kind: RecursionType.DataConstructionRecursion, property: string }
-  | { kind: RecursionType.MultipleDataConstructionRecursion };
+  | { kind: RecursionType.MultipleDataConstructionRecursion }
+  | { kind: RecursionType.ArithmeticRecursion, operator: ArithmeticOperator }
 
 type Recursion
   = { kind: RecursionType.NotRecursive }
@@ -180,7 +186,8 @@ type Recursion
   | { kind: RecursionType.ConsRecursion, elements : ts.Expression[], arguments : Array<ts.Expression> }
   | { kind: RecursionType.BooleanRecursion, expression: ts.Expression, mainOperator: BooleanKind, arguments : Array<ts.Expression> }
   | { kind: RecursionType.DataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
-  | { kind: RecursionType.MultipleDataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> };
+  | { kind: RecursionType.MultipleDataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
+  | { kind: RecursionType.ArithmeticRecursion, operator: ArithmeticOperator, expression : ts.Expression, arguments : Array<ts.Expression> }
 
 function determineRecursionType(functionName : string, body : ts.Node) : FunctionRecursion {
   let recursionType : FunctionRecursion = { kind: RecursionType.NotRecursive };
@@ -617,6 +624,8 @@ function toFunctionRecursion(recursion : Recursion) : FunctionRecursion {
       return { kind: RecursionType.DataConstructionRecursion, property: recursion.property };
     case RecursionType.MultipleDataConstructionRecursion:
       return { kind: RecursionType.MultipleDataConstructionRecursion };
+    case RecursionType.ArithmeticRecursion:
+      return { kind: RecursionType.ArithmeticRecursion, operator: recursion.operator };
   }
 }
 
