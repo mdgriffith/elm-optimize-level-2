@@ -263,6 +263,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
 const START = ts.createIdentifier("$start");
 const END = ts.createIdentifier("$end");
 const FIELD = ts.createIdentifier("$field");
+const RESULT = ts.createIdentifier("$result");
 
 const consDeclarations =
   [
@@ -410,6 +411,27 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       return ts.createBlock(
         [ // `<label>: while (true) { <updatedBlock> }`
         ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+        ]
+      );
+    }
+
+    return updatedBlock;
+  }
+
+  if (recursionType.kind === RecursionType.ArithmeticRecursion) {
+    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+      return ts.createBlock(
+        [ // `var $result = 0;`
+        ts.createVariableStatement(
+          undefined,
+          [ts.createVariableDeclaration(
+            RESULT,
+            undefined,
+            ts.createLiteral(0)
+          )]
+        )
+        // `<label>: while (true) { <updatedBlock> }`
+        , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
         ]
       );
     }
