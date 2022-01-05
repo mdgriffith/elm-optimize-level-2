@@ -30,7 +30,6 @@ but this version doesn't (because of the additional `<|`):
 
 // TODO Enable TCO for sum recursions
 //   TODO Figure out whether the values are strings or numbers to set the initial value
-// TODO Enable TCO for product recursions
 // TODO Enable TCO for nested data constructions
 // TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
 // TODO Optimize functions like
@@ -172,7 +171,15 @@ enum BooleanKind {
 
 enum ArithmeticOperator {
   Add,
+  Multiply
 }
+
+type ArithmeticData = {
+  operator: ArithmeticOperator,
+  neutralValue: number,
+  binaryToken: ts.SyntaxKind,
+  assignmentToken: ts.CompoundAssignmentOperator,
+} 
 
 type FunctionRecursion
   = { kind: RecursionType.NotRecursive }
@@ -181,7 +188,7 @@ type FunctionRecursion
   | { kind: RecursionType.BooleanRecursion }
   | { kind: RecursionType.DataConstructionRecursion, property: string }
   | { kind: RecursionType.MultipleDataConstructionRecursion }
-  | { kind: RecursionType.ArithmeticRecursion, operator: ArithmeticOperator }
+  | { kind: RecursionType.ArithmeticRecursion, operation: ArithmeticData }
 
 type Recursion
   = { kind: RecursionType.NotRecursive }
@@ -424,13 +431,14 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   if (recursionType.kind === RecursionType.ArithmeticRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
-        [ // `var $result = 0;`
-        ts.createVariableStatement(
+        // `var $result = 0;` for addition
+        // `var $result = 1;` for multiplication
+        [ ts.createVariableStatement(
           undefined,
           [ts.createVariableDeclaration(
             RESULT,
             undefined,
-            ts.createLiteral(0)
+            ts.createLiteral(recursionType.operation.neutralValue)
           )]
         )
         // `<label>: while (true) { <updatedBlock> }`
@@ -515,7 +523,7 @@ function updateReturnStatement(recursionType : FunctionRecursion, functionName :
   }
 
   if (recursionType.kind === RecursionType.ArithmeticRecursion) {
-    return updateReturnStatementForArithmeticOperation(extract, label, parameterNames, expression);
+    return updateReturnStatementForArithmeticOperation(recursionType.operation, extract, label, parameterNames, expression);
   }
 
   switch (extract.kind) {
@@ -574,28 +582,27 @@ function updateReturnStatementForCons(extract : Recursion, label : string, param
   ];
 }
 
-function updateReturnStatementForArithmeticOperation(extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+function updateReturnStatementForArithmeticOperation(operation: ArithmeticData, extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
   if (extract.kind === RecursionType.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
   if (extract.kind === RecursionType.ArithmeticRecursion) {
-    return createArithmeticContinuation(label, parameterNames, extract.expression, extract.arguments);
+    return createArithmeticContinuation(operation, label, parameterNames, extract.expression, extract.arguments);
   }
 
   // End of the recursion, return the result combined with the return value
-  // TODO Compare with 0
-  if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
-    // The end of the list is already an empty list, setting it would be useless.
-    // `return $result;`
+  if (ts.isLiteralExpression(expression) && expression.text === (operation.neutralValue + '')) {
     return ts.createReturn(RESULT);
   }
 
+  // `return $result + <expression>;` for addition
+  // `return $result * <expression>;` for multiplication
   return ts.createReturn(
     ts.createBinary(
       RESULT,
-      // TODO Support more
-      ts.SyntaxKind.PlusToken,
+      // Added "any" because it works but could not figure out how to make it typecheck
+      (ts.createToken(operation.binaryToken) as any),
       expression
     )
   );
@@ -681,7 +688,27 @@ function toFunctionRecursion(recursion : Recursion) : FunctionRecursion {
     case RecursionType.MultipleDataConstructionRecursion:
       return { kind: RecursionType.MultipleDataConstructionRecursion };
     case RecursionType.ArithmeticRecursion:
-      return { kind: RecursionType.ArithmeticRecursion, operator: recursion.operator };
+      return { kind: RecursionType.ArithmeticRecursion, operation: arithmeticOperation(recursion.operator) };
+  }
+}
+
+function arithmeticOperation(operator: ArithmeticOperator) : ArithmeticData {
+  switch (operator) {
+    case ArithmeticOperator.Add:
+      return {
+        operator,
+        neutralValue: 0,
+        binaryToken: ts.SyntaxKind.PlusToken,
+        assignmentToken: ts.SyntaxKind.PlusEqualsToken,
+      };
+
+    case ArithmeticOperator.Multiply:
+      return {
+        operator,
+        neutralValue: 1,
+        binaryToken: ts.SyntaxKind.AsteriskToken,
+        assignmentToken: ts.SyntaxKind.AsteriskEqualsToken,
+      };
   }
 }
 
@@ -796,7 +823,7 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
     return extractRecursionKindFromBooleanExpression(functionName, node);
   }
 
-  if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+  if (node.operatorToken.kind === ts.SyntaxKind.PlusToken || node.operatorToken.kind === ts.SyntaxKind.AsteriskToken) {
     return extractRecursionKindFromArithmeticExpression(functionName, node);
   }
 
@@ -826,8 +853,10 @@ function extractRecursionKindFromBooleanExpression(functionName : string, node :
 
 function extractRecursionKindFromArithmeticExpression(functionName : string, node : ts.BinaryExpression) : Recursion {
   const extract = extractRecursionKindFromExpression(functionName, node.right);
-  // TODO Support more
-  const operator = ArithmeticOperator.Add;
+  const operator =
+    node.operatorToken.kind === ts.SyntaxKind.PlusToken
+      ? ArithmeticOperator.Add
+      : /* ts.SyntaxKind.AsteriskToken */ ArithmeticOperator.Multiply
 
   if (extract.kind === RecursionType.PlainRecursion) {
     return {
@@ -840,7 +869,7 @@ function extractRecursionKindFromArithmeticExpression(functionName : string, nod
   }
 
   if (extract.kind === RecursionType.ArithmeticRecursion && extract.operator === operator) {
-    // `<node.left> + <expressions from node.right>`
+    // `<node.left> + <expressions from node.right>` (operation can be either + or *)
     extract.expression = ts.createBinary(node.left, node.operatorToken, extract.expression);
     return extract;
   }
@@ -876,13 +905,14 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
   ];
 }
 
-function createArithmeticContinuation(label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function createArithmeticContinuation(operation: ArithmeticData, label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
   return [
-    // `$result += <expression>;`
+    // `$result += <expression>;` for addition
+    // `$result *= <expression>;` for multiplication
     ts.createExpressionStatement(
       ts.createBinary(
         RESULT,
-        ts.SyntaxKind.PlusEqualsToken,
+        operation.assignmentToken,
         expression
       )
     ),

@@ -699,7 +699,148 @@ test('should optimize a function that adds values to the result of recursive cal
         var xs = list.b;
         $result += x;
         list = xs;
-        constinue sumPlus1;
+        continue sumPlus1;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should skip the final addition with 0 for a recursive addition', () => {
+  // Corresponds to the following Elm code
+  // sum : List number -> number
+  // sum list =
+  //     case list of
+  //         [] ->
+  //             0
+  //         x :: xs ->
+  //             x + sum xs
+  const initialCode = `
+  var $something$sum = function (list) {
+    if (!list.b) {
+      return 0;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return x + $something$sum(xs);
+    }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$sum = function (list) {
+    var $result = 0;
+    sum: while (true) {
+      if (!list.b) {
+        return $result;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        $result += x;
+        list = xs;
+        continue sum;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should optimize a function that multiplies values to the result of recursive calls (List.product-like)', () => {
+  // Corresponds to the following Elm code
+  // naiveProduct : List number -> number
+  // naiveProduct list =
+  //     case list of
+  //         [] ->
+  //             2
+  //         x :: xs ->
+  //             x * naiveProduct xs
+  const initialCode = `
+  var $something$product = function (list) {
+    if (!list.b) {
+      return 2;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return x * $something$product(xs);
+    }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$product = function (list) {
+    var $result = 1;
+    product: while (true) {
+      if (!list.b) {
+        return $result * 2;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        $result *= x;
+        list = xs;
+        continue product;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should skip the final multiplication by 1 for a recursive multiplication', () => {
+  // Corresponds to the following Elm code
+  // naiveProduct : List number -> number
+  // naiveProduct list =
+  //     case list of
+  //         [] ->
+  //             1
+  //         x :: xs ->
+  //             x * naiveProduct xs
+  const initialCode = `
+  var $something$product = function (list) {
+    if (!list.b) {
+      return 1;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return x * $something$product(xs);
+    }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$product = function (list) {
+    var $result = 1;
+    product: while (true) {
+      if (!list.b) {
+        return $result;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        $result *= x;
+        list = xs;
+        continue product;
       }
     }
   };
