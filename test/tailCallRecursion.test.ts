@@ -855,6 +855,53 @@ test('should skip the final multiplication by 1 for a recursive multiplication',
   expect(actual).toBe(expected);
 });
 
+test('should support arithmetic operations on the right side of the recursive call', () => {
+  // Corresponds to the following Elm code
+  // naiveProduct : List number -> number
+  // naiveProduct list =
+  //     case list of
+  //         [] ->
+  //             1
+  //         x :: xs ->
+  //             x * naiveProduct xs
+  const initialCode = `
+  var $something$product = function (list) {
+    if (!list.b) {
+      return 1;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return $something$product(xs) * x;
+    }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$product = function (list) {
+    var $result = 1;
+    product: while (true) {
+      if (!list.b) {
+        return $result;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        $result *= x;
+        list = xs;
+        continue product;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,

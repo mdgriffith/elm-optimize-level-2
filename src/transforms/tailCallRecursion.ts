@@ -822,7 +822,11 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
   }
 
   if (node.operatorToken.kind === ts.SyntaxKind.PlusToken || node.operatorToken.kind === ts.SyntaxKind.AsteriskToken) {
-    return extractRecursionKindFromArithmeticExpression(functionName, node);
+    const extract = extractRecursionKindFromArithmeticExpression(functionName, node.right, node.operatorToken, node.left)
+    if (extract.kind === RecursionType.NotRecursive) {
+      return extractRecursionKindFromArithmeticExpression(functionName, node.left, node.operatorToken, node.right);
+    }
+    return extract;
   }
 
   return { kind: RecursionType.NotRecursive };
@@ -849,26 +853,25 @@ function extractRecursionKindFromBooleanExpression(functionName : string, node :
   return { kind: RecursionType.NotRecursive };
 }
 
-function extractRecursionKindFromArithmeticExpression(functionName : string, node : ts.BinaryExpression) : Recursion {
-  const extract = extractRecursionKindFromExpression(functionName, node.right);
+function extractRecursionKindFromArithmeticExpression(functionName : string, expression : ts.Expression, operatorToken : ts.BinaryOperatorToken, otherOperand : ts.Expression) : Recursion {
+  const extract = extractRecursionKindFromExpression(functionName, expression);
   const operator =
-    node.operatorToken.kind === ts.SyntaxKind.PlusToken
+    operatorToken.kind === ts.SyntaxKind.PlusToken
       ? ArithmeticOperator.Add
       : /* ts.SyntaxKind.AsteriskToken */ ArithmeticOperator.Multiply
 
   if (extract.kind === RecursionType.PlainRecursion) {
     return {
       kind: RecursionType.ArithmeticRecursion,
-      // TODO Support right?
-      expression: node.left,
+      expression: otherOperand,
       operator: operator,
       arguments: extract.arguments
     };
   }
 
   if (extract.kind === RecursionType.ArithmeticRecursion && extract.operator === operator) {
-    // `<node.left> + <expressions from node.right>` (operation can be either + or *)
-    extract.expression = ts.createBinary(node.left, node.operatorToken, extract.expression);
+    // `<expressions from otherOperand> + <expression>` (operation can be either + or *)
+    extract.expression = ts.createBinary(otherOperand, operatorToken, extract.expression);
     return extract;
   }
 
