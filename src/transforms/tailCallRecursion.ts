@@ -811,8 +811,6 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
 function isDataConstructor(functionName : string) {
   // Checks whether the function name is a native data constructor by checking
   // whether the name starts with an upper case.
-  // TODO Include non-custom type constructors, but then we need to be more careful about validating the property name.
-  // TODO This actively doesn't work for record type aliases, so support needs to be improved or actively removed
   const splits = functionName.split("$");
   const last = splits[splits.length - 1];
   return last && last[0] === last[0].toUpperCase();
