@@ -28,8 +28,23 @@ but this version doesn't (because of the additional `<|`):
 
 */
 
-// TODO Enable TCO for sum recursions
-//   TODO Figure out whether the values are strings or numbers to set the initial value
+/*
+For arithmetic operations:
++ is used for both concatenating numbers and strings
+but it is only used for strings when concatenating string literals
+When strings are appended without literals, `_Utils_ap` is used (which is also used for list concatenation)
+- `foo ++ "bar"` => `foo + 'bar'`
+- `foo ++ bar ++ "bar"` => `foo + (bar + 'bar')`
+- `(foo ++ bar) ++ "bar"` => `_Utils_ap(foo, bar) + 'bar'`
+
+Therefore:
+- If we see a `+` operation, we can look at the operands. If there is a string, it's a string append, and otherwise it's a number sum.
+- If we see a `_Utils_ap`
+  - If there was a `+` somewhere else (in a return statement), then we can determine it's a string concatenation
+  - Otherwise we don't know so we shouldn't do anything (or try to infer harder based on the arguments)
+
+*/
+
 // TODO Enable TCO for nested data constructions
 // TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
 // TODO Optimize functions like
