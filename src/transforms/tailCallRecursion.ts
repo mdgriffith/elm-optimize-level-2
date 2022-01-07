@@ -422,10 +422,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
 
   if (recursionType.kind === RecursionType.PlainRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-      return ts.createBlock(
-        // `<label>: while (true) { <updatedBlock> }`
-        [ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))]
-      );
+      return ts.createBlock([labelAndLoop(label, updatedBlock)]);
     }
 
     return updatedBlock;
@@ -433,11 +430,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
 
   if (recursionType.kind === RecursionType.BooleanRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-      return ts.createBlock(
-        [ // `<label>: while (true) { <updatedBlock> }`
-        ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
-        ]
-      );
+      return ts.createBlock([labelAndLoop(label, updatedBlock)]);
     }
 
     return updatedBlock;
@@ -446,18 +439,18 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   if (recursionType.kind === RecursionType.ArithmeticRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
-        // `var $result = 0;` for addition
-        // `var $result = 1;` for multiplication
-        [ ts.createVariableStatement(
-          undefined,
-          [ts.createVariableDeclaration(
-            RESULT,
+        [
+          // `var $result = 0;` for addition
+          // `var $result = 1;` for multiplication
+          ts.createVariableStatement(
             undefined,
-            ts.createLiteral(recursionType.operation.neutralValue)
-          )]
-        )
-        // `<label>: while (true) { <updatedBlock> }`
-        , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+            [ts.createVariableDeclaration(
+              RESULT,
+              undefined,
+              ts.createLiteral(recursionType.operation.neutralValue)
+            )]
+          ),
+          labelAndLoop(label, updatedBlock)
         ]
       );
     }
@@ -468,17 +461,18 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   if (recursionType.kind === RecursionType.ConsRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
-        [ ...consDeclarations
-        // `<label>: while (true) { <updatedBlock> }`
-        , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+        [
+          ...consDeclarations,
+          labelAndLoop(label, updatedBlock)
         ]
       );
     }
 
     return ts.updateBlock(
       updatedBlock,
-      [ ...consDeclarations
-      , ...updatedBlock.statements
+      [
+        ...consDeclarations,
+        ...updatedBlock.statements
       ]
     );
   }
@@ -486,17 +480,18 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   if (recursionType.kind === RecursionType.DataConstructionRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
-        [ ...constructorDeclarations(recursionType.property)
-        // `<label>: while (true) { <updatedBlock> }`
-        , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+        [
+          ...constructorDeclarations(recursionType.property),
+          labelAndLoop(label, updatedBlock)
         ]
       );
     }
 
     return ts.updateBlock(
       updatedBlock,
-      [ ...constructorDeclarations(recursionType.property)
-      , ...updatedBlock.statements
+      [
+        ...constructorDeclarations(recursionType.property),
+        ...updatedBlock.statements
       ]
     );
   }
@@ -504,22 +499,28 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   if (recursionType.kind === RecursionType.MultipleDataConstructionRecursion) {
     if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
       return ts.createBlock(
-        [ ...multipleConstructorDeclarations
-        // `<label>: while (true) { <updatedBlock> }`
-        , ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+        [
+          ...multipleConstructorDeclarations,
+          labelAndLoop(label, updatedBlock)
         ]
       );
     }
 
     return ts.updateBlock(
       updatedBlock,
-      [ ...multipleConstructorDeclarations
-      , ...updatedBlock.statements
+      [
+        ...multipleConstructorDeclarations,
+        ...updatedBlock.statements
       ]
     );
   }
 
   return updatedBlock;
+}
+
+function labelAndLoop(label : string, block: ts.Block) : ts.Statement {
+  // `<label>: while (true) { <block> }`
+  return ts.createLabel(label, ts.createWhile(ts.createTrue(), block));
 }
 
 function updateReturnStatement(recursionType : FunctionRecursion, functionName : string, label : string, parameterNames : Array<string>, expression : ts.Expression) {
