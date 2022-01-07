@@ -209,7 +209,7 @@ type Recursion
   = { kind: RecursionType.NotRecursive }
   | { kind: RecursionType.PlainRecursion, arguments : Array<ts.Expression> }
   | { kind: RecursionType.ConsRecursion, elements : ts.Expression[], arguments : Array<ts.Expression> }
-  | { kind: RecursionType.BooleanRecursion, expression: ts.Expression, mainOperator: BooleanKind, arguments : Array<ts.Expression> }
+  | { kind: RecursionType.BooleanRecursion, expression: ts.Expression, booleanKind: BooleanKind, arguments : Array<ts.Expression> }
   | { kind: RecursionType.DataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
   | { kind: RecursionType.MultipleDataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
   | { kind: RecursionType.ArithmeticRecursion, operator: ArithmeticOperator, expression : ts.Expression, arguments : Array<ts.Expression> }
@@ -551,7 +551,7 @@ function updateReturnStatement(recursionType : FunctionRecursion, functionName :
     }
 
     case RecursionType.BooleanRecursion: {
-      return createBooleanContinuation(label, parameterNames, extract.mainOperator, extract.expression, extract.arguments);
+      return createBooleanContinuation(label, parameterNames, extract.booleanKind, extract.expression, extract.arguments);
     }
   }
 
@@ -862,7 +862,7 @@ function extractRecursionKindFromBooleanExpression(functionName : string, node :
     return {
       kind: RecursionType.BooleanRecursion,
       expression: node.left,
-      mainOperator: node.operatorToken.kind === ts.SyntaxKind.BarBarToken ? BooleanKind.Or : BooleanKind.And,
+      booleanKind: node.operatorToken.kind === ts.SyntaxKind.BarBarToken ? BooleanKind.Or : BooleanKind.And,
       arguments: extract.arguments
     };
   }
