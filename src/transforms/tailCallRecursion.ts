@@ -416,106 +416,106 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
     return node;
   }
 
-  if (recursionType.kind === RecursionType.NotRecursive) {
-    return body;
-  }
-
-  if (recursionType.kind === RecursionType.PlainRecursion) {
-    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-      return ts.createBlock([labelAndLoop(label, updatedBlock)]);
+  switch (recursionType.kind) {
+    case RecursionType.NotRecursive: {
+      return body;
     }
 
-    return updatedBlock;
-  }
+    case RecursionType.PlainRecursion: {
+      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+        return ts.createBlock([labelAndLoop(label, updatedBlock)]);
+      }
 
-  if (recursionType.kind === RecursionType.BooleanRecursion) {
-    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-      return ts.createBlock([labelAndLoop(label, updatedBlock)]);
+      return updatedBlock;
     }
 
-    return updatedBlock;
-  }
+    case RecursionType.BooleanRecursion: {
+      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+        return ts.createBlock([labelAndLoop(label, updatedBlock)]);
+      }
 
-  if (recursionType.kind === RecursionType.ArithmeticRecursion) {
-    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-      return ts.createBlock(
-        [
-          // `var $result = 0;` for addition
-          // `var $result = 1;` for multiplication
-          ts.createVariableStatement(
-            undefined,
-            [ts.createVariableDeclaration(
-              RESULT,
+      return updatedBlock;
+    }
+
+    case RecursionType.ArithmeticRecursion: {
+      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+        return ts.createBlock(
+          [
+            // `var $result = 0;` for addition
+            // `var $result = 1;` for multiplication
+            ts.createVariableStatement(
               undefined,
-              ts.createLiteral(recursionType.operation.neutralValue)
-            )]
-          ),
-          labelAndLoop(label, updatedBlock)
-        ]
-      );
+              [ts.createVariableDeclaration(
+                RESULT,
+                undefined,
+                ts.createLiteral(recursionType.operation.neutralValue)
+              )]
+            ),
+            labelAndLoop(label, updatedBlock)
+          ]
+        );
+      }
+
+      return updatedBlock;
     }
 
-    return updatedBlock;
-  }
+    case RecursionType.ConsRecursion: {
+      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+        return ts.createBlock(
+          [
+            ...consDeclarations,
+            labelAndLoop(label, updatedBlock)
+          ]
+        );
+      }
 
-  if (recursionType.kind === RecursionType.ConsRecursion) {
-    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-      return ts.createBlock(
+      return ts.updateBlock(
+        updatedBlock,
         [
           ...consDeclarations,
-          labelAndLoop(label, updatedBlock)
+          ...updatedBlock.statements
         ]
       );
     }
 
-    return ts.updateBlock(
-      updatedBlock,
-      [
-        ...consDeclarations,
-        ...updatedBlock.statements
-      ]
-    );
-  }
+    case RecursionType.DataConstructionRecursion: {
+      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+        return ts.createBlock(
+          [
+            ...constructorDeclarations(recursionType.property),
+            labelAndLoop(label, updatedBlock)
+          ]
+        );
+      }
 
-  if (recursionType.kind === RecursionType.DataConstructionRecursion) {
-    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-      return ts.createBlock(
+      return ts.updateBlock(
+        updatedBlock,
         [
           ...constructorDeclarations(recursionType.property),
-          labelAndLoop(label, updatedBlock)
+          ...updatedBlock.statements
         ]
       );
     }
 
-    return ts.updateBlock(
-      updatedBlock,
-      [
-        ...constructorDeclarations(recursionType.property),
-        ...updatedBlock.statements
-      ]
-    );
-  }
-
-  if (recursionType.kind === RecursionType.MultipleDataConstructionRecursion) {
-    if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-      return ts.createBlock(
+    case RecursionType.MultipleDataConstructionRecursion: {
+      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+        return ts.createBlock(
+          [
+            ...multipleConstructorDeclarations,
+            labelAndLoop(label, updatedBlock)
+          ]
+        );
+      }
+  
+      return ts.updateBlock(
+        updatedBlock,
         [
           ...multipleConstructorDeclarations,
-          labelAndLoop(label, updatedBlock)
+          ...updatedBlock.statements
         ]
       );
     }
-
-    return ts.updateBlock(
-      updatedBlock,
-      [
-        ...multipleConstructorDeclarations,
-        ...updatedBlock.statements
-      ]
-    );
   }
-
-  return updatedBlock;
 }
 
 function labelAndLoop(label : string, block: ts.Block) : ts.Statement {
