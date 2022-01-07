@@ -526,37 +526,48 @@ function labelAndLoop(label : string, block: ts.Block) : ts.Statement {
 function updateReturnStatement(recursionType : FunctionRecursion, functionName : string, label : string, parameterNames : Array<string>, expression : ts.Expression) {
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
-  if (recursionType.kind === RecursionType.ConsRecursion) {
-    return updateReturnStatementForCons(extract, label, parameterNames, expression);
-  }
-
-  if (recursionType.kind === RecursionType.DataConstructionRecursion) {
-    return updateReturnStatementForDataConstruction(recursionType.property, extract, label, parameterNames, expression);
-  }
-
-  if (recursionType.kind === RecursionType.MultipleDataConstructionRecursion) {
-    return updateReturnStatementForMultipleDataConstruction(extract, label, parameterNames, expression)
-  }
-
-  if (recursionType.kind === RecursionType.ArithmeticRecursion) {
-    return updateReturnStatementForArithmeticOperation(recursionType.operation, extract, label, parameterNames, expression);
-  }
-
-  switch (extract.kind) {
-    case RecursionType.NotRecursive: {
-      return null;
+  switch (recursionType.kind) {
+    case RecursionType.ArithmeticRecursion: {
+      return updateReturnStatementForArithmeticOperation(recursionType.operation, extract, label, parameterNames, expression);
     }
 
-    case RecursionType.PlainRecursion: {
-      return createContinuation(label, parameterNames, extract.arguments);
+    case RecursionType.ConsRecursion: {
+      return updateReturnStatementForCons(extract, label, parameterNames, expression);
     }
 
+    case RecursionType.DataConstructionRecursion: {
+      return updateReturnStatementForDataConstruction(recursionType.property, extract, label, parameterNames, expression);
+    }
+
+    case RecursionType.MultipleDataConstructionRecursion: {
+      return updateReturnStatementForMultipleDataConstruction(extract, label, parameterNames, expression)
+    }
+
+    case RecursionType.NotRecursive:
+    case RecursionType.PlainRecursion:
     case RecursionType.BooleanRecursion: {
-      return createBooleanContinuation(label, parameterNames, extract.booleanKind, extract.expression, extract.arguments);
+      switch (extract.kind) {
+        case RecursionType.NotRecursive: {
+          return null;
+        }
+
+        case RecursionType.PlainRecursion: {
+          return createContinuation(label, parameterNames, extract.arguments);
+        }
+
+        case RecursionType.BooleanRecursion: {
+          return createBooleanContinuation(label, parameterNames, extract.booleanKind, extract.expression, extract.arguments);
+        }
+
+        case RecursionType.ArithmeticRecursion:
+        case RecursionType.ConsRecursion:
+        case RecursionType.DataConstructionRecursion:
+        case RecursionType.MultipleDataConstructionRecursion: {
+          return null;
+        }
+      }
     }
   }
-
-  return null;
 }
 
 function updateReturnStatementForCons(extract : Recursion, label : string, parameterNames : Array<string>, expression : ts.Expression) {
