@@ -837,9 +837,9 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
   }
 
   if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
-    const extract = extractRecursionKindFromArithmeticExpression(functionName, node.right, node.left)
+    const extract = extractRecursionKindFromAdditionExpression(functionName, node.right, node.left)
     if (extract.kind === RecursionType.NotRecursive) {
-      return extractRecursionKindFromArithmeticExpression(functionName, node.left, node.right);
+      return extractRecursionKindFromAdditionExpression(functionName, node.left, node.right);
     }
     return extract;
   }
@@ -876,7 +876,7 @@ function extractRecursionKindFromBooleanExpression(functionName : string, node :
   return { kind: RecursionType.NotRecursive };
 }
 
-function extractRecursionKindFromArithmeticExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion {
+function extractRecursionKindFromAdditionExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion {
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
   if (extract.kind === RecursionType.PlainRecursion) {
