@@ -170,13 +170,13 @@ function extractFCall(node: ts.CallExpression): ts.FunctionExpression | null {
 }
 
 enum RecursionType {
-  NotRecursive = 0,
-  PlainRecursion = 1,
-  BooleanRecursion = 2,
-  ConsRecursion = 3,
-  DataConstructionRecursion = 4,
-  MultipleDataConstructionRecursion = 5,
-  ArithmeticRecursion = 6,
+  NotRecursive,
+  PlainRecursion,
+  BooleanRecursion,
+  ConsRecursion,
+  DataConstructionRecursion,
+  MultipleDataConstructionRecursion,
+  ArithmeticRecursion,
 };
 
 enum BooleanKind {
