@@ -980,6 +980,11 @@ function extractRecursionKindFromAdditionExpression(functionName : string, expre
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
   if (extract.kind === RecursionType.PlainRecursion) {
+    if (isString(otherOperand)) {
+      // TODO Support strings
+      return { kind: RecursionType.NotRecursive };
+    }
+
     return {
       kind: RecursionType.ArithmeticRecursion,
       expression: otherOperand,
@@ -996,6 +1001,18 @@ function extractRecursionKindFromAdditionExpression(functionName : string, expre
 
   // TODO If the function is otherwise plain recursive in other places, then we should still make this function plain recursive.
   return { kind: RecursionType.NotRecursive };
+}
+
+function isString(node : ts.Expression) : boolean {
+  if (ts.isParenthesizedExpression(node)) {
+    return isString(node.expression);
+  }
+
+  if (ts.isLiteralExpression(node)) {
+    return false;
+  }
+
+  return false;
 }
 
 function extractRecursionKindFromMultiplicationExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion | NotRecursive {
