@@ -214,6 +214,10 @@ type Recursion
   | { kind: RecursionType.MultipleDataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
   | { kind: RecursionType.ArithmeticRecursion, operator: ArithmeticOperator, expression : ts.Expression, arguments : Array<ts.Expression> }
 
+type MaybeRecursion
+  = { kind: RecursionType.NotRecursive }
+  | Recursion;
+
 function determineRecursionType(functionName : string, body : ts.Node) : FunctionRecursion {
   let recursionType : FunctionRecursion = { kind: RecursionType.NotRecursive };
   let nodesToVisit : Array<ts.Node> = [body];
