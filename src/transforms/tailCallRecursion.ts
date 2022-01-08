@@ -214,6 +214,10 @@ type Recursion
   | { kind: RecursionType.MultipleDataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
   | { kind: RecursionType.ArithmeticRecursion, operator: ArithmeticOperator, expression : ts.Expression, arguments : Array<ts.Expression> }
 
+type MaybeFunctionRecursion
+  = { kind: RecursionType.NotRecursive }
+  | FunctionRecursion;
+
 type MaybeRecursion
   = { kind: RecursionType.NotRecursive }
   | Recursion;
