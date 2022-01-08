@@ -1011,22 +1011,18 @@ function extractRecursionKindFromAdditionExpression(functionName : string, expre
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
   if (extract.kind === RecursionType.PlainRecursion) {
-    if (isString(otherOperand)) {
-      // TODO Support strings
-      return { kind: RecursionType.NotRecursive };
-    }
-
     return {
       kind: RecursionType.AddRecursion,
       expression: otherOperand,
       arguments: extract.arguments,
-      adding: null
+      adding: isThisANumberOrString(otherOperand)
     };
   }
 
   if (extract.kind === RecursionType.AddRecursion) {
     // `<expressions from otherOperand> + <expression>`
     extract.expression = ts.createBinary(otherOperand, ts.SyntaxKind.PlusToken, extract.expression);
+    extract.adding = extract.adding || isThisANumberOrString(otherOperand);
     return extract;
   }
 
@@ -1034,20 +1030,35 @@ function extractRecursionKindFromAdditionExpression(functionName : string, expre
   return { kind: RecursionType.NotRecursive };
 }
 
-function isString(node : ts.Expression) : boolean {
+function isThisANumberOrString(node : ts.Expression) : "numbers" | "strings" | null {
   if (ts.isParenthesizedExpression(node)) {
-    return isString(node.expression);
+    return isThisANumberOrString(node.expression);
   }
 
-  if (ts.isLiteralExpression(node)) {
-    return false;
+  // TODO We could also detect we're adding strings if we find a `Utils_ap`
+  // either here or in another return expression.
+  if (ts.isStringLiteral(node)) {
+    return "strings";
   }
 
-  if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
-    return isString(node.left) || isString(node.right);
+  if (ts.isNumericLiteral(node)) {
+    return "numbers";
   }
 
-  return false;
+  if (ts.isBinaryExpression(node)) {
+    if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+      return isThisANumberOrString(node.left) || isThisANumberOrString(node.right);
+    }
+    if (node.operatorToken.kind === ts.SyntaxKind.AsteriskToken
+      || node.operatorToken.kind === ts.SyntaxKind.MinusToken
+      || node.operatorToken.kind === ts.SyntaxKind.SlashToken
+      || node.operatorToken.kind === ts.SyntaxKind.AsteriskAsteriskToken
+    ) {
+      return "numbers";
+    }
+  }
+
+  return null;
 }
 
 function extractRecursionKindFromMultiplicationExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion | NotRecursive {
