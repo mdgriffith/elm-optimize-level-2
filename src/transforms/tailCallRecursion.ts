@@ -202,7 +202,7 @@ type FunctionRecursion
   | { kind: RecursionType.BooleanRecursion }
   | { kind: RecursionType.DataConstructionRecursion, property: string }
   | { kind: RecursionType.MultipleDataConstructionRecursion }
-  | { kind: RecursionType.ArithmeticRecursion, operation: ArithmeticData }
+  | { kind: RecursionType.ArithmeticRecursion }
   | { kind: RecursionType.MultiplyRecursion }
 
 type Recursion
@@ -501,13 +501,13 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
-            // `var $result = 0;` for addition
+            // `var $result = 0;`
             ts.createVariableStatement(
               undefined,
               [ts.createVariableDeclaration(
                 RESULT,
                 undefined,
-                ts.createLiteral(recursionType.operation.neutralValue)
+                ts.createLiteral(0)
               )]
             ),
             labelAndLoop(label, updatedBlock)
@@ -643,7 +643,17 @@ function updateReturnStatement(
 
   switch (recursionType.kind) {
     case RecursionType.ArithmeticRecursion: {
-      return updateReturnStatementForArithmeticOperation(recursionType.operation, extract, label, parameterNames, expression);
+      return updateReturnStatementForArithmeticOperation(
+        {
+          neutralValue: 0,
+          binaryToken: ts.SyntaxKind.PlusToken,
+          assignmentToken: ts.SyntaxKind.PlusEqualsToken,
+        },
+        extract,
+        label,
+        parameterNames,
+        expression
+      );
     }
 
     case RecursionType.MultiplyRecursion: {
@@ -847,27 +857,9 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRec
     case RecursionType.MultipleDataConstructionRecursion:
       return { kind: RecursionType.MultipleDataConstructionRecursion };
     case RecursionType.ArithmeticRecursion:
-      return { kind: RecursionType.ArithmeticRecursion, operation: arithmeticOperation(recursion.operator) };
+      return { kind: RecursionType.ArithmeticRecursion };
     case RecursionType.MultiplyRecursion:
       return { kind: RecursionType.MultiplyRecursion };
-  }
-}
-
-function arithmeticOperation(operator: ArithmeticOperator) : ArithmeticData {
-  switch (operator) {
-    case ArithmeticOperator.Add:
-      return {
-        neutralValue: 0,
-        binaryToken: ts.SyntaxKind.PlusToken,
-        assignmentToken: ts.SyntaxKind.PlusEqualsToken,
-      };
-
-    case ArithmeticOperator.Multiply:
-      return {
-        neutralValue: 1,
-        binaryToken: ts.SyntaxKind.AsteriskToken,
-        assignmentToken: ts.SyntaxKind.AsteriskEqualsToken,
-      };
   }
 }
 
