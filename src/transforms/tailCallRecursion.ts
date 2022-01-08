@@ -417,6 +417,29 @@ const multipleConstructorDeclarations =
   )
 ];
 
+// `var $result = <n>;`
+function resultDeclaration(n : number) {
+  return ts.createVariableStatement(
+      undefined,
+      [ts.createVariableDeclaration(
+        RESULT,
+        undefined,
+        ts.createLiteral(n)
+      )]
+    );
+}
+
+// `var $left = "";`
+const stringConsDeclaration =
+  ts.createVariableStatement(
+    undefined,
+    [ts.createVariableDeclaration(
+      LEFT,
+      undefined,
+      ts.createStringLiteral("")
+    )]
+  );
+
 function constructorDeclarations(property : string) {
   return [
     // `var $start = { <property> : null };`
@@ -496,67 +519,64 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
     }
 
     case RecursionType.AddRecursion: {
+      // `var $result = 0;`
+      const declaration = resultDeclaration(0);
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
-            // `var $result = 0;`
-            ts.createVariableStatement(
-              undefined,
-              [ts.createVariableDeclaration(
-                RESULT,
-                undefined,
-                ts.createLiteral(0)
-              )]
-            ),
+            declaration,
             labelAndLoop(label, updatedBlock)
           ]
         );
       }
 
-      return updatedBlock;
+      return ts.updateBlock(
+        updatedBlock,
+        [
+          declaration,
+          ...updatedBlock.statements
+        ]
+      );
     }
 
     case RecursionType.StringConcatRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
-            // `var $left = "";`
-            ts.createVariableStatement(
-              undefined,
-              [ts.createVariableDeclaration(
-                LEFT,
-                undefined,
-                ts.createStringLiteral("")
-              )]
-            ),
+            stringConsDeclaration,
             labelAndLoop(label, updatedBlock)
           ]
         );
       }
 
-      // TODO Need to create $left
-      return updatedBlock;
+      return ts.updateBlock(
+        updatedBlock,
+        [
+          stringConsDeclaration,
+          ...updatedBlock.statements
+        ]
+      );
     }
 
     case RecursionType.MultiplyRecursion: {
+      // `var $result = 1;`
+      const declaration = resultDeclaration(1);
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
-            // `var $result = 1;`
-            ts.createVariableStatement(
-              undefined,
-              [ts.createVariableDeclaration(
-                RESULT,
-                undefined,
-                ts.createLiteral(1)
-              )]
-            ),
+            declaration,
             labelAndLoop(label, updatedBlock)
           ]
         );
       }
 
-      return updatedBlock;
+      return ts.updateBlock(
+        updatedBlock,
+        [
+          declaration,
+          ...updatedBlock.statements
+        ]
+      );
     }
 
     case RecursionType.ConsRecursion: {
