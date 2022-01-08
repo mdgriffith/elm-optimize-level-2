@@ -863,7 +863,7 @@ test('should support arithmetic operations on the right side of the recursive ca
   //         [] ->
   //             1
   //         x :: xs ->
-  //             x * naiveProduct xs
+  //             naiveProduct xs * x
   const initialCode = `
   var $something$product = function (list) {
     if (!list.b) {
