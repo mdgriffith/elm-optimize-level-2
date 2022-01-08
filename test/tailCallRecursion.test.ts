@@ -983,6 +983,46 @@ test('should optimize a function that multiplies values to the result of recursi
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that concatenates strings to the result of recursive calls (String.repeat-like)', () => {
+  // Corresponds to the following Elm code
+  // repeat : Int -> String -> String
+  // repeat n str =
+  //     if n <= 0 then
+  //         "suffix"
+  //     else
+  //         "" ++ str ++ repeat (n - 1) str
+  const initialCode = `
+  var $something$repeat = F2(
+    function (n, str) {
+      return (n <= 0) ? 'suffix' : ('' + (str + A2($something$repeat, n - 1, str)));
+    });
+  `;
+
+  const expectedOutputCode = `
+  var $something$repeat = F2(
+    function (n, str) {
+      var $left = "";
+      repeat: while (true) {
+        if ((n <= 0)) {
+          return $left + 'suffix';
+        } else {
+          $left += '' + str;
+          n = n - 1;
+          continue repeat;
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
