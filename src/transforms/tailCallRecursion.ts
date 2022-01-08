@@ -185,11 +185,6 @@ enum BooleanKind {
   Or,
 };
 
-enum ArithmeticOperator {
-  Add,
-  Multiply
-}
-
 type ArithmeticData = {
   neutralValue: number,
   binaryToken: ts.SyntaxKind,
@@ -259,7 +254,6 @@ type MultipleDataConstructionRecursion =
 type AddRecursion =
   {
     kind: RecursionType.AddRecursion,
-    operator: ArithmeticOperator,
     expression : ts.Expression,
     arguments : Array<ts.Expression>
   }
@@ -1024,12 +1018,11 @@ function extractRecursionKindFromAdditionExpression(functionName : string, expre
     return {
       kind: RecursionType.AddRecursion,
       expression: otherOperand,
-      operator: ArithmeticOperator.Add,
       arguments: extract.arguments
     };
   }
 
-  if (extract.kind === RecursionType.AddRecursion && extract.operator === ArithmeticOperator.Add) {
+  if (extract.kind === RecursionType.AddRecursion) {
     // `<expressions from otherOperand> + <expression>`
     extract.expression = ts.createBinary(otherOperand, ts.SyntaxKind.PlusToken, extract.expression);
     return extract;
