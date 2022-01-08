@@ -205,12 +205,57 @@ type FunctionRecursion
   | { kind: RecursionType.ArithmeticRecursion, operation: ArithmeticData }
 
 type Recursion
-  = { kind: RecursionType.PlainRecursion, arguments : Array<ts.Expression> }
-  | { kind: RecursionType.ConsRecursion, elements : ts.Expression[], arguments : Array<ts.Expression> }
-  | { kind: RecursionType.BooleanRecursion, expression: ts.Expression, booleanKind: BooleanKind, arguments : Array<ts.Expression> }
-  | { kind: RecursionType.DataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
-  | { kind: RecursionType.MultipleDataConstructionRecursion, property: string, expression : ts.Expression, arguments : Array<ts.Expression> }
-  | { kind: RecursionType.ArithmeticRecursion, operator: ArithmeticOperator, expression : ts.Expression, arguments : Array<ts.Expression> }
+  = PlainRecursion
+  | ConsRecursion
+  | BooleanRecursion
+  | DataConstructionRecursion
+  | MultipleDataConstructionRecursion
+  | ArithmeticRecursion
+
+type PlainRecursion =
+  {
+    kind: RecursionType.PlainRecursion,
+    arguments : Array<ts.Expression>
+  }
+
+type ConsRecursion =
+  {
+    kind: RecursionType.ConsRecursion,
+    elements : ts.Expression[],
+    arguments : Array<ts.Expression>
+  }
+
+type BooleanRecursion =
+  {
+    kind: RecursionType.BooleanRecursion,
+    expression: ts.Expression,
+    booleanKind: BooleanKind,
+    arguments : Array<ts.Expression>
+  }
+
+type DataConstructionRecursion =
+  {
+    kind: RecursionType.DataConstructionRecursion,
+    property: string,
+    expression : ts.Expression,
+    arguments : Array<ts.Expression>
+  }
+
+type MultipleDataConstructionRecursion =
+  {
+    kind: RecursionType.MultipleDataConstructionRecursion,
+    property: string,
+    expression : ts.Expression,
+    arguments : Array<ts.Expression>
+  }
+
+type ArithmeticRecursion =
+  {
+    kind: RecursionType.ArithmeticRecursion,
+    operator: ArithmeticOperator,
+    expression : ts.Expression,
+    arguments : Array<ts.Expression>
+  }
 
 type MaybeFunctionRecursion
   = { kind: RecursionType.NotRecursive }
