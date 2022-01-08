@@ -902,6 +902,87 @@ test('should support arithmetic operations on the right side of the recursive ca
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that multiplies values to the result of recursive calls (factorial using if condition)', () => {
+  // Corresponds to the following Elm code
+  // factorial : Int -> Int
+  // factorial n =
+  //     if n <= 1 then
+  //         1
+  //     else
+  //         -- insert a let declaration here to force an if condition
+  //         n * factorial (n - 1)
+  const initialCode = `
+  var $something$factorial = function (n) {
+    if (n <= 1) {
+      return 1;
+    } else {
+      return n * $something$factorial(n - 1);
+    }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$factorial = function (n) {
+    var $result = 1;
+    factorial: while (true) {
+      if (n <= 1) {
+        return $result;
+      } else {
+        $result *= n;
+        n = n - 1;
+        continue factorial;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should optimize a function that multiplies values to the result of recursive calls (factorial using ternary)', () => {
+  // Corresponds to the following Elm code
+  // factorial : Int -> Int
+  // factorial n =
+  //     if n <= 1 then
+  //         1
+  //     else
+  //         n * factorial (n - 1)
+  const initialCode = `
+  var $something$factorial = function (n) {
+    return (n <= 1) ? 1 : (n * $something$factorial(n - 1));
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$factorial = function (n) {
+    var $result = 1;
+    factorial: while (true) {
+      if ((n <= 1)) {
+        return $result;
+      } else {
+        $result *= n;
+        n = n - 1;
+        continue factorial;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
