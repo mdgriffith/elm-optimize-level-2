@@ -1090,9 +1090,7 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
         )
       )
     ),
-    ...paramReassignments(parameterNames, newArguments),
-    // `continue <label>;`
-    ts.createContinue(label)
+    ...createContinuation(label, parameterNames, newArguments)
   ];
 }
 
@@ -1107,9 +1105,7 @@ function createArithmeticContinuation(operation: ArithmeticData, label : string,
         expression
       )
     ),
-    ...paramReassignments(parameterNames, newArguments),
-    // `continue <label>;`
-    ts.createContinue(label)
+    ...createContinuation(label, parameterNames, newArguments)
   ];
 }
 
@@ -1126,9 +1122,7 @@ function createDataConstructionContinuation(label : string, property : string, p
         )
       )
     ),
-    ...paramReassignments(parameterNames, newArguments),
-    // `continue <label>;`
-    ts.createContinue(label)
+    ...createContinuation(label, parameterNames, newArguments)
   ];
 }
 
@@ -1152,9 +1146,7 @@ function createMultipleDataConstructionContinuation(label : string, property : s
         ts.createLiteral(property)
       )
     ),
-    ...paramReassignments(parameterNames, newArguments),
-    // `continue <label>;`
-    ts.createContinue(label)
+    ...createContinuation(label, parameterNames, newArguments)
   ];
 }
 
@@ -1178,9 +1170,7 @@ function createBooleanContinuation(label : string, parameterNames : Array<string
 
   return [
     ifExpr,
-    ...paramReassignments(parameterNames, newArguments),
-    // `continue <label>;`
-    ts.createContinue(label)
+    ...createContinuation(label, parameterNames, newArguments)
   ];
 }
 
