@@ -197,7 +197,7 @@ type FunctionRecursion
   | { kind: RecursionType.BooleanRecursion }
   | { kind: RecursionType.DataConstructionRecursion, property: string }
   | { kind: RecursionType.MultipleDataConstructionRecursion }
-  | { kind: RecursionType.AddRecursion }
+  | { kind: RecursionType.AddRecursion, adding: "numbers" | "strings" | null }
   | { kind: RecursionType.MultiplyRecursion }
 
 type Recursion
@@ -255,7 +255,8 @@ type AddRecursion =
   {
     kind: RecursionType.AddRecursion,
     expression : ts.Expression,
-    arguments : Array<ts.Expression>
+    arguments : Array<ts.Expression>,
+    adding: "numbers" | "strings" | null
   }
 
 type MultiplyRecursion =
@@ -851,7 +852,7 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRec
     case RecursionType.MultipleDataConstructionRecursion:
       return { kind: RecursionType.MultipleDataConstructionRecursion };
     case RecursionType.AddRecursion:
-      return { kind: RecursionType.AddRecursion };
+      return { kind: RecursionType.AddRecursion, adding: recursion.adding };
     case RecursionType.MultiplyRecursion:
       return { kind: RecursionType.MultiplyRecursion };
   }
@@ -1018,7 +1019,8 @@ function extractRecursionKindFromAdditionExpression(functionName : string, expre
     return {
       kind: RecursionType.AddRecursion,
       expression: otherOperand,
-      arguments: extract.arguments
+      arguments: extract.arguments,
+      adding: null
     };
   }
 
