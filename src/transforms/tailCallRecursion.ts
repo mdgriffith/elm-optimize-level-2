@@ -176,7 +176,7 @@ enum RecursionType {
   ConsRecursion,
   DataConstructionRecursion,
   MultipleDataConstructionRecursion,
-  ArithmeticRecursion,
+  AddRecursion,
   MultiplyRecursion,
 };
 
@@ -202,7 +202,7 @@ type FunctionRecursion
   | { kind: RecursionType.BooleanRecursion }
   | { kind: RecursionType.DataConstructionRecursion, property: string }
   | { kind: RecursionType.MultipleDataConstructionRecursion }
-  | { kind: RecursionType.ArithmeticRecursion }
+  | { kind: RecursionType.AddRecursion }
   | { kind: RecursionType.MultiplyRecursion }
 
 type Recursion
@@ -211,7 +211,7 @@ type Recursion
   | BooleanRecursion
   | DataConstructionRecursion
   | MultipleDataConstructionRecursion
-  | ArithmeticRecursion
+  | AddRecursion
   | MultiplyRecursion
 
 type NotRecursive =
@@ -256,9 +256,9 @@ type MultipleDataConstructionRecursion =
     arguments : Array<ts.Expression>
   }
 
-type ArithmeticRecursion =
+type AddRecursion =
   {
-    kind: RecursionType.ArithmeticRecursion,
+    kind: RecursionType.AddRecursion,
     operator: ArithmeticOperator,
     expression : ts.Expression,
     arguments : Array<ts.Expression>
@@ -497,7 +497,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       return updatedBlock;
     }
 
-    case RecursionType.ArithmeticRecursion: {
+    case RecursionType.AddRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
@@ -642,7 +642,7 @@ function updateReturnStatement(
   }
 
   switch (recursionType.kind) {
-    case RecursionType.ArithmeticRecursion: {
+    case RecursionType.AddRecursion: {
       return updateReturnStatementForArithmeticOperation(
         {
           neutralValue: 0,
@@ -694,7 +694,7 @@ function updateReturnStatement(
         }
 
         case RecursionType.NotRecursive:
-        case RecursionType.ArithmeticRecursion:
+        case RecursionType.AddRecursion:
         case RecursionType.MultiplyRecursion:
         case RecursionType.ConsRecursion:
         case RecursionType.DataConstructionRecursion:
@@ -756,7 +756,7 @@ function updateReturnStatementForArithmeticOperation(
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionType.ArithmeticRecursion || extract.kind === RecursionType.MultiplyRecursion) {
+  if (extract.kind === RecursionType.AddRecursion || extract.kind === RecursionType.MultiplyRecursion) {
     return createArithmeticContinuation(operation, label, parameterNames, extract.expression, extract.arguments);
   }
 
@@ -856,8 +856,8 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRec
       return { kind: RecursionType.DataConstructionRecursion, property: recursion.property };
     case RecursionType.MultipleDataConstructionRecursion:
       return { kind: RecursionType.MultipleDataConstructionRecursion };
-    case RecursionType.ArithmeticRecursion:
-      return { kind: RecursionType.ArithmeticRecursion };
+    case RecursionType.AddRecursion:
+      return { kind: RecursionType.AddRecursion };
     case RecursionType.MultiplyRecursion:
       return { kind: RecursionType.MultiplyRecursion };
   }
@@ -1022,14 +1022,14 @@ function extractRecursionKindFromAdditionExpression(functionName : string, expre
     }
 
     return {
-      kind: RecursionType.ArithmeticRecursion,
+      kind: RecursionType.AddRecursion,
       expression: otherOperand,
       operator: ArithmeticOperator.Add,
       arguments: extract.arguments
     };
   }
 
-  if (extract.kind === RecursionType.ArithmeticRecursion && extract.operator === ArithmeticOperator.Add) {
+  if (extract.kind === RecursionType.AddRecursion && extract.operator === ArithmeticOperator.Add) {
     // `<expressions from otherOperand> + <expression>`
     extract.expression = ts.createBinary(otherOperand, ts.SyntaxKind.PlusToken, extract.expression);
     return extract;
