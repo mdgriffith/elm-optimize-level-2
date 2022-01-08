@@ -76,7 +76,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
             return ts.visitEachChild(node, visitor, context);
           }
 
-          const functionRecursionType : MaybeFunctionRecursion = determineRecursionType(node.name.text, foundFunction.fn.body);
+          const functionRecursionType : FunctionRecursion | NotRecursive = determineRecursionType(node.name.text, foundFunction.fn.body);
           if (functionRecursionType.kind === RecursionType.NotRecursive) {
             return ts.visitEachChild(node, visitor, context);
           }
@@ -262,16 +262,12 @@ type ArithmeticRecursion =
     arguments : Array<ts.Expression>
   }
 
-type MaybeFunctionRecursion
-  = NotRecursive
-  | FunctionRecursion;
-
 type MaybeRecursion
   = NotRecursive
   | Recursion;
 
-function determineRecursionType(functionName : string, body : ts.Node) : MaybeFunctionRecursion {
-  let recursionType : MaybeFunctionRecursion = { kind: RecursionType.NotRecursive };
+function determineRecursionType(functionName : string, body : ts.Node) : FunctionRecursion | NotRecursive {
+  let recursionType : FunctionRecursion | NotRecursive = { kind: RecursionType.NotRecursive };
   let nodesToVisit : Array<ts.Node> = [body];
   let node : ts.Node | undefined;
 
@@ -324,7 +320,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : MaybeFu
     }
 
     if (ts.isReturnStatement(node) && node.expression) {
-      const expressionRecursion : MaybeFunctionRecursion = toFunctionRecursion(extractRecursionKindFromExpression(functionName, node.expression));
+      const expressionRecursion : FunctionRecursion | NotRecursive = toFunctionRecursion(extractRecursionKindFromExpression(functionName, node.expression));
       if (recursionType.kind === RecursionType.DataConstructionRecursion && expressionRecursion.kind === RecursionType.DataConstructionRecursion) {
         recursionType = { kind: RecursionType.MultipleDataConstructionRecursion };
         continue loop;
@@ -748,7 +744,7 @@ function updateReturnStatementForMultipleDataConstruction(extract : MaybeRecursi
   ];
 }
 
-function toFunctionRecursion(recursion : MaybeRecursion) : MaybeFunctionRecursion {
+function toFunctionRecursion(recursion : MaybeRecursion) : FunctionRecursion | NotRecursive {
   switch (recursion.kind) {
     case RecursionType.NotRecursive:
       return { kind: RecursionType.NotRecursive };
