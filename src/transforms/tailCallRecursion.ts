@@ -177,6 +177,7 @@ enum RecursionType {
   DataConstructionRecursion,
   MultipleDataConstructionRecursion,
   ArithmeticRecursion,
+  MultiplyRecursion,
 };
 
 enum BooleanKind {
@@ -202,6 +203,7 @@ type FunctionRecursion
   | { kind: RecursionType.DataConstructionRecursion, property: string }
   | { kind: RecursionType.MultipleDataConstructionRecursion }
   | { kind: RecursionType.ArithmeticRecursion, operation: ArithmeticData }
+  | { kind: RecursionType.MultiplyRecursion }
 
 type Recursion
   = PlainRecursion
@@ -210,6 +212,7 @@ type Recursion
   | DataConstructionRecursion
   | MultipleDataConstructionRecursion
   | ArithmeticRecursion
+  | MultiplyRecursion
 
 type NotRecursive =
   {
@@ -257,6 +260,13 @@ type ArithmeticRecursion =
   {
     kind: RecursionType.ArithmeticRecursion,
     operator: ArithmeticOperator,
+    expression : ts.Expression,
+    arguments : Array<ts.Expression>
+  }
+
+type MultiplyRecursion =
+  {
+    kind: RecursionType.MultiplyRecursion,
     expression : ts.Expression,
     arguments : Array<ts.Expression>
   }
@@ -492,13 +502,33 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
         return ts.createBlock(
           [
             // `var $result = 0;` for addition
-            // `var $result = 1;` for multiplication
             ts.createVariableStatement(
               undefined,
               [ts.createVariableDeclaration(
                 RESULT,
                 undefined,
                 ts.createLiteral(recursionType.operation.neutralValue)
+              )]
+            ),
+            labelAndLoop(label, updatedBlock)
+          ]
+        );
+      }
+
+      return updatedBlock;
+    }
+
+    case RecursionType.MultiplyRecursion: {
+      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
+        return ts.createBlock(
+          [
+            // `var $result = 1;`
+            ts.createVariableStatement(
+              undefined,
+              [ts.createVariableDeclaration(
+                RESULT,
+                undefined,
+                ts.createLiteral(1)
               )]
             ),
             labelAndLoop(label, updatedBlock)
@@ -616,6 +646,20 @@ function updateReturnStatement(
       return updateReturnStatementForArithmeticOperation(recursionType.operation, extract, label, parameterNames, expression);
     }
 
+    case RecursionType.MultiplyRecursion: {
+      return updateReturnStatementForArithmeticOperation(
+        {
+          neutralValue: 1,
+          binaryToken: ts.SyntaxKind.AsteriskToken,
+          assignmentToken: ts.SyntaxKind.AsteriskEqualsToken,
+        },
+        extract,
+        label,
+        parameterNames,
+        expression
+      );
+    }
+
     case RecursionType.ConsRecursion: {
       return updateReturnStatementForCons(extract, label, parameterNames, expression);
     }
@@ -641,6 +685,7 @@ function updateReturnStatement(
 
         case RecursionType.NotRecursive:
         case RecursionType.ArithmeticRecursion:
+        case RecursionType.MultiplyRecursion:
         case RecursionType.ConsRecursion:
         case RecursionType.DataConstructionRecursion:
         case RecursionType.MultipleDataConstructionRecursion: {
@@ -701,7 +746,7 @@ function updateReturnStatementForArithmeticOperation(
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionType.ArithmeticRecursion) {
+  if (extract.kind === RecursionType.ArithmeticRecursion || extract.kind === RecursionType.MultiplyRecursion) {
     return createArithmeticContinuation(operation, label, parameterNames, extract.expression, extract.arguments);
   }
 
@@ -803,6 +848,8 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRec
       return { kind: RecursionType.MultipleDataConstructionRecursion };
     case RecursionType.ArithmeticRecursion:
       return { kind: RecursionType.ArithmeticRecursion, operation: arithmeticOperation(recursion.operator) };
+    case RecursionType.MultiplyRecursion:
+      return { kind: RecursionType.MultiplyRecursion };
   }
 }
 
@@ -1021,14 +1068,13 @@ function extractRecursionKindFromMultiplicationExpression(functionName : string,
 
   if (extract.kind === RecursionType.PlainRecursion) {
     return {
-      kind: RecursionType.ArithmeticRecursion,
+      kind: RecursionType.MultiplyRecursion,
       expression: otherOperand,
-      operator: ArithmeticOperator.Multiply,
       arguments: extract.arguments
     };
   }
 
-  if (extract.kind === RecursionType.ArithmeticRecursion && extract.operator === ArithmeticOperator.Multiply) {
+  if (extract.kind === RecursionType.MultiplyRecursion) {
     // `<expressions from otherOperand> * <expression>`
     extract.expression = ts.createBinary(otherOperand, ts.SyntaxKind.AsteriskAsteriskToken, extract.expression);
     return extract;
