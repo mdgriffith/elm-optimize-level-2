@@ -875,12 +875,12 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
   return { kind: RecursionType.NotRecursive };
 }
 
-function isDataConstructor(functionName : string) {
+function isDataConstructor(functionName : string) : boolean {
   // Checks whether the function name is a native data constructor by checking
   // whether the name starts with an upper case.
   const splits = functionName.split("$");
   const last = splits[splits.length - 1];
-  return last && last[0] === last[0].toUpperCase();
+  return !!last && last[0] === last[0].toUpperCase();
 }
 
 function extractRecursionKindFromBinaryExpression(functionName : string, node : ts.BinaryExpression) : Recursion | NotRecursive {
