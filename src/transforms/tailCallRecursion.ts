@@ -567,7 +567,13 @@ function labelAndLoop(label : string, block: ts.Block) : ts.Statement {
   return ts.createLabel(label, ts.createWhile(ts.createTrue(), block));
 }
 
-function updateReturnStatement(recursionType : FunctionRecursion, functionName : string, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+function updateReturnStatement(
+  recursionType : FunctionRecursion,
+  functionName : string,
+  label : string,
+  parameterNames : Array<string>,
+  expression : ts.Expression
+) : ts.Node[] | ts.ReturnStatement | null {
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
   switch (recursionType.kind) {
@@ -610,7 +616,7 @@ function updateReturnStatement(recursionType : FunctionRecursion, functionName :
   }
 }
 
-function updateReturnStatementForCons(extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+function updateReturnStatementForCons(extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
   if (extract.kind === RecursionType.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
@@ -649,7 +655,13 @@ function updateReturnStatementForCons(extract : Recursion | NotRecursive, label 
   ];
 }
 
-function updateReturnStatementForArithmeticOperation(operation: ArithmeticData, extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+function updateReturnStatementForArithmeticOperation(
+  operation: ArithmeticData,
+  extract : Recursion | NotRecursive,
+  label : string,
+  parameterNames : Array<string>,
+  expression : ts.Expression
+) : ts.Statement[] | ts.ReturnStatement | null {
   if (extract.kind === RecursionType.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
@@ -972,7 +984,7 @@ function extractRecursionKindFromMultiplicationExpression(functionName : string,
   return { kind: RecursionType.NotRecursive };
 }
 
-function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
     ...paramReassignments(parameterNames, newArguments),
     // `continue <label>;`
@@ -980,7 +992,7 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
   ];
 }
 
-function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
     ...elements.map(addToEnd),
     // `$end = $end.b;`
@@ -999,7 +1011,7 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
   ];
 }
 
-function createArithmeticContinuation(operation: ArithmeticData, label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function createArithmeticContinuation(operation: ArithmeticData, label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
     // `$result += <expression>;` for addition
     // `$result *= <expression>;` for multiplication
@@ -1016,7 +1028,7 @@ function createArithmeticContinuation(operation: ArithmeticData, label : string,
   ];
 }
 
-function createDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function createDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
     assignToStaticDataProperty(property, expression),
     // `$end = $end.<property>;`
@@ -1035,7 +1047,7 @@ function createDataConstructionContinuation(label : string, property : string, p
   ];
 }
 
-function createMultipleDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function createMultipleDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
     assignToDynamicDataProperty(expression),
     // `$end = $end[$field];`
@@ -1061,7 +1073,7 @@ function createMultipleDataConstructionContinuation(label : string, property : s
   ];
 }
 
-function createBooleanContinuation(label : string, parameterNames : Array<string>, mainOperator: BooleanKind, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function createBooleanContinuation(label : string, parameterNames : Array<string>, mainOperator: BooleanKind, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   const ifExpr =
     mainOperator === BooleanKind.Or
       ? // if (<condition>) { return true; }
@@ -1087,7 +1099,7 @@ function createBooleanContinuation(label : string, parameterNames : Array<string
   ];
 }
 
-function paramReassignments(parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Node> {
+function paramReassignments(parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   let assignments : Array<ts.VariableDeclaration> = [];
   let reassignments : Array<ts.Statement> = [];
   const filteredParameters : Array<{ name: string; value: ts.Expression; }> = [];
