@@ -263,11 +263,11 @@ type ArithmeticRecursion =
   }
 
 type MaybeFunctionRecursion
-  = { kind: RecursionType.NotRecursive }
+  = NotRecursive
   | FunctionRecursion;
 
 type MaybeRecursion
-  = { kind: RecursionType.NotRecursive }
+  = NotRecursive
   | Recursion;
 
 function determineRecursionType(functionName : string, body : ts.Node) : MaybeFunctionRecursion {
