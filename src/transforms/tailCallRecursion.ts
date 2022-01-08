@@ -1012,6 +1012,10 @@ function isString(node : ts.Expression) : boolean {
     return false;
   }
 
+  if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+    return isString(node.left) || isString(node.right);
+  }
+
   return false;
 }
 
