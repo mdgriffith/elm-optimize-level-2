@@ -190,7 +190,6 @@ enum ArithmeticOperator {
 }
 
 type ArithmeticData = {
-  operator: ArithmeticOperator,
   neutralValue: number,
   binaryToken: ts.SyntaxKind,
   assignmentToken: ts.CompoundAssignmentOperator,
@@ -811,7 +810,6 @@ function arithmeticOperation(operator: ArithmeticOperator) : ArithmeticData {
   switch (operator) {
     case ArithmeticOperator.Add:
       return {
-        operator,
         neutralValue: 0,
         binaryToken: ts.SyntaxKind.PlusToken,
         assignmentToken: ts.SyntaxKind.PlusEqualsToken,
@@ -819,7 +817,6 @@ function arithmeticOperation(operator: ArithmeticOperator) : ArithmeticData {
 
     case ArithmeticOperator.Multiply:
       return {
-        operator,
         neutralValue: 1,
         binaryToken: ts.SyntaxKind.AsteriskToken,
         assignmentToken: ts.SyntaxKind.AsteriskEqualsToken,
