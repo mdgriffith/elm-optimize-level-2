@@ -197,7 +197,7 @@ type FunctionRecursion
   | { kind: RecursionType.BooleanRecursion }
   | { kind: RecursionType.DataConstructionRecursion, property: string }
   | { kind: RecursionType.MultipleDataConstructionRecursion }
-  | { kind: RecursionType.AddRecursion, adding: "numbers" | "strings" | null }
+  | { kind: RecursionType.AddRecursion, adding: "numbers" | "strings" }
   | { kind: RecursionType.MultiplyRecursion }
 
 type Recursion
@@ -852,7 +852,7 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRec
     case RecursionType.MultipleDataConstructionRecursion:
       return { kind: RecursionType.MultipleDataConstructionRecursion };
     case RecursionType.AddRecursion:
-      return { kind: RecursionType.AddRecursion, adding: recursion.adding };
+      return { kind: RecursionType.AddRecursion, adding: recursion.adding || "numbers" };
     case RecursionType.MultiplyRecursion:
       return { kind: RecursionType.MultiplyRecursion };
   }
