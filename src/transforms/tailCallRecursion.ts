@@ -212,6 +212,11 @@ type Recursion
   | MultipleDataConstructionRecursion
   | ArithmeticRecursion
 
+type NotRecursive =
+  {
+    kind: RecursionType.NotRecursive
+  }
+
 type PlainRecursion =
   {
     kind: RecursionType.PlainRecursion,
