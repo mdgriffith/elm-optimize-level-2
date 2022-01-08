@@ -316,6 +316,13 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
     }
 
     if (ts.isReturnStatement(node) && node.expression) {
+      if (ts.isConditionalExpression(node.expression)) {
+        nodesToVisit.unshift(ts.createReturn(node.expression.whenFalse));
+        // We could have unshifted this as well, but this skips an iteration
+        node = node.expression.whenTrue;
+        continue loop;
+      }
+
       const expressionRecursion : FunctionRecursion | NotRecursive = toFunctionRecursion(extractRecursionKindFromExpression(functionName, node.expression));
       if (recursionType.kind === RecursionType.DataConstructionRecursion && expressionRecursion.kind === RecursionType.DataConstructionRecursion) {
         recursionType = { kind: RecursionType.MultipleDataConstructionRecursion };
@@ -567,14 +574,43 @@ function labelAndLoop(label : string, block: ts.Block) : ts.Statement {
   return ts.createLabel(label, ts.createWhile(ts.createTrue(), block));
 }
 
+function returnStatementToBlock(expression : ts.Statement[] | ts.ReturnStatement | null, original : ts.Expression) : ts.Block {
+  if (expression === null) {
+    return ts.createBlock([
+      ts.createReturn(original)
+    ]);
+  }
+  
+  if (!Array.isArray(expression)) {
+    return ts.createBlock([expression]);
+  }
+
+  return ts.createBlock(expression);
+}
+
 function updateReturnStatement(
   recursionType : FunctionRecursion,
   functionName : string,
   label : string,
   parameterNames : Array<string>,
   expression : ts.Expression
-) : ts.Node[] | ts.ReturnStatement | null {
+) : ts.Statement[] | ts.ReturnStatement | null {
   const extract = extractRecursionKindFromExpression(functionName, expression);
+  if (ts.isConditionalExpression(expression)) {
+    const maybeLeft = updateReturnStatement(recursionType, functionName, label, parameterNames, expression.whenTrue);
+    const maybeRight = updateReturnStatement(recursionType, functionName, label, parameterNames, expression.whenFalse);
+    if (maybeLeft === null && maybeRight === null) {
+      return null;
+    }
+
+    return [
+      ts.createIf(
+        expression.condition,
+        returnStatementToBlock(maybeLeft, expression.whenTrue),
+        returnStatementToBlock(maybeRight, expression.whenFalse),
+      )
+    ];
+  }
 
   switch (recursionType.kind) {
     case RecursionType.ArithmeticRecursion: {
