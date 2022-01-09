@@ -264,8 +264,8 @@ test('should optimize a function that cons (::) on the result of recursive calls
   const expectedOutputCode = `
   var $something$map = F2(
 	function (fn, list) {
-        var $start = _List_Cons(undefined, _List_Nil);
-        var $end = $start;
+    var $start = _List_Cons(undefined, _List_Nil);
+    var $end = $start;
 		map:
 		while (true) {
 			if (!list.b) {
@@ -273,8 +273,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
 			} else {
 				var x = list.a;
 				var xs = list.b;
-                $end.b = _List_Cons(fn(x), _List_Nil);
-                $end = $end.b;
+        $end = $end.b = _List_Cons(fn(x), _List_Nil);
 				list = xs;
 				continue map;
 			}
@@ -344,8 +343,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
         var x = list.a;
         var xs = list.b;
         if (predicate(x)) {
-          $end.b = _List_Cons(x, _List_Nil);
-          $end = $end.b;
+          $end = $end.b = _List_Cons(x, _List_Nil);
           list = xs;
           continue filter;
         } else {
