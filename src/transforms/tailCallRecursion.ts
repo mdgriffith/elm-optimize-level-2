@@ -45,6 +45,7 @@ Therefore:
 
 */
 
+// TODO Support _Utils_ap for string concatenation
 // TODO Enable TCO for nested data constructions
 // TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
 // TODO Optimize functions like
@@ -199,8 +200,15 @@ type FunctionRecursion
   | { kind: RecursionType.DataConstructionRecursion, property: string }
   | { kind: RecursionType.MultipleDataConstructionRecursion }
   | { kind: RecursionType.AddRecursion }
-  | { kind: RecursionType.StringConcatRecursion }
+  | StringConcatRecursion
   | { kind: RecursionType.MultiplyRecursion }
+
+type StringConcatRecursion =
+  {
+    kind: RecursionType.StringConcatRecursion,
+    left: boolean,
+    right: boolean
+  }
 
 type Recursion
   = PlainRecursion
@@ -256,7 +264,8 @@ type MultipleDataConstructionRecursion =
 type AddRecursion =
   {
     kind: RecursionType.AddRecursion,
-    expression : ts.Expression,
+    left : ts.Expression | null,
+    right : ts.Expression | null,
     arguments : Array<ts.Expression>,
     adding: "numbers" | "strings" | null
   }
@@ -351,6 +360,7 @@ const END = ts.createIdentifier("$end");
 const FIELD = ts.createIdentifier("$field");
 const RESULT = ts.createIdentifier("$result");
 const LEFT = ts.createIdentifier("$left");
+const RIGHT = ts.createIdentifier("$right");
 
 const consDeclarations =
   [
@@ -429,16 +439,32 @@ function resultDeclaration(n : number) {
     );
 }
 
-// `var $left = "";`
-const stringConsDeclaration =
-  ts.createVariableStatement(
-    undefined,
-    [ts.createVariableDeclaration(
-      LEFT,
-      undefined,
-      ts.createStringLiteral("")
-    )]
-  );
+function stringConsDeclaration(left : boolean, right: boolean) {
+  let declarations = [];
+  if (left) {
+    declarations.push(
+      //`$left = ""`
+      ts.createVariableDeclaration(
+        LEFT,
+        undefined,
+        ts.createStringLiteral("")
+      )
+    );
+  }
+
+  if (right) {
+    declarations.push(
+      //`$right = ""`
+      ts.createVariableDeclaration(
+        RIGHT,
+        undefined,
+        ts.createStringLiteral("")
+      )
+    );
+  }
+
+  return ts.createVariableStatement(undefined, declarations);
+}
 
 function constructorDeclarations(property : string) {
   return [
@@ -543,7 +569,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
-            stringConsDeclaration,
+            stringConsDeclaration(recursionType.left, recursionType.right),
             labelAndLoop(label, updatedBlock)
           ]
         );
@@ -552,7 +578,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       return ts.updateBlock(
         updatedBlock,
         [
-          stringConsDeclaration,
+          stringConsDeclaration(recursionType.left, recursionType.right),
           ...updatedBlock.statements
         ]
       );
@@ -698,7 +724,9 @@ function updateReturnStatement(
     }
 
     case RecursionType.StringConcatRecursion: {
-      return updateReturnStatementForStringConcat(extract,
+      return updateReturnStatementForStringConcat(
+        recursionType,
+        extract,
         label,
         parameterNames,
         expression
@@ -805,8 +833,24 @@ function updateReturnStatementForArithmeticOperation(
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionType.AddRecursion || extract.kind === RecursionType.MultiplyRecursion) {
-    return createArithmeticContinuation(operation, label, parameterNames, extract.expression, extract.arguments);
+  if (extract.kind === RecursionType.AddRecursion) {
+    return createArithmeticContinuation(
+      operation,
+      label,
+      parameterNames,
+      combineExpressionsWithPlus(extract.left, extract.right),
+      extract.arguments
+    );
+  }
+
+  if (extract.kind === RecursionType.MultiplyRecursion) {
+    return createArithmeticContinuation(
+      operation,
+      label,
+      parameterNames,
+      extract.expression,
+      extract.arguments
+    );
   }
 
   // End of the recursion, return the result combined with the return value
@@ -827,6 +871,7 @@ function updateReturnStatementForArithmeticOperation(
 }
 
 function updateReturnStatementForStringConcat(
+  recursion: StringConcatRecursion,
   extract : Recursion | NotRecursive,
   label : string,
   parameterNames : Array<string>,
@@ -837,20 +882,17 @@ function updateReturnStatementForStringConcat(
   }
 
   if (extract.kind === RecursionType.AddRecursion) {
-    return createStringConcatContinuation(label, parameterNames, extract.expression, extract.arguments);
+    return createStringConcatContinuation(label, parameterNames, extract.left, extract.right, extract.arguments);
   }
 
   // End of the recursion, return the result combined with the return value
-  if (ts.isLiteralExpression(expression) && expression.text === '') {
-    return ts.createReturn(LEFT);
-  }
-
-  // `return $left + <expression>;`
   return ts.createReturn(
-    ts.createBinary(
-      LEFT,
-      ts.createToken(ts.SyntaxKind.PlusToken),
-      expression
+    combineExpressionsWithPlus(
+      recursion.left ? LEFT : null,
+      combineExpressionsWithPlus(
+        ts.isLiteralExpression(expression) && expression.text === '' ? null : expression,
+        recursion.right ? RIGHT : null,
+      )
     )
   );
 }
@@ -936,7 +978,7 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRec
       return { kind: RecursionType.MultipleDataConstructionRecursion };
     case RecursionType.AddRecursion:
       if (recursion.adding === "strings") {
-        return { kind: RecursionType.StringConcatRecursion };
+        return { kind: RecursionType.StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
       }
       return { kind: RecursionType.AddRecursion };
     case RecursionType.MultiplyRecursion:
@@ -1054,9 +1096,9 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
   }
 
   if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
-    const extract = extractRecursionKindFromAdditionExpression(functionName, node.right, node.left)
+    const extract = extractRecursionKindFromAdditionExpression(functionName, node.right, node.left, false)
     if (extract.kind === RecursionType.NotRecursive) {
-      return extractRecursionKindFromAdditionExpression(functionName, node.left, node.right);
+      return extractRecursionKindFromAdditionExpression(functionName, node.left, node.right, true);
     }
     return extract;
   }
@@ -1093,27 +1135,43 @@ function extractRecursionKindFromBooleanExpression(functionName : string, node :
   return { kind: RecursionType.NotRecursive };
 }
 
-function extractRecursionKindFromAdditionExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion | NotRecursive {
+function extractRecursionKindFromAdditionExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression, isLeft : boolean) : Recursion | NotRecursive {
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
   if (extract.kind === RecursionType.PlainRecursion) {
     return {
       kind: RecursionType.AddRecursion,
-      expression: otherOperand,
+      left: isLeft ? null : otherOperand,
+      right: isLeft ? otherOperand : null,
       arguments: extract.arguments,
       adding: isThisANumberOrString(otherOperand)
     };
   }
 
   if (extract.kind === RecursionType.AddRecursion) {
-    // `<expressions from otherOperand> + <expression>`
-    extract.expression = ts.createBinary(otherOperand, ts.SyntaxKind.PlusToken, extract.expression);
+    if (isLeft) {
+      // `<expression> + <expressions from otherOperand>`
+      extract.right = combineExpressionsWithPlus(extract.right, otherOperand);
+    } else {
+      // `<expressions from otherOperand> + <expression>`
+      extract.left = combineExpressionsWithPlus(otherOperand, extract.left);
+    }
     extract.adding = extract.adding || isThisANumberOrString(otherOperand);
     return extract;
   }
 
   // TODO If the function is otherwise plain recursive in other places, then we should still make this function plain recursive.
   return { kind: RecursionType.NotRecursive };
+}
+
+function combineExpressionsWithPlus(left : ts.Expression | null, right : ts.Expression | null) : ts.Expression {
+  if (!left) {
+    // We're assuming there's always one out of left or right that exists,
+    // otherwise we shouldn't have had to call this function.
+    return right || ts.createNull();
+  }
+  if (!right) { return left; }
+  return ts.createBinary(left, ts.SyntaxKind.PlusToken, right);
 }
 
 function isThisANumberOrString(node : ts.Expression) : "numbers" | "strings" | null {
@@ -1208,20 +1266,40 @@ function createArithmeticContinuation(operation: ArithmeticData, label : string,
   ];
 }
 
-function createStringConcatContinuation(label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
-  return [
-    // `$left += <expression>;`
-    ts.createExpressionStatement(
-      ts.createBinary(
-        LEFT,
-        ts.SyntaxKind.PlusEqualsToken,
-        expression
-      )
-    ),
-    ...createContinuation(label, parameterNames, newArguments)
-  ];
-}
+function createStringConcatContinuation(label : string, parameterNames : Array<string>, left : ts.Expression | null, right : ts.Expression | null, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  let result = createContinuation(label, parameterNames, newArguments);
 
+  if (right) {
+    // `$right = <expression> + $right;`
+    result.unshift(
+      ts.createExpressionStatement(
+        ts.createBinary(
+          RIGHT,
+          ts.SyntaxKind.EqualsToken,
+          ts.createBinary(
+            right,
+            ts.SyntaxKind.PlusToken,
+            RIGHT
+          )
+        )
+      )
+    );
+  }
+
+  if (left) {
+    // `$left += <expression>;`
+    result.unshift(
+      ts.createExpressionStatement(
+        ts.createBinary(
+          LEFT,
+          ts.SyntaxKind.PlusEqualsToken,
+          left
+        )
+      )
+    );
+  }
+  return result;
+}
 
 function createDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
