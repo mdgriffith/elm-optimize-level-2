@@ -382,16 +382,9 @@ function mergeFunctionCalls(functionToApplyFirst: ts.FunctionExpression, functio
   const body = ts.createBlock(
     extract1.statements.concat(extract2.statements).concat(returnStatement)
   )
-  return ts.updateFunctionExpression(
-    functionToApplyFirst,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    functionToApplyFirst.parameters,
-    undefined,
-    body
-  );
+  const functionExpression = ts.getMutableClone(functionToApplyFirst);
+  functionExpression.body = body;
+  return functionExpression;
 }
 
 function extractStatementsAndReturnValue(fn: ts.FunctionExpression) {
