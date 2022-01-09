@@ -70,7 +70,10 @@ Therefore:
 type Context = any;
 
 const LIST_CONS = "_List_Cons";
+const LIST_FROM_ARRAY = "_List_fromArray";
 const EMPTY_LIST = "_List_Nil";
+const UTILS_AP = "_Utils_ap";
+const COPY_LIST_AND_GET_END = "_Utils_copyListAndGetEnd";
 
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
   return (sourceFile) => {
@@ -85,8 +88,8 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
             return ts.visitEachChild(node, visitor, context);
           }
 
-          const functionRecursionType : FunctionRecursion | NotRecursive = determineRecursionType(node.name.text, foundFunction.fn.body);
-          if (functionRecursionType.kind === RecursionType.NotRecursive) {
+          const functionRecursionType : FunctionRecursion | NotRecursiveFunction = determineRecursionType(node.name.text, foundFunction.fn.body);
+          if (functionRecursionType.kind === FunctionRecursionKind.F_NotRecursive) {
             return ts.visitEachChild(node, visitor, context);
           }
 
@@ -172,7 +175,7 @@ function extractFCall(node: ts.CallExpression): ts.FunctionExpression | null {
   return null;
 }
 
-enum RecursionType {
+enum RecursionTypeKind {
   NotRecursive,
   PlainRecursion,
   BooleanRecursion,
@@ -181,6 +184,7 @@ enum RecursionType {
   MultipleDataConstructionRecursion,
   AddRecursion,
   StringConcatRecursion,
+  ConcatRecursion,
   MultiplyRecursion,
 };
 
@@ -189,25 +193,39 @@ enum BooleanKind {
   Or,
 };
 
-type ArithmeticData = {
-  neutralValue: number | string,
-  binaryToken: ts.SyntaxKind,
-  assignmentToken: ts.CompoundAssignmentOperator,
-} 
+enum FunctionRecursionKind {
+  F_NotRecursive,
+  F_PlainRecursion,
+  F_BooleanRecursion,
+  F_ListRecursion,
+  F_DataConstructionRecursion,
+  F_MultipleDataConstructionRecursion,
+  F_AddRecursion,
+  F_StringConcatRecursion,
+  F_ConcatRecursion,
+  F_MultiplyRecursion,
+};
 
 type FunctionRecursion
-  = { kind: RecursionType.PlainRecursion }
-  | { kind: RecursionType.ConsRecursion }
-  | { kind: RecursionType.BooleanRecursion }
-  | { kind: RecursionType.DataConstructionRecursion, property: string }
-  | { kind: RecursionType.MultipleDataConstructionRecursion }
-  | { kind: RecursionType.AddRecursion }
+  = { kind: FunctionRecursionKind.F_PlainRecursion }
+  | ListRecursion
+  | { kind: FunctionRecursionKind.F_BooleanRecursion }
+  | { kind: FunctionRecursionKind.F_DataConstructionRecursion, property: string }
+  | { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion }
+  | { kind: FunctionRecursionKind.F_AddRecursion }
   | StringConcatRecursion
-  | { kind: RecursionType.MultiplyRecursion }
+  | { kind: FunctionRecursionKind.F_MultiplyRecursion }
 
 type StringConcatRecursion =
   {
-    kind: RecursionType.StringConcatRecursion,
+    kind: FunctionRecursionKind.F_StringConcatRecursion,
+    left: boolean,
+    right: boolean
+  }
+
+type ListRecursion =
+  {
+    kind: FunctionRecursionKind.F_ListRecursion,
     left: boolean,
     right: boolean
   }
@@ -220,28 +238,34 @@ type Recursion
   | MultipleDataConstructionRecursion
   | AddRecursion
   | MultiplyRecursion
+  | ConcatRecursion
+
+type NotRecursiveFunction =
+  {
+    kind: FunctionRecursionKind.F_NotRecursive
+  }
 
 type NotRecursive =
   {
-    kind: RecursionType.NotRecursive
+    kind: RecursionTypeKind.NotRecursive
   }
 
 type PlainRecursion =
   {
-    kind: RecursionType.PlainRecursion,
+    kind: RecursionTypeKind.PlainRecursion,
     arguments : Array<ts.Expression>
   }
 
 type ConsRecursion =
   {
-    kind: RecursionType.ConsRecursion,
+    kind: RecursionTypeKind.ConsRecursion,
     elements : ts.Expression[],
     arguments : Array<ts.Expression>
   }
 
 type BooleanRecursion =
   {
-    kind: RecursionType.BooleanRecursion,
+    kind: RecursionTypeKind.BooleanRecursion,
     expression: ts.Expression,
     booleanKind: BooleanKind,
     arguments : Array<ts.Expression>
@@ -249,7 +273,7 @@ type BooleanRecursion =
 
 type DataConstructionRecursion =
   {
-    kind: RecursionType.DataConstructionRecursion,
+    kind: RecursionTypeKind.DataConstructionRecursion,
     property: string,
     expression : ts.Expression,
     arguments : Array<ts.Expression>
@@ -257,7 +281,7 @@ type DataConstructionRecursion =
 
 type MultipleDataConstructionRecursion =
   {
-    kind: RecursionType.MultipleDataConstructionRecursion,
+    kind: RecursionTypeKind.MultipleDataConstructionRecursion,
     property: string,
     expression : ts.Expression,
     arguments : Array<ts.Expression>
@@ -265,29 +289,38 @@ type MultipleDataConstructionRecursion =
 
 type AddRecursion =
   {
-    kind: RecursionType.AddRecursion,
+    kind: RecursionTypeKind.AddRecursion,
     left : ts.Expression | null,
     right : ts.Expression | null,
     arguments : Array<ts.Expression>,
-    adding: "numbers" | "strings" | null
+    adds: "numbers" | "strings" | null
+  }
+
+type ConcatRecursion =
+  {
+    kind: RecursionTypeKind.ConcatRecursion,
+    left : ts.Expression | null,
+    right : ts.Expression | null,
+    arguments : Array<ts.Expression>,
+    concatenates: "strings" | "lists" | null
   }
 
 type MultiplyRecursion =
   {
-    kind: RecursionType.MultiplyRecursion,
+    kind: RecursionTypeKind.MultiplyRecursion,
     expression : ts.Expression,
     arguments : Array<ts.Expression>
   }
 
-function determineRecursionType(functionName : string, body : ts.Node) : FunctionRecursion | NotRecursive {
-  let recursionType : FunctionRecursion | NotRecursive = { kind: RecursionType.NotRecursive };
+function determineRecursionType(functionName : string, body : ts.Node) : FunctionRecursion | NotRecursiveFunction {
+  let recursionType : FunctionRecursion | NotRecursiveFunction = { kind: FunctionRecursionKind.F_NotRecursive };
   let nodesToVisit : Array<ts.Node> = [body];
   let node : ts.Node | undefined;
 
   loop: while (
-    (recursionType.kind === RecursionType.NotRecursive
-      || recursionType.kind === RecursionType.PlainRecursion
-      || recursionType.kind === RecursionType.DataConstructionRecursion
+    (recursionType.kind === FunctionRecursionKind.F_NotRecursive
+      || recursionType.kind === FunctionRecursionKind.F_PlainRecursion
+      || recursionType.kind === FunctionRecursionKind.F_DataConstructionRecursion
     )
     && (node = nodesToVisit.shift())
   ) {
@@ -312,7 +345,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
     }
 
     if (ts.isContinueStatement(node) && node.label) {
-      recursionType = { kind: RecursionType.PlainRecursion };
+      recursionType = { kind: FunctionRecursionKind.F_PlainRecursion };
       continue loop;
     }
 
@@ -340,12 +373,12 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
         continue loop;
       }
 
-      const expressionRecursion : FunctionRecursion | NotRecursive = toFunctionRecursion(extractRecursionKindFromExpression(functionName, node.expression));
-      if (recursionType.kind === RecursionType.DataConstructionRecursion
-        && expressionRecursion.kind === RecursionType.DataConstructionRecursion
+      const expressionRecursion : FunctionRecursion | NotRecursiveFunction = toFunctionRecursion(extractRecursionKindFromExpression(functionName, node.expression));
+      if (recursionType.kind === FunctionRecursionKind.F_DataConstructionRecursion
+        && expressionRecursion.kind === FunctionRecursionKind.F_DataConstructionRecursion
         && expressionRecursion.property !== recursionType.property
       ) {
-        recursionType = { kind: RecursionType.MultipleDataConstructionRecursion };
+        recursionType = { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion };
         continue loop;
       }
 
@@ -533,7 +566,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   }
 
   switch (recursionType.kind) {
-    case RecursionType.PlainRecursion: {
+    case FunctionRecursionKind.F_PlainRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock([labelAndLoop(label, updatedBlock)], true);
       }
@@ -541,7 +574,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       return updatedBlock;
     }
 
-    case RecursionType.BooleanRecursion: {
+    case FunctionRecursionKind.F_BooleanRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock([labelAndLoop(label, updatedBlock)], true);
       }
@@ -549,7 +582,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       return updatedBlock;
     }
 
-    case RecursionType.AddRecursion: {
+    case FunctionRecursionKind.F_AddRecursion: {
       // `var $result = 0;`
       const declaration = resultDeclaration(0);
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
@@ -570,7 +603,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       );
     }
 
-    case RecursionType.StringConcatRecursion: {
+    case FunctionRecursionKind.F_StringConcatRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
@@ -589,7 +622,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       );
     }
 
-    case RecursionType.MultiplyRecursion: {
+    case FunctionRecursionKind.F_MultiplyRecursion: {
       // `var $result = 1;`
       const declaration = resultDeclaration(1);
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
@@ -610,7 +643,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       );
     }
 
-    case RecursionType.ConsRecursion: {
+    case FunctionRecursionKind.F_ListRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
@@ -629,7 +662,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       );
     }
 
-    case RecursionType.DataConstructionRecursion: {
+    case FunctionRecursionKind.F_DataConstructionRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
@@ -648,7 +681,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
       );
     }
 
-    case RecursionType.MultipleDataConstructionRecursion: {
+    case FunctionRecursionKind.F_MultipleDataConstructionRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
         return ts.createBlock(
           [
@@ -714,7 +747,7 @@ function updateReturnStatement(
   }
 
   switch (recursionType.kind) {
-    case RecursionType.AddRecursion: {
+    case FunctionRecursionKind.F_AddRecursion: {
       return updateReturnStatementForArithmeticOperation(
         {
           neutralValue: 0,
@@ -728,7 +761,7 @@ function updateReturnStatement(
       );
     }
 
-    case RecursionType.StringConcatRecursion: {
+    case FunctionRecursionKind.F_StringConcatRecursion: {
       return updateReturnStatementForStringConcat(
         recursionType,
         extract,
@@ -738,7 +771,7 @@ function updateReturnStatement(
       );
     }
 
-    case RecursionType.MultiplyRecursion: {
+    case FunctionRecursionKind.F_MultiplyRecursion: {
       return updateReturnStatementForArithmeticOperation(
         {
           neutralValue: 1,
@@ -752,35 +785,36 @@ function updateReturnStatement(
       );
     }
 
-    case RecursionType.ConsRecursion: {
-      return updateReturnStatementForCons(extract, label, parameterNames, expression);
+    case FunctionRecursionKind.F_ListRecursion: {
+      return updateReturnStatementForListRecursion(extract, label, parameterNames, expression);
     }
 
-    case RecursionType.DataConstructionRecursion: {
+    case FunctionRecursionKind.F_DataConstructionRecursion: {
       return updateReturnStatementForDataConstruction(recursionType.property, extract, label, parameterNames, expression);
     }
 
-    case RecursionType.MultipleDataConstructionRecursion: {
+    case FunctionRecursionKind.F_MultipleDataConstructionRecursion: {
       return updateReturnStatementForMultipleDataConstruction(extract, label, parameterNames, expression)
     }
 
-    case RecursionType.PlainRecursion:
-    case RecursionType.BooleanRecursion: {
+    case FunctionRecursionKind.F_PlainRecursion:
+    case FunctionRecursionKind.F_BooleanRecursion: {
       switch (extract.kind) {
-        case RecursionType.PlainRecursion: {
+        case RecursionTypeKind.PlainRecursion: {
           return createContinuation(label, parameterNames, extract.arguments);
         }
 
-        case RecursionType.BooleanRecursion: {
+        case RecursionTypeKind.BooleanRecursion: {
           return createBooleanContinuation(label, parameterNames, extract.booleanKind, extract.expression, extract.arguments);
         }
 
-        case RecursionType.NotRecursive:
-        case RecursionType.AddRecursion:
-        case RecursionType.MultiplyRecursion:
-        case RecursionType.ConsRecursion:
-        case RecursionType.DataConstructionRecursion:
-        case RecursionType.MultipleDataConstructionRecursion: {
+        case RecursionTypeKind.NotRecursive:
+        case RecursionTypeKind.AddRecursion:
+        case RecursionTypeKind.MultiplyRecursion:
+        case RecursionTypeKind.ConcatRecursion:
+        case RecursionTypeKind.ConsRecursion:
+        case RecursionTypeKind.DataConstructionRecursion:
+        case RecursionTypeKind.MultipleDataConstructionRecursion: {
           return null;
         }
       }
@@ -788,13 +822,17 @@ function updateReturnStatement(
   }
 }
 
-function updateReturnStatementForCons(extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
-  if (extract.kind === RecursionType.PlainRecursion) {
+function updateReturnStatementForListRecursion(extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionType.ConsRecursion) {
+  if (extract.kind === RecursionTypeKind.ConsRecursion) {
     return createConsContinuation(label, parameterNames, extract.elements, extract.arguments);
+  }
+
+  if (extract.kind === RecursionTypeKind.ConcatRecursion) {
+    return createListConcatContinuation(label, parameterNames, extract.left, extract.right, extract.arguments);
   }
 
   // End of the recursion, add the value to the end of the list and return the start.
@@ -827,6 +865,12 @@ function updateReturnStatementForCons(extract : Recursion | NotRecursive, label 
   ];
 }
 
+type ArithmeticData = {
+  neutralValue: number | string,
+  binaryToken: ts.SyntaxKind,
+  assignmentToken: ts.CompoundAssignmentOperator,
+}
+
 function updateReturnStatementForArithmeticOperation(
   operation: ArithmeticData,
   extract : Recursion | NotRecursive,
@@ -834,11 +878,11 @@ function updateReturnStatementForArithmeticOperation(
   parameterNames : Array<string>,
   expression : ts.Expression
 ) : ts.Statement[] | ts.ReturnStatement | null {
-  if (extract.kind === RecursionType.PlainRecursion) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionType.AddRecursion) {
+  if (extract.kind === RecursionTypeKind.AddRecursion) {
     return createArithmeticContinuation(
       operation,
       label,
@@ -848,7 +892,7 @@ function updateReturnStatementForArithmeticOperation(
     );
   }
 
-  if (extract.kind === RecursionType.MultiplyRecursion) {
+  if (extract.kind === RecursionTypeKind.MultiplyRecursion) {
     return createArithmeticContinuation(
       operation,
       label,
@@ -882,11 +926,11 @@ function updateReturnStatementForStringConcat(
   parameterNames : Array<string>,
   expression : ts.Expression
 ) : ts.Statement[] | ts.ReturnStatement | null {
-  if (extract.kind === RecursionType.PlainRecursion) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionType.AddRecursion) {
+  if (extract.kind === RecursionTypeKind.AddRecursion) {
     return createStringConcatContinuation(label, parameterNames, extract.left, extract.right, extract.arguments);
   }
 
@@ -903,11 +947,11 @@ function updateReturnStatementForStringConcat(
 }
 
 function updateReturnStatementForDataConstruction(property : string, extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) {
-  if (extract.kind === RecursionType.PlainRecursion) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionType.DataConstructionRecursion) {
+  if (extract.kind === RecursionTypeKind.DataConstructionRecursion) {
     return createDataConstructionContinuation(label, extract.property, parameterNames, extract.expression, extract.arguments);
   }
 
@@ -937,11 +981,11 @@ function updateReturnStatementForDataConstruction(property : string, extract : R
 }
 
 function updateReturnStatementForMultipleDataConstruction(extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) {
-  if (extract.kind === RecursionType.PlainRecursion) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionType.DataConstructionRecursion) {
+  if (extract.kind === RecursionTypeKind.DataConstructionRecursion) {
     return createMultipleDataConstructionContinuation(label, extract.property, parameterNames, extract.expression, extract.arguments);
   }
 
@@ -967,27 +1011,36 @@ function updateReturnStatementForMultipleDataConstruction(extract : Recursion | 
   ];
 }
 
-function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRecursion | NotRecursive {
+function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRecursion | NotRecursiveFunction {
   switch (recursion.kind) {
-    case RecursionType.NotRecursive:
-      return { kind: RecursionType.NotRecursive };
-    case RecursionType.PlainRecursion:
-      return { kind: RecursionType.PlainRecursion };
-    case RecursionType.ConsRecursion:
-      return { kind: RecursionType.ConsRecursion };
-    case RecursionType.BooleanRecursion:
-      return { kind: RecursionType.BooleanRecursion };
-    case RecursionType.DataConstructionRecursion:
-      return { kind: RecursionType.DataConstructionRecursion, property: recursion.property };
-    case RecursionType.MultipleDataConstructionRecursion:
-      return { kind: RecursionType.MultipleDataConstructionRecursion };
-    case RecursionType.AddRecursion:
-      if (recursion.adding === "strings") {
-        return { kind: RecursionType.StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
+    case RecursionTypeKind.NotRecursive:
+      return { kind: FunctionRecursionKind.F_NotRecursive };
+    case RecursionTypeKind.PlainRecursion:
+      return { kind: FunctionRecursionKind.F_PlainRecursion };
+    case RecursionTypeKind.ConsRecursion:
+      return { kind: FunctionRecursionKind.F_ListRecursion, left: true, right: false };
+    case RecursionTypeKind.BooleanRecursion:
+      return { kind: FunctionRecursionKind.F_BooleanRecursion };
+    case RecursionTypeKind.DataConstructionRecursion:
+      return { kind: FunctionRecursionKind.F_DataConstructionRecursion, property: recursion.property };
+    case RecursionTypeKind.MultipleDataConstructionRecursion:
+      return { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion };
+    case RecursionTypeKind.AddRecursion:
+      if (recursion.adds === "strings") {
+        return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
       }
-      return { kind: RecursionType.AddRecursion };
-    case RecursionType.MultiplyRecursion:
-      return { kind: RecursionType.MultiplyRecursion };
+      return { kind: FunctionRecursionKind.F_AddRecursion };
+    case RecursionTypeKind.ConcatRecursion:
+      if (recursion.concatenates === "strings") {
+        return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
+      }
+      else if (recursion.concatenates === "lists") {
+        return { kind: FunctionRecursionKind.F_ListRecursion, left: !!recursion.left, right: !!recursion.right };
+      }
+      // TODO It might still be plain recursive in some places?
+      return { kind: FunctionRecursionKind.F_NotRecursive };
+    case RecursionTypeKind.MultiplyRecursion:
+      return { kind: FunctionRecursionKind.F_MultiplyRecursion };
   }
 }
 
@@ -1004,33 +1057,45 @@ function extractRecursionKindFromExpression(functionName : string, node : ts.Exp
     return extractRecursionKindFromBinaryExpression(functionName, node);
   }
 
-  return { kind: RecursionType.NotRecursive };
+  return { kind: RecursionTypeKind.NotRecursive };
 }
 
 function extractRecursionKindFromCallExpression(functionName : string, node : ts.CallExpression) : Recursion | NotRecursive {
   if (!ts.isIdentifier(node.expression)) {
-    return { kind: RecursionType.NotRecursive };
+    return { kind: RecursionTypeKind.NotRecursive };
   }
 
   // Is "fn(...)"
   if (node.expression.text === functionName) {
     return {
-      kind: RecursionType.PlainRecursion,
+      kind: RecursionTypeKind.PlainRecursion,
       arguments: [...node.arguments]
     };
   }
 
-  // Is "AX(fn, ...)"
   const [firstArg, secondArg, thirdArg] = node.arguments;
+  // Is "_Utils_ap(...)"
+  if (node.expression.text === UTILS_AP) {
+    let recursion = null;
+    if (ts.isCallExpression(secondArg)) {
+      recursion = extractRecursionKindFromUtilsAppendExpression(functionName, secondArg, {left: firstArg});
+    }
+    if (!recursion && ts.isCallExpression(firstArg)) {
+      recursion = extractRecursionKindFromUtilsAppendExpression(functionName, firstArg, {right: secondArg});
+    }
+    return recursion || { kind: RecursionTypeKind.NotRecursive };
+  }
+
+  // Is "AX(fn, ...)"
   if (!node.expression.text.startsWith("A")
     || !ts.isIdentifier(firstArg)
   ) {
-    return { kind: RecursionType.NotRecursive };
+    return { kind: RecursionTypeKind.NotRecursive };
   }
 
   if (firstArg.text === functionName) {
     return {
-      kind: RecursionType.PlainRecursion,
+      kind: RecursionTypeKind.PlainRecursion,
       arguments: node.arguments.slice(1)
     };
   }
@@ -1039,15 +1104,15 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
   // JS: Is A2($elm$core$List$cons, x, <recursive call>)
   if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
     const thirdArgExtract = extractRecursionKindFromExpression(functionName, thirdArg);
-    if (thirdArgExtract.kind === RecursionType.PlainRecursion) {
+    if (thirdArgExtract.kind === RecursionTypeKind.PlainRecursion) {
       return {
-        kind: RecursionType.ConsRecursion,
+        kind: RecursionTypeKind.ConsRecursion,
         elements: [secondArg],
         arguments: thirdArgExtract.arguments
       };
     }
 
-    if (thirdArgExtract.kind === RecursionType.ConsRecursion) {
+    if (thirdArgExtract.kind === RecursionTypeKind.ConsRecursion) {
       thirdArgExtract.elements.push(secondArg);
       return thirdArgExtract;
     }
@@ -1057,17 +1122,17 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
   // Elm: `type X = Y <args> X <args> | ... ; Y <...> <recursive call> <...>
   // JS: `return AX(Y, ..., <recursive call>, ...);
   if (isDataConstructor(firstArg.text)) {
-    let extract : Recursion | NotRecursive = { kind: RecursionType.NotRecursive };
+    let extract : Recursion | NotRecursive = { kind: RecursionTypeKind.NotRecursive };
 
-    for (let i = 1; extract.kind === RecursionType.NotRecursive && i < node.arguments.length; i++) {
+    for (let i = 1; extract.kind === RecursionTypeKind.NotRecursive && i < node.arguments.length; i++) {
       const argExtract = extractRecursionKindFromExpression(functionName, node.arguments[i]);
       // TODO Support nested data construction
-      if (argExtract.kind === RecursionType.PlainRecursion) {
+      if (argExtract.kind === RecursionTypeKind.PlainRecursion) {
         const argumentsWithHole : ts.Expression[] = [...node.arguments];
         argumentsWithHole[i] = ts.createNull();
 
         extract = {
-          kind: RecursionType.DataConstructionRecursion,
+          kind: RecursionTypeKind.DataConstructionRecursion,
           // TODO Only works for custom types, not record type alias constructors or other functions
           property: "abcdefghijklmnopqrstuvwxyz"[i - 1],
           expression: ts.updateCall(
@@ -1084,7 +1149,35 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
     return extract;
   }
 
-  return { kind: RecursionType.NotRecursive };
+  return { kind: RecursionTypeKind.NotRecursive };
+}
+
+function extractRecursionKindFromUtilsAppendExpression(functionName : string, expression : ts.Expression, args: { left ?: ts.Expression, right ?: ts.Expression }) : ConcatRecursion | null {
+  const extract = extractRecursionKindFromExpression(functionName, expression);
+  // TODO Support cons recursion here
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return {
+      kind: RecursionTypeKind.ConcatRecursion,
+      left : args.left || null,
+      right : args.right || null,
+      arguments : extract.arguments,
+      concatenates: (args.left && isThisAStringOrList(args.left))
+        || (args.right && isThisAStringOrList(args.right))
+        || null
+    };
+  }
+  else if (extract.kind === RecursionTypeKind.ConcatRecursion) {
+    if (args.left) {
+      extract.left = combineExpressionsWithUtilsAp(extract.left, args.left);
+      extract.concatenates = extract.concatenates || isThisAStringOrList(args.left);
+    } else if (args.right) {
+      extract.right = combineExpressionsWithUtilsAp(args.right, extract.right);
+      extract.concatenates = extract.concatenates || isThisAStringOrList(args.right);
+    }
+    return extract;
+  }
+
+  return null;
 }
 
 function isDataConstructor(functionName : string) : boolean {
@@ -1102,7 +1195,7 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
 
   if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
     const extract = extractRecursionKindFromAdditionExpression(functionName, node.right, node.left, false)
-    if (extract.kind === RecursionType.NotRecursive) {
+    if (extract.kind === RecursionTypeKind.NotRecursive) {
       return extractRecursionKindFromAdditionExpression(functionName, node.left, node.right, true);
     }
     return extract;
@@ -1110,50 +1203,50 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
 
   if (node.operatorToken.kind === ts.SyntaxKind.AsteriskToken) {
     const extract = extractRecursionKindFromMultiplicationExpression(functionName, node.right, node.left)
-    if (extract.kind === RecursionType.NotRecursive) {
+    if (extract.kind === RecursionTypeKind.NotRecursive) {
       return extractRecursionKindFromMultiplicationExpression(functionName, node.left, node.right);
     }
     return extract;
   }
 
-  return { kind: RecursionType.NotRecursive };
+  return { kind: RecursionTypeKind.NotRecursive };
 }
 
 function extractRecursionKindFromBooleanExpression(functionName : string, node : ts.BinaryExpression) : Recursion | NotRecursive {
   const extract = extractRecursionKindFromExpression(functionName, node.right);
 
-  if (extract.kind === RecursionType.PlainRecursion) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return {
-      kind: RecursionType.BooleanRecursion,
+      kind: RecursionTypeKind.BooleanRecursion,
       expression: node.left,
       booleanKind: node.operatorToken.kind === ts.SyntaxKind.BarBarToken ? BooleanKind.Or : BooleanKind.And,
       arguments: extract.arguments
     };
   }
 
-  if (extract.kind === RecursionType.BooleanRecursion) {
+  if (extract.kind === RecursionTypeKind.BooleanRecursion) {
     // `<node.left> && <expressions from node.right>` (operation can be either && or ||)
     extract.expression = ts.createBinary(node.left, node.operatorToken, extract.expression);
     return extract;
   }
 
-  return { kind: RecursionType.NotRecursive };
+  return { kind: RecursionTypeKind.NotRecursive };
 }
 
 function extractRecursionKindFromAdditionExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression, isLeft : boolean) : Recursion | NotRecursive {
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
-  if (extract.kind === RecursionType.PlainRecursion) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return {
-      kind: RecursionType.AddRecursion,
+      kind: RecursionTypeKind.AddRecursion,
       left: isLeft ? null : otherOperand,
       right: isLeft ? otherOperand : null,
       arguments: extract.arguments,
-      adding: isThisANumberOrString(otherOperand)
+      adds: isThisANumberOrString(otherOperand)
     };
   }
 
-  if (extract.kind === RecursionType.AddRecursion) {
+  if (extract.kind === RecursionTypeKind.AddRecursion) {
     if (isLeft) {
       // `<expression> + <expressions from otherOperand>`
       extract.right = combineExpressionsWithPlus(extract.right, otherOperand);
@@ -1161,12 +1254,12 @@ function extractRecursionKindFromAdditionExpression(functionName : string, expre
       // `<expressions from otherOperand> + <expression>`
       extract.left = combineExpressionsWithPlus(otherOperand, extract.left);
     }
-    extract.adding = extract.adding || isThisANumberOrString(otherOperand);
+    extract.adds = extract.adds || isThisANumberOrString(otherOperand);
     return extract;
   }
 
   // TODO If the function is otherwise plain recursive in other places, then we should still make this function plain recursive.
-  return { kind: RecursionType.NotRecursive };
+  return { kind: RecursionTypeKind.NotRecursive };
 }
 
 function combineExpressionsWithPlus(left : ts.Expression | null, right : ts.Expression | null) : ts.Expression {
@@ -1177,6 +1270,16 @@ function combineExpressionsWithPlus(left : ts.Expression | null, right : ts.Expr
   }
   if (!right) { return left; }
   return ts.createBinary(left, ts.SyntaxKind.PlusToken, right);
+}
+
+function combineExpressionsWithUtilsAp(left : ts.Expression | null, right : ts.Expression | null) : ts.Expression {
+  if (!left) {
+    // We're assuming there's always one out of left or right that exists,
+    // otherwise we shouldn't have had to call this function.
+    return right || ts.createNull();
+  }
+  if (!right) { return left; }
+  return ts.createCall(ts.createIdentifier(UTILS_AP), undefined, [left, right]);
 }
 
 function isThisANumberOrString(node : ts.Expression) : "numbers" | "strings" | null {
@@ -1210,25 +1313,51 @@ function isThisANumberOrString(node : ts.Expression) : "numbers" | "strings" | n
   return null;
 }
 
+function isThisAStringOrList(node : ts.Expression) : "strings" | "lists" | null {
+  if (ts.isParenthesizedExpression(node)) {
+    return isThisAStringOrList(node.expression);
+  }
+
+  // TODO We could also detect we're adding strings if we find a `Utils_ap`
+  // either here or in another return expression.
+  if (ts.isStringLiteral(node)) {
+    return "strings";
+  }
+
+  if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+    return "strings";
+  }
+
+  if (ts.isIdentifier(node) && node.text === EMPTY_LIST) {
+    return "lists";
+  }
+
+  if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === LIST_FROM_ARRAY) {
+    return "lists";
+  }
+
+  return null;
+}
+
 function extractRecursionKindFromMultiplicationExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion | NotRecursive {
   const extract = extractRecursionKindFromExpression(functionName, expression);
 
-  if (extract.kind === RecursionType.PlainRecursion) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return {
-      kind: RecursionType.MultiplyRecursion,
+      kind: RecursionTypeKind.MultiplyRecursion,
       expression: otherOperand,
       arguments: extract.arguments
     };
   }
 
-  if (extract.kind === RecursionType.MultiplyRecursion) {
+  if (extract.kind === RecursionTypeKind.MultiplyRecursion) {
     // `<expressions from otherOperand> * <expression>`
     extract.expression = ts.createBinary(otherOperand, ts.SyntaxKind.AsteriskAsteriskToken, extract.expression);
     return extract;
   }
 
   // TODO If the function is otherwise plain recursive in other places, then we should still make this function plain recursive.
-  return { kind: RecursionType.NotRecursive };
+  return { kind: RecursionTypeKind.NotRecursive };
 }
 
 function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
@@ -1244,6 +1373,31 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
     ...elements.map(addToEnd),
     ...createContinuation(label, parameterNames, newArguments)
   ];
+}
+
+function createListConcatContinuation(label : string, parameterNames : Array<string>, left : ts.Expression | null, right : ts.Expression | null, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  let result = createContinuation(label, parameterNames, newArguments);
+
+  if (left) {
+    // $end = _Utils_copyListAndGetEnd($end, <left>);
+    result.unshift(
+      ts.createExpressionStatement(
+        ts.createBinary(
+          END,
+          ts.SyntaxKind.EqualsToken,
+          ts.createCall(
+            // TODO Make into constant
+            ts.createIdentifier(COPY_LIST_AND_GET_END),
+            undefined,
+            [END, left]
+          )
+        )
+      )
+    );
+  }
+
+  // TODO Support right-hand side
+  return result;
 }
 
 function createArithmeticContinuation(operation: ArithmeticData, label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
