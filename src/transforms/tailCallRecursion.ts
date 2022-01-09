@@ -87,12 +87,9 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
           });
           const newBody = updateFunctionBody(functionRecursionType, node.name.text, parameterNames, foundFunction.fn.body, context);
 
-          return ts.updateVariableDeclaration(
-            node,
-            node.name,
-            undefined,
-            foundFunction.update(newBody)
-          );
+          const variableDeclaration = ts.getMutableClone(node);
+          variableDeclaration.initializer = foundFunction.update(newBody);
+          return variableDeclaration;
       }
       return ts.visitEachChild(node, visitor, context);
     };
@@ -123,12 +120,9 @@ function findFunction(node : ts.Node) {
           body
         );
 
-        return ts.updateCall(
-          node,
-          node.expression,
-          undefined,
-          [newFn]
-        );
+        const functionCall = ts.getMutableClone(node);
+        functionCall.arguments = ts.createNodeArray([newFn]);
+        return functionCall;
       }
     }
   }
