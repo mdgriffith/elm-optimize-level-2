@@ -1297,16 +1297,6 @@ function createStringConcatContinuation(label : string, parameterNames : Array<s
 function createDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
     assignToStaticDataProperty(property, expression),
-    // `$end = $end.<property>;`
-    ts.createExpressionStatement(
-      ts.createAssignment(
-        END,
-        ts.createPropertyAccess(
-          END,
-          property
-        )
-      )
-    ),
     ...createContinuation(label, parameterNames, newArguments)
   ];
 }
@@ -1314,16 +1304,6 @@ function createDataConstructionContinuation(label : string, property : string, p
 function createMultipleDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
     assignToDynamicDataProperty(expression),
-    // `$end = $end[$field];`
-    ts.createExpressionStatement(
-      ts.createAssignment(
-        END,
-        ts.createElementAccess(
-          END,
-          FIELD
-        )
-      )
-    ),
     // `$field = '<property>';`
     ts.createExpressionStatement(
       ts.createAssignment(
@@ -1438,27 +1418,33 @@ function addToEnd(element : ts.Expression) : ts.Statement {
 }
 
 function assignToStaticDataProperty(property : string, expression : ts.Expression) : ts.Statement {
-  // `$end.b = <expression where recursive call has been replaced by null>;`
+  // `$end = $end.<property> = <expression where recursive call has been replaced by null>;`
   return ts.createExpressionStatement(
     ts.createAssignment(
-      ts.createPropertyAccess(
-        END,
-        property
-      ),
-      expression
+      END,
+      ts.createAssignment(
+        ts.createPropertyAccess(
+          END,
+          property
+        ),
+        expression
+      )
     )
   );
 }
 
 function assignToDynamicDataProperty(expression : ts.Expression) : ts.Statement {
-  // `end[$field] = <expression where recursive call has been replaced by null>;`
+  // `$end = $end[$field] = <expression where recursive call has been replaced by null>;`
   return ts.createExpressionStatement(
     ts.createAssignment(
-      ts.createElementAccess(
-        END,
-        FIELD
-      ),
-      expression
+      END,
+      ts.createAssignment(
+        ts.createElementAccess(
+          END,
+          FIELD
+        ),
+        expression
+      )
     )
   );
 }
