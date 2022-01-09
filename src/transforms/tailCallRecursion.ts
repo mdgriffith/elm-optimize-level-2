@@ -339,7 +339,10 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
       }
 
       const expressionRecursion : FunctionRecursion | NotRecursive = toFunctionRecursion(extractRecursionKindFromExpression(functionName, node.expression));
-      if (recursionType.kind === RecursionType.DataConstructionRecursion && expressionRecursion.kind === RecursionType.DataConstructionRecursion) {
+      if (recursionType.kind === RecursionType.DataConstructionRecursion
+        && expressionRecursion.kind === RecursionType.DataConstructionRecursion
+        && expressionRecursion.property !== recursionType.property
+      ) {
         recursionType = { kind: RecursionType.MultipleDataConstructionRecursion };
         continue loop;
       }

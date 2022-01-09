@@ -667,6 +667,143 @@ test('should optimize a function that wraps the result in a constructors with di
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that wraps the result in a constructors with different properties', () => {
+  // Corresponds to the following Elm code (from elm/core Dict)
+  // removeMin : Dict k v -> Dict k v
+  // removeMin dict =
+  //   case dict of
+  //     RBNode_elm_builtin color key value ((RBNode_elm_builtin lColor _ _ lLeft _) as left) right ->
+  //       case lColor of
+  //         Black ->
+  //           case lLeft of
+  //             RBNode_elm_builtin Red _ _ _ _ ->
+  //               RBNode_elm_builtin color key value (removeMin left) right
+  //             _ ->
+  //               case moveRedLeft dict of
+  //                 RBNode_elm_builtin nColor nKey nValue nLeft nRight ->
+  //                   balance nColor nKey nValue (removeMin nLeft) nRight
+  //                 RBEmpty_elm_builtin ->
+  //                   RBEmpty_elm_builtin
+  //         _ ->
+  //           RBNode_elm_builtin color key value (removeMin left) right
+  //     _ ->
+  //       RBEmpty_elm_builtin
+  const initialCode = `
+  var $elm$core$Dict$removeMin = function (dict) {
+    if ((dict.$ === -1) && (dict.d.$ === -1)) {
+      var color = dict.a;
+      var key = dict.b;
+      var value = dict.c;
+      var left = dict.d;
+      var lColor = left.a;
+      var lLeft = left.d;
+      var right = dict.e;
+      if (lColor === 1) {
+        if ((lLeft.$ === -1) && (!lLeft.a)) {
+          var _v3 = lLeft.a;
+          return A5(
+            $elm$core$Dict$RBNode_elm_builtin,
+            color,
+            key,
+            value,
+            $elm$core$Dict$removeMin(left),
+            right);
+        } else {
+          var _v4 = $elm$core$Dict$moveRedLeft(dict);
+          if (_v4.$ === -1) {
+            var nColor = _v4.a;
+            var nKey = _v4.b;
+            var nValue = _v4.c;
+            var nLeft = _v4.d;
+            var nRight = _v4.e;
+            return A5(
+              $elm$core$Dict$balance,
+              nColor,
+              nKey,
+              nValue,
+              $elm$core$Dict$removeMin(nLeft),
+              nRight);
+          } else {
+            return $elm$core$Dict$RBEmpty_elm_builtin;
+          }
+        }
+      } else {
+        return A5(
+          $elm$core$Dict$RBNode_elm_builtin,
+          color,
+          key,
+          value,
+          $elm$core$Dict$removeMin(left),
+          right);
+      }
+    } else {
+      return $elm$core$Dict$RBEmpty_elm_builtin;
+    }
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $elm$core$Dict$removeMin = function (dict) {
+    var $start = { d: null };
+    var $end = $start;
+    removeMin: while (true) {
+      if ((dict.$ === -1) && (dict.d.$ === -1)) {
+          var color = dict.a;
+          var key = dict.b;
+          var value = dict.c;
+          var left = dict.d;
+          var lColor = left.a;
+          var lLeft = left.d;
+          var right = dict.e;
+          if (lColor === 1) {
+              if ((lLeft.$ === -1) && (!lLeft.a)) {
+                  var _v3 = lLeft.a;
+                  $end.d = A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, null, right);
+                  $end = $end.d;
+                  dict = left;
+                  continue removeMin;
+              }
+              else {
+                  var _v4 = $elm$core$Dict$moveRedLeft(dict);
+                  if (_v4.$ === -1) {
+                      var nColor = _v4.a;
+                      var nKey = _v4.b;
+                      var nValue = _v4.c;
+                      var nLeft = _v4.d;
+                      var nRight = _v4.e;
+                      $end.d = A5($elm$core$Dict$balance, nColor, nKey, nValue, $elm$core$Dict$removeMin(nLeft), nRight);
+                      return $start.d;
+                  }
+                  else {
+                      $end.d = $elm$core$Dict$RBEmpty_elm_builtin;
+                      return $start.d;
+                  }
+              }
+          }
+          else {
+              $end.d = A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, null, right);
+              $end = $end.d;
+              dict = left;
+              continue removeMin;
+          }
+      }
+      else {
+          $end.d = $elm$core$Dict$RBEmpty_elm_builtin;
+          return $start.d;
+      }
+    }
+  };
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('should optimize a function that adds values to the result of recursive calls (List.sum-like)', () => {
   // Corresponds to the following Elm code
   // sumPlus1 : List number -> number
