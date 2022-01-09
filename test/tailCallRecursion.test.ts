@@ -525,8 +525,7 @@ test('should optimize a function that wraps the result in a constructor', () => 
         var x = pairs.a;
         var y = pairs.b;
         var ps = pairs.c;
-        $end.c = A3($something$Cons, y, x, null);
-        $end = $end.c;
+        $end = $end.c = A3($something$Cons, y, x, null);
         pairs = ps;
         continue swap;
       }
@@ -630,11 +629,10 @@ test('should optimize a function that wraps the result in a constructors with di
           case 1:
             var subTree = tree.a;
             var value = tree.b;
-            $end[$field] = A2(
+            $end = $end[$field] = A2(
               $something$TreeWrapping$SingleChild,
               null,
               fn(value));
-            $end = $end[$field];
             $field = 'a';
             tree = subTree;
             continue map;
@@ -642,12 +640,11 @@ test('should optimize a function that wraps the result in a constructors with di
             var value = tree.a;
             var left = tree.b;
             var right = tree.c;
-            $end[$field] = A3(
+            $end = $end[$field] = A3(
               $something$TreeWrapping$TwoChildren,
               fn(value),
               null,
               A2($something$TreeWrapping$map, fn, right));
-            $end = $end[$field];
             $field = 'b';
             tree = left;
             continue map;
@@ -756,8 +753,7 @@ test('should optimize a function that wraps the result in a constructors with di
           if (lColor === 1) {
               if ((lLeft.$ === -1) && (!lLeft.a)) {
                   var _v3 = lLeft.a;
-                  $end.d = A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, null, right);
-                  $end = $end.d;
+                  $end = $end.d = A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, null, right);
                   dict = left;
                   continue removeMin;
               }
@@ -779,8 +775,7 @@ test('should optimize a function that wraps the result in a constructors with di
               }
           }
           else {
-              $end.d = A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, null, right);
-              $end = $end.d;
+              $end = $end.d = A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, null, right);
               dict = left;
               continue removeMin;
           }
