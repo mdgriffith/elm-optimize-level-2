@@ -527,7 +527,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   switch (recursionType.kind) {
     case RecursionType.PlainRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock([labelAndLoop(label, updatedBlock)]);
+        return ts.createBlock([labelAndLoop(label, updatedBlock)], true);
       }
 
       return updatedBlock;
@@ -535,7 +535,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
 
     case RecursionType.BooleanRecursion: {
       if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock([labelAndLoop(label, updatedBlock)]);
+        return ts.createBlock([labelAndLoop(label, updatedBlock)], true);
       }
 
       return updatedBlock;
@@ -549,7 +549,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
           [
             declaration,
             labelAndLoop(label, updatedBlock)
-          ]
+          ], true
         );
       }
 
@@ -568,7 +568,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
           [
             stringConsDeclaration(recursionType.left, recursionType.right),
             labelAndLoop(label, updatedBlock)
-          ]
+          ], true
         );
       }
 
@@ -589,7 +589,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
           [
             declaration,
             labelAndLoop(label, updatedBlock)
-          ]
+          ], true
         );
       }
 
@@ -608,7 +608,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
           [
             ...consDeclarations,
             labelAndLoop(label, updatedBlock)
-          ]
+          ], true
         );
       }
 
@@ -627,7 +627,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
           [
             ...constructorDeclarations(recursionType.property),
             labelAndLoop(label, updatedBlock)
-          ]
+          ], true
         );
       }
 
@@ -646,7 +646,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
           [
             ...multipleConstructorDeclarations,
             labelAndLoop(label, updatedBlock)
-          ]
+          ], true
         );
       }
   
