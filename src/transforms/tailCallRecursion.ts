@@ -1240,16 +1240,6 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
 function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   return [
     ...elements.map(addToEnd),
-    // `$end = $end.b;`
-    ts.createExpressionStatement(
-      ts.createAssignment(
-        END,
-        ts.createPropertyAccess(
-          END,
-          "b"
-        )
-      )
-    ),
     ...createContinuation(label, parameterNames, newArguments)
   ];
 }
@@ -1425,27 +1415,30 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
 }
 
 function addToEnd(element : ts.Expression) : ts.Statement {
-  // `end.b = _List_Cons(element, _List_Nil);`
+  // `$end = $end.b = _List_Cons(element, _List_Nil);`
   return ts.createExpressionStatement(
     ts.createAssignment(
-      ts.createPropertyAccess(
-        END,
-        "b"
-      ),
-      ts.createCall(
-        ts.createIdentifier(LIST_CONS),
-        undefined,
-        [
-          element,
-          ts.createIdentifier(EMPTY_LIST)
-        ]
+      END,
+      ts.createAssignment(
+        ts.createPropertyAccess(
+          END,
+          "b"
+        ),
+        ts.createCall(
+          ts.createIdentifier(LIST_CONS),
+          undefined,
+          [
+            element,
+            ts.createIdentifier(EMPTY_LIST)
+          ]
+        )
       )
     )
   );
 }
 
 function assignToStaticDataProperty(property : string, expression : ts.Expression) : ts.Statement {
-  // `end.b = <expression where recursive call has been replaced by null>;`
+  // `$end.b = <expression where recursive call has been replaced by null>;`
   return ts.createExpressionStatement(
     ts.createAssignment(
       ts.createPropertyAccess(
