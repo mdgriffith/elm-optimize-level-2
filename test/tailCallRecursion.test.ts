@@ -945,44 +945,6 @@ test('should optimize a function that multiplies values to the result of recursi
   expect(actual).toBe(expected);
 });
 
-test('should optimize a function that multiplies values to the result of recursive calls (factorial using ternary)', () => {
-  // Corresponds to the following Elm code
-  // factorial : Int -> Int
-  // factorial n =
-  //     if n <= 1 then
-  //         1
-  //     else
-  //         n * factorial (n - 1)
-  const initialCode = `
-  var $something$factorial = function (n) {
-    return (n <= 1) ? 1 : (n * $something$factorial(n - 1));
-  };
-  `;
-
-  const expectedOutputCode = `
-  var $something$factorial = function (n) {
-    var $result = 1;
-    factorial: while (true) {
-      if ((n <= 1)) {
-        return $result;
-      } else {
-        $result *= n;
-        n = n - 1;
-        continue factorial;
-      }
-    }
-  };
-  `;
-
-  const { actual, expected } = transformCode(
-    initialCode,
-    expectedOutputCode,
-    createTailCallRecursionTransformer
-  );
-
-  expect(actual).toBe(expected);
-});
-
 test('should optimize a function that concatenates strings to the result of recursive calls (String.repeat-like)', () => {
   // Corresponds to the following Elm code
   // repeat : Int -> String -> String
@@ -1012,6 +974,45 @@ test('should optimize a function that concatenates strings to the result of recu
         }
       }
     });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should optimize a function that concatenates strings on both sides of the result of recursive calls (String.pad-like)', () => {
+  // Corresponds to the following Elm code
+  // pad : Int -> String
+  // pad n =
+  //     if n <= 0 then
+  //         ""
+  //     else
+  //         "prefix " ++ pad (n - 1) ++ " suffix"
+  const initialCode = `
+  var $something$pad = function (n) {
+    return (n <= 0) ? '' : ('prefix ' + ($something$pad(n - 1) + ' suffix'));
+  };
+  `;
+
+  const expectedOutputCode = `
+  var $something$pad = function (n) {
+    var $left = "", $right = "";
+    pad: while (true) {
+      if ((n <= 0)) {
+        return $left + $right;
+      } else {
+        $left += 'prefix ';
+        $right = ' suffix' + $right;
+        n = n - 1;
+        continue pad;
+      }
+    }
+  };
   `;
 
   const { actual, expected } = transformCode(
