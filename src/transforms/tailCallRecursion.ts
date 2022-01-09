@@ -638,6 +638,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
   }
 }
 
+// TODO Don't set while loop if there is already one, even if after other declarations
 function labelAndLoop(label : string, block: ts.Block) : ts.Statement {
   // `<label>: while (true) { <block> }`
   return ts.createLabel(label, ts.createWhile(ts.createTrue(), block));
