@@ -48,6 +48,16 @@ Therefore:
 */
 
 // TODO Support _Utils_ap for string concatenation
+// TODO Support shortcutting creating list when _List_fromArray is on the list to add
+// function _Utils_copyListAndGetEndForLiteral(end, arr)
+//   {
+//   	for (var i = 0; i < arr.length; i++)
+//   	{
+//   		end = end.b = _List_Cons(arr[i], _List_Nil);
+//   	}
+//   	return end;
+//   }
+
 // TODO Enable TCO for nested data constructions
 // TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
 
