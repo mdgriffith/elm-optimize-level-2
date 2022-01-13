@@ -327,16 +327,38 @@ type MultiplyRecursion =
 
 function determineRecursionType(functionName : string, body : ts.Node) : FunctionRecursion | NotRecursiveFunction {
   let recursionType : FunctionRecursion | NotRecursiveFunction = { kind: FunctionRecursionKind.F_NotRecursive };
+  const iter = findReturnStatements(body);
+  let expression : ts.Expression | undefined;
+
+  while (
+    recursionType.kind === FunctionRecursionKind.F_NotRecursive
+      || recursionType.kind === FunctionRecursionKind.F_PlainRecursion
+      || recursionType.kind === FunctionRecursionKind.F_DataConstructionRecursion
+  ) {
+    const next = iter.next();
+    if (next.done) { return recursionType; }
+    expression = next.value;
+
+    const expressionRecursion : FunctionRecursion | NotRecursiveFunction = toFunctionRecursion(extractRecursionKindFromExpression(functionName, expression));
+    if (recursionType.kind === FunctionRecursionKind.F_DataConstructionRecursion
+      && expressionRecursion.kind === FunctionRecursionKind.F_DataConstructionRecursion
+      && expressionRecursion.property !== recursionType.property
+    ) {
+      recursionType = { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion };
+    }
+    else if (recursionType.kind < expressionRecursion.kind) {
+      recursionType = expressionRecursion;
+    }
+  }
+
+  return recursionType;
+}
+
+function* findReturnStatements(body : ts.Node) : Generator<ts.Expression, void, null> {
   let nodesToVisit : Array<ts.Node> = [body];
   let node : ts.Node | undefined;
 
-  loop: while (
-    (recursionType.kind === FunctionRecursionKind.F_NotRecursive
-      || recursionType.kind === FunctionRecursionKind.F_PlainRecursion
-      || recursionType.kind === FunctionRecursionKind.F_DataConstructionRecursion
-    )
-    && (node = nodesToVisit.shift())
-  ) {
+  loop: while (node = nodesToVisit.shift()) {
     if (ts.isParenthesizedExpression(node)) {
       nodesToVisit = [node.expression, ...nodesToVisit];
       continue loop;
@@ -377,28 +399,14 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
       if (ts.isConditionalExpression(node.expression)) {
         nodesToVisit.unshift(ts.createReturn(node.expression.whenFalse));
         // We could have unshifted this as well, but this skips an iteration
-        node = node.expression.whenTrue;
+        yield node.expression.whenTrue;
         continue loop;
       }
 
-      const expressionRecursion : FunctionRecursion | NotRecursiveFunction = toFunctionRecursion(extractRecursionKindFromExpression(functionName, node.expression));
-      if (recursionType.kind === FunctionRecursionKind.F_DataConstructionRecursion
-        && expressionRecursion.kind === FunctionRecursionKind.F_DataConstructionRecursion
-        && expressionRecursion.property !== recursionType.property
-      ) {
-        recursionType = { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion };
-        continue loop;
-      }
-
-      if (recursionType.kind < expressionRecursion.kind) {
-        recursionType = expressionRecursion;
-      }
-      
+      yield node.expression;
       continue loop;
     }
   }
-
-  return recursionType;
 }
 
 const START = ts.createIdentifier("$start");
