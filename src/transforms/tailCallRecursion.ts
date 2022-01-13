@@ -357,11 +357,6 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
       continue loop;
     }
 
-    if (ts.isContinueStatement(node) && node.label) {
-      recursionType = { kind: FunctionRecursionKind.F_PlainRecursion };
-      continue loop;
-    }
-
     if (ts.isIfStatement(node)) {
       if (node.elseStatement) {
         nodesToVisit.unshift(node.elseStatement);
