@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import { ast } from './utils/create';
 
 /*
 
@@ -75,8 +76,20 @@ const EMPTY_LIST = "_List_Nil";
 const UTILS_AP = "_Utils_ap";
 const COPY_LIST_AND_GET_END = "_Utils_copyListAndGetEnd";
 
+const newFunctionDefinitions: {[key: string]: string} = {
+  [COPY_LIST_AND_GET_END]:
+    `function _Utils_copyListAndGetEnd(root, xs) {
+      for (; xs.b; xs = xs.b) {
+        root = root.b = _List_Cons(xs.a, _List_Nil);
+      }
+      return root;
+    }`,
+};
+
 export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
-  return (sourceFile) => {
+  return (sourceFile : ts.SourceFile) => {
+    const functionsToInsert: Set<string> = new Set();
+
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // Is `var x = FX(function(...) { ... })` or `var x = function(...) { ... }`
       if (ts.isVariableDeclaration(node)
@@ -96,7 +109,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
           const parameterNames : Array<string> = foundFunction.fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
-          const newBody = updateFunctionBody(functionRecursionType, node.name.text, parameterNames, foundFunction.fn.body, context);
+          const newBody = updateFunctionBody(functionsToInsert, functionRecursionType, node.name.text, parameterNames, foundFunction.fn.body, context);
 
           const variableDeclaration = ts.getMutableClone(node);
           variableDeclaration.initializer = foundFunction.update(newBody);
@@ -105,7 +118,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
       return ts.visitEachChild(node, visitor, context);
     };
 
-    return ts.visitNode(sourceFile, visitor);
+    return introduceFunctions(functionsToInsert, ts.visitNode(sourceFile, visitor), context);
   };
 };
 
@@ -530,7 +543,7 @@ function constructorDeclarations(property : string) {
   ];
 }
 
-function updateFunctionBody(recursionType : FunctionRecursion, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(functionsToInsert : Set<string>, recursionType : FunctionRecursion, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
@@ -559,7 +572,7 @@ function updateFunctionBody(recursionType : FunctionRecursion, functionName : st
     if (ts.isReturnStatement(node)
       && node.expression
     ) {
-      return updateReturnStatement(recursionType, functionName, label, parameterNames, node.expression) || node;
+      return updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, node.expression) || node;
     }
 
     return node;
@@ -723,6 +736,7 @@ function returnStatementToBlock(expression : ts.Statement[] | ts.ReturnStatement
 }
 
 function updateReturnStatement(
+  functionsToInsert : Set<string>,
   recursionType : FunctionRecursion,
   functionName : string,
   label : string,
@@ -731,8 +745,8 @@ function updateReturnStatement(
 ) : ts.Statement[] | ts.ReturnStatement | null {
   const extract = extractRecursionKindFromExpression(functionName, expression);
   if (ts.isConditionalExpression(expression)) {
-    const maybeLeft = updateReturnStatement(recursionType, functionName, label, parameterNames, expression.whenTrue);
-    const maybeRight = updateReturnStatement(recursionType, functionName, label, parameterNames, expression.whenFalse);
+    const maybeLeft = updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenTrue);
+    const maybeRight = updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenFalse);
     if (maybeLeft === null && maybeRight === null) {
       return null;
     }
@@ -786,7 +800,7 @@ function updateReturnStatement(
     }
 
     case FunctionRecursionKind.F_ListRecursion: {
-      return updateReturnStatementForListRecursion(extract, label, parameterNames, expression);
+      return updateReturnStatementForListRecursion(functionsToInsert, extract, label, parameterNames, expression);
     }
 
     case FunctionRecursionKind.F_DataConstructionRecursion: {
@@ -822,7 +836,7 @@ function updateReturnStatement(
   }
 }
 
-function updateReturnStatementForListRecursion(extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
+function updateReturnStatementForListRecursion(functionsToInsert : Set<string>, extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
   if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
@@ -832,7 +846,7 @@ function updateReturnStatementForListRecursion(extract : Recursion | NotRecursiv
   }
 
   if (extract.kind === RecursionTypeKind.ConcatRecursion) {
-    return createListConcatContinuation(label, parameterNames, extract.left, extract.right, extract.arguments);
+    return createListConcatContinuation(functionsToInsert, label, parameterNames, extract.left, extract.right, extract.arguments);
   }
 
   // End of the recursion, add the value to the end of the list and return the start.
@@ -1375,10 +1389,11 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
   ];
 }
 
-function createListConcatContinuation(label : string, parameterNames : Array<string>, left : ts.Expression | null, right : ts.Expression | null, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+function createListConcatContinuation(functionsToInsert : Set<string>, label : string, parameterNames : Array<string>, left : ts.Expression | null, right : ts.Expression | null, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   let result = createContinuation(label, parameterNames, newArguments);
 
   if (left) {
+    functionsToInsert.add(COPY_LIST_AND_GET_END);
     // $end = _Utils_copyListAndGetEnd($end, <left>);
     result.unshift(
       ts.createExpressionStatement(
@@ -1603,4 +1618,47 @@ function assignToDynamicDataProperty(expression : ts.Expression) : ts.Statement 
       )
     )
   );
+}
+
+
+/*******************************************
+ * Adding new functions to the source file *
+ *******************************************/
+
+function introduceFunctions(functionsToInsert : Set<string>, sourceFile : ts.SourceFile, context : Context) {
+  let nativeFunctionNodes: ts.Node[] = [];
+  for (const nativeFunction of functionsToInsert) {
+    nativeFunctionNodes.push(ast(newFunctionDefinitions[nativeFunction]));
+  }
+
+  return ts.visitNode(sourceFile, prependNodes(nativeFunctionNodes, context, /* TODO for tests */ true));
+}
+
+/* Taken from recordUpdate.ts and updated, maybe mutualize these? */
+function prependNodes(nodes: ts.Node[], context: ts.TransformationContext, forTests: boolean) {
+  if (forTests) {
+    const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      if (ts.isFunctionDeclaration(node) || ts.isVariableStatement(node)) {
+        return nodes.concat(node);
+      }
+
+      return ts.visitEachChild(node, visitorHelp, context);
+    }
+
+    return visitorHelp;
+  }
+
+  const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
+    if (isFirstFWrapper(node)) {
+      return nodes.concat(node);
+    }
+
+    return ts.visitEachChild(node, visitorHelp, context);
+  }
+
+  return visitorHelp;
+}
+
+function isFirstFWrapper(node: ts.Node): boolean {
+    return ts.isFunctionDeclaration(node) && node?.name?.text === 'F';
 }
