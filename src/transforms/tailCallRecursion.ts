@@ -814,27 +814,21 @@ function updateReturnStatement(
       return updateReturnStatementForMultipleDataConstruction(extract, label, parameterNames, expression)
     }
 
-    case FunctionRecursionKind.F_PlainRecursion:
     case FunctionRecursionKind.F_BooleanRecursion: {
-      switch (extract.kind) {
-        case RecursionTypeKind.PlainRecursion: {
-          return createContinuation(label, parameterNames, extract.arguments);
-        }
-
-        case RecursionTypeKind.BooleanRecursion: {
-          return createBooleanContinuation(label, parameterNames, extract.booleanKind, extract.expression, extract.arguments);
-        }
-
-        case RecursionTypeKind.NotRecursive:
-        case RecursionTypeKind.AddRecursion:
-        case RecursionTypeKind.MultiplyRecursion:
-        case RecursionTypeKind.ConcatRecursion:
-        case RecursionTypeKind.ConsRecursion:
-        case RecursionTypeKind.DataConstructionRecursion:
-        case RecursionTypeKind.MultipleDataConstructionRecursion: {
-          return null;
-        }
+      if (extract.kind === RecursionTypeKind.PlainRecursion) {
+        return createContinuation(label, parameterNames, extract.arguments);
       }
+      if (extract.kind === RecursionTypeKind.BooleanRecursion) {
+        return createBooleanContinuation(label, parameterNames, extract.booleanKind, extract.expression, extract.arguments);
+      }
+      return null;
+    }
+
+    case FunctionRecursionKind.F_PlainRecursion: {
+      if (extract.kind === RecursionTypeKind.PlainRecursion) {
+        return createContinuation(label, parameterNames, extract.arguments);
+      }
+      return null;
     }
   }
 }
