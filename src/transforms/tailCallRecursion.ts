@@ -577,9 +577,16 @@ function* findReturnStatements(body : ts.Node) : Generator<ts.Expression | "whil
 
     if (ts.isReturnStatement(node) && node.expression) {
       if (ts.isConditionalExpression(node.expression)) {
-        nodesToVisit.unshift(ts.createReturn(node.expression.whenFalse));
-        // We could have unshifted this as well, but this skips an iteration
-        yield node.expression.whenTrue;
+        nodesToVisit = [
+          ts.createReturn(node.expression.whenTrue),
+          ts.createReturn(node.expression.whenFalse),
+          ...nodesToVisit
+        ];
+        continue loop;
+      }
+
+      if (ts.isParenthesizedExpression(node.expression)) {
+        nodesToVisit.unshift(ts.createReturn(node.expression.expression));
         continue loop;
       }
 
@@ -838,7 +845,6 @@ function updateReturnStatement(
   parameterNames : Array<string>,
   expression : ts.Expression
 ) : ts.Statement[] | ts.ReturnStatement | null {
-  const extract = extractRecursionKindFromExpression(functionName, expression);
   if (ts.isConditionalExpression(expression)) {
     const maybeLeft = updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenTrue);
     const maybeRight = updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenFalse);
@@ -855,6 +861,11 @@ function updateReturnStatement(
     ];
   }
 
+  if (ts.isParenthesizedExpression(expression)) {
+    return updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, expression.expression);
+  }
+
+  const extract = extractRecursionKindFromExpression(functionName, expression);
   switch (recursionType.kind) {
     case FunctionRecursionKind.F_AddRecursion: {
       return updateReturnStatementForArithmeticOperation(
