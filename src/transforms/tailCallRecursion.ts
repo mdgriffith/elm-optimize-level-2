@@ -101,15 +101,15 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
             return ts.visitEachChild(node, visitor, context);
           }
 
-          const functionRecursionType : FunctionRecursion | NotRecursiveFunction = determineRecursionType(node.name.text, foundFunction.fn.body);
-          if (functionRecursionType.kind === FunctionRecursionKind.F_NotRecursive) {
+          const functionAnalysis : FunctionAnalysis = determineRecursionType(node.name.text, foundFunction.fn.body);
+          if (functionAnalysis.recursionType.kind === FunctionRecursionKind.F_NotRecursive) {
             return ts.visitEachChild(node, visitor, context);
           }
 
           const parameterNames : Array<string> = foundFunction.fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
-          const newBody = updateFunctionBody(functionsToInsert, functionRecursionType, node.name.text, parameterNames, foundFunction.fn.body, context);
+          const newBody = updateFunctionBody(functionsToInsert, functionAnalysis.recursionType, functionAnalysis.hasWhileLoop, node.name.text, parameterNames, foundFunction.fn.body, context);
 
           const variableDeclaration = ts.getMutableClone(node);
           variableDeclaration.initializer = foundFunction.update(newBody);
@@ -325,8 +325,15 @@ type MultiplyRecursion =
     arguments : Array<ts.Expression>
   }
 
-function determineRecursionType(functionName : string, body : ts.Node) : FunctionRecursion | NotRecursiveFunction {
+type FunctionAnalysis =
+  {
+    recursionType : FunctionRecursion | NotRecursiveFunction,
+    hasWhileLoop : boolean
+  }
+
+function determineRecursionType(functionName : string, body : ts.Node) : FunctionAnalysis {
   let recursionType : FunctionRecursion | NotRecursiveFunction = { kind: FunctionRecursionKind.F_NotRecursive };
+  let hasWhileLoop : boolean = false;
   const iter = findReturnStatements(body);
   let expression : ts.Expression | undefined;
 
@@ -336,7 +343,12 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
       || recursionType.kind === FunctionRecursionKind.F_DataConstructionRecursion
   ) {
     const next = iter.next();
-    if (next.done) { return recursionType; }
+    if (next.done) { break; }
+    if (next.value === "while-loop") {
+      hasWhileLoop = true;
+      continue;
+    }
+
     expression = next.value;
 
     const expressionRecursion : FunctionRecursion | NotRecursiveFunction = toFunctionRecursion(extractRecursionKindFromExpression(functionName, expression));
@@ -351,10 +363,10 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
     }
   }
 
-  return recursionType;
+  return { recursionType, hasWhileLoop };
 }
 
-function* findReturnStatements(body : ts.Node) : Generator<ts.Expression, void, null> {
+function* findReturnStatements(body : ts.Node) : Generator<ts.Expression | "while-loop", void, null> {
   let nodesToVisit : Array<ts.Node> = [body];
   let node : ts.Node | undefined;
 
@@ -371,6 +383,7 @@ function* findReturnStatements(body : ts.Node) : Generator<ts.Expression, void, 
 
     if (ts.isLabeledStatement(node)) {
       nodesToVisit.unshift(node.statement);
+      yield "while-loop";
       continue loop;
     }
 
@@ -546,7 +559,7 @@ function constructorDeclarations(property : string) {
   ];
 }
 
-function updateFunctionBody(functionsToInsert : Set<string>, recursionType : FunctionRecursion, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(functionsToInsert : Set<string>, recursionType : FunctionRecursion, hasWhileLoop : boolean, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
   const labelSplits = functionName.split("$");
   const label = labelSplits[labelSplits.length - 1] || functionName;
   const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
@@ -581,147 +594,59 @@ function updateFunctionBody(functionsToInsert : Set<string>, recursionType : Fun
     return node;
   }
 
+  const declarations = declarationsForRecursiveFunction(recursionType);
+
+  if (!hasWhileLoop) {
+    return ts.createBlock(
+      [
+        ...declarations,
+        // `<label>: while (true) { <block> }`
+        ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+      ],
+      true
+    );
+  }
+
+  return ts.updateBlock(
+    updatedBlock,
+    [
+      ...declarations,
+      ...updatedBlock.statements
+    ]
+  );
+}
+
+function declarationsForRecursiveFunction(recursionType : FunctionRecursion) : ts.Statement[] {
   switch (recursionType.kind) {
-    case FunctionRecursionKind.F_PlainRecursion: {
-      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock([labelAndLoop(label, updatedBlock)], true);
-      }
-
-      return updatedBlock;
-    }
-
+    case FunctionRecursionKind.F_PlainRecursion:
     case FunctionRecursionKind.F_BooleanRecursion: {
-      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock([labelAndLoop(label, updatedBlock)], true);
-      }
-
-      return updatedBlock;
+      return [];
     }
-
     case FunctionRecursionKind.F_AddRecursion: {
       // `var $result = 0;`
-      const declaration = resultDeclaration(0);
-      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock(
-          [
-            declaration,
-            labelAndLoop(label, updatedBlock)
-          ], true
-        );
-      }
-
-      return ts.updateBlock(
-        updatedBlock,
-        [
-          declaration,
-          ...updatedBlock.statements
-        ]
-      );
+      return [resultDeclaration(0)];
     }
-
     case FunctionRecursionKind.F_StringConcatRecursion: {
-      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock(
-          [
-            stringConsDeclaration(recursionType.left, recursionType.right),
-            labelAndLoop(label, updatedBlock)
-          ], true
-        );
-      }
-
-      return ts.updateBlock(
-        updatedBlock,
-        [
-          stringConsDeclaration(recursionType.left, recursionType.right),
-          ...updatedBlock.statements
-        ]
-      );
+      return [stringConsDeclaration(recursionType.left, recursionType.right)];
     }
 
     case FunctionRecursionKind.F_MultiplyRecursion: {
       // `var $result = 1;`
-      const declaration = resultDeclaration(1);
-      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock(
-          [
-            declaration,
-            labelAndLoop(label, updatedBlock)
-          ], true
-        );
-      }
-
-      return ts.updateBlock(
-        updatedBlock,
-        [
-          declaration,
-          ...updatedBlock.statements
-        ]
-      );
+      return [resultDeclaration(1)];
     }
 
     case FunctionRecursionKind.F_ListRecursion: {
-      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock(
-          [
-            ...consDeclarations,
-            labelAndLoop(label, updatedBlock)
-          ], true
-        );
-      }
-
-      return ts.updateBlock(
-        updatedBlock,
-        [
-          ...consDeclarations,
-          ...updatedBlock.statements
-        ]
-      );
+      return consDeclarations;
     }
 
     case FunctionRecursionKind.F_DataConstructionRecursion: {
-      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock(
-          [
-            ...constructorDeclarations(recursionType.property),
-            labelAndLoop(label, updatedBlock)
-          ], true
-        );
-      }
-
-      return ts.updateBlock(
-        updatedBlock,
-        [
-          ...constructorDeclarations(recursionType.property),
-          ...updatedBlock.statements
-        ]
-      );
+      return constructorDeclarations(recursionType.property);
     }
 
     case FunctionRecursionKind.F_MultipleDataConstructionRecursion: {
-      if (!ts.isLabeledStatement(updatedBlock.statements[0])) {
-        return ts.createBlock(
-          [
-            ...multipleConstructorDeclarations,
-            labelAndLoop(label, updatedBlock)
-          ], true
-        );
-      }
-  
-      return ts.updateBlock(
-        updatedBlock,
-        [
-          ...multipleConstructorDeclarations,
-          ...updatedBlock.statements
-        ]
-      );
+      return multipleConstructorDeclarations;
     }
   }
-}
-
-// TODO Don't set while loop if there is already one, even if after other declarations
-function labelAndLoop(label : string, block: ts.Block) : ts.Statement {
-  // `<label>: while (true) { <block> }`
-  return ts.createLabel(label, ts.createWhile(ts.createTrue(), block));
 }
 
 function returnStatementToBlock(expression : ts.Statement[] | ts.ReturnStatement | null, original : ts.Expression) : ts.Block {
