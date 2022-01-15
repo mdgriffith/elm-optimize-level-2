@@ -337,11 +337,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
   const iter = findReturnStatements(body);
   let expression : ts.Expression | undefined;
 
-  while (
-    recursionType.kind === FunctionRecursionKind.F_NotRecursive
-      || recursionType.kind === FunctionRecursionKind.F_PlainRecursion
-      || recursionType.kind === FunctionRecursionKind.F_DataConstructionRecursion
-  ) {
+  while (!hasRecursionTypeBeenDetermined(recursionType)) {
     const next = iter.next();
     if (next.done) { break; }
     if (next.value === "while-loop") {
@@ -364,6 +360,25 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
   }
 
   return { recursionType, hasWhileLoop };
+}
+
+function hasRecursionTypeBeenDetermined(recursion : FunctionRecursion | NotRecursiveFunction) {
+  switch (recursion.kind) {
+    case FunctionRecursionKind.F_NotRecursive: return false;
+    case FunctionRecursionKind.F_PlainRecursion: return false;
+    case FunctionRecursionKind.F_BooleanRecursion: return true;
+    case FunctionRecursionKind.F_MultiplyRecursion: return true;
+    case FunctionRecursionKind.F_MultipleDataConstructionRecursion: return true;
+    case FunctionRecursionKind.F_DataConstructionRecursion: return false;
+    case FunctionRecursionKind.F_AddRecursion: return false;
+    case FunctionRecursionKind.F_ListRecursion: {
+      // We need to know for sure on which side there will be concatenation.
+      return recursion.left === true && recursion.right === true;
+    }
+    case FunctionRecursionKind.F_StringConcatRecursion:
+      // We need to know for sure on which side there will be concatenation.
+      return recursion.left === true && recursion.right === true;
+  }
 }
 
 function* findReturnStatements(body : ts.Node) : Generator<ts.Expression | "while-loop", void, null> {
