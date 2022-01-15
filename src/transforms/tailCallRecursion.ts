@@ -225,7 +225,7 @@ type FunctionRecursion
   | { kind: FunctionRecursionKind.F_BooleanRecursion }
   | { kind: FunctionRecursionKind.F_DataConstructionRecursion, property: string }
   | { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion }
-  | { kind: FunctionRecursionKind.F_AddRecursion }
+  | { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed : boolean }
   | StringConcatRecursion
   | { kind: FunctionRecursionKind.F_MultiplyRecursion }
 
@@ -370,7 +370,7 @@ function hasRecursionTypeBeenDetermined(recursion : FunctionRecursion | NotRecur
     case FunctionRecursionKind.F_MultiplyRecursion: return true;
     case FunctionRecursionKind.F_MultipleDataConstructionRecursion: return true;
     case FunctionRecursionKind.F_DataConstructionRecursion: return false;
-    case FunctionRecursionKind.F_AddRecursion: return false;
+    case FunctionRecursionKind.F_AddRecursion: return recursion.numbersConfirmed;
     case FunctionRecursionKind.F_ListRecursion: {
       // We need to know for sure on which side there will be concatenation.
       return recursion.left === true && recursion.right === true;
@@ -980,7 +980,7 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive) : FunctionRec
       if (recursion.adds === "strings") {
         return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
       }
-      return { kind: FunctionRecursionKind.F_AddRecursion };
+      return { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed: recursion.adds === "numbers" };
     case RecursionTypeKind.ConcatRecursion:
       if (recursion.concatenates === "strings") {
         return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
