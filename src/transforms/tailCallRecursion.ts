@@ -76,6 +76,7 @@ const LIST_FROM_ARRAY = "_List_fromArray";
 const EMPTY_LIST = "_List_Nil";
 const UTILS_AP = "_Utils_ap";
 const COPY_LIST_AND_GET_END = "_Utils_copyListAndGetEnd";
+const LIST_APPEND = "$elm$core$List$append";
 
 const newFunctionDefinitions: {[key: string]: string} = {
   [COPY_LIST_AND_GET_END]:
@@ -598,12 +599,20 @@ function* findReturnStatements(body : ts.Node) : Generator<ts.Expression | "whil
 
 const START = ts.createIdentifier("$start");
 const END = ts.createIdentifier("$end");
+const TAIL = ts.createIdentifier("$tail");
 const FIELD = ts.createIdentifier("$field");
 const RESULT = ts.createIdentifier("$result");
 const LEFT = ts.createIdentifier("$left");
 const RIGHT = ts.createIdentifier("$right");
 
-const consDeclarations =
+function consDeclarations(left : boolean, right : boolean) {
+  return [
+    ...(left ? consLeftDeclarations : []),
+    ...(right ? [consrightDeclaration] : [])
+  ];
+}
+
+const consLeftDeclarations =
   [
     // `var $start = _List_Cons(undefined, _List_Nil);`
     ts.createVariableStatement(
@@ -632,6 +641,17 @@ const consDeclarations =
       ]
     )
   ];
+
+// `var $tail = _List_Nil;`
+const consrightDeclaration =
+  ts.createVariableStatement(
+    undefined,
+    [ts.createVariableDeclaration(
+      TAIL,
+      undefined,
+      ts.createIdentifier(EMPTY_LIST)
+    )]
+  );
 
 const multipleConstructorDeclarations =
 [
@@ -810,7 +830,7 @@ function declarationsForRecursiveFunction(recursionType : FunctionRecursion) : t
     }
 
     case FunctionRecursionKind.F_ListRecursion: {
-      return consDeclarations;
+      return consDeclarations(recursionType.left, recursionType.right);
     }
 
     case FunctionRecursionKind.F_DataConstructionRecursion: {
@@ -906,7 +926,7 @@ function updateReturnStatement(
     }
 
     case FunctionRecursionKind.F_ListRecursion: {
-      return updateReturnStatementForListRecursion(functionsToInsert, extract, label, parameterNames, expression);
+      return updateReturnStatementForListRecursion(recursionType, functionsToInsert, extract, label, parameterNames, expression);
     }
 
     case FunctionRecursionKind.F_DataConstructionRecursion: {
@@ -936,7 +956,7 @@ function updateReturnStatement(
   }
 }
 
-function updateReturnStatementForListRecursion(functionsToInsert : Set<string>, extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
+function updateReturnStatementForListRecursion(recursion : ListRecursion, functionsToInsert : Set<string>, extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
   if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return createContinuation(label, parameterNames, extract.arguments);
   }
@@ -950,32 +970,58 @@ function updateReturnStatementForListRecursion(functionsToInsert : Set<string>, 
   }
 
   // End of the recursion, add the value to the end of the list and return the start.
+  function addReturnValueToList() {
+    if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
+      // Adding `[]` would not do anything, so don't add it
+      return [];
+    }
 
-  // `return $end.b;`
-  const returnStatement = ts.createReturn(
-    ts.createPropertyAccess(
-      START,
-      "b"
-    )
-  );
+    if (recursion.right) {
+      return [addListToTail(expression)];
+    }
+    else {
+      // `$end.b = <expression>;`
+      return [ts.createExpressionStatement(
+        ts.createAssignment(
+          ts.createPropertyAccess(
+            END,
+            "b"
+          ),
+          expression
+        )
+      )];
+    }
+  }
 
-  if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
-    // The end of the list is already an empty list, setting it would be useless.
-    return returnStatement;
+  function returnStart() {
+    // `return $end.b;`
+    return ts.createReturn(
+      ts.createPropertyAccess(
+        START,
+        "b"
+      )
+    );
+  }
+
+  function returnStatement() {
+    if (recursion.left && recursion.right) {
+      return [
+        // TODO
+        returnStart()
+      ];
+    }
+    if (recursion.left) {
+      return [
+        returnStart()
+      ];
+    }
+    // `return $tail;`
+    return [ts.createReturn(TAIL)];
   }
 
   return [
-    // `$end.b = <expression>;`
-    ts.createExpressionStatement(
-      ts.createAssignment(
-        ts.createPropertyAccess(
-          END,
-          "b"
-        ),
-        expression
-      )
-    ),
-    returnStatement
+    ...addReturnValueToList(),
+    ...returnStatement()
   ];
 }
 
@@ -1501,7 +1547,6 @@ function createListConcatContinuation(functionsToInsert : Set<string>, label : s
           END,
           ts.SyntaxKind.EqualsToken,
           ts.createCall(
-            // TODO Make into constant
             ts.createIdentifier(COPY_LIST_AND_GET_END),
             undefined,
             [END, left]
@@ -1511,8 +1556,30 @@ function createListConcatContinuation(functionsToInsert : Set<string>, label : s
     );
   }
 
-  // TODO Support right-hand side
+  if (right) {
+    result.unshift(addListToTail(right));
+  }
+
   return result;
+}
+
+function addListToTail(value : ts.Expression) : ts.ExpressionStatement {
+  // $tail = A2($elm$core$List$append, <value>, $tail);
+  return ts.createExpressionStatement(
+    ts.createBinary(
+      TAIL,
+      ts.SyntaxKind.EqualsToken,
+      ts.createCall(
+        ts.createIdentifier("A2"),
+        undefined,
+        [
+          ts.createIdentifier(LIST_APPEND),
+          value,
+          TAIL
+        ]
+      )
+    )
+  );
 }
 
 function createArithmeticContinuation(operation: ArithmeticData, label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {

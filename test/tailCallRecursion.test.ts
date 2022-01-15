@@ -1204,6 +1204,55 @@ test('should optimize a function that concatenates lists at the beginning', () =
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that concatenates lists at the end', () => {
+  // Corresponds to the following Elm code
+  // repeatList : Int -> List Int -> List Int
+  // repeatList n list =
+  //     if n <= 0 then
+  //         []
+  //     else if n == 1 then
+  //         [ x ]
+  //     else
+  //         repeatList (n - 1) list ++ list
+  const initialCode = `
+  var $something$repeatList = F2(
+    function (n, list) {
+      return (n <= 0) ? _List_Nil : ((n === 1) ? _List_fromArray([x]) : _Utils_ap(
+        A2($something$repeatList, n - 1, list),
+        list));
+    });
+  `;
+
+  const expectedOutputCode = `
+  var $something$repeatList = F2(
+    function (n, list) {
+      var $tail = _List_Nil;
+      repeatList: while (true) {
+        if ((n <= 0)) {
+          return $tail;
+        } else {
+          if ((n === 1)) {
+            $tail = A2($elm$core$List$append, _List_fromArray([x]), $tail);
+            return $tail;
+          } else {
+            $tail = A2($elm$core$List$append, list, $tail);
+            n = n - 1;
+            continue repeatList;
+          }
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
