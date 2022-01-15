@@ -79,6 +79,145 @@ Therefore:
 //     else
 //         str ++ repeat (n - 1) str
 
+// TODO Avoid re-computing extracts every time: Instead store them in a dictionary by the node id/position. If there's no entry because we skipped it, then compute the extract.
+
+
+/*
+
+The Elm compiler does tail-recursive call optimization, as explained in https://jfmengels.net/tail-call-optimization/
+
+TODO Explain the concept of holes and when/why we can optimize some functions but not others
+
+# How does this transformer work?
+
+On a high level, this transformer analyzes functions to find if they're recursive and optimizable.
+
+It does one visit of the AST to analyze the `return` expressions of functions to try and find recursive calls,
+allowing it to determine what kind of optimization strategy to adopt.
+
+It then does a second pass to alter the function. It rewrites the body of the function to use iteration (using a loop)
+and changes the `return` statements to `continue` statements with some additional variable manipulations.
+
+Let's go into the details.
+
+## Analyzing return statements
+
+To know whether a function is recursive, we need to look at the return statements to find "local recursion patterns".
+
+If we have a function named `rec`, then a call like `rec(n - 1)` is a "plain" recursive call.
+The analysis tries to find additional patterns that we know are potentially optimizable (the examples are Elm code):
+- Boolean recursion: `fn x || rec (n - 1)` or `fn x && rec (n - 1)`
+- Cons recursion: `x :: rec (n - 1)`
+- Addition recursion: `x + rec (n - 1)` (can be used for both numbers and strings)
+- Multiplication recursion: `x * rec (n - 1)
+- Concatenation recursion: `x ++ rec (n - 1)` or `rec (n - 1) ++ x` using the JS `_Utils_ap` function (can be used for both strings and lists)
+- Data construction recursion: `Cons x (rec (n - 1))`
+
+## Combining local recursion patterns to find the function recursion type
+
+The way we are going to update the `return` statements depends on the local recursion patterns, but the way we change the "outer body" of the function
+depends on the combination of those, which we are going to distill into a "function recursion type".
+
+For instance, if we have the following code:
+```elm
+sum : List number -> number
+sum list =
+    case list of
+        [] ->
+            0
+
+        x :: xs ->
+            x + sum xs
+```
+```js
+var sum = function (list) {
+  if (!list.b) {
+    return 0;
+  } else {
+    var x = list.a;
+    var xs = list.b;
+    return x + sum(xs);
+  }
+};
+```
+then we will transform it to the following:
+```js
+var sum = function (list) {
+  var $result = 0; // Change dependent on the function recursion type
+  sum: while (true) {
+    if (!list.b) {
+      // Change dependent on the local recursion pattern
+      // (in practice we remove the + 0) 
+      return $result + 0;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      // Change dependent on the local recursion pattern
+      $result += x;
+      list = xs;
+      continue sum;
+    }
+  }
+};
+```
+
+While plain recursion and boolean recursion calls are always optimizable, not all of the others are without some more information or intersecting information.
+
+For instance, when we find concatenation recursion calls (like `x ++ rec (n - 1)`), we don't have enough information to optimize this.
+For this optimization in particular, we need to create an initial value to which to append all the `return` expression, but since we don't
+know if we're dealing with strings (initial value `""`) or lists (initial value `[]`).
+
+This is also the case for the addition recursion, where we don't know if the JS `+` is for adding numbers or strings.
+Though in that case, we can rely on the fact that the compiler (at least until 0.19.1) won't use `+` unless there is a literal string somewhere,
+so we can assume we're adding numbers unless we found such a literal string.
+
+So in essence, we need to combine the different local recursion patterns to find which kind of function recursion optimization we're going to apply.
+For instance, if in one branch we see an addition recursion call, and in another one we see concatenation recursion, we can infer that we're dealing with strings,
+that the function type should be string concatenation recursion and that the initial value for the accumulator should be `""` (instead of 0 or `[]`).
+
+We will also use trivial type inference on (recursive and non-recursive) return statements to figure out the missing bits. If we see a `return "";` somewhere,
+we know by the fact that all return statements return the same type, that we're dealing with strings and not numbers or lists, which can help determine whether
+we need to do list concatenation recursion or string concatenation recursion.
+
+Once we have figured the exact function recursion type, we can stop the analysis and start transforming the body and the return statements.
+
+## Transforming the body
+
+Once we detect recursion, we know that we will need to have a while loop. Because the Elm compiler already introduces while loops for plain recursive calls
+(modulo some issues with piping), we will just need to make sure we don't introduce a second one.
+
+Depending on the function recursion type, we also need to add accumulator variables to help us accumulate the results of the recursive calls.
+For example and as shown in the previous `sum` example, the initial value will be an accumulator holding the value `0`, and for multiplication it will be `1`.
+
+For strings, dependent on whether we find `foo ++ rec (n - 1)` and/or `rec (n - 1) ++ foo`
+(both can be found in the same function, and we can also find `foo ++ rec (n - 1) ++ bar`),
+we will add a variable `$left` and/or `$right` containing `""`.
+
+
+## Transforming the return statements
+
+Already present `continue` statements that are introduced by the Elm compiler aren't touched and don't need to be altered.
+
+The return statement updates will highly depend on the function recursion type.
+
+For plain recursion functions, we leave the non-recursive calls untouched and only touch the (plain) recursive calls.
+
+For boolean recursion functions/calls, we do the same, except that we transform `fn x || rec (n - 1)` into `if (fn(x)) { return true; } else { <...> ; continue; }`.
+
+For the other recursive function types, we will basically do the same operations for recursive calls, along with a few operations to mutate the accumulator.
+For instance, when encountering `return x + rec(n - 1)`, we will transform that to the following:
+
+```js
+$result += x; // Updates the accumulator
+n = n - 1; // Changes the arguments to the function, like for plain recursion
+continue rec; // Re-start the loop
+```
+
+If we have a non-recursive call, then we need to update the return value to include the accumulator.
+For an addition recursion, `return x` would be transformed to `return $result + x`.
+
+*/
+
 type Context = any;
 
 const LIST_CONS = "_List_Cons";
