@@ -103,7 +103,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
 
           const functionAnalysis : FunctionAnalysis = determineRecursionType(node.name.text, foundFunction.fn.body);
           if (functionAnalysis.recursionType.kind === FunctionRecursionKind.F_NotRecursive) {
-            return ts.visitEachChild(node, visitor, context);
+            return node;
           }
 
           const parameterNames : Array<string> = foundFunction.fn.parameters.map(param => {
