@@ -1607,6 +1607,7 @@ function combineExpressionsWithUtilsAp(left : ts.Expression | null, right : ts.E
   return ts.createCall(ts.createIdentifier(UTILS_AP), undefined, [left, right]);
 }
 
+// TODO Use determineType instead
 function isThisANumberOrString(node : ts.Expression) : "numbers" | "strings" | null {
   if (ts.isParenthesizedExpression(node)) {
     return isThisANumberOrString(node.expression);
@@ -1638,6 +1639,7 @@ function isThisANumberOrString(node : ts.Expression) : "numbers" | "strings" | n
   return null;
 }
 
+// TODO Use determineType instead
 function isThisAStringOrList(node : ts.Expression) : "strings" | "lists" | null {
   if (ts.isParenthesizedExpression(node)) {
     return isThisAStringOrList(node.expression);
