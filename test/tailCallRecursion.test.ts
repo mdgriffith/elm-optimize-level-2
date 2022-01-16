@@ -1362,6 +1362,31 @@ test('should optimize a function that concatenates lists on both sides and retur
   expect(actual).toBe(expected);
 });
 
+test("should not optimize a function that concatenates but where we can't determine if it's strings or lists", () => {
+  // Corresponds to the following Elm code
+  // repeatSomething n thing =
+  //     if n <= 0 then
+  //         x
+  //     else
+  //         repeatSomething (n - 1) thing ++ thing
+  const initialCode = `
+  var $something$repeatSomething = F2(
+    function (n, thing) {
+      return (n <= 0) ? x : _Utils_ap(
+          A2($something$repeatSomething, n - 1, thing),
+          thing);
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    initialCode,
+    createTailCallRecursionTransformer(true)
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
