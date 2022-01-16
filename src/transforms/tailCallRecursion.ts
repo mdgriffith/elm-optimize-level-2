@@ -671,10 +671,8 @@ function refineTypeForExpression(
       }
       else if (inferredType === "numbers") {
         recursionType = {
-          kind: FunctionRecursionKind.F_StringConcatRecursion,
-          // TODO remove hardcoding
-          left: true,
-          right: false
+          kind: FunctionRecursionKind.F_AddRecursion,
+          numbersConfirmed: true
         };
       }
       return {recursionType, inferredType };
