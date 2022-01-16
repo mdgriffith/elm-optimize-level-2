@@ -380,7 +380,7 @@ type FunctionRecursion
   | { kind: FunctionRecursionKind.F_BooleanRecursion }
   | { kind: FunctionRecursionKind.F_DataConstructionRecursion, property: string }
   | { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion }
-  | { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed : boolean }
+  | { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed : boolean, left: boolean, right: boolean }
   | StringConcatRecursion
   | { kind: FunctionRecursionKind.F_MultiplyRecursion }
 
@@ -569,20 +569,22 @@ function refineRecursionType(
           if (recursion.adds === "strings" || inferredType === "strings" || inferredType === "strings-or-lists") {
             return {
               kind: FunctionRecursionKind.F_StringConcatRecursion,
-              left: !!recursion.left,
-              right: !!recursion.right
+              left: recursionType.left || !!recursion.left,
+              right: recursionType.right || !!recursion.right
             };
           }
           return {
             kind: FunctionRecursionKind.F_AddRecursion,
-            numbersConfirmed: recursion.adds === "numbers" || inferredType === "numbers"
+            numbersConfirmed: recursion.adds === "numbers" || inferredType === "numbers",
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right
           };
         }
         case RecursionTypeKind.ConcatRecursion: {
           return {
             kind: FunctionRecursionKind.F_StringConcatRecursion,
-            left: !!recursion.left,
-            right: !!recursion.right
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right
           };
         }
         default: {
@@ -664,15 +666,16 @@ function refineTypeForExpression(
       if (inferredType === "strings" || inferredType === "strings-or-lists") {
         recursionType = {
           kind: FunctionRecursionKind.F_StringConcatRecursion,
-          // TODO remove hardcoding
-          left: true,
-          right: false
+          left: recursionType.left,
+          right: recursionType.right
         };
       }
       else if (inferredType === "numbers") {
         recursionType = {
           kind: FunctionRecursionKind.F_AddRecursion,
-          numbersConfirmed: true
+          numbersConfirmed: true,
+          left: recursionType.left,
+          right: recursionType.right
         };
       }
       return {recursionType, inferredType };
@@ -1354,7 +1357,7 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType 
       if (recursion.adds === "strings" || inferredType === "strings" || inferredType === "strings-or-lists") {
         return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
       }
-      return { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed: recursion.adds === "numbers" };
+      return { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed: recursion.adds === "numbers", left: !!recursion.left, right: !!recursion.right };
     case RecursionTypeKind.ConcatRecursion:
       if (recursion.concatenates === "strings" || inferredType === "strings" || inferredType === "numbers-or-strings") {
         return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
