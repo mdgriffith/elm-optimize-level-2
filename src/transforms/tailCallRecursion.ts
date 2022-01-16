@@ -649,7 +649,8 @@ function refineTypeForExpression(
     case FunctionRecursionKind.F_MultiplyRecursion:
     case FunctionRecursionKind.F_MultipleDataConstructionRecursion:
     case FunctionRecursionKind.F_ListRecursion:
-    case FunctionRecursionKind.F_DataConstructionRecursion: {
+    case FunctionRecursionKind.F_DataConstructionRecursion:
+    case FunctionRecursionKind.F_StringConcatRecursion: {
       return {recursionType, inferredType };
     }
 
@@ -678,12 +679,7 @@ function refineTypeForExpression(
           right: recursionType.right
         };
       }
-      return {recursionType, inferredType };
-    }
-
-    case FunctionRecursionKind.F_StringConcatRecursion: {
-      // TODO
-      return {recursionType, inferredType };
+      return { recursionType, inferredType };
     }
   }
 }
