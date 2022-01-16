@@ -4,6 +4,7 @@ export type PossibleReturnType = "numbers" | "strings" | "lists" | "numbers-or-s
 
 const EMPTY_LIST = "_List_Nil";
 const UTILS_AP = "_Utils_ap";
+const LIST_FROM_ARRAY = "_List_fromArray";
 
 export function determineType(node : ts.Expression, currentEstimation : PossibleReturnType) : PossibleReturnType {
   if (currentEstimation === "numbers" || currentEstimation === "strings" || currentEstimation === "lists") {
@@ -30,8 +31,14 @@ export function determineType(node : ts.Expression, currentEstimation : Possible
     return currentEstimation;
   }
 
-  if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === UTILS_AP) {
-    return determineType(node.arguments[0], determineType(node.arguments[1], combineInformation(currentEstimation, "strings-or-lists")));
+  if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+    if (node.expression.text === UTILS_AP) {
+      return determineType(node.arguments[0], determineType(node.arguments[1], combineInformation(currentEstimation, "strings-or-lists")));
+    }
+    else if (node.expression.text === LIST_FROM_ARRAY) {
+      return "lists";
+    }
+    return currentEstimation;
   }
 
   if (ts.isBinaryExpression(node)) {

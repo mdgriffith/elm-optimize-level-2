@@ -21,6 +21,12 @@ test("should return lists when expression is []", () => {
   expect(determineType(expression, null)).toBe("lists");
 });
 
+test("should return lists when expression is a _List_fromArray call", () => {
+  const expression = createExpression(`_List_fromArray([x])`);
+
+  expect(determineType(expression, null)).toBe("lists");
+});
+
 test("should return strings-or-lists when expression is a _Utils_ap call", () => {
   const expression = createExpression(`_Utils_ap(a, b)`);
 
