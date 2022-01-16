@@ -12,7 +12,7 @@ test("it doesn't affect functions that are not recursive", () => {
   const { actual, expected } = transformCode(
     initialCode,
     initialCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -28,7 +28,7 @@ test("it doesn't affect functions that are not tail-call recursive", () => {
   const { actual, expected } = transformCode(
     initialCode,
     initialCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -97,7 +97,7 @@ test('it can turn a function that is tail-call recursive into a while loop', () 
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -202,7 +202,7 @@ test('should re-use the label and while loop if there already is one', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -232,7 +232,7 @@ test('should not change non-recursive functions', () => {
   const { actual, expected } = transformCode(
     initialCode,
     initialCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -284,7 +284,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -359,7 +359,7 @@ test('should optimize a function that cons (::) on the result of recursive calls
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -411,7 +411,7 @@ test('should optimize a function that does "x || <recursive call>"', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -463,7 +463,7 @@ test('should optimize a function that does "x && <recursive call>"', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -536,7 +536,7 @@ test('should optimize a function that wraps the result in a constructor', () => 
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -656,7 +656,7 @@ test('should optimize a function that wraps the result in a constructors with di
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -791,7 +791,7 @@ test('should optimize a function that wraps the result in a constructors with di
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -838,7 +838,7 @@ test('should optimize a function that adds values to the result of recursive cal
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -885,7 +885,7 @@ test('should skip the final addition with 0 for a recursive addition', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -932,7 +932,7 @@ test('should optimize a function that multiplies values to the result of recursi
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -979,7 +979,7 @@ test('should skip the final multiplication by 1 for a recursive multiplication',
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -1026,7 +1026,7 @@ test('should support arithmetic operations on the right side of the recursive ca
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -1069,7 +1069,7 @@ test('should optimize a function that multiplies values to the result of recursi
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -1109,7 +1109,7 @@ test('should optimize a function that concatenates strings to the result of recu
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -1148,7 +1148,7 @@ test('should optimize a function that concatenates strings on both sides of the 
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -1198,7 +1198,7 @@ test('should optimize a function that concatenates lists at the beginning', () =
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -1246,7 +1246,7 @@ test('should optimize a function that concatenates lists at the end', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -1301,7 +1301,7 @@ test('should optimize a function that concatenates lists on both sides', () => {
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);
@@ -1356,7 +1356,7 @@ test('should optimize a function that concatenates lists on both sides and retur
   const { actual, expected } = transformCode(
     initialCode,
     expectedOutputCode,
-    createTailCallRecursionTransformer
+    createTailCallRecursionTransformer(true)
   );
 
   expect(actual).toBe(expected);

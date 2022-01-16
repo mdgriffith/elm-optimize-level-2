@@ -98,7 +98,7 @@ const newFunctionDefinitions: {[key: string]: string} = {
     }`,
 };
 
-export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.SourceFile> = (context : Context) => {
+export const createTailCallRecursionTransformer = (forTests: boolean) => (context : Context) => {
   return (sourceFile : ts.SourceFile) => {
     const functionsToInsert: Set<string> = new Set();
 
@@ -130,7 +130,7 @@ export const createTailCallRecursionTransformer : ts.TransformerFactory<ts.Sourc
       return ts.visitEachChild(node, visitor, context);
     };
 
-    return introduceFunctions(functionsToInsert, ts.visitNode(sourceFile, visitor), context);
+    return introduceFunctions(functionsToInsert, ts.visitNode(sourceFile, visitor), forTests, context);
   };
 };
 
@@ -1821,13 +1821,13 @@ function assignToDynamicDataProperty(expression : ts.Expression) : ts.Statement 
  * Adding new functions to the source file *
  *******************************************/
 
-function introduceFunctions(functionsToInsert : Set<string>, sourceFile : ts.SourceFile, context : Context) {
+function introduceFunctions(functionsToInsert : Set<string>, sourceFile : ts.SourceFile, forTests: boolean, context : Context) {
   let nativeFunctionNodes: ts.Node[] = [];
   for (const nativeFunction of functionsToInsert) {
     nativeFunctionNodes.push(ast(newFunctionDefinitions[nativeFunction]));
   }
 
-  return ts.visitNode(sourceFile, prependNodes(nativeFunctionNodes, context, /* TODO for tests */ true));
+  return ts.visitNode(sourceFile, prependNodes(nativeFunctionNodes, context, forTests));
 }
 
 /* Taken from recordUpdate.ts and updated, maybe mutualize these? */
