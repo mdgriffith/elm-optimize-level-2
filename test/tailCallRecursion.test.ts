@@ -1232,13 +1232,122 @@ test('should optimize a function that concatenates lists at the end', () => {
           return $tail;
         } else {
           if ((n === 1)) {
-            $tail = A2($elm$core$List$append, _List_fromArray([x]), $tail);
-            return $tail;
+            return A2($elm$core$List$append, _List_fromArray([x]), $tail);
           } else {
             $tail = A2($elm$core$List$append, list, $tail);
             n = n - 1;
             continue repeatList;
           }
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should optimize a function that concatenates lists on both sides', () => {
+  // Corresponds to the following Elm code
+  // repeatList : Int -> List a -> List a
+  // repeatList n list =
+  //     if n <= 0 then
+  //         []
+  //     else
+  //         list1 ++ repeatList (n - 1) list ++ list2
+  const initialCode = `
+  var $something$repeatList = F2(
+    function (n, list) {
+      return (n <= 0) ? _List_Nil : _Utils_ap(
+        list1,
+        _Utils_ap(
+          A2($something$repeatList, n - 1, list),
+          list2));
+    });
+  `;
+
+  const expectedOutputCode = `
+  function _Utils_copyListAndGetEnd(root, xs) {
+    for (; xs.b; xs = xs.b) {
+      root = root.b = _List_Cons(xs.a, _List_Nil);
+    }
+    return root;
+  }
+
+  var $something$repeatList = F2(
+    function (n, list) {
+      var $start = _List_Cons(undefined, _List_Nil);
+      var $end = $start;
+      var $tail = _List_Nil;
+      repeatList: while (true) {
+        if ((n <= 0)) {
+          $end.b = $tail;
+          return $start.b;
+        } else {
+          $tail = A2($elm$core$List$append, list2, $tail);
+          $end = _Utils_copyListAndGetEnd($end, list1);
+          n = n - 1;
+          continue repeatList;
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer
+  );
+
+  expect(actual).toBe(expected);
+});
+
+test('should optimize a function that concatenates lists on both sides and returns non-[] value at the end', () => {
+  // Corresponds to the following Elm code
+  // repeatList : Int -> List a -> List a
+  // repeatList n list =
+  //     if n <= 0 then
+  //         [x]
+  //     else
+  //         list1 ++ repeatList (n - 1) list ++ list2
+  const initialCode = `
+  var $something$repeatList = F2(
+    function (n, list) {
+      return (n <= 0) ? _List_fromArray([x]) : _Utils_ap(
+        list1,
+        _Utils_ap(
+          A2($something$repeatList, n - 1, list),
+          list2));
+    });
+  `;
+
+  const expectedOutputCode = `
+  function _Utils_copyListAndGetEnd(root, xs) {
+    for (; xs.b; xs = xs.b) {
+      root = root.b = _List_Cons(xs.a, _List_Nil);
+    }
+    return root;
+  }
+
+  var $something$repeatList = F2(
+    function (n, list) {
+      var $start = _List_Cons(undefined, _List_Nil);
+      var $end = $start;
+      var $tail = _List_Nil;
+      repeatList: while (true) {
+        if ((n <= 0)) {
+          $end.b = A2($elm$core$List$append, _List_fromArray([x]), $tail);
+          return $start.b;
+        } else {
+          $tail = A2($elm$core$List$append, list2, $tail);
+          $end = _Utils_copyListAndGetEnd($end, list1);
+          n = n - 1;
+          continue repeatList;
         }
       }
     });
