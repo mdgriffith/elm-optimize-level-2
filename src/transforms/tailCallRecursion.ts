@@ -252,7 +252,11 @@ export const createTailCallRecursionTransformer = (forTests: boolean) => (contex
             return ts.visitEachChild(node, visitor, context);
           }
 
-          const functionAnalysis : FunctionAnalysis = determineRecursionType(node.name.text, foundFunction.fn.body);
+          const functionName = node.name.text;
+          const labelSplits = functionName.split("$");
+          const label = labelSplits[labelSplits.length - 1] || functionName;
+
+          const functionAnalysis : FunctionAnalysis = determineRecursionType(functionName, label, foundFunction.fn.body);
           if (functionAnalysis.recursionType.kind === FunctionRecursionKind.F_NotRecursive) {
             return node;
           }
@@ -260,7 +264,7 @@ export const createTailCallRecursionTransformer = (forTests: boolean) => (contex
           const parameterNames : Array<string> = foundFunction.fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
-          const newBody : ts.Block = updateFunctionBody(functionsToInsert, functionAnalysis.recursionType, functionAnalysis.hasWhileLoop, node.name.text, parameterNames, foundFunction.fn.body, context);
+          const newBody : ts.Block = updateFunctionBody(functionsToInsert, functionAnalysis.recursionType, functionAnalysis.shouldAddWhileLoop, functionName, label, parameterNames, foundFunction.fn.body, context);
 
           const variableDeclaration : ts.VariableDeclaration = ts.getMutableClone(node);
           variableDeclaration.initializer = foundFunction.update(newBody);
@@ -479,20 +483,20 @@ type MultiplyRecursion =
 type FunctionAnalysis =
   {
     recursionType : FunctionRecursion | NotRecursiveFunction,
-    hasWhileLoop : boolean
+    shouldAddWhileLoop : boolean
   }
 
-function determineRecursionType(functionName : string, body : ts.Node) : FunctionAnalysis {
+function determineRecursionType(functionName : string, label : string, body : ts.Node) : FunctionAnalysis {
   let recursionType : FunctionRecursion | NotRecursiveFunction = { kind: FunctionRecursionKind.F_NotRecursive };
-  let hasWhileLoop : boolean = false;
+  let shouldAddWhileLoop : boolean = true;
   let inferredType : PossibleReturnType = null;
-  const iter = findReturnStatements(body);
+  const iter = findReturnStatements(label, body);
 
   while (!hasRecursionTypeBeenDetermined(recursionType)) {
     const next = iter.next();
     if (next.done) { break; }
-    if (next.value === "while-loop") {
-      hasWhileLoop = true;
+    if (next.value === "has-while-loop") {
+      shouldAddWhileLoop = false;
       continue;
     }
 
@@ -509,7 +513,7 @@ function determineRecursionType(functionName : string, body : ts.Node) : Functio
     }
   }
 
-  return { recursionType, hasWhileLoop };
+  return { recursionType, shouldAddWhileLoop };
 }
 
 function hasRecursionTypeBeenDetermined(recursion : FunctionRecursion | NotRecursiveFunction) {
@@ -683,7 +687,7 @@ function refineTypeForExpression(
   }
 }
 
-function* findReturnStatements(body : ts.Node) : Generator<ts.Expression | "while-loop", void, null> {
+function* findReturnStatements(label : string, body : ts.Node) : Generator<ts.Expression | "has-while-loop", void, null> {
   let nodesToVisit : Array<ts.Node> = [body];
   let node : ts.Node | undefined;
 
@@ -700,7 +704,9 @@ function* findReturnStatements(body : ts.Node) : Generator<ts.Expression | "whil
 
     if (ts.isLabeledStatement(node)) {
       nodesToVisit.unshift(node.statement);
-      yield "while-loop";
+      if (node.label.text === label) {
+        yield "has-while-loop";
+      }
       continue loop;
     }
 
@@ -902,10 +908,8 @@ function constructorDeclarations(property : string) {
   ];
 }
 
-function updateFunctionBody(functionsToInsert : Set<string>, recursionType : FunctionRecursion, hasWhileLoop : boolean, functionName : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
-  const labelSplits = functionName.split("$");
-  const label = labelSplits[labelSplits.length - 1] || functionName;
-  const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
+function updateFunctionBody(functionsToInsert : Set<string>, recursionType : FunctionRecursion, shouldAddWhileLoop : boolean, functionName : string, label : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+    const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
 
   function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
     if (ts.isBlock(node)
@@ -939,7 +943,7 @@ function updateFunctionBody(functionsToInsert : Set<string>, recursionType : Fun
 
   const declarations = declarationsForRecursiveFunction(recursionType);
 
-  if (!hasWhileLoop) {
+  if (shouldAddWhileLoop) {
     return ts.createBlock(
       [
         ...declarations,

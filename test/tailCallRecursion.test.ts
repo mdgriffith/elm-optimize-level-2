@@ -1387,6 +1387,193 @@ test("should not optimize a function that concatenates but where we can't determ
   expect(actual).toBe(expected);
 });
 
+test("should introduce a while loop in functions that already have them if it's not the first statement", () => {
+  // Corresponds to the following Elm code (simplified version of `takeFast` in `elm/core`'s List module)
+  // takeFast : Int -> List a -> List a
+  // takeFast n list =
+  //     case ( n, list ) of
+  //         ( _, [] ) ->
+  //             list
+  //         ( 1, x :: _ ) ->
+  //             [ x ]
+  //         ( 2, x :: y :: _ ) ->
+  //             [ x, y ]
+  //         _ ->
+  //             list
+  const initialCode = `
+  var $something$takeFast = F3(
+    function (ctr, n, list) {
+      var _v0 = _Utils_Tuple2(n, list);
+      _v0$1:
+      while (true) {
+        _v0$5:
+        while (true) {
+          if (!_v0.b.b) {
+            return list;
+          } else {
+            if (_v0.b.b.b) {
+              switch (_v0.a) {
+                case 1:
+                  break _v0$1;
+                case 2:
+                  var _v2 = _v0.b;
+                  var x = _v2.a;
+                  var _v3 = _v2.b;
+                  var y = _v3.a;
+                  return _List_fromArray(
+                    [x, y]);
+                case 3:
+                  if (_v0.b.b.b.b) {
+                    var _v4 = _v0.b;
+                    var x = _v4.a;
+                    var _v5 = _v4.b;
+                    var y = _v5.a;
+                    var _v6 = _v5.b;
+                    var z = _v6.a;
+                    return _List_fromArray(
+                      [x, y, z]);
+                  } else {
+                    break _v0$5;
+                  }
+                default:
+                  if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+                    var _v7 = _v0.b;
+                    var x = _v7.a;
+                    var _v8 = _v7.b;
+                    var y = _v8.a;
+                    var _v9 = _v8.b;
+                    var z = _v9.a;
+                    var _v10 = _v9.b;
+                    var w = _v10.a;
+                    var tl = _v10.b;
+                    return A2(
+                      $elm$core$List$cons,
+                      x,
+                      A2(
+                        $elm$core$List$cons,
+                        y,
+                        A2(
+                          $elm$core$List$cons,
+                          z,
+                          A2(
+                            $elm$core$List$cons,
+                            w,
+                            A3($something$takeFast, ctr + 1, n - 4, tl)))));
+                  } else {
+                    break _v0$5;
+                  }
+              }
+            } else {
+              if (_v0.a === 1) {
+                break _v0$1;
+              } else {
+                break _v0$5;
+              }
+            }
+          }
+        }
+        return list;
+      }
+      var _v1 = _v0.b;
+      var x = _v1.a;
+      return _List_fromArray(
+        [x]);
+    });
+  `;
+
+  const expectedOutputCode = `
+  
+  var $something$takeFast = F3(
+    function (ctr, n, list) {
+      var $start = _List_Cons(undefined, _List_Nil);
+      var $end = $start;  
+      takeFast: while (true) {
+        var _v0 = _Utils_Tuple2(n, list);
+        _v0$1:
+        while (true) {
+          _v0$5:
+          while (true) {
+            if (!_v0.b.b) {
+              $end.b = list;
+              return $start.b;
+            } else {
+              if (_v0.b.b.b) {
+                switch (_v0.a) {
+                  case 1:
+                    break _v0$1;
+                  case 2:
+                    var _v2 = _v0.b;
+                    var x = _v2.a;
+                    var _v3 = _v2.b;
+                    var y = _v3.a;
+                    $end.b = _List_fromArray([x, y]);
+                    return $start.b;
+                  case 3:
+                    if (_v0.b.b.b.b) {
+                      var _v4 = _v0.b;
+                      var x = _v4.a;
+                      var _v5 = _v4.b;
+                      var y = _v5.a;
+                      var _v6 = _v5.b;
+                      var z = _v6.a;
+                      $end.b = _List_fromArray([x, y, z]);
+                      return $start.b;
+                    } else {
+                      break _v0$5;
+                    }
+                  default:
+                    if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+                      var _v7 = _v0.b;
+                      var x = _v7.a;
+                      var _v8 = _v7.b;
+                      var y = _v8.a;
+                      var _v9 = _v8.b;
+                      var z = _v9.a;
+                      var _v10 = _v9.b;
+                      var w = _v10.a;
+                      var tl = _v10.b;
+                      $end = $end.b = _List_Cons(w, _List_Nil);
+                      $end = $end.b = _List_Cons(z, _List_Nil);
+                      $end = $end.b = _List_Cons(y, _List_Nil);
+                      $end = $end.b = _List_Cons(x, _List_Nil);
+                      var $temp$ctr = ctr + 1, $temp$n = n - 4, $temp$list = tl;
+                      ctr = $temp$ctr;
+                      n = $temp$n;
+                      list = $temp$list;
+                      continue takeFast;
+                    } else {
+                      break _v0$5;
+                    }
+                }
+              } else {
+                if (_v0.a === 1) {
+                  break _v0$1;
+                } else {
+                  break _v0$5;
+                }
+              }
+            }
+          }
+          $end.b = list;
+          return $start.b;
+        }
+        var _v1 = _v0.b;
+        var x = _v1.a;
+        $end.b = _List_fromArray([x]);
+        return $start.b;
+      }
+    });
+  `
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer(true)
+  );
+
+  expect(actual).toBe(expected);
+});
+
 export function transformCode(
   initialCode: string,
   expectedCode: string,
