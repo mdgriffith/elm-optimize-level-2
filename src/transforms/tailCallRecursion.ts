@@ -979,19 +979,53 @@ function updateReturnStatementForListRecursion(recursion : ListRecursion, functi
     return createListConcatContinuation(functionsToInsert, label, parameterNames, extract.left, extract.right, extract.arguments);
   }
 
-  // End of the recursion, add the value to the end of the list and return the start.
-  function addReturnValueToList() {
-    if (ts.isIdentifier(expression) && expression.text === EMPTY_LIST) {
-      // Adding `[]` would not do anything, so don't add it
-      return [];
+  const isValueEmpty = ts.isIdentifier(expression) && expression.text === EMPTY_LIST;
+
+  function returnStart() {
+    // `return $start.b;`
+    return ts.createReturn(
+      ts.createPropertyAccess(START, "b")
+    );
+  }
+
+  // End of the recursion, add the value to the list and return the whole list.
+
+  if (recursion.left) {
+    if (recursion.right) {
+      if (isValueEmpty) {
+        return [
+          // `$end.b = $tail;`
+          ts.createExpressionStatement(
+            ts.createAssignment(
+              ts.createPropertyAccess(END, "b"),
+              TAIL
+            )
+          ),
+          returnStart()
+        ];
+      }
+      return [
+        // `$end.b = A2($elm$core$List$append, <expression>, $tail);`
+        ts.createExpressionStatement(
+          ts.createAssignment(
+            ts.createPropertyAccess(END, "b"),
+            combineValueAndTail(expression)
+          )
+        ),
+        returnStart()
+      ];
     }
 
-    if (recursion.right) {
-      return [addListToTail(expression)];
+    // We know it's a left recursion only
+
+    if (isValueEmpty) {
+      // Adding `[]` would not do anything, so don't add it
+      return returnStart();
     }
-    else {
-      // `$end.b = <expression>;`
-      return [ts.createExpressionStatement(
+
+    // `$end.b = <expression>;`
+    return [
+      ts.createExpressionStatement(
         ts.createAssignment(
           ts.createPropertyAccess(
             END,
@@ -999,40 +1033,20 @@ function updateReturnStatementForListRecursion(recursion : ListRecursion, functi
           ),
           expression
         )
-      )];
-    }
+      ),
+      returnStart()
+    ];
   }
 
-  function returnStart() {
-    // `return $end.b;`
-    return ts.createReturn(
-      ts.createPropertyAccess(
-        START,
-        "b"
-      )
-    );
-  }
-
-  function returnStatement() {
-    if (recursion.left && recursion.right) {
-      return [
-        // TODO
-        returnStart()
-      ];
-    }
-    if (recursion.left) {
-      return [
-        returnStart()
-      ];
-    }
+  // We know it's a right recursion only
+  if (isValueEmpty) {
+    // Adding `[]` would not do anything, so don't add it
     // `return $tail;`
-    return [ts.createReturn(TAIL)];
+    return ts.createReturn(TAIL);
   }
 
-  return [
-    ...addReturnValueToList(),
-    ...returnStatement()
-  ];
+  // `return A2($elm$core$List$append, <expression>, $tail);`
+  return ts.createReturn(combineValueAndTail(expression));
 }
 
 type ArithmeticData = {
@@ -1573,21 +1587,26 @@ function createListConcatContinuation(functionsToInsert : Set<string>, label : s
   return result;
 }
 
+function combineValueAndTail(value : ts.Expression) {
+  // `A2($elm$core$List$append, <value>, $tail);`
+  return ts.createCall(
+    ts.createIdentifier("A2"),
+    undefined,
+    [
+      ts.createIdentifier(LIST_APPEND),
+      value,
+      TAIL
+    ]
+  );
+}
+
 function addListToTail(value : ts.Expression) : ts.ExpressionStatement {
-  // $tail = A2($elm$core$List$append, <value>, $tail);
+  // `$tail = A2($elm$core$List$append, <value>, $tail);`
   return ts.createExpressionStatement(
     ts.createBinary(
       TAIL,
       ts.SyntaxKind.EqualsToken,
-      ts.createCall(
-        ts.createIdentifier("A2"),
-        undefined,
-        [
-          ts.createIdentifier(LIST_APPEND),
-          value,
-          TAIL
-        ]
-      )
+      combineValueAndTail(value)
     )
   );
 }
