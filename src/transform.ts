@@ -88,7 +88,7 @@ export const transform = async (
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
     // [transforms.replacements != null, replacementTransformer ],
-    [transforms.tailCallRecursion, createTailCallRecursionTransformer ],
+    [transforms.tailCallRecursion, createTailCallRecursionTransformer(false) ],
     // [transforms.fastCurriedFns, Replace.from_file('/../replacements/faster-function-wrappers') ],
     // [transforms.replaceListFunctions,  Replace.from_file('/../replacements/list') ],
     // [transforms.replaceStringFunctions, Replace.from_file('/../replacements/string') ],
