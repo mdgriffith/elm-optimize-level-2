@@ -1189,36 +1189,45 @@ function updateReturnStatementForListRecursion(recursion : ListRecursion, functi
   }
 
   if (extract.kind === RecursionTypeKind.ConcatRecursion) {
+    let leftOperations : ts.Statement[] = [];
+    if (extract.left) {
+      leftOperations = [copyListAndAddToEnd(functionsToInsert, extract.left)];
+    }
+
+    let rightOperations : ts.Statement[] = [];
+    if (extract.right) {
+      rightOperations = [addListToTail(extract.right)];
+    }
+
     return [
-      ...createListConcatContinuation(functionsToInsert, extract.left, extract.right),
+      ...leftOperations,
+      ...rightOperations,
       ...createContinuation(label, parameterNames, extract.arguments)
     ];
   }
 
   if (extract.kind === RecursionTypeKind.ListOperationsRecursion) {
-    let results : ts.Statement[] = [];
-    if (extract.right) {
-      results.push(addListToTail(extract.right));
-    }
-
-    extract.left.forEach(({ kind, expression }) => {
+    let leftOperations : ts.Statement[] = extract.left.map(({ kind, expression }) => {
       switch (kind) {
         case "cons": {
-          results.push(addToEnd(expression));
-          return;
+          return addToEnd(expression);
         }
-
         case "append": {
-          results =
-            createListConcatContinuation(functionsToInsert, expression, null)
-              .concat(results);
+          return copyListAndAddToEnd(functionsToInsert, expression);
         }
       }
     });
 
-    return results.concat(
-      createContinuation(label, parameterNames, extract.arguments)
-    );
+    let rightOperations : ts.Statement[] = [];
+    if (extract.right) {
+      rightOperations = [addListToTail(extract.right)];
+    }
+
+    return [
+      ...leftOperations,
+      ...rightOperations,
+      ...createContinuation(label, parameterNames, extract.arguments)
+    ];
   }
 
   const isValueEmpty = ts.isIdentifier(expression) && expression.text === EMPTY_LIST;
@@ -1554,10 +1563,26 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
       };
     }
 
+    if (thirdArgExtract.kind === RecursionTypeKind.ConcatRecursion) {
+      const left : ListOperation[] =
+        thirdArgExtract.left
+        ? [ { kind: "append", expression: thirdArgExtract.left } ]
+        : [];
+      left.unshift({ kind: "cons", expression: secondArg });
+      return {
+        kind: RecursionTypeKind.ListOperationsRecursion,
+        left: left,
+        right: thirdArgExtract.right,
+        arguments: thirdArgExtract.arguments
+      };
+    }
+
     if (thirdArgExtract.kind === RecursionTypeKind.ListOperationsRecursion) {
       thirdArgExtract.left.push({ kind: "cons", expression: secondArg });
       return thirdArgExtract;
     }
+
+    return { kind: RecursionTypeKind.NotRecursive };
   }
 
   // Is constructor call
@@ -1812,32 +1837,20 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
   ];
 }
 
-function createListConcatContinuation(functionsToInsert : Set<string>, left : ts.Expression | null, right : ts.Expression | null) : Array<ts.Statement> {
-  let result = [];
-
-  if (right) {
-    result.unshift(addListToTail(right));
-  }
-
-  if (left) {
-    functionsToInsert.add(COPY_LIST_AND_GET_END);
-    // $end = _Utils_copyListAndGetEnd($end, <left>);
-    result.unshift(
-      ts.createExpressionStatement(
-        ts.createBinary(
-          END,
-          ts.SyntaxKind.EqualsToken,
-          ts.createCall(
-            ts.createIdentifier(COPY_LIST_AND_GET_END),
-            undefined,
-            [END, left]
-          )
-        )
+function copyListAndAddToEnd(functionsToInsert : Set<string>, expression : ts.Expression) : ts.Statement {
+  functionsToInsert.add(COPY_LIST_AND_GET_END);
+  // $end = _Utils_copyListAndGetEnd($end, <expression>);
+  return ts.createExpressionStatement(
+    ts.createBinary(
+      END,
+      ts.SyntaxKind.EqualsToken,
+      ts.createCall(
+        ts.createIdentifier(COPY_LIST_AND_GET_END),
+        undefined,
+        [END, expression]
       )
-    );
-  }
-
-  return result;
+    )
+  );
 }
 
 function combineValueAndTail(value : ts.Expression) {
