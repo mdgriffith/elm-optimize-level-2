@@ -1432,6 +1432,54 @@ test("should not optimize a function that concatenates but where we can't determ
   expect(actual).toBe(expected);
 });
 
+test("should only optimize plain recursive calls for a function that concatenates but where we can't determine if it's strings or lists", () => {
+  // Corresponds to the following Elm code
+  // repeatSomething n thing =
+  //     if n <= 0 then
+  //         x
+  //     else if n == 1 then
+  //         repeatSomething (n - 10) <| thing
+  //     else
+  //         repeatSomething (n - 1) thing ++ thing
+  const initialCode = `
+  var $something$repeatSomething = F2(
+    function (n, thing) {
+      return (n <= 0) ? x : ((n === 1) ? A2($something$repeatSomething, n - 10, thing) : _Utils_ap(
+        A2($something$repeatSomething, n - 1, thing),
+        thing));
+    });
+  `;
+
+  const expectedOutputCode = `
+  var $something$repeatSomething = F2(
+    function (n, thing) {
+      repeatSomething:
+      while (true) {
+        if ((n <= 0)) {
+          return x;
+        } else {
+          if ((n === 1)) {
+            n = n - 10;
+            continue repeatSomething;
+          } else {
+            return _Utils_ap(
+              A2($something$repeatSomething, n - 1, thing),
+              thing);
+          }
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer(true)
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test("should introduce a while loop in functions that already have them if it's not the first statement", () => {
   // Corresponds to the following Elm code (simplified version of `takeFast` in `elm/core`'s List module)
   // takeFast : Int -> List a -> List a
