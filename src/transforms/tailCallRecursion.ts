@@ -248,7 +248,9 @@ export const createTailCallRecursionTransformer = (forTests: boolean) => (contex
           const label = labelSplits[labelSplits.length - 1] || functionName;
 
           const functionAnalysis : FunctionAnalysis = determineRecursionType(functionName, label, foundFunction.fn.body);
-          if (functionAnalysis.recursionType.kind === FunctionRecursionKind.F_NotRecursive) {
+          if (functionAnalysis.recursionType.kind === FunctionRecursionKind.F_NotRecursive
+            || (functionAnalysis.recursionType.kind === FunctionRecursionKind.F_ConcatRecursion && !functionAnalysis.recursionType.hasPlainRecursionCalls)
+          ) {
             return node;
           }
 
@@ -373,6 +375,7 @@ type FunctionRecursion
   | { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion }
   | { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed : boolean, left: boolean, right: boolean }
   | StringConcatRecursion
+  | UndeterminedConcatRecursion
   | { kind: FunctionRecursionKind.F_MultiplyRecursion }
 
 type StringConcatRecursion =
@@ -380,6 +383,14 @@ type StringConcatRecursion =
     kind: FunctionRecursionKind.F_StringConcatRecursion,
     left: boolean,
     right: boolean
+  }
+
+type UndeterminedConcatRecursion =
+  {
+    kind: FunctionRecursionKind.F_ConcatRecursion,
+    left: boolean,
+    right: boolean,
+    hasPlainRecursionCalls: boolean
   }
 
 type ListRecursion =
@@ -516,6 +527,7 @@ function hasRecursionTypeBeenDetermined(recursion : FunctionRecursion | NotRecur
     case FunctionRecursionKind.F_MultipleDataConstructionRecursion: return true;
     case FunctionRecursionKind.F_DataConstructionRecursion: return false;
     case FunctionRecursionKind.F_AddRecursion: return recursion.numbersConfirmed;
+    case FunctionRecursionKind.F_ConcatRecursion: return false;
     case FunctionRecursionKind.F_ListRecursion: {
       // We need to know for sure on which side there will be concatenation.
       return recursion.left === true && recursion.right === true;
@@ -542,10 +554,10 @@ function refineRecursionType(
       return recursionType;
 
     case FunctionRecursionKind.F_NotRecursive:
-      return toFunctionRecursion(recursion, inferredType);
+      return toFunctionRecursion(recursion, inferredType, false);
 
     case FunctionRecursionKind.F_PlainRecursion:
-      return toFunctionRecursion(recursion, inferredType);
+      return toFunctionRecursion(recursion, inferredType, true);
 
     case FunctionRecursionKind.F_DataConstructionRecursion: {
       if (recursion.kind === RecursionTypeKind.DataConstructionRecursion && recursion.property !== recursionType.property) {
@@ -627,6 +639,51 @@ function refineRecursionType(
         }
       }
     }
+
+    case FunctionRecursionKind.F_ConcatRecursion: {
+      switch (recursion.kind) {
+        case RecursionTypeKind.ConcatRecursion: {
+          if (recursion.concatenates === "strings") {
+            return {
+              kind: FunctionRecursionKind.F_StringConcatRecursion,
+              left: recursionType.left || !!recursion.left,
+              right: recursionType.right || !!recursion.right
+            };
+          }
+          if (recursion.concatenates === "lists") {
+            return {
+              kind: FunctionRecursionKind.F_ListRecursion,
+              left: recursionType.left || !!recursion.left,
+              right: recursionType.right || !!recursion.right
+            };
+          }
+          return {
+            kind: FunctionRecursionKind.F_ConcatRecursion,
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right,
+            hasPlainRecursionCalls: recursionType.hasPlainRecursionCalls
+          };
+        }
+        case RecursionTypeKind.ConsRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_ListRecursion,
+            left: true,
+            right: recursionType.right
+          };
+        }
+        case RecursionTypeKind.PlainRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_ConcatRecursion,
+            left: recursionType.left,
+            right: recursionType.right,
+            hasPlainRecursionCalls: true
+          };
+        }
+        default: {
+          return recursionType;
+        }
+      }
+    }
   }
 }
 
@@ -666,6 +723,25 @@ function refineTypeForExpression(
         recursionType = {
           kind: FunctionRecursionKind.F_AddRecursion,
           numbersConfirmed: true,
+          left: recursionType.left,
+          right: recursionType.right
+        };
+      }
+      return { recursionType, inferredType };
+    }
+
+    case FunctionRecursionKind.F_ConcatRecursion: {
+      inferredType = determineType(node, inferredType);
+      if (inferredType === "strings" || inferredType === "numbers-or-strings") {
+        recursionType = {
+          kind: FunctionRecursionKind.F_StringConcatRecursion,
+          left: recursionType.left,
+          right: recursionType.right
+        };
+      }
+      else if (inferredType === "lists") {
+        recursionType = {
+          kind: FunctionRecursionKind.F_ListRecursion,
           left: recursionType.left,
           right: recursionType.right
         };
@@ -954,6 +1030,7 @@ function updateFunctionBody(functionsToInsert : Set<string>, recursionType : Fun
 function declarationsForRecursiveFunction(recursionType : FunctionRecursion) : ts.Statement[] {
   switch (recursionType.kind) {
     case FunctionRecursionKind.F_PlainRecursion:
+    case FunctionRecursionKind.F_ConcatRecursion:
     case FunctionRecursionKind.F_BooleanRecursion: {
       return [];
     }
@@ -961,6 +1038,7 @@ function declarationsForRecursiveFunction(recursionType : FunctionRecursion) : t
       // `var $result = 0;`
       return [resultDeclaration(0)];
     }
+
     case FunctionRecursionKind.F_StringConcatRecursion: {
       return [stringConsDeclaration(recursionType.left, recursionType.right)];
     }
@@ -1088,7 +1166,8 @@ function updateReturnStatement(
       return null;
     }
 
-    case FunctionRecursionKind.F_PlainRecursion: {
+    case FunctionRecursionKind.F_PlainRecursion:
+    case FunctionRecursionKind.F_ConcatRecursion: {
       if (extract.kind === RecursionTypeKind.PlainRecursion) {
         return createContinuation(label, parameterNames, extract.arguments);
       }
@@ -1330,7 +1409,7 @@ function updateReturnStatementForMultipleDataConstruction(extract : Recursion | 
   ];
 }
 
-function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType : PossibleReturnType) : FunctionRecursion | NotRecursiveFunction {
+function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType : PossibleReturnType, hasPlainRecursionCalls : boolean) : FunctionRecursion | NotRecursiveFunction {
   switch (recursion.kind) {
     case RecursionTypeKind.NotRecursive:
       return { kind: FunctionRecursionKind.F_NotRecursive };
@@ -1344,20 +1423,26 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType 
       return { kind: FunctionRecursionKind.F_DataConstructionRecursion, property: recursion.property };
     case RecursionTypeKind.MultipleDataConstructionRecursion:
       return { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion };
-    case RecursionTypeKind.AddRecursion:
+    case RecursionTypeKind.AddRecursion: {
       if (recursion.adds === "strings" || inferredType === "strings" || inferredType === "strings-or-lists") {
         return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
       }
       return { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed: recursion.adds === "numbers", left: !!recursion.left, right: !!recursion.right };
-    case RecursionTypeKind.ConcatRecursion:
+    }
+    case RecursionTypeKind.ConcatRecursion: {
       if (recursion.concatenates === "strings" || inferredType === "strings" || inferredType === "numbers-or-strings") {
         return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
       }
       else if (recursion.concatenates === "lists" || inferredType === "lists") {
         return { kind: FunctionRecursionKind.F_ListRecursion, left: !!recursion.left, right: !!recursion.right };
       }
-      // TODO It might still be plain recursive in some places?
-      return { kind: FunctionRecursionKind.F_NotRecursive };
+      return {
+        kind: FunctionRecursionKind.F_ConcatRecursion,
+        left: !!recursion.left,
+        right: !!recursion.right,
+        hasPlainRecursionCalls: hasPlainRecursionCalls
+      };
+    }
     case RecursionTypeKind.MultiplyRecursion:
       return { kind: FunctionRecursionKind.F_MultiplyRecursion };
   }
