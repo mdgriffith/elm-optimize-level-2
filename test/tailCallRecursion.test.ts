@@ -1154,6 +1154,51 @@ test('should optimize a function that concatenates strings on both sides of the 
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that concatenates strings using _Utils_ap on both sides of the result of recursive calls (String.pad-like)', () => {
+  // Corresponds to the following Elm code
+  // pad : String -> String -> Int -> String
+  // pad prefix suffix n =
+  //     if n <= 0 then
+  //         "middle"
+  //     else
+  //         prefix ++ pad prefix suffix (n - 1) ++ suffix
+  const initialCode = `
+  var $something$pad = F3(
+    function (prefix, suffix, n) {
+      return (n <= 0) ? 'middle' : _Utils_ap(
+        prefix,
+        _Utils_ap(
+          A3($something$pad, prefix, suffix, n - 1),
+          suffix));
+    });
+  `;
+
+  const expectedOutputCode = `
+  var $something$pad = F3(
+    function (prefix, suffix, n) {
+      var $left = "", $right = "";
+      pad: while (true) {
+        if ((n <= 0)) {
+          return $left + ('middle' + $right);
+        } else {
+          $left += prefix;
+          $right = suffix + $right;
+          n = n - 1;
+          continue pad;
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer(true)
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test('should optimize a function that concatenates lists at the beginning', () => {
   // Corresponds to the following Elm code
   // repeatList : Int -> List a -> List a
