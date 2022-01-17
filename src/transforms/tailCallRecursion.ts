@@ -47,7 +47,6 @@ Therefore:
 
 */
 
-// TODO Support _Utils_ap for string concatenation
 // TODO Support shortcutting creating list when _List_fromArray is on the list to add
 // function _Utils_copyListAndGetEndForLiteral(end, arr)
 //   {
@@ -1255,6 +1254,10 @@ function updateReturnStatementForStringConcat(
   }
 
   if (extract.kind === RecursionTypeKind.AddRecursion) {
+    return createStringConcatContinuation(label, parameterNames, extract.left, extract.right, extract.arguments);
+  }
+
+  if (extract.kind === RecursionTypeKind.ConcatRecursion) {
     return createStringConcatContinuation(label, parameterNames, extract.left, extract.right, extract.arguments);
   }
 
