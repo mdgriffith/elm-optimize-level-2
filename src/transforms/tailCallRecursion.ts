@@ -70,14 +70,6 @@ Therefore:
 //             x :: xs ->
 //                 fn x :: naiveMap fn xs
 
-// TODO Get hints about the return type from other return statements
-// For instance, here we know that the type will be string but we don't yet know that at the recursive call site
-// repeat n str =
-//     if n <= 0 then
-//         "suffix"
-//     else
-//         str ++ repeat (n - 1) str
-
 // TODO Avoid re-computing extracts every time: Instead store them in a dictionary by the node id/position. If there's no entry because we skipped it, then compute the extract.
 
 
