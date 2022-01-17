@@ -1407,6 +1407,63 @@ test('should optimize a function that concatenates lists on both sides and retur
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that does cons on concat and recursion', () => {
+  // Corresponds to the following Elm code
+  // repeatSomething n thing =
+  //     if n <= 0 then
+  //         y
+  //     else
+  //         x :: thing ++ repeatSomething (n - 1) thing
+  const initialCode = `
+  var $something$repeatSomething = F2(
+    function (n, thing) {
+      return (n <= 0) ? y : A2(
+        $elm$core$List$cons,
+        x,
+        _Utils_ap(
+          thing,
+          A2($something$repeatSomething, n - 1, thing)));
+    });
+  `;
+
+  // Splitting `root.b` on two lines to please the test runner.
+  // I don't understand why it was necessary for this test and not others.
+  const expectedOutputCode = `
+  function _Utils_copyListAndGetEnd(root, xs) {
+    for (; xs.b; xs = xs.b) {
+      root = root
+        .b = _List_Cons(xs.a, _List_Nil);
+    }
+    return root;
+  }
+
+  var $something$repeatSomething = F2(
+    function (n, thing) {
+      var $start = _List_Cons(undefined, _List_Nil);
+      var $end = $start;
+      repeatSomething: while (true) {
+        if ((n <= 0)) {
+          $end.b = y;
+          return $start.b;
+        } else {
+          $end = $end.b = _List_Cons(x, _List_Nil);
+          $end = _Utils_copyListAndGetEnd($end, thing);
+          n = n - 1;
+          continue repeatSomething;
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer(true)
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test("should not optimize a function that concatenates but where we can't determine if it's strings or lists", () => {
   // Corresponds to the following Elm code
   // repeatSomething n thing =
@@ -1575,7 +1632,6 @@ test("should introduce a while loop in functions that already have them if it's 
   `;
 
   const expectedOutputCode = `
-  
   var $something$takeFast = F3(
     function (ctr, n, list) {
       var $start = _List_Cons(undefined, _List_Nil);
