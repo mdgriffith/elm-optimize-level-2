@@ -340,13 +340,12 @@ enum RecursionTypeKind {
   NotRecursive,
   PlainRecursion,
   BooleanRecursion,
-  ConsRecursion,
+  ListOperationsRecursion,
   DataConstructionRecursion,
   MultipleDataConstructionRecursion,
   AddRecursion,
   StringConcatRecursion,
   ConcatRecursion,
-  ListOperationsRecursion,
   MultiplyRecursion,
 };
 
@@ -403,14 +402,13 @@ type ListRecursion =
 
 type Recursion
   = PlainRecursion
-  | ConsRecursion
+  | ListOperationsRecursion
   | BooleanRecursion
   | DataConstructionRecursion
   | MultipleDataConstructionRecursion
   | AddRecursion
   | MultiplyRecursion
   | ConcatRecursion
-  | ListOperationsRecursion
 
 type NotRecursiveFunction =
   {
@@ -425,13 +423,6 @@ type NotRecursive =
 type PlainRecursion =
   {
     kind: RecursionTypeKind.PlainRecursion,
-    arguments : Array<ts.Expression>
-  }
-
-type ConsRecursion =
-  {
-    kind: RecursionTypeKind.ConsRecursion,
-    elements : ts.Expression[],
     arguments : Array<ts.Expression>
   }
 
@@ -621,13 +612,6 @@ function refineRecursionType(
             right: recursionType.right || !!recursion.right
           };
         }
-        case RecursionTypeKind.ConsRecursion: {
-          return {
-            kind: FunctionRecursionKind.F_ListRecursion,
-            left: true,
-            right: recursionType.right
-          };
-        }
         case RecursionTypeKind.ListOperationsRecursion: {
           return {
             kind: FunctionRecursionKind.F_ListRecursion,
@@ -685,13 +669,6 @@ function refineRecursionType(
             left: recursionType.left || !!recursion.left,
             right: recursionType.right || !!recursion.right,
             hasPlainRecursionCalls: recursionType.hasPlainRecursionCalls
-          };
-        }
-        case RecursionTypeKind.ConsRecursion: {
-          return {
-            kind: FunctionRecursionKind.F_ListRecursion,
-            left: true,
-            right: recursionType.right
           };
         }
         case RecursionTypeKind.ListOperationsRecursion: {
@@ -1211,13 +1188,6 @@ function updateReturnStatementForListRecursion(recursion : ListRecursion, functi
     return createContinuation(label, parameterNames, extract.arguments);
   }
 
-  if (extract.kind === RecursionTypeKind.ConsRecursion) {
-    return [
-      ...extract.elements.map(addToEnd),
-      ...createContinuation(label, parameterNames, extract.arguments)
-    ];
-  }
-
   if (extract.kind === RecursionTypeKind.ConcatRecursion) {
     return [
       ...createListConcatContinuation(functionsToInsert, extract.left, extract.right),
@@ -1477,8 +1447,13 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType 
       return { kind: FunctionRecursionKind.F_NotRecursive };
     case RecursionTypeKind.PlainRecursion:
       return { kind: FunctionRecursionKind.F_PlainRecursion };
-    case RecursionTypeKind.ConsRecursion:
-      return { kind: FunctionRecursionKind.F_ListRecursion, left: true, right: false };
+    case RecursionTypeKind.ListOperationsRecursion: {
+      return {
+        kind: FunctionRecursionKind.F_ListRecursion,
+        left: recursion.left.length > 0,
+        right: !!recursion.right
+      };
+    }
     case RecursionTypeKind.BooleanRecursion:
       return { kind: FunctionRecursionKind.F_BooleanRecursion };
     case RecursionTypeKind.DataConstructionRecursion:
@@ -1503,13 +1478,6 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType 
         left: !!recursion.left,
         right: !!recursion.right,
         hasPlainRecursionCalls: hasPlainRecursionCalls
-      };
-    }
-    case RecursionTypeKind.ListOperationsRecursion: {
-      return {
-        kind: FunctionRecursionKind.F_ListRecursion,
-        left: recursion.left.length > 0,
-        right: !!recursion.right
       };
     }
     case RecursionTypeKind.MultiplyRecursion:
@@ -1579,14 +1547,15 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
     const thirdArgExtract = extractRecursionKindFromExpression(functionName, thirdArg);
     if (thirdArgExtract.kind === RecursionTypeKind.PlainRecursion) {
       return {
-        kind: RecursionTypeKind.ConsRecursion,
-        elements: [secondArg],
+        kind: RecursionTypeKind.ListOperationsRecursion,
+        left: [{ kind: "cons", expression: secondArg }],
+        right: null,
         arguments: thirdArgExtract.arguments
       };
     }
 
-    if (thirdArgExtract.kind === RecursionTypeKind.ConsRecursion) {
-      thirdArgExtract.elements.push(secondArg);
+    if (thirdArgExtract.kind === RecursionTypeKind.ListOperationsRecursion) {
+      thirdArgExtract.left.push({ kind: "cons", expression: secondArg });
       return thirdArgExtract;
     }
   }
