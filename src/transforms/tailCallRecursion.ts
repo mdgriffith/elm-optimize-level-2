@@ -47,6 +47,7 @@ Therefore:
 
 */
 
+// TODO Support using both addition and multiplication and other operations, but only choose one (the most common?)
 // TODO Support shortcutting creating list when _List_fromArray is on the list to add
 // function _Utils_copyListAndGetEndForLiteral(end, arr)
 //   {
