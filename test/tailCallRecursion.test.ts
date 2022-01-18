@@ -1334,8 +1334,8 @@ test('should optimize a function that concatenates lists on both sides', () => {
           $end.b = $tail;
           return $start.b;
         } else {
-          $tail = A2($elm$core$List$append, list2, $tail);
           $end = _Utils_copyListAndGetEnd($end, list1);
+          $tail = A2($elm$core$List$append, list2, $tail);
           n = n - 1;
           continue repeatList;
         }
@@ -1389,8 +1389,8 @@ test('should optimize a function that concatenates lists on both sides and retur
           $end.b = A2($elm$core$List$append, _List_fromArray([x]), $tail);
           return $start.b;
         } else {
-          $tail = A2($elm$core$List$append, list2, $tail);
           $end = _Utils_copyListAndGetEnd($end, list1);
+          $tail = A2($elm$core$List$append, list2, $tail);
           n = n - 1;
           continue repeatList;
         }

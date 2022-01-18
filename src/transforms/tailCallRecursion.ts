@@ -1784,6 +1784,10 @@ function createConsContinuation(label : string, parameterNames : Array<string>, 
 function createListConcatContinuation(functionsToInsert : Set<string>, label : string, parameterNames : Array<string>, left : ts.Expression | null, right : ts.Expression | null, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
   let result = createContinuation(label, parameterNames, newArguments);
 
+  if (right) {
+    result.unshift(addListToTail(right));
+  }
+
   if (left) {
     functionsToInsert.add(COPY_LIST_AND_GET_END);
     // $end = _Utils_copyListAndGetEnd($end, <left>);
@@ -1800,10 +1804,6 @@ function createListConcatContinuation(functionsToInsert : Set<string>, label : s
         )
       )
     );
-  }
-
-  if (right) {
-    result.unshift(addListToTail(right));
   }
 
   return result;
