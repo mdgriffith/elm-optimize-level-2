@@ -346,6 +346,7 @@ enum RecursionTypeKind {
   AddRecursion,
   StringConcatRecursion,
   ConcatRecursion,
+  ListOperationsRecursion,
   MultiplyRecursion,
 };
 
@@ -409,6 +410,7 @@ type Recursion
   | AddRecursion
   | MultiplyRecursion
   | ConcatRecursion
+  | ListOperationsRecursion
 
 type NotRecursiveFunction =
   {
@@ -473,6 +475,20 @@ type ConcatRecursion =
     right : ts.Expression | null,
     arguments : Array<ts.Expression>,
     concatenates: "strings" | "lists" | null
+  }
+
+type ListOperationsRecursion =
+  {
+    kind: RecursionTypeKind.ListOperationsRecursion,
+    left : ListOperation[],
+    right : ts.Expression | null,
+    arguments : Array<ts.Expression>
+  }
+
+type ListOperation =
+  {
+    kind : "cons" | "append",
+    expression : ts.Expression
   }
 
 type MultiplyRecursion =
@@ -612,6 +628,13 @@ function refineRecursionType(
             right: recursionType.right
           };
         }
+        case RecursionTypeKind.ListOperationsRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_ListRecursion,
+            left: recursionType.left || recursion.left.length > 0,
+            right: recursionType.right || !!recursion.right
+          };
+        }
         default: {
           return recursionType;
         }
@@ -669,6 +692,13 @@ function refineRecursionType(
             kind: FunctionRecursionKind.F_ListRecursion,
             left: true,
             right: recursionType.right
+          };
+        }
+        case RecursionTypeKind.ListOperationsRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_ListRecursion,
+            left: recursionType.left || recursion.left.length > 0,
+            right: recursionType.right || !!recursion.right
           };
         }
         case RecursionTypeKind.PlainRecursion: {
@@ -1441,6 +1471,13 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType 
         left: !!recursion.left,
         right: !!recursion.right,
         hasPlainRecursionCalls: hasPlainRecursionCalls
+      };
+    }
+    case RecursionTypeKind.ListOperationsRecursion: {
+      return {
+        kind: FunctionRecursionKind.F_ListRecursion,
+        left: recursion.left.length > 0,
+        right: !!recursion.right
       };
     }
     case RecursionTypeKind.MultiplyRecursion:
