@@ -1762,8 +1762,6 @@ function isThisANumberOrString(node : ts.Expression) : "numbers" | "strings" | n
     return isThisANumberOrString(node.expression);
   }
 
-  // TODO We could also detect we're adding strings if we find a `Utils_ap`
-  // either here or in another return expression.
   if (ts.isStringLiteral(node)) {
     return "strings";
   }
@@ -1794,8 +1792,6 @@ function isThisAStringOrList(node : ts.Expression) : "strings" | "lists" | null 
     return isThisAStringOrList(node.expression);
   }
 
-  // TODO We could also detect we're adding strings if we find a `Utils_ap`
-  // either here or in another return expression.
   if (ts.isStringLiteral(node)) {
     return "strings";
   }
