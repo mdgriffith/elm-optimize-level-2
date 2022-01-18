@@ -1578,7 +1578,7 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
     }
 
     if (thirdArgExtract.kind === RecursionTypeKind.ListOperationsRecursion) {
-      thirdArgExtract.left.push({ kind: "cons", expression: secondArg });
+      thirdArgExtract.left.unshift({ kind: "cons", expression: secondArg });
       return thirdArgExtract;
     }
 
@@ -1619,9 +1619,8 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
   return { kind: RecursionTypeKind.NotRecursive };
 }
 
-function extractRecursionKindFromUtilsAppendExpression(functionName : string, expression : ts.Expression, args: { left ?: ts.Expression, right ?: ts.Expression }) : ConcatRecursion | null {
+function extractRecursionKindFromUtilsAppendExpression(functionName : string, expression : ts.Expression, args: { left ?: ts.Expression, right ?: ts.Expression }) : Recursion | null {
   const extract = extractRecursionKindFromExpression(functionName, expression);
-  // TODO Support cons recursion here
   if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return {
       kind: RecursionTypeKind.ConcatRecursion,
@@ -1640,6 +1639,14 @@ function extractRecursionKindFromUtilsAppendExpression(functionName : string, ex
     } else if (args.right) {
       extract.right = combineExpressionsWithUtilsAp(args.right, extract.right);
       extract.concatenates = extract.concatenates || isThisAStringOrList(args.right);
+    }
+    return extract;
+  }
+  else if (extract.kind === RecursionTypeKind.ListOperationsRecursion) {
+    if (args.left) {
+      extract.left.unshift({kind: "append", expression: args.left});
+    } else if (args.right) {
+      extract.right = combineExpressionsWithUtilsAp(args.right, extract.right);
     }
     return extract;
   }
