@@ -1212,11 +1212,43 @@ function updateReturnStatementForListRecursion(recursion : ListRecursion, functi
   }
 
   if (extract.kind === RecursionTypeKind.ConsRecursion) {
-    return createConsContinuation(label, parameterNames, extract.elements, extract.arguments);
+    return [
+      ...extract.elements.map(addToEnd),
+      ...createContinuation(label, parameterNames, extract.arguments)
+    ];
   }
 
   if (extract.kind === RecursionTypeKind.ConcatRecursion) {
-    return createListConcatContinuation(functionsToInsert, label, parameterNames, extract.left, extract.right, extract.arguments);
+    return [
+      ...createListConcatContinuation(functionsToInsert, extract.left, extract.right),
+      ...createContinuation(label, parameterNames, extract.arguments)
+    ];
+  }
+
+  if (extract.kind === RecursionTypeKind.ListOperationsRecursion) {
+    let results : ts.Statement[] = [];
+    if (extract.right) {
+      results.push(addListToTail(extract.right));
+    }
+
+    extract.left.forEach(({ kind, expression }) => {
+      switch (kind) {
+        case "cons": {
+          results.push(addToEnd(expression));
+          return;
+        }
+
+        case "append": {
+          results =
+            createListConcatContinuation(functionsToInsert, expression, null)
+              .concat(results);
+        }
+      }
+    });
+
+    return results.concat(
+      createContinuation(label, parameterNames, extract.arguments)
+    );
   }
 
   const isValueEmpty = ts.isIdentifier(expression) && expression.text === EMPTY_LIST;
@@ -1811,15 +1843,8 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
   ];
 }
 
-function createConsContinuation(label : string, parameterNames : Array<string>, elements : ts.Expression[], newArguments : Array<ts.Expression>) : Array<ts.Statement> {
-  return [
-    ...elements.map(addToEnd),
-    ...createContinuation(label, parameterNames, newArguments)
-  ];
-}
-
-function createListConcatContinuation(functionsToInsert : Set<string>, label : string, parameterNames : Array<string>, left : ts.Expression | null, right : ts.Expression | null, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
-  let result = createContinuation(label, parameterNames, newArguments);
+function createListConcatContinuation(functionsToInsert : Set<string>, left : ts.Expression | null, right : ts.Expression | null) : Array<ts.Statement> {
+  let result = [];
 
   if (right) {
     result.unshift(addListToTail(right));
