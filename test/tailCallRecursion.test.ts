@@ -1464,6 +1464,60 @@ test('should optimize a function that does cons on concat and recursion', () => 
   expect(actual).toBe(expected);
 });
 
+test('should optimize a function that does concat on cons and recursion', () => {
+  // Corresponds to the following Elm code
+  // repeatSomething n thing =
+  //     if n <= 0 then
+  //         y
+  //     else
+  //         thing ++ x :: repeatSomething (n - 1) thing
+  const initialCode = `
+  var $something$repeatSomething = F2(
+    function (n, thing) {
+      return (n <= 0) ? x : _Utils_ap(
+        thing,
+        A2(
+          $elm$core$List$cons,
+          x,
+          A2($something$repeatSomething, n - 1, thing)));
+    });
+  `;
+
+  const expectedOutputCode = `
+  function _Utils_copyListAndGetEnd(root, xs) {
+    for (; xs.b; xs = xs.b) {
+      root = root.b = _List_Cons(xs.a, _List_Nil);
+    }
+    return root;
+  }
+
+  var $something$repeatSomething = F2(
+    function (n, thing) {
+      var $start = _List_Cons(undefined, _List_Nil);
+      var $end = $start;
+      repeatSomething: while (true) {
+        if ((n <= 0)) {
+          $end.b = x;
+          return $start.b;
+        } else {
+          $end = _Utils_copyListAndGetEnd($end, thing);
+          $end = $end.b = _List_Cons(x, _List_Nil);
+          n = n - 1;
+          continue repeatSomething;
+        }
+      }
+    });
+  `;
+
+  const { actual, expected } = transformCode(
+    initialCode,
+    expectedOutputCode,
+    createTailCallRecursionTransformer(true)
+  );
+
+  expect(actual).toBe(expected);
+});
+
 test("should not optimize a function that concatenates but where we can't determine if it's strings or lists", () => {
   // Corresponds to the following Elm code
   // repeatSomething n thing =
@@ -1681,10 +1735,10 @@ test("should introduce a while loop in functions that already have them if it's 
                       var _v10 = _v9.b;
                       var w = _v10.a;
                       var tl = _v10.b;
-                      $end = $end.b = _List_Cons(w, _List_Nil);
-                      $end = $end.b = _List_Cons(z, _List_Nil);
-                      $end = $end.b = _List_Cons(y, _List_Nil);
                       $end = $end.b = _List_Cons(x, _List_Nil);
+                      $end = $end.b = _List_Cons(y, _List_Nil);
+                      $end = $end.b = _List_Cons(z, _List_Nil);
+                      $end = $end.b = _List_Cons(w, _List_Nil);
                       var $temp$ctr = ctr + 1, $temp$n = n - 4, $temp$list = tl;
                       ctr = $temp$ctr;
                       n = $temp$n;
