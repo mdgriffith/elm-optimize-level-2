@@ -87,39 +87,39 @@ export const transform = async (
 
   let inlineCtx: InlineContext | undefined;
   const transformations: any[] = removeDisabled([
-    // [transforms.replacements != null, replacementTransformer ],
+    [transforms.replacements != null, replacementTransformer ],
     [transforms.tailCallRecursion, createTailCallRecursionTransformer(false) ],
-    // [transforms.fastCurriedFns, Replace.from_file('/../replacements/faster-function-wrappers') ],
-    // [transforms.replaceListFunctions,  Replace.from_file('/../replacements/list') ],
-    // [transforms.replaceStringFunctions, Replace.from_file('/../replacements/string') ],
-    // [transforms.v8Analysis, v8Debug],
-    // [transforms.variantShapes, normalizeVariantShapes],
-    // [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
-    // [transforms.inlineEquality, inlineEquality()],
-    // [transforms.inlineNumberToString, inlineNumberToString()],
-    // [
-    //   transforms.listLiterals == InlineLists.AsObjects,
-    //   createInlineListFromArrayTransformer(
-    //     InlineMode.UsingLiteralObjects(Mode.Prod)
-    //   ),
-    // ],
-    // [
-    //   transforms.listLiterals == InlineLists.AsCons,
-    //   createInlineListFromArrayTransformer(InlineMode.UsingConsFunc),
-    // ],
-    // [
-    //   transforms.passUnwrappedFunctions,
-    //   createPassUnwrappedFunctionsTransformer(() => inlineCtx),
-    // ],
-    // [
-    //   !!transforms.objectUpdate,
-    //   transforms.objectUpdate && objectUpdate(transforms.objectUpdate),
-    // ],
-    // [transforms.arrowFns, convertFunctionExpressionsToArrowFuncs],
-    // [transforms.shorthandObjectLiterals, convertToObjectShorthandLiterals],
-    // [transforms.unusedValues, createRemoveUnusedLocalsTransform()],
-    // [transforms.recordUpdates, recordUpdate()],
-    // [transforms.v8Analysis, reportFunctionStatusInBenchmarks],
+    [transforms.fastCurriedFns, Replace.from_file('/../replacements/faster-function-wrappers') ],
+    [transforms.replaceListFunctions,  Replace.from_file('/../replacements/list') ],
+    [transforms.replaceStringFunctions, Replace.from_file('/../replacements/string') ],
+    [transforms.v8Analysis, v8Debug],
+    [transforms.variantShapes, normalizeVariantShapes],
+    [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
+    [transforms.inlineEquality, inlineEquality()],
+    [transforms.inlineNumberToString, inlineNumberToString()],
+    [
+      transforms.listLiterals == InlineLists.AsObjects,
+      createInlineListFromArrayTransformer(
+        InlineMode.UsingLiteralObjects(Mode.Prod)
+      ),
+    ],
+    [
+      transforms.listLiterals == InlineLists.AsCons,
+      createInlineListFromArrayTransformer(InlineMode.UsingConsFunc),
+    ],
+    [
+      transforms.passUnwrappedFunctions,
+      createPassUnwrappedFunctionsTransformer(() => inlineCtx),
+    ],
+    [
+      !!transforms.objectUpdate,
+      transforms.objectUpdate && objectUpdate(transforms.objectUpdate),
+    ],
+    [transforms.arrowFns, convertFunctionExpressionsToArrowFuncs],
+    [transforms.shorthandObjectLiterals, convertToObjectShorthandLiterals],
+    [transforms.unusedValues, createRemoveUnusedLocalsTransform()],
+    [transforms.recordUpdates, recordUpdate()],
+    [transforms.v8Analysis, reportFunctionStatusInBenchmarks],
   ]);
 
   const {
