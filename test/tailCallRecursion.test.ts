@@ -5,7 +5,7 @@ import { createTailCallRecursionTransformer } from '../src/transforms/tailCallRe
 test("it doesn't affect functions that are not recursive", () => {
   const initialCode = `
   var $elm$core$Basics$identity = function (x) {
-	return x;
+  return x;
   };
   `;
 
@@ -21,7 +21,7 @@ test("it doesn't affect functions that are not recursive", () => {
 test("it doesn't affect functions that are not tail-call recursive", () => {
   const initialCode = `
   var factorial = function (n) {
-	return mult(n, factorial(n - 1));
+  return mult(n, factorial(n - 1));
   };
   `;
 
@@ -45,22 +45,22 @@ test('it can turn a function that is tail-call recursive into a while loop', () 
   //             recursiveFunction mapper xs <| (mapper x :: acc)
   const initialCode = `
   var something$recursiveFunction = F3(
-	function (mapper, list, acc) {
-		if (!list.b) {
-			return acc;
-		} else {
-			var x = list.a;
-			var xs = list.b;
-			return A3(
-				something$recursiveFunction,
-				mapper,
-				xs,
-				A2(
-					$elm$core$List$cons,
-					mapper(x),
-					acc));
-		}
-	});
+  function (mapper, list, acc) {
+    if (!list.b) {
+      return acc;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return A3(
+        something$recursiveFunction,
+        mapper,
+        xs,
+        A2(
+          $elm$core$List$cons,
+          mapper(x),
+          acc));
+    }
+  });
   `;
 
   // Corresponds to the following TCO-ed Elm code
@@ -73,25 +73,25 @@ test('it can turn a function that is tail-call recursive into a while loop', () 
   //             recursiveFunction mapper xs (mapper x :: acc)
   const expectedOutputCode = `
   var something$recursiveFunction = F3(
-	function (mapper, list, acc) {
-		recursiveFunction:
-		while (true) {
-			if (!list.b) {
-				return acc;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				var $temp$list = xs,
-					$temp$acc = A2(
-					$elm$core$List$cons,
-					mapper(x),
-					acc);
-				list = $temp$list;
-				acc = $temp$acc;
-				continue recursiveFunction;
-			}
-		}
-	});
+  function (mapper, list, acc) {
+    recursiveFunction:
+    while (true) {
+      if (!list.b) {
+        return acc;
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        var $temp$list = xs,
+          $temp$acc = A2(
+          $elm$core$List$cons,
+          mapper(x),
+          acc);
+        list = $temp$list;
+        acc = $temp$acc;
+        continue recursiveFunction;
+      }
+    }
+  });
   `;
 
   const { actual, expected } = transformCode(
@@ -211,22 +211,22 @@ test('should re-use the label and while loop if there already is one', () => {
 test('should not change non-recursive functions', () => {
   const initialCode = `
   var something$recursiveFunction = F3(
-	function (mapper, list, acc) {
-		if (!list.b) {
-			return acc;
-		} else {
-			var x = list.a;
-			var xs = list.b;
-			return A3(
-				something$else,
-				mapper,
-				xs,
-				A2(
-					$elm$core$List$cons,
-					mapper(x),
-					acc));
-		}
-	});
+  function (mapper, list, acc) {
+    if (!list.b) {
+      return acc;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return A3(
+        something$else,
+        mapper,
+        xs,
+        A2(
+          $elm$core$List$cons,
+          mapper(x),
+          acc));
+    }
+  });
   `;
 
   const { actual, expected } = transformCode(
@@ -247,38 +247,38 @@ test('should optimize a function that cons (::) on the result of recursive calls
   //             fn x :: map fn xs
   const initialCode = `
   var $something$map = F2(
-	function (fn, list) {
-		if (!list.b) {
-			return _List_Nil;
-		} else {
-			var x = list.a;
-			var xs = list.b;
-			return A2(
-				$elm$core$List$cons,
-				fn(x),
-				A2($something$map, fn, xs));
-		}
-	});
+  function (fn, list) {
+    if (!list.b) {
+      return _List_Nil;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return A2(
+        $elm$core$List$cons,
+        fn(x),
+        A2($something$map, fn, xs));
+    }
+  });
   `;
 
   const expectedOutputCode = `
   var $something$map = F2(
-	function (fn, list) {
+  function (fn, list) {
     var $start = _List_Cons(undefined, _List_Nil);
     var $end = $start;
-		map:
-		while (true) {
-			if (!list.b) {
-				return $start.b;
-			} else {
-				var x = list.a;
-				var xs = list.b;
+    map:
+    while (true) {
+      if (!list.b) {
+        return $start.b;
+      } else {
+        var x = list.a;
+        var xs = list.b;
         $end = $end.b = _List_Cons(fn(x), _List_Nil);
-				list = xs;
-				continue map;
-			}
-		}
-	});
+        list = xs;
+        continue map;
+      }
+    }
+  });
   `;
 
   const { actual, expected } = transformCode(
@@ -306,27 +306,27 @@ test('should optimize a function that cons (::) on the result of recursive calls
   //                 filter predicate xs
   const initialCode = `
   var $something$filter = F2(
-	function (predicate, list) {
-		filter:
-		while (true) {
-			if (!list.b) {
-				return something(0);
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (predicate(x)) {
-					return A2(
-						$elm$core$List$cons,
-						x,
-						A2($something$filter, predicate, xs));
-				} else {
-					var $temp$list = xs;
-					list = $temp$list;
-					continue filter;
-				}
-			}
-		}
-	});
+  function (predicate, list) {
+    filter:
+    while (true) {
+      if (!list.b) {
+        return something(0);
+      } else {
+        var x = list.a;
+        var xs = list.b;
+        if (predicate(x)) {
+          return A2(
+            $elm$core$List$cons,
+            x,
+            A2($something$filter, predicate, xs));
+        } else {
+          var $temp$list = xs;
+          list = $temp$list;
+          continue filter;
+        }
+      }
+    }
+  });
   `;
 
   const expectedOutputCode = `
@@ -377,25 +377,25 @@ test('should optimize a function that does "x || <recursive call>"', () => {
   //              isOkay x || False || naiveAny isOkay xs
   const initialCode = `
   var $something$naiveAny = F2(
-	function (isOkay, list) {
-		if (!list.b) {
-			return false;
-		} else {
-			var x = list.a;
-			var xs = list.b;
-			return isOkay(x) || (false || A2($something$naiveAny, isOkay, xs));
-		}
-	});
+  function (isOkay, list) {
+    if (!list.b) {
+      return false;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      return isOkay(x) || (false || A2($something$naiveAny, isOkay, xs));
+    }
+  });
   `;
 
   const expectedOutputCode = `
   var $something$naiveAny = F2(
-	function (isOkay, list) {
-		naiveAny:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
+  function (isOkay, list) {
+    naiveAny:
+    while (true) {
+      if (!list.b) {
+        return false;
+      } else {
         var x = list.a;
         var xs = list.b;
         if (isOkay(x) || false) {
@@ -403,9 +403,9 @@ test('should optimize a function that does "x || <recursive call>"', () => {
         }
         list = xs;
         continue naiveAny;
-			}
-		}
-	});
+      }
+    }
+  });
   `;
 
   const { actual, expected } = transformCode(
@@ -442,12 +442,12 @@ test('should optimize a function that does "x && <recursive call>"', () => {
 
   const expectedOutputCode = `
   var $something$naiveAll = F2(
-	function (isOkay, list) {
-		naiveAll:
-		while (true) {
-			if (!list.b) {
-				return true;
-			} else {
+  function (isOkay, list) {
+    naiveAll:
+    while (true) {
+      if (!list.b) {
+        return true;
+      } else {
         var x = list.a;
         var xs = list.b;
         if (!(isOkay(x) && true)) {
@@ -455,9 +455,9 @@ test('should optimize a function that does "x && <recursive call>"', () => {
         }
         list = xs;
         continue naiveAll;
-			}
-		}
-	});
+      }
+    }
+  });
   `;
 
   const { actual, expected } = transformCode(
