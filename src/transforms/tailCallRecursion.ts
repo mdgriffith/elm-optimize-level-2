@@ -1,3 +1,4 @@
+import { of } from 'ts-union';
 import ts from 'typescript';
 import { ast } from './utils/create';
 import { determineType, PossibleReturnType } from './utils/determineType';
@@ -46,6 +47,18 @@ Therefore:
   - Otherwise we don't know so we shouldn't do anything (or try to infer harder based on the arguments)
 
 */
+
+// TODO Support tail-recursion that is nested in tail-preserving contexts like
+// map fn list =
+//   case list of
+//     [] -> []
+//     x :: xs ->
+//       f x ::
+//         (if condition then
+//            map fn xs
+//          else
+//            map fn (y :: xs)
+//         )
 
 // TODO Support using both addition and multiplication and other operations, but only choose one (the most common?)
 // TODO Support shortcutting creating list when _List_fromArray is on the list to add
