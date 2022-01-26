@@ -4,7 +4,12 @@ import { determineType, PossibleReturnType } from './utils/determineType';
 
 /*
 
-Applies tail-call recursion when possible, where the compiler didn't.
+Applies "Tail Recursion Modulo Cons" (TMRC) when possible, and simple TCR where the compiler didn't.
+
+
+# TCR improvements over the compiler output
+
+## TCR failures because of pipelines
 
 This function gets tail-call optimized.
 
@@ -28,71 +33,152 @@ but this version doesn't (because of the additional `<|`):
             x :: xs ->
                 nonTco mapper xs <| (mapper x :: acc)
 
-*/
 
-/*
-For arithmetic operations:
-+ is used for both concatenating numbers and strings
-but it is only used for strings when concatenating string literals
+## Recursion inside a boolean expression
+
+This function gets tail-call optimized.
+
+    naiveAll : (a -> Bool) -> List a -> Bool
+    naiveAll isOkay list =
+        case list of
+            [] ->
+                True
+
+            x :: xs ->
+                isOkay x && naiveAll isOkay xs
+
+just like if it was written as
+
+    naiveAll : (a -> Bool) -> List a -> Bool
+    naiveAll isOkay list =
+        case list of
+            [] ->
+                True
+
+            x :: xs ->
+                if isOkay x then
+                  True
+
+                else
+                  naiveAll isOkay xs
+
+
+## Tail Recursion Modulo Cons
+
+"Tail Recursion Modulo Cons" (TRMC) is an extension to TCR/TCO that supports making some operations on the result of
+recursive calls optimized into a while loop, which makes the recursive function stack-safe and more performant.
+
+made it into OCaml in 2022, and a paper describing the why and how
+is available here: https://arxiv.org/pdf/2102.09823.pdf.
+
+This implementation and the one in the OCaml were done independently (I hadn't read the paper when I did
+most of the implementation), but I think they're sufficiently close that the paper makes for a deeper explanation
+than what I will do here. There is a section further below going detailing the differences between the two implementations.
+
+The Elm compiler does tail-recursive call optimization, as explained in detail
+in https://jfmengels.net/tail-call-optimization/. This optimization is great because it both
+prevents stack-overflow errors and improves performance.
+
+Unfortunately, the knowledge of how to write stack-safe recursive functions does not come
+naturally to developers and requires first encountering runtime errors.
+
+TRMC helps with that by expanding the number of situations where functions benefit from tail-call
+optimization including almost textbook examples of recursion (that are generally not stack-safe), reducing the number of stack overflows that compiled Elm code will create.
+
+I have written an `elm-review` rule (https://package.elm-lang.org/packages/jfmengels/elm-review-performance/latest/NoUnoptimizedRecursion)
+to detect non-recursive functions, and a lot of the issues would be resolved by TMRC (and this transformer, re: boolean and pipe recursions).
+
+If we take the errors reported by the rule in [`elm-community/list-extra`](https://github.com/elm-community/list-extra/blob/8.3.0/src/List/Extra.elm)
+v8.3.0 (some functions were rewritten later based on the rule's reports), then we find that there are 13 functions
+that are not stack-safe. Of those and with this transformer, 1 would become optimized because of the support for
+pipeline operators, and 6 would become stack-safe without any rewrite.
+
+Functions that were written to be TCR-compliant often incur a code-complexity cost, and TRMC help reduce that.
+Here are functions rewritten assuming TRMC:
+- `elm/core`: https://github.com/jfmengels/core/compare/2fa34772a2575d036c0871b4390379741e6f5f91...new-tail-recursion?diff=split
+- `elm-community/list-extra`: https://github.com/jfmengels/list-extra/compare/2e70e94278dd54e0d7f24bc6fdcbd5a2c6ff5c00..new-tail-recursion?diff=split
+
+
+## Supported kinds of recursion
+
+This implementation supports the following recursion constructs. Examples for how the code looks before and after
+transformation can be found in the tests.
+
+### Data construction
+
+```elm
+type List a
+  = Nil
+  | Cons a (List a)
+
+map : (a -> b) -> List a -> List b
+map fn list =
+  case list of
+    Nil ->
+      Nil
+
+    Cons x rest ->
+      Cons (fn x) (map fn rest)
+```
+
+
+### Nested data construction (NOTE: not implemented yet)
+
+Same as before, but for when data is wrapped in an arbitrary number of data wrappers (whose data structures is predictable).
+
+```elm
+type List a
+  = Nil
+  | Cons { data : a, list : List a }
+
+map : (a -> b) -> List a -> List b
+map fn list =
+  case list of
+    Nil ->
+      Nil
+
+    Cons x rest ->
+      Cons { data = fn x, list = map fn rest }
+```
+
+### List constructions
+
+Recursions like `x :: rec y`, `x ++ rec y` and `rec y ++ x` (or using `List.append`)  are optimized, as long as we
+can infer somewhere that the function returns lists (for concatenation).
+
+### Arithmetic operators
+
+Recursions like `x + rec y`, `rec y + x`, `rec y * x` and `x * rec y` are optimized, as long as they're not mixed.
+
+### String constructions
+
+Recursions like `x ++ rec y` and `rec y ++ x`are optimized, as long as we can infer somewhere
+that the function returns strings.
+
+
+### Note on determining which the recursion type
+
+Because `+` in the compiled code is used for both addition and string concatenation, and because `_Utils_ap` is the function
+used for both concatenating strings and concatenating lists, we unfortunately need to figure out the type of the function
+to choose the right one.
+
 When strings are appended without literals, `_Utils_ap` is used (which is also used for list concatenation)
 - `foo ++ "bar"` => `foo + 'bar'`
 - `foo ++ bar ++ "bar"` => `foo + (bar + 'bar')`
 - `(foo ++ bar) ++ "bar"` => `_Utils_ap(foo, bar) + 'bar'`
 
-Therefore:
-- If we see a `+` operation, we can look at the operands. If there is a string, it's a string append, and otherwise it's a number sum.
-- If we see a `_Utils_ap`
+If we see a `+` operation, we can look at the operands. If there is a string, it's a string append, and otherwise it's a number sum.
+
+If we see a `_Utils_ap`
   - If there was a `+` somewhere else (in a return statement), then we can determine it's a string concatenation
-  - Otherwise we don't know so we shouldn't do anything (or try to infer harder based on the arguments)
+  - Otherwise we don't know and we don't do anything
 
-*/
-
-// TODO Support tail-recursion that is nested in tail-preserving contexts like
-// map fn list =
-//   case list of
-//     [] -> []
-//     x :: xs ->
-//       f x ::
-//         (if condition then
-//            map fn xs
-//          else
-//            map fn (y :: xs)
-//         )
-
-// TODO Support using both addition and multiplication and other operations, but only choose one (the most common?)
-// TODO Support shortcutting creating list when _List_fromArray is on the list to add
-// function _Utils_copyListAndGetEndForLiteral(end, arr)
-//   {
-//   	for (var i = 0; i < arr.length; i++)
-//   	{
-//   		end = end.b = _List_Cons(arr[i], _List_Nil);
-//   	}
-//   	return end;
-//   }
-
-// TODO Enable TCO for nested data constructions
-// TODO Enable TCO for let declarations (watch out for name shadowing for $start/$end for nested recursive functions)
-
-// TODO Optimize functions like
-// naiveMap : (a -> b) -> List a -> List b
-// naiveMap =
-//     \fn list ->
-//         case list of
-//             [] ->
-//                 []
-//             x :: xs ->
-//                 fn x :: naiveMap fn xs
-
-// TODO Avoid re-computing extracts every time: Instead store them in a dictionary by the node id/position. If there's no entry because we skipped it, then compute the extract.
+We could try and do more inference but we don't want to reimplement a type checker here. Also, we could potentially
+inspect the Elm code or the elmi/elmo files inside `elm-stuff`, but these would not work (as well) for let functions,
+and would not always be available to this `elm-optimize-level-2`.
 
 
-/*
-
-The Elm compiler does tail-recursive call optimization, as explained in https://jfmengels.net/tail-call-optimization/
-
-TODO Explain the concept of holes and when/why we can optimize some functions but not others
-
-# How does this transformer work?
+## How does this transformer work?
 
 On a high level, this transformer analyzes functions to find if they're recursive and optimizable.
 
@@ -104,22 +190,22 @@ and changes the `return` statements to `continue` statements with some additiona
 
 Let's go into the details.
 
-## Analyzing return statements
+### Analyzing return statements
 
 To know whether a function is recursive, we need to look at the return statements to find "local recursion patterns".
 
-If we have a function named `rec`, then a call like `rec(n - 1)` is a "plain" recursive call.
+If we have a function named `rec`, then a call like `rec y` is a "plain" recursive call.
 The analysis tries to find additional patterns that we know are potentially optimizable (the examples are Elm code):
-- Boolean recursion: `fn x || rec (n - 1)` or `fn x && rec (n - 1)`
-- Cons recursion: `x :: rec (n - 1)`
-- Addition recursion: `x + rec (n - 1)` (can be used for both numbers and strings)
-- Multiplication recursion: `x * rec (n - 1)
-- Concatenation recursion: `x ++ rec (n - 1)` or `rec (n - 1) ++ x` using the JS `_Utils_ap` function (can be used for both strings and lists)
-- Data construction recursion: `Cons x (rec (n - 1))`
+- Boolean recursion: `fn x || rec y` or `fn x && rec y`
+- Cons recursion: `x :: rec y`
+- Addition recursion: `x + rec y` (can be used for both numbers and strings)
+- Multiplication recursion: `x * rec y
+- Concatenation recursion: `x ++ rec y` or `rec y ++ x` using the JS `_Utils_ap` function (can be used for both strings and lists)
+- Data construction recursion: `Cons x (rec y`
 
-## Combining local recursion patterns to find the function recursion type
+### Combining local recursion patterns to find the function recursion type
 
-The way we are going to update the `return` statements depends on the local recursion patterns, but the way we change the "outer body" of the function
+The way we are going to update the `return` statements depends mostly on the local recursion patterns, but the way we change the "outer body" of the function
 depends on the combination of those, which we are going to distill into a "function recursion type".
 
 For instance, if we have the following code:
@@ -151,7 +237,7 @@ var sum = function (list) {
   sum: while (true) {
     if (!list.b) {
       // Change dependent on the local recursion pattern
-      // (in practice we remove the + 0) 
+      // (in practice we remove the + 0)
       return $result + 0;
     } else {
       var x = list.a;
@@ -185,7 +271,7 @@ we need to do list concatenation recursion or string concatenation recursion.
 
 Once we have figured the exact function recursion type, we can stop the analysis and start transforming the body and the return statements.
 
-## Transforming the body
+### Transforming the body
 
 Once we detect recursion, we know that we will need to have a while loop. Because the Elm compiler already introduces while loops for plain recursive calls
 (modulo some issues with piping), we will just need to make sure we don't introduce a second one.
@@ -198,7 +284,7 @@ For strings, dependent on whether we find `foo ++ rec (n - 1)` and/or `rec (n - 
 we will add a variable `$left` and/or `$right` containing `""`.
 
 
-## Transforming the return statements
+### Transforming the return statements
 
 Already present `continue` statements that are introduced by the Elm compiler aren't touched and don't need to be altered.
 
@@ -209,16 +295,139 @@ For plain recursion functions, we leave the non-recursive calls untouched and on
 For boolean recursion functions/calls, we do the same, except that we transform `fn x || rec (n - 1)` into `if (fn(x)) { return true; } else { <...> ; continue; }`.
 
 For the other recursive function types, we will basically do the same operations for recursive calls, along with a few operations to mutate the accumulator.
-For instance, when encountering `return x + rec(n - 1)`, we will transform that to the following:
+For instance, when encountering `return x + rec y`, we will transform that to the following:
 
 ```js
-$result += x; // Updates the accumulator
+$left += x; // Updates the accumulator
 n = n - 1; // Changes the arguments to the function, like for plain recursion
 continue rec; // Re-start the loop
 ```
 
 If we have a non-recursive call, then we need to update the return value to include the accumulator.
-For an addition recursion, `return x` would be transformed to `return $result + x`.
+For an addition recursion, `return x` would be transformed to `return $left + x`.
+
+
+## Differences with the OCaml implementation
+
+This idea and implementation were not made based on the paper, but we came to most of the same conclusions,
+but a few differences remain.
+
+1) The OCaml implementation chose to split TMR functions into a base version and a regular "DPS" version,
+to avoid the extra cost of an additional function call. Our implementation only updates the body to add the
+necessary accumulators to avoid the extra cost of an additional function call. From my benchmarking, it's not
+clear which version is faster, but our version makes for a smaller bundle size.
+
+2) The OCaml implementors chose to make the optimization opt-in. While I do understand adding annotations
+to get compiler errors when an optimization doesn't kick in, I don't understand the reasoning for not applying it
+by default, except for the fact that in their case the optimization increases the output code size by duplicating
+the function.
+
+3) The OCaml implementation chose to only support data construction, whereas we also support arithmetic operators,
+stirng concatenation and list concatenation.
+
+4) The OCaml implementation chose to only support data construction. Since we can analyze all the functions and determine
+whether they simply store an argument in an object or do something else with it, we can support more functions that are
+not necessarily data constructors. In the following example a recursive call in position `x` could be optimized, but
+not one in position `y`: `fn x y = { x = x, y = y + 1 }`.
+
+5) Because OCaml is an effectful language, the order of operations matters and the resulting code reflects that.
+Since Elm isn't an effectful language, I took the liberty of re-ordering the computations to make for shorter output code.
+
+
+# Remaining work
+
+The current work is ready to be tested and benchmarked, but there is more work to be done that would be valuable.
+
+
+## Support tail-recursion that is nested in tail-preserving contexts like
+
+The following code could be optimized but isn't.
+
+  map fn list =
+    case list of
+      [] -> []
+      x :: xs ->
+        f x ::
+          (if condition then
+            map fn xs
+          else
+            map fn (y :: xs)
+          )
+
+
+## Support using both addition and multiplication and other operations, but only choose one (the most common?)
+
+Currently, our implementation doesn't apply any optimizations if it sees both addition and multiplication recursions.
+We could do better by supporting at least one of them, leaving the other as a regular call.
+
+One issue with this is that we would need to rely on heuristics to choose which operation to optimize for (the ones that
+we found the most) but that could be the wrong one to optimize for. In the compiler implementation and with new syntax,
+annotations could possibly be added by users to choose which operation to optimize.
+
+In any case, since it reduces the chance for a stack overflow and likely improves performance, I think it would still be
+worth it even if it's imperfect.
+
+
+## Special casing list literals
+
+When concatenating lists, we make a copy of the first list. When encountering list literals which are
+wrapped in a `_List_fromArray`, we could instead use a copy of the `_List_fromArray` function that makes the list not
+end with `_List_Nil` but with the list to append to, with a function like this:
+
+    function _List_fromArray_andAppend(arr, end) {
+      var out = end;
+      for (var i = arr.length; i--; )
+      {
+        out = _List_Cons(arr[i], out);
+      }
+      return out;
+    }
+
+
+## Figure out whether it would be interesting to check whether $tail is empty
+
+When we find appends to the recursion result, we prepend it to `$tail`, which means creating a copy.
+When this is the first append though (`$tail` is empty`), then we are doing an unnecessary copy of the list,
+which the unoptimized version would not do.
+
+A potential fix for that would be to check whether `$tail` is empty (or null, whatever is quicker) and if it is
+skip the copy and just make `$tail` point to the list. The cost for this would be an extra check every time we wish
+to add to the tail, and that might hurt performance.
+
+
+## Support nested data constructors
+
+The OCaml implementation did this but this implementation hasn't yet.
+
+
+## Support let declarations
+
+At the moment, this implementation only targets top-level functions, and not let functions.
+It absolutely should. The only thing to be wary of is the potential naming conflicts for the variables that we introduce
+when optimizing a let function inside of a function that is also being optimized.
+
+
+## Avoid recomputing the extracts
+
+This is for the performance of the transformer. We compute "extracts" to figure out what kind of recursion this function
+uses, and when transforming the function's body we compute these again. We could store these extracts to avoid duplicate work.
+
+
+## Support for recursions in lambda declarations
+
+When encountering code like this:
+
+    naiveMap : (a -> b) -> List a -> List b
+    naiveMap =
+        \fn list ->
+            case list of
+                [] ->
+                    []
+                x :: xs ->
+                    fn x :: naiveMap fn xs
+
+the compiler outputs something pretty complex with multiple declarations and re-assignements.
+I don't think this is a high-priority and worth the effort, but I'll mention it anyway.
 
 */
 
