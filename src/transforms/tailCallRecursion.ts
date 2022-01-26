@@ -1,4 +1,3 @@
-import { of } from 'ts-union';
 import ts from 'typescript';
 import { ast } from './utils/create';
 import { determineType, PossibleReturnType } from './utils/determineType';
