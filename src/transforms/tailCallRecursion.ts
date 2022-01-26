@@ -860,13 +860,9 @@ const consLeftDeclarations =
       [ts.createVariableDeclaration(
         START,
         undefined,
-        ts.createCall(
-          ts.createIdentifier(LIST_CONS),
-          undefined,
-          [
-            ts.createIdentifier("undefined"),
-            ts.createIdentifier(EMPTY_LIST)
-          ]
+        consToList(
+          ts.createIdentifier("undefined"),
+          ts.createIdentifier(EMPTY_LIST)
         )
       )]
     ),
@@ -1221,27 +1217,7 @@ function updateReturnStatementForListRecursion(recursion : ListRecursion, functi
   }
 
   if (extract.kind === RecursionTypeKind.ListOperationsRecursion) {
-    let leftOperations : ts.Statement[] = extract.left.map(({ kind, expression }) => {
-      switch (kind) {
-        case "cons": {
-          return addToEnd(expression);
-        }
-        case "append": {
-          return copyListAndAddToEnd(functionsToInsert, expression);
-        }
-      }
-    });
-
-    let rightOperations : ts.Statement[] = [];
-    if (extract.right) {
-      rightOperations = [addListToTail(extract.right)];
-    }
-
-    return [
-      ...leftOperations,
-      ...rightOperations,
-      ...createContinuation(label, parameterNames, extract.arguments)
-    ];
+    return updateReturnStatementForListOperationsRecursion(functionsToInsert, label, parameterNames, extract);
   }
 
   const isValueEmpty = ts.isIdentifier(expression) && expression.text === EMPTY_LIST;
@@ -1312,6 +1288,85 @@ function updateReturnStatementForListRecursion(recursion : ListRecursion, functi
 
   // `return A2($elm$core$List$append, <expression>, $tail);`
   return ts.createReturn(combineValueAndTail(expression));
+}
+
+function updateReturnStatementForListOperationsRecursion(functionsToInsert : Set<string>, label : string, parameterNames : Array<string>, extract : ListOperationsRecursion) : ts.Statement[] {
+  let rightOperations : ts.Statement[] = [];
+  if (extract.right) {
+    rightOperations = [addListToTail(extract.right)];
+  }
+
+  return [
+    ...leftListOperationsRecursion(functionsToInsert, extract.left),
+    ...rightOperations,
+    ...createContinuation(label, parameterNames, extract.arguments)
+  ];
+}
+
+function leftListOperationsRecursion(functionsToInsert : Set<string>, operations : ListOperation[]) : ts.Statement[] {
+  if (operations.length === 0) {
+    return [];
+  }
+
+  const [lastItem, ...otherItems] = operations;
+  if (otherItems.length === 0) {
+    return [
+      // `$end = $end.b = _List_Cons(<lastItem>, _List_Nil);` or `$end = $end.b = _Utils_copyListAndGetEnd(_List_Nil, <lastItem>);`
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          END,
+          ts.createAssignment(
+            ts.createPropertyAccess(END, "b"),
+            createNewListOperationValue(functionsToInsert)(ts.createIdentifier(EMPTY_LIST), lastItem)
+          )
+        )
+      )
+    ];
+  }
+
+  const $newEnd = ts.createIdentifier("$newEnd");
+
+  const newValue : ts.Expression = otherItems.reduce(createNewListOperationValue(functionsToInsert), $newEnd);
+
+  return [
+    // `var $newEnd = _List_Cons(<lastItem>, _List_Nil);` or `var $newEnd = _Utils_copyListAndGetEnd(_List_Nil, <lastItem>);`
+    ts.createVariableStatement(
+      undefined,
+      [ts.createVariableDeclaration(
+        $newEnd,
+        undefined,
+        createNewListOperationValue(functionsToInsert)(ts.createIdentifier(EMPTY_LIST), lastItem),
+      )]
+    ),
+    // `$end.b = <newValue>`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        ts.createPropertyAccess(END,"b"),
+        newValue
+      )
+    ),
+    // `$end = $newEnd;`
+    ts.createExpressionStatement(
+      ts.createBinary(
+        END,
+        ts.SyntaxKind.EqualsToken,
+        $newEnd
+      )
+    )
+  ];
+}
+
+function createNewListOperationValue(functionsToInsert : Set<string>) {
+  return (list : ts.Expression, { kind, expression } : ListOperation) : ts.Expression => {
+    switch (kind) {
+      case "cons": {
+        return consToList(expression, list);
+      }
+      case "append": {
+        return copyListAndGetEnd(functionsToInsert, expression, list);
+      }
+    }
+  }
 }
 
 type ArithmeticData = {
@@ -1582,7 +1637,7 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
         thirdArgExtract.left
         ? [ { kind: "append", expression: thirdArgExtract.left } ]
         : [];
-      left.unshift({ kind: "cons", expression: secondArg });
+      left.push({ kind: "cons", expression: secondArg });
       return {
         kind: RecursionTypeKind.ListOperationsRecursion,
         left: left,
@@ -1592,7 +1647,7 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
     }
 
     if (thirdArgExtract.kind === RecursionTypeKind.ListOperationsRecursion) {
-      thirdArgExtract.left.unshift({ kind: "cons", expression: secondArg });
+      thirdArgExtract.left.push({ kind: "cons", expression: secondArg });
       return thirdArgExtract;
     }
 
@@ -1658,7 +1713,7 @@ function extractRecursionKindFromUtilsAppendExpression(functionName : string, ex
   }
   else if (extract.kind === RecursionTypeKind.ListOperationsRecursion) {
     if (args.left) {
-      extract.left.unshift({kind: "append", expression: args.left});
+      extract.left.push({kind: "append", expression: args.left});
     } else if (args.right) {
       extract.right = combineExpressionsWithUtilsAp(args.right, extract.right);
     }
@@ -1855,18 +1910,23 @@ function createContinuation(label : string, parameterNames : Array<string>, newA
 }
 
 function copyListAndAddToEnd(functionsToInsert : Set<string>, expression : ts.Expression) : ts.Statement {
-  functionsToInsert.add(COPY_LIST_AND_GET_END);
   // $end = _Utils_copyListAndGetEnd($end, <expression>);
   return ts.createExpressionStatement(
     ts.createBinary(
       END,
       ts.SyntaxKind.EqualsToken,
-      ts.createCall(
-        ts.createIdentifier(COPY_LIST_AND_GET_END),
-        undefined,
-        [END, expression]
-      )
+      copyListAndGetEnd(functionsToInsert, expression, END)
     )
+  );
+}
+
+function copyListAndGetEnd(functionsToInsert : Set<string>, expression : ts.Expression, list : ts.Expression) : ts.Expression {
+  functionsToInsert.add(COPY_LIST_AND_GET_END);
+  // _Utils_copyListAndGetEnd(<list>, <expression>);
+  return ts.createCall(
+    ts.createIdentifier(COPY_LIST_AND_GET_END),
+    undefined,
+    [list, expression]
   );
 }
 
@@ -2044,26 +2104,14 @@ function paramReassignments(parameterNames : Array<string>, newArguments : Array
   ];
 }
 
-function addToEnd(element : ts.Expression) : ts.Statement {
-  // `$end = $end.b = _List_Cons(element, _List_Nil);`
-  return ts.createExpressionStatement(
-    ts.createAssignment(
-      END,
-      ts.createAssignment(
-        ts.createPropertyAccess(
-          END,
-          "b"
-        ),
-        ts.createCall(
-          ts.createIdentifier(LIST_CONS),
-          undefined,
-          [
-            element,
-            ts.createIdentifier(EMPTY_LIST)
-          ]
-        )
-      )
-    )
+function consToList(element : ts.Expression, list : ts.Expression) : ts.Expression {
+  return ts.createCall(
+    ts.createIdentifier(LIST_CONS),
+    undefined,
+    [
+      element,
+      list
+    ]
   );
 }
 

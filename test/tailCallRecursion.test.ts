@@ -1446,8 +1446,9 @@ test('should optimize a function that does cons on concat and recursion', () => 
           $end.b = y;
           return $start.b;
         } else {
-          $end = $end.b = _List_Cons(x, _List_Nil);
-          $end = _Utils_copyListAndGetEnd($end, thing);
+          var $newEnd = _Utils_copyListAndGetEnd(_List_Nil, thing);
+          $end.b = _List_Cons(x, $newEnd);
+          $end = $newEnd;
           n = n - 1;
           continue repeatSomething;
         }
@@ -1500,8 +1501,9 @@ test('should optimize a function that does concat on cons and recursion', () => 
           $end.b = x;
           return $start.b;
         } else {
-          $end = _Utils_copyListAndGetEnd($end, thing);
-          $end = $end.b = _List_Cons(x, _List_Nil);
+          var $newEnd = _List_Cons(x, _List_Nil);
+          $end.b = _Utils_copyListAndGetEnd($newEnd, thing);
+          $end = $newEnd;
           n = n - 1;
           continue repeatSomething;
         }
@@ -1735,10 +1737,9 @@ test("should introduce a while loop in functions that already have them if it's 
                       var _v10 = _v9.b;
                       var w = _v10.a;
                       var tl = _v10.b;
-                      $end = $end.b = _List_Cons(x, _List_Nil);
-                      $end = $end.b = _List_Cons(y, _List_Nil);
-                      $end = $end.b = _List_Cons(z, _List_Nil);
-                      $end = $end.b = _List_Cons(w, _List_Nil);
+                      var $newEnd = _List_Cons(w, _List_Nil);
+                      $end.b = _List_Cons(x, _List_Cons(y, _List_Cons(z, $newEnd)));
+                      $end = $newEnd;
                       var $temp$ctr = ctr + 1, $temp$n = n - 4, $temp$list = tl;
                       ctr = $temp$ctr;
                       n = $temp$n;
