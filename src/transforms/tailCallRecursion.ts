@@ -431,7 +431,7 @@ I don't think this is a high-priority and worth the effort, but I'll mention it 
 
 */
 
-type Context = any;
+type Context = ts.TransformationContext;
 
 const LIST_CONS = "_List_Cons";
 const LIST_FROM_ARRAY = "_List_fromArray";
@@ -1216,8 +1216,8 @@ function updateFunctionBody(functionsToInsert : Set<string>, recursionType : Fun
       return ts.updateIf(
         node,
         node.expression,
-        ts.visitNode(node.thenStatement, updateRecursiveCallVisitor, context),
-        ts.visitNode(node.elseStatement, updateRecursiveCallVisitor, context)
+        ts.visitNode(node.thenStatement, updateRecursiveCallVisitor),
+        ts.visitNode(node.elseStatement, updateRecursiveCallVisitor)
       )
     }
 
