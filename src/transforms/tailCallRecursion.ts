@@ -407,12 +407,6 @@ It absolutely should. The only thing to be wary of is the potential naming confl
 when optimizing a let function inside of a function that is also being optimized.
 
 
-## Avoid recomputing the extracts
-
-This is for the performance of the transformer. We compute "extracts" to figure out what kind of recursion this function
-uses, and when transforming the function's body we compute these again. We could store these extracts to avoid duplicate work.
-
-
 ## Support for recursions in lambda declarations
 
 When encountering code like this:
@@ -479,7 +473,17 @@ export const createTailCallRecursionTransformer = (forTests: boolean) => (contex
           const parameterNames : Array<string> = foundFunction.fn.parameters.map(param => {
             return ts.isIdentifier(param.name) ? param.name.text : '';
           });
-          const newBody : ts.Block = updateFunctionBody(functionsToInsert, functionAnalysis.recursionType, functionAnalysis.shouldAddWhileLoop, functionName, label, parameterNames, foundFunction.fn.body, context);
+          const newBody : ts.Block = updateFunctionBody(
+            functionAnalysis.extractCache,
+            functionsToInsert,
+            functionAnalysis.recursionType,
+            functionAnalysis.shouldAddWhileLoop,
+            functionName,
+            label,
+            parameterNames,
+            foundFunction.fn.body,
+            context
+          );
 
           const variableDeclaration : ts.VariableDeclaration = ts.getMutableClone(node);
           variableDeclaration.initializer = foundFunction.update(newBody);
@@ -714,10 +718,12 @@ type MultiplyRecursion =
 type FunctionAnalysis =
   {
     recursionType : FunctionRecursion | NotRecursiveFunction,
-    shouldAddWhileLoop : boolean
+    shouldAddWhileLoop : boolean,
+    extractCache : ExtractCache
   }
 
 function determineRecursionType(functionName : string, label : string, body : ts.Node) : FunctionAnalysis {
+  let extractCache : ExtractCache = new Map();
   let recursionType : FunctionRecursion | NotRecursiveFunction = { kind: FunctionRecursionKind.F_NotRecursive };
   let shouldAddWhileLoop : boolean = true;
   let inferredType : PossibleReturnType = null;
@@ -732,7 +738,8 @@ function determineRecursionType(functionName : string, label : string, body : ts
     }
 
     const node : ts.Expression = next.value;
-    const recursionForReturn : Recursion | NotRecursive = extractRecursionKindFromExpression(functionName, node);
+    const recursionForReturn : Recursion | NotRecursive = extractRecursionKindFromExpression(extractCache, functionName, node);
+    addToCache(extractCache, node, recursionForReturn);
 
     if (recursionForReturn.kind === RecursionTypeKind.NotRecursive) {
       const refinement = refineTypeForExpression(recursionType, node, inferredType);
@@ -744,7 +751,7 @@ function determineRecursionType(functionName : string, label : string, body : ts
     }
   }
 
-  return { recursionType, shouldAddWhileLoop };
+  return { recursionType, shouldAddWhileLoop, extractCache };
 }
 
 function hasRecursionTypeBeenDetermined(recursion : FunctionRecursion | NotRecursiveFunction) {
@@ -1197,7 +1204,7 @@ function constructorDeclarations(property : string) {
   ];
 }
 
-function updateFunctionBody(functionsToInsert : Set<string>, recursionType : FunctionRecursion, shouldAddWhileLoop : boolean, functionName : string, label : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+function updateFunctionBody(extractCache : ExtractCache, functionsToInsert : Set<string>, recursionType : FunctionRecursion, shouldAddWhileLoop : boolean, functionName : string, label : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
     const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
 
   function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
@@ -1224,7 +1231,7 @@ function updateFunctionBody(functionsToInsert : Set<string>, recursionType : Fun
     if (ts.isReturnStatement(node)
       && node.expression
     ) {
-      return updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, node.expression) || node;
+      return updateReturnStatement(extractCache, functionsToInsert, recursionType, functionName, label, parameterNames, node.expression) || node;
     }
 
     return node;
@@ -1302,6 +1309,7 @@ function returnStatementToBlock(expression : ts.Statement[] | ts.ReturnStatement
 }
 
 function updateReturnStatement(
+  extractCache : ExtractCache,
   functionsToInsert : Set<string>,
   recursionType : FunctionRecursion,
   functionName : string,
@@ -1310,8 +1318,8 @@ function updateReturnStatement(
   expression : ts.Expression
 ) : ts.Statement[] | ts.ReturnStatement | null {
   if (ts.isConditionalExpression(expression)) {
-    const maybeLeft = updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenTrue);
-    const maybeRight = updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenFalse);
+    const maybeLeft = updateReturnStatement(extractCache, functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenTrue);
+    const maybeRight = updateReturnStatement(extractCache, functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenFalse);
     if (maybeLeft === null && maybeRight === null) {
       return null;
     }
@@ -1326,10 +1334,13 @@ function updateReturnStatement(
   }
 
   if (ts.isParenthesizedExpression(expression)) {
-    return updateReturnStatement(functionsToInsert, recursionType, functionName, label, parameterNames, expression.expression);
+    return updateReturnStatement(extractCache, functionsToInsert, recursionType, functionName, label, parameterNames, expression.expression);
   }
 
-  const extract = extractRecursionKindFromExpression(functionName, expression);
+  const extract : Recursion | NotRecursive =
+    getCachedExtract(extractCache, expression)
+    || extractRecursionKindFromExpression(extractCache, functionName, expression);
+
   switch (recursionType.kind) {
     case FunctionRecursionKind.F_AddRecursion: {
       return updateReturnStatementForArithmeticOperation(
@@ -1400,6 +1411,7 @@ function updateReturnStatement(
     }
   }
 }
+
 
 function updateReturnStatementForListRecursion(recursion : ListRecursion, functionsToInsert : Set<string>, extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
   if (extract.kind === RecursionTypeKind.PlainRecursion) {
@@ -1771,23 +1783,23 @@ function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType 
   }
 }
 
-function extractRecursionKindFromExpression(functionName : string, node : ts.Expression) : Recursion | NotRecursive {
+function extractRecursionKindFromExpression(extractCache : ExtractCache, functionName : string, node : ts.Expression) : Recursion | NotRecursive {
   if (ts.isParenthesizedExpression(node)) {
-    return extractRecursionKindFromExpression(functionName, node.expression);
+    return extractRecursionKindFromExpression(extractCache, functionName, node.expression);
   }
 
   if (ts.isCallExpression(node)) {
-    return extractRecursionKindFromCallExpression(functionName, node);
+    return extractRecursionKindFromCallExpression(extractCache, functionName, node);
   }
 
   if (ts.isBinaryExpression(node) && node.operatorToken) {
-    return extractRecursionKindFromBinaryExpression(functionName, node);
+    return extractRecursionKindFromBinaryExpression(extractCache, functionName, node);
   }
 
   return { kind: RecursionTypeKind.NotRecursive };
 }
 
-function extractRecursionKindFromCallExpression(functionName : string, node : ts.CallExpression) : Recursion | NotRecursive {
+function extractRecursionKindFromCallExpression(extractCache : ExtractCache, functionName : string, node : ts.CallExpression) : Recursion | NotRecursive {
   if (!ts.isIdentifier(node.expression)) {
     return { kind: RecursionTypeKind.NotRecursive };
   }
@@ -1805,10 +1817,10 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
   if (node.expression.text === UTILS_AP) {
     let recursion = null;
     if (ts.isCallExpression(secondArg)) {
-      recursion = extractRecursionKindFromUtilsAppendExpression(functionName, secondArg, {left: firstArg});
+      recursion = extractRecursionKindFromUtilsAppendExpression(extractCache, functionName, secondArg, {left: firstArg});
     }
     if (!recursion && ts.isCallExpression(firstArg)) {
-      recursion = extractRecursionKindFromUtilsAppendExpression(functionName, firstArg, {right: secondArg});
+      recursion = extractRecursionKindFromUtilsAppendExpression(extractCache, functionName, firstArg, {right: secondArg});
     }
     return recursion || { kind: RecursionTypeKind.NotRecursive };
   }
@@ -1830,7 +1842,7 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
   // Elm: Is x :: <recursive call>
   // JS: Is A2($elm$core$List$cons, x, <recursive call>)
   if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
-    const thirdArgExtract = extractRecursionKindFromExpression(functionName, thirdArg);
+    const thirdArgExtract = extractRecursionKindFromExpression(extractCache, functionName, thirdArg);
     if (thirdArgExtract.kind === RecursionTypeKind.PlainRecursion) {
       return {
         kind: RecursionTypeKind.ListOperationsRecursion,
@@ -1869,7 +1881,7 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
     let extract : Recursion | NotRecursive = { kind: RecursionTypeKind.NotRecursive };
 
     for (let i = 1; extract.kind === RecursionTypeKind.NotRecursive && i < node.arguments.length; i++) {
-      const argExtract = extractRecursionKindFromExpression(functionName, node.arguments[i]);
+      const argExtract = extractRecursionKindFromExpression(extractCache, functionName, node.arguments[i]);
       // TODO Support nested data construction
       if (argExtract.kind === RecursionTypeKind.PlainRecursion) {
         const argumentsWithHole : ts.Expression[] = [...node.arguments];
@@ -1896,8 +1908,8 @@ function extractRecursionKindFromCallExpression(functionName : string, node : ts
   return { kind: RecursionTypeKind.NotRecursive };
 }
 
-function extractRecursionKindFromUtilsAppendExpression(functionName : string, expression : ts.Expression, args: { left ?: ts.Expression, right ?: ts.Expression }) : Recursion | null {
-  const extract = extractRecursionKindFromExpression(functionName, expression);
+function extractRecursionKindFromUtilsAppendExpression(extractCache : ExtractCache, functionName : string, expression : ts.Expression, args: { left ?: ts.Expression, right ?: ts.Expression }) : Recursion | null {
+  const extract = extractRecursionKindFromExpression(extractCache, functionName, expression);
   if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return {
       kind: RecursionTypeKind.ConcatRecursion,
@@ -1939,23 +1951,23 @@ function isDataConstructor(functionName : string) : boolean {
   return !!last && last[0] === last[0].toUpperCase();
 }
 
-function extractRecursionKindFromBinaryExpression(functionName : string, node : ts.BinaryExpression) : Recursion | NotRecursive {
+function extractRecursionKindFromBinaryExpression(extractCache : ExtractCache, functionName : string, node : ts.BinaryExpression) : Recursion | NotRecursive {
   if (node.operatorToken.kind === ts.SyntaxKind.BarBarToken || node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
-    return extractRecursionKindFromBooleanExpression(functionName, node);
+    return extractRecursionKindFromBooleanExpression(extractCache, functionName, node);
   }
 
   if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
-    const extract = extractRecursionKindFromAdditionExpression(functionName, node.right, node.left, false)
+    const extract = extractRecursionKindFromAdditionExpression(extractCache, functionName, node.right, node.left, false)
     if (extract.kind === RecursionTypeKind.NotRecursive) {
-      return extractRecursionKindFromAdditionExpression(functionName, node.left, node.right, true);
+      return extractRecursionKindFromAdditionExpression(extractCache, functionName, node.left, node.right, true);
     }
     return extract;
   }
 
   if (node.operatorToken.kind === ts.SyntaxKind.AsteriskToken) {
-    const extract = extractRecursionKindFromMultiplicationExpression(functionName, node.right, node.left)
+    const extract = extractRecursionKindFromMultiplicationExpression(extractCache, functionName, node.right, node.left)
     if (extract.kind === RecursionTypeKind.NotRecursive) {
-      return extractRecursionKindFromMultiplicationExpression(functionName, node.left, node.right);
+      return extractRecursionKindFromMultiplicationExpression(extractCache, functionName, node.left, node.right);
     }
     return extract;
   }
@@ -1963,8 +1975,8 @@ function extractRecursionKindFromBinaryExpression(functionName : string, node : 
   return { kind: RecursionTypeKind.NotRecursive };
 }
 
-function extractRecursionKindFromBooleanExpression(functionName : string, node : ts.BinaryExpression) : Recursion | NotRecursive {
-  const extract = extractRecursionKindFromExpression(functionName, node.right);
+function extractRecursionKindFromBooleanExpression(extractCache : ExtractCache, functionName : string, node : ts.BinaryExpression) : Recursion | NotRecursive {
+  const extract = extractRecursionKindFromExpression(extractCache, functionName, node.right);
 
   if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return {
@@ -1984,8 +1996,8 @@ function extractRecursionKindFromBooleanExpression(functionName : string, node :
   return { kind: RecursionTypeKind.NotRecursive };
 }
 
-function extractRecursionKindFromAdditionExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression, isLeft : boolean) : Recursion | NotRecursive {
-  const extract = extractRecursionKindFromExpression(functionName, expression);
+function extractRecursionKindFromAdditionExpression(extractCache : ExtractCache, functionName : string, expression : ts.Expression, otherOperand : ts.Expression, isLeft : boolean) : Recursion | NotRecursive {
+  const extract = extractRecursionKindFromExpression(extractCache, functionName, expression);
 
   if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return {
@@ -2088,8 +2100,8 @@ function isThisAStringOrList(node : ts.Expression) : "strings" | "lists" | null 
   return null;
 }
 
-function extractRecursionKindFromMultiplicationExpression(functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion | NotRecursive {
-  const extract = extractRecursionKindFromExpression(functionName, expression);
+function extractRecursionKindFromMultiplicationExpression(extractCache : ExtractCache, functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion | NotRecursive {
+  const extract = extractRecursionKindFromExpression(extractCache, functionName, expression);
 
   if (extract.kind === RecursionTypeKind.PlainRecursion) {
     return {
@@ -2355,6 +2367,26 @@ function assignToDynamicDataProperty(expression : ts.Expression) : ts.Statement 
   );
 }
 
+
+/*******************************************
+ * Cache *
+ *******************************************/
+
+
+type ExtractCache = Map<String, Recursion | NotRecursive>;
+
+function addToCache(extractCache : ExtractCache, expression : ts.Expression, recursion : Recursion | NotRecursive) : Recursion | NotRecursive {
+    extractCache.set(nodeKey(expression), recursion);
+    return recursion;
+}
+
+function getCachedExtract(extractCache : Map<String, Recursion | NotRecursive>, expression : ts.Expression) : Recursion | NotRecursive | null {
+    return extractCache.get(nodeKey(expression)) || null;
+}
+
+function nodeKey(expression : ts.Expression) : string {
+    return expression.pos + ":" + expression.end;
+}
 
 /*******************************************
  * Adding new functions to the source file *
