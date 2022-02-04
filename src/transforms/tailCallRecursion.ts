@@ -485,9 +485,12 @@ export const createTailCallRecursionTransformer = (forTests: boolean) => (contex
             context
           );
 
-          const variableDeclaration : ts.VariableDeclaration = ts.getMutableClone(node);
-          variableDeclaration.initializer = foundFunction.update(newBody);
-          return variableDeclaration;
+          return ts.updateVariableDeclaration(
+              node,
+              node.name,
+              node.type,
+              foundFunction.update(newBody)
+          );
       }
       return ts.visitEachChild(node, visitor, context);
     };
@@ -518,9 +521,12 @@ function findFunction(node : ts.Node) {
           body
         );
 
-        const functionCall = ts.getMutableClone(node);
-        functionCall.arguments = ts.createNodeArray([newFn]);
-        return functionCall;
+        return ts.updateCall(
+            node,
+            node.expression,
+            node.typeArguments,
+            ts.createNodeArray([newFn])
+        );
       }
     }
   }
