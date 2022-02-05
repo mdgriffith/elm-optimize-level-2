@@ -40,7 +40,18 @@ export const transform = async (
   verbose: boolean,
   transforms: Transforms
 ): Promise<string> => {
-  let source = ts.createSourceFile('elm.js', jsSource, ts.ScriptTarget.ES2018);
+  /* First, remove comments from source.
+
+  We've encountered a bug when running some of the transforms (specifically the
+  record-update transform when the -O3 flag is enabled) where comments from the
+  source file appear interspersed throughout the transformed file. In some cases
+  this will result in runtime exceptions.
+ */
+  const sourceWithComments = ts.createSourceFile('n/a', jsSource, ts.ScriptTarget.ES2018);
+  const noCommentsPrinter = ts.createPrinter({ removeComments: true });
+  const jsSourceWithoutComments = noCommentsPrinter.printFile(sourceWithComments);
+
+  let source = ts.createSourceFile('elm.js', jsSourceWithoutComments, ts.ScriptTarget.ES2018);
 
   let parsedVariants = primitives;
   if (elmfile && transforms.variantShapes) {
