@@ -186,7 +186,7 @@ export const run = async function (
 //         },
     });
 
-    const transformed = await Transform.transform(
+    const transformed = Transform.transform(
       instance.dir,
       source,
       path.join(instance.dir, instance.elmFile),
@@ -358,7 +358,7 @@ export const runWithBreakdown = async function (
         , gzip: options.gzip
         }
     )
-    const transformed = await Transform.transform(
+    const transformed = Transform.transform(
       instance.dir,
       source,
       path.join(instance.dir, instance.elmFile),
@@ -402,7 +402,7 @@ export const runWithBreakdown = async function (
 
     let steps = breakdown(options.transforms);
     for (let i in steps) {
-      const intermediate = await Transform.transform(
+      const intermediate = Transform.transform(
         instance.dir,
         source,
         path.join(instance.dir, instance.elmFile),
@@ -469,7 +469,7 @@ export const runWithKnockout = async function (
 
     fs.writeFileSync(path.join(instance.dir, 'output', 'elm.opt.js'), source);
 
-    const transformed = await Transform.transform(
+    const transformed = Transform.transform(
       instance.dir,
       source,
       path.join(instance.dir, instance.elmFile),
@@ -518,7 +518,7 @@ export const runWithKnockout = async function (
 
     let steps = knockout(options.transforms);
     for (let i in steps) {
-      const intermediate = await Transform.transform(
+      const intermediate = Transform.transform(
         instance.dir,
         source,
         path.join(instance.dir, instance.elmFile),
