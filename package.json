@@ -18,12 +18,13 @@
     "node": ">=12"
   },
   "bin": {
-    "elm-optimize-level-2": "./bin/elm-optimize-level-2.js"
+    "elm-optimize-level-2": "./bin/elm-optimize-level-2"
   },
   "scripts": {
     "test": "jest",
     "help": "ts-node -T src/index.ts --help",
-    "prepare": "tsc -p tsconfig.json && npm run copy-replacements",
+    "prepare": "tsc --project tsconfig.json && npm run copy-replacements",
+    "build": "tsc --project tsconfig.json && npm run copy-replacements",
     "lvl-2": "ts-node -T src/index.ts",
     "run": "ts-node -T src/index.ts testcases/core/Main.elm",
     "run-benchmarks": "ts-node -T src/benchmark/run.ts",
