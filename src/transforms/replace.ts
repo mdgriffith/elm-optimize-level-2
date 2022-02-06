@@ -14,12 +14,14 @@ export const replace = (
                 const key = name.text as keyof typeof replacements;
                 return ast(replacements[key]);
               }
+              return node;
             } else if (ts.isFunctionDeclaration(node)) {
               const name = node.name;
               if (name && isIdentifier(name) && replacements.hasOwnProperty(name.text)) {
                 const key = name.text as keyof typeof replacements;
                 return astNodes(replacements[key]);
               }
+              return node;
             }
             return ts.visitEachChild(node, visitor, context);
         };
