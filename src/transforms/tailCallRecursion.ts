@@ -1,0 +1,2437 @@
+import ts from 'typescript';
+import { ast } from './utils/create';
+import { determineType, PossibleReturnType } from './utils/determineType';
+
+/*
+
+Applies "Tail Recursion Modulo Cons" (TMRC) when possible, and simple TCR where the compiler didn't.
+
+
+# TCR improvements over the compiler output
+
+## TCR failures because of pipelines
+
+This function gets tail-call optimized.
+
+    tco : (a -> b) -> List a -> List b -> List b
+    tco mapper list acc =
+        case list of
+            [] ->
+                acc
+
+            x :: xs ->
+                tco mapper xs (mapper x :: acc)
+
+but this version doesn't (because of the additional `<|`):
+
+    nonTco : (a -> b) -> List a -> List b -> List b
+    nonTco mapper list acc =
+        case list of
+            [] ->
+                acc
+
+            x :: xs ->
+                nonTco mapper xs <| (mapper x :: acc)
+
+
+## Recursion inside a boolean expression
+
+This function gets tail-call optimized.
+
+    naiveAll : (a -> Bool) -> List a -> Bool
+    naiveAll isOkay list =
+        case list of
+            [] ->
+                True
+
+            x :: xs ->
+                isOkay x && naiveAll isOkay xs
+
+just like if it was written as
+
+    naiveAll : (a -> Bool) -> List a -> Bool
+    naiveAll isOkay list =
+        case list of
+            [] ->
+                True
+
+            x :: xs ->
+                if isOkay x then
+                  True
+
+                else
+                  naiveAll isOkay xs
+
+
+## Tail Recursion Modulo Cons
+
+"Tail Recursion Modulo Cons" (TRMC) is an extension to TCR/TCO that supports making some operations on the result of
+recursive calls optimized into a while loop, which makes the recursive function stack-safe and more performant.
+
+made it into OCaml in 2022, and a paper describing the why and how
+is available here: https://arxiv.org/pdf/2102.09823.pdf.
+
+This implementation and the one in the OCaml were done independently (I hadn't read the paper when I did
+most of the implementation), but I think they're sufficiently close that the paper makes for a deeper explanation
+than what I will do here. There is a section further below going detailing the differences between the two implementations.
+
+The Elm compiler does tail-recursive call optimization, as explained in detail
+in https://jfmengels.net/tail-call-optimization/. This optimization is great because it both
+prevents stack-overflow errors and improves performance.
+
+Unfortunately, the knowledge of how to write stack-safe recursive functions does not come
+naturally to developers and requires first encountering runtime errors.
+
+TRMC helps with that by expanding the number of situations where functions benefit from tail-call
+optimization including almost textbook examples of recursion (that are generally not stack-safe), reducing the number of stack overflows that compiled Elm code will create.
+
+I have written an `elm-review` rule (https://package.elm-lang.org/packages/jfmengels/elm-review-performance/latest/NoUnoptimizedRecursion)
+to detect non-recursive functions, and a lot of the issues would be resolved by TMRC (and this transformer, re: boolean and pipe recursions).
+
+If we take the errors reported by the rule in [`elm-community/list-extra`](https://github.com/elm-community/list-extra/blob/8.3.0/src/List/Extra.elm)
+v8.3.0 (some functions were rewritten later based on the rule's reports), then we find that there are 13 functions
+that are not stack-safe. Of those and with this transformer, 1 would become optimized because of the support for
+pipeline operators, and 6 would become stack-safe without any rewrite.
+
+Functions that were written to be TCR-compliant often incur a code-complexity cost, and TRMC help reduce that.
+Here are functions rewritten assuming TRMC:
+- `elm/core`: https://github.com/jfmengels/core/compare/2fa34772a2575d036c0871b4390379741e6f5f91...new-tail-recursion?diff=split
+- `elm-community/list-extra`: https://github.com/jfmengels/list-extra/compare/2e70e94278dd54e0d7f24bc6fdcbd5a2c6ff5c00..new-tail-recursion?diff=split
+
+
+## Supported kinds of recursion
+
+This implementation supports the following recursion constructs. Examples for how the code looks before and after
+transformation can be found in the tests.
+
+### Data construction
+
+```elm
+type List a
+  = Nil
+  | Cons a (List a)
+
+map : (a -> b) -> List a -> List b
+map fn list =
+  case list of
+    Nil ->
+      Nil
+
+    Cons x rest ->
+      Cons (fn x) (map fn rest)
+```
+
+
+### Nested data construction (NOTE: not implemented yet)
+
+Same as before, but for when data is wrapped in an arbitrary number of data wrappers (whose data structures is predictable).
+
+```elm
+type List a
+  = Nil
+  | Cons { data : a, list : List a }
+
+map : (a -> b) -> List a -> List b
+map fn list =
+  case list of
+    Nil ->
+      Nil
+
+    Cons x rest ->
+      Cons { data = fn x, list = map fn rest }
+```
+
+### List constructions
+
+Recursions like `x :: rec y`, `x ++ rec y` and `rec y ++ x` (or using `List.append`)  are optimized, as long as we
+can infer somewhere that the function returns lists (for concatenation).
+
+### Arithmetic operators
+
+Recursions like `x + rec y`, `rec y + x`, `rec y * x` and `x * rec y` are optimized, as long as they're not mixed.
+
+### String constructions
+
+Recursions like `x ++ rec y` and `rec y ++ x`are optimized, as long as we can infer somewhere
+that the function returns strings.
+
+
+### Note on determining which the recursion type
+
+Because `+` in the compiled code is used for both addition and string concatenation, and because `_Utils_ap` is the function
+used for both concatenating strings and concatenating lists, we unfortunately need to figure out the type of the function
+to choose the right one.
+
+When strings are appended without literals, `_Utils_ap` is used (which is also used for list concatenation)
+- `foo ++ "bar"` => `foo + 'bar'`
+- `foo ++ bar ++ "bar"` => `foo + (bar + 'bar')`
+- `(foo ++ bar) ++ "bar"` => `_Utils_ap(foo, bar) + 'bar'`
+
+If we see a `+` operation, we can look at the operands. If there is a string, it's a string append, and otherwise it's a number sum.
+
+If we see a `_Utils_ap`
+  - If there was a `+` somewhere else (in a return statement), then we can determine it's a string concatenation
+  - Otherwise we don't know and we don't do anything
+
+We could try and do more inference but we don't want to reimplement a type checker here. Also, we could potentially
+inspect the Elm code or the elmi/elmo files inside `elm-stuff`, but these would not work (as well) for let functions,
+and would not always be available to this `elm-optimize-level-2`.
+
+
+## How does this transformer work?
+
+On a high level, this transformer analyzes functions to find if they're recursive and optimizable.
+
+It does one visit of the AST to analyze the `return` expressions of functions to try and find recursive calls,
+allowing it to determine what kind of optimization strategy to adopt.
+
+It then does a second pass to alter the function. It rewrites the body of the function to use iteration (using a loop)
+and changes the `return` statements to `continue` statements with some additional variable manipulations.
+
+Let's go into the details.
+
+### Analyzing return statements
+
+To know whether a function is recursive, we need to look at the return statements to find "local recursion patterns".
+
+If we have a function named `rec`, then a call like `rec y` is a "plain" recursive call.
+The analysis tries to find additional patterns that we know are potentially optimizable (the examples are Elm code):
+- Boolean recursion: `fn x || rec y` or `fn x && rec y`
+- Cons recursion: `x :: rec y`
+- Addition recursion: `x + rec y` (can be used for both numbers and strings)
+- Multiplication recursion: `x * rec y
+- Concatenation recursion: `x ++ rec y` or `rec y ++ x` using the JS `_Utils_ap` function (can be used for both strings and lists)
+- Data construction recursion: `Cons x (rec y`
+
+### Combining local recursion patterns to find the function recursion type
+
+The way we are going to update the `return` statements depends mostly on the local recursion patterns, but the way we change the "outer body" of the function
+depends on the combination of those, which we are going to distill into a "function recursion type".
+
+For instance, if we have the following code:
+```elm
+sum : List number -> number
+sum list =
+    case list of
+        [] ->
+            0
+
+        x :: xs ->
+            x + sum xs
+```
+```js
+var sum = function (list) {
+  if (!list.b) {
+    return 0;
+  } else {
+    var x = list.a;
+    var xs = list.b;
+    return x + sum(xs);
+  }
+};
+```
+then we will transform it to the following:
+```js
+var sum = function (list) {
+  var $result = 0; // Change dependent on the function recursion type
+  sum: while (true) {
+    if (!list.b) {
+      // Change dependent on the local recursion pattern
+      // (in practice we remove the + 0)
+      return $result + 0;
+    } else {
+      var x = list.a;
+      var xs = list.b;
+      // Change dependent on the local recursion pattern
+      $result += x;
+      list = xs;
+      continue sum;
+    }
+  }
+};
+```
+
+While plain recursion and boolean recursion calls are always optimizable, not all of the others are without some more information or intersecting information.
+
+For instance, when we find concatenation recursion calls (like `x ++ rec (n - 1)`), we don't have enough information to optimize this.
+For this optimization in particular, we need to create an initial value to which to append all the `return` expression, but since we don't
+know if we're dealing with strings (initial value `""`) or lists (initial value `[]`).
+
+This is also the case for the addition recursion, where we don't know if the JS `+` is for adding numbers or strings.
+Though in that case, we can rely on the fact that the compiler (at least until 0.19.1) won't use `+` unless there is a literal string somewhere,
+so we can assume we're adding numbers unless we found such a literal string.
+
+So in essence, we need to combine the different local recursion patterns to find which kind of function recursion optimization we're going to apply.
+For instance, if in one branch we see an addition recursion call, and in another one we see concatenation recursion, we can infer that we're dealing with strings,
+that the function type should be string concatenation recursion and that the initial value for the accumulator should be `""` (instead of 0 or `[]`).
+
+We will also use trivial type inference on (recursive and non-recursive) return statements to figure out the missing bits. If we see a `return "";` somewhere,
+we know by the fact that all return statements return the same type, that we're dealing with strings and not numbers or lists, which can help determine whether
+we need to do list concatenation recursion or string concatenation recursion.
+
+Once we have figured the exact function recursion type, we can stop the analysis and start transforming the body and the return statements.
+
+### Transforming the body
+
+Once we detect recursion, we know that we will need to have a while loop. Because the Elm compiler already introduces while loops for plain recursive calls
+(modulo some issues with piping), we will just need to make sure we don't introduce a second one.
+
+Depending on the function recursion type, we also need to add accumulator variables to help us accumulate the results of the recursive calls.
+For example and as shown in the previous `sum` example, the initial value will be an accumulator holding the value `0`, and for multiplication it will be `1`.
+
+For strings, dependent on whether we find `foo ++ rec (n - 1)` and/or `rec (n - 1) ++ foo`
+(both can be found in the same function, and we can also find `foo ++ rec (n - 1) ++ bar`),
+we will add a variable `$left` and/or `$right` containing `""`.
+
+
+### Transforming the return statements
+
+Already present `continue` statements that are introduced by the Elm compiler aren't touched and don't need to be altered.
+
+The return statement updates will highly depend on the function recursion type.
+
+For plain recursion functions, we leave the non-recursive calls untouched and only touch the (plain) recursive calls.
+
+For boolean recursion functions/calls, we do the same, except that we transform `fn x || rec (n - 1)` into `if (fn(x)) { return true; } else { <...> ; continue; }`.
+
+For the other recursive function types, we will basically do the same operations for recursive calls, along with a few operations to mutate the accumulator.
+For instance, when encountering `return x + rec y`, we will transform that to the following:
+
+```js
+$left += x; // Updates the accumulator
+n = n - 1; // Changes the arguments to the function, like for plain recursion
+continue rec; // Re-start the loop
+```
+
+If we have a non-recursive call, then we need to update the return value to include the accumulator.
+For an addition recursion, `return x` would be transformed to `return $left + x`.
+
+
+## Differences with the OCaml implementation
+
+This idea and implementation were not made based on the paper, but we came to most of the same conclusions,
+but a few differences remain.
+
+1) The OCaml implementation chose to split TMR functions into a base version and a regular "DPS" version,
+to avoid the extra cost of an additional function call. Our implementation only updates the body to add the
+necessary accumulators to avoid the extra cost of an additional function call. From my benchmarking, it's not
+clear which version is faster, but our version makes for a smaller bundle size.
+
+2) The OCaml implementors chose to make the optimization opt-in. While I do understand adding annotations
+to get compiler errors when an optimization doesn't kick in, I don't understand the reasoning for not applying it
+by default, except for the fact that in their case the optimization increases the output code size by duplicating
+the function.
+
+3) The OCaml implementation chose to only support data construction, whereas we also support arithmetic operators,
+stirng concatenation and list concatenation.
+
+4) The OCaml implementation chose to only support data construction. Since we can analyze all the functions and determine
+whether they simply store an argument in an object or do something else with it, we can support more functions that are
+not necessarily data constructors. In the following example a recursive call in position `x` could be optimized, but
+not one in position `y`: `fn x y = { x = x, y = y + 1 }`.
+
+5) Because OCaml is an effectful language, the order of operations matters and the resulting code reflects that.
+Since Elm isn't an effectful language, I took the liberty of re-ordering the computations to make for shorter output code.
+
+
+# Remaining work
+
+The current work is ready to be tested and benchmarked, but there is more work to be done that would be valuable.
+
+
+## Support tail-recursion that is nested in tail-preserving contexts like
+
+The following code could be optimized but isn't.
+
+  map fn list =
+    case list of
+      [] -> []
+      x :: xs ->
+        f x ::
+          (if condition then
+            map fn xs
+          else
+            map fn (y :: xs)
+          )
+
+
+## Support using both addition and multiplication and other operations, but only choose one (the most common?)
+
+Currently, our implementation doesn't apply any optimizations if it sees both addition and multiplication recursions.
+We could do better by supporting at least one of them, leaving the other as a regular call.
+
+One issue with this is that we would need to rely on heuristics to choose which operation to optimize for (the ones that
+we found the most) but that could be the wrong one to optimize for. In the compiler implementation and with new syntax,
+annotations could possibly be added by users to choose which operation to optimize.
+
+In any case, since it reduces the chance for a stack overflow and likely improves performance, I think it would still be
+worth it even if it's imperfect.
+
+
+## Special casing list literals
+
+When concatenating lists, we make a copy of the first list. When encountering list literals which are
+wrapped in a `_List_fromArray`, we could instead use a copy of the `_List_fromArray` function that makes the list not
+end with `_List_Nil` but with the list to append to, with a function like this:
+
+    function _List_fromArray_andAppend(arr, end) {
+      var out = end;
+      for (var i = arr.length; i--; )
+      {
+        out = _List_Cons(arr[i], out);
+      }
+      return out;
+    }
+
+
+## Figure out whether it would be interesting to check whether $tail is empty
+
+When we find appends to the recursion result, we prepend it to `$tail`, which means creating a copy.
+When this is the first append though (`$tail` is empty`), then we are doing an unnecessary copy of the list,
+which the unoptimized version would not do.
+
+A potential fix for that would be to check whether `$tail` is empty (or null, whatever is quicker) and if it is
+skip the copy and just make `$tail` point to the list. The cost for this would be an extra check every time we wish
+to add to the tail, and that might hurt performance.
+
+
+## Support nested data constructors
+
+The OCaml implementation did this but this implementation hasn't yet.
+
+
+## Support let declarations
+
+At the moment, this implementation only targets top-level functions, and not let functions.
+It absolutely should. The only thing to be wary of is the potential naming conflicts for the variables that we introduce
+when optimizing a let function inside of a function that is also being optimized.
+
+
+## Support for recursions in lambda declarations
+
+When encountering code like this:
+
+    naiveMap : (a -> b) -> List a -> List b
+    naiveMap =
+        \fn list ->
+            case list of
+                [] ->
+                    []
+                x :: xs ->
+                    fn x :: naiveMap fn xs
+
+the compiler outputs something pretty complex with multiple declarations and re-assignements.
+I don't think this is a high-priority and worth the effort, but I'll mention it anyway.
+
+*/
+
+type Context = ts.TransformationContext;
+
+const LIST_CONS = "_List_Cons";
+const LIST_FROM_ARRAY = "_List_fromArray";
+const EMPTY_LIST = "_List_Nil";
+const UTILS_AP = "_Utils_ap";
+const COPY_LIST_AND_GET_END = "_Utils_copyListAndGetEnd";
+const LIST_APPEND = "$elm$core$List$append";
+
+const newFunctionDefinitions: {[key: string]: string} = {
+  [COPY_LIST_AND_GET_END]:
+    `function _Utils_copyListAndGetEnd(root, xs) {
+      for (; xs.b; xs = xs.b) {
+        root = root.b = _List_Cons(xs.a, _List_Nil);
+      }
+      return root;
+    }`,
+};
+
+export const createTailCallRecursionTransformer = (forTests: boolean) => (context : Context) => {
+  return (sourceFile : ts.SourceFile) => {
+    const functionsToInsert: Set<string> = new Set();
+
+    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      // Is `var x = FX(function(...) { ... })` or `var x = function(...) { ... }`
+      if (ts.isVariableDeclaration(node)
+        && ts.isIdentifier(node.name)
+        && node.initializer
+      ) {
+          const foundFunction = findFunction(node.initializer);
+          if (!foundFunction) {
+            return ts.visitEachChild(node, visitor, context);
+          }
+
+          const functionName = node.name.text;
+          const labelSplits = functionName.split("$");
+          const label = labelSplits[labelSplits.length - 1] || functionName;
+
+          const functionAnalysis : FunctionAnalysis = determineRecursionType(functionName, label, foundFunction.fn.body);
+          if (functionAnalysis.recursionType.kind === FunctionRecursionKind.F_NotRecursive
+            || (functionAnalysis.recursionType.kind === FunctionRecursionKind.F_ConcatRecursion && !functionAnalysis.recursionType.hasPlainRecursionCalls)
+          ) {
+            return node;
+          }
+
+          const parameterNames : Array<string> = foundFunction.fn.parameters.map(param => {
+            return ts.isIdentifier(param.name) ? param.name.text : '';
+          });
+          const newBody : ts.Block = updateFunctionBody(
+            functionAnalysis.extractCache,
+            functionsToInsert,
+            functionAnalysis.recursionType,
+            functionAnalysis.shouldAddWhileLoop,
+            functionName,
+            label,
+            parameterNames,
+            foundFunction.fn.body,
+            context
+          );
+
+          return ts.updateVariableDeclaration(
+              node,
+              node.name,
+              node.type,
+              foundFunction.update(newBody)
+          );
+      }
+      return ts.visitEachChild(node, visitor, context);
+    };
+
+    return introduceFunctions(functionsToInsert, ts.visitNode(sourceFile, visitor), forTests, context);
+  };
+};
+
+function findFunction(node : ts.Node) {
+  // Multiple-argument function wrapped in FX function
+  if (ts.isCallExpression(node)) {
+    var fn = extractFCall(node);
+    if (!fn) {
+      return null;
+    }
+    const {name, parameters, modifiers} = fn;
+
+    return {
+      fn: fn,
+      update: (body : ts.Block) => {
+        const newFn = ts.createFunctionExpression(
+          modifiers,
+          undefined,
+          name,
+          undefined,
+          parameters,
+          undefined,
+          body
+        );
+
+        return ts.updateCall(
+            node,
+            node.expression,
+            node.typeArguments,
+            ts.createNodeArray([newFn])
+        );
+      }
+    }
+  }
+
+  // Single-argument function not wrapped in FX
+  if (ts.isFunctionExpression(node)) {
+    return {
+      fn: node,
+      update: (body : ts.Block) => {
+        return ts.createFunctionExpression(
+          node.modifiers,
+          undefined,
+          node.name,
+          undefined,
+          node.parameters,
+          undefined,
+          body
+        );
+      }
+    }
+  }
+
+  return null;
+}
+
+function extractFCall(node: ts.CallExpression): ts.FunctionExpression | null {
+  if (ts.isIdentifier(node.expression)
+    && node.expression.text.startsWith('F')
+    && node.arguments.length > 0
+  ) {
+    const fn = node.arguments[0];
+    if (ts.isFunctionExpression(fn)) {
+      return fn;
+    }
+
+    return null;
+  }
+
+  return null;
+}
+
+enum RecursionTypeKind {
+  NotRecursive,
+  PlainRecursion,
+  BooleanRecursion,
+  ListOperationsRecursion,
+  DataConstructionRecursion,
+  MultipleDataConstructionRecursion,
+  AddRecursion,
+  StringConcatRecursion,
+  ConcatRecursion,
+  MultiplyRecursion,
+};
+
+enum BooleanKind {
+  And,
+  Or,
+};
+
+enum FunctionRecursionKind {
+  F_NotRecursive,
+  F_PlainRecursion,
+  F_BooleanRecursion,
+  F_ListRecursion,
+  F_DataConstructionRecursion,
+  F_MultipleDataConstructionRecursion,
+  F_AddRecursion,
+  F_StringConcatRecursion,
+  F_ConcatRecursion,
+  F_MultiplyRecursion,
+};
+
+type FunctionRecursion
+  = { kind: FunctionRecursionKind.F_PlainRecursion }
+  | ListRecursion
+  | { kind: FunctionRecursionKind.F_BooleanRecursion }
+  | { kind: FunctionRecursionKind.F_DataConstructionRecursion, property: string }
+  | { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion }
+  | { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed : boolean, left: boolean, right: boolean }
+  | StringConcatRecursion
+  | UndeterminedConcatRecursion
+  | { kind: FunctionRecursionKind.F_MultiplyRecursion }
+
+type StringConcatRecursion =
+  {
+    kind: FunctionRecursionKind.F_StringConcatRecursion,
+    left: boolean,
+    right: boolean
+  }
+
+type UndeterminedConcatRecursion =
+  {
+    kind: FunctionRecursionKind.F_ConcatRecursion,
+    left: boolean,
+    right: boolean,
+    hasPlainRecursionCalls: boolean
+  }
+
+type ListRecursion =
+  {
+    kind: FunctionRecursionKind.F_ListRecursion,
+    left: boolean,
+    right: boolean
+  }
+
+type Recursion
+  = PlainRecursion
+  | ListOperationsRecursion
+  | BooleanRecursion
+  | DataConstructionRecursion
+  | MultipleDataConstructionRecursion
+  | AddRecursion
+  | MultiplyRecursion
+  | ConcatRecursion
+
+type NotRecursiveFunction =
+  {
+    kind: FunctionRecursionKind.F_NotRecursive
+  }
+
+type NotRecursive =
+  {
+    kind: RecursionTypeKind.NotRecursive
+  }
+
+type PlainRecursion =
+  {
+    kind: RecursionTypeKind.PlainRecursion,
+    arguments : Array<ts.Expression>
+  }
+
+type BooleanRecursion =
+  {
+    kind: RecursionTypeKind.BooleanRecursion,
+    expression: ts.Expression,
+    booleanKind: BooleanKind,
+    arguments : Array<ts.Expression>
+  }
+
+type DataConstructionRecursion =
+  {
+    kind: RecursionTypeKind.DataConstructionRecursion,
+    property: string,
+    expression : ts.Expression,
+    arguments : Array<ts.Expression>
+  }
+
+type MultipleDataConstructionRecursion =
+  {
+    kind: RecursionTypeKind.MultipleDataConstructionRecursion,
+    property: string,
+    expression : ts.Expression,
+    arguments : Array<ts.Expression>
+  }
+
+type AddRecursion =
+  {
+    kind: RecursionTypeKind.AddRecursion,
+    left : ts.Expression | null,
+    right : ts.Expression | null,
+    arguments : Array<ts.Expression>,
+    adds: "numbers" | "strings" | null
+  }
+
+type ConcatRecursion =
+  {
+    kind: RecursionTypeKind.ConcatRecursion,
+    left : ts.Expression | null,
+    right : ts.Expression | null,
+    arguments : Array<ts.Expression>,
+    concatenates: "strings" | "lists" | null
+  }
+
+type ListOperationsRecursion =
+  {
+    kind: RecursionTypeKind.ListOperationsRecursion,
+    left : ListOperation[],
+    right : ts.Expression | null,
+    arguments : Array<ts.Expression>
+  }
+
+type ListOperation =
+  {
+    kind : "cons" | "append",
+    expression : ts.Expression
+  }
+
+type MultiplyRecursion =
+  {
+    kind: RecursionTypeKind.MultiplyRecursion,
+    expression : ts.Expression,
+    arguments : Array<ts.Expression>
+  }
+
+type FunctionAnalysis =
+  {
+    recursionType : FunctionRecursion | NotRecursiveFunction,
+    shouldAddWhileLoop : boolean,
+    extractCache : ExtractCache
+  }
+
+function determineRecursionType(functionName : string, label : string, body : ts.Node) : FunctionAnalysis {
+  let extractCache : ExtractCache = new Map();
+  let recursionType : FunctionRecursion | NotRecursiveFunction = { kind: FunctionRecursionKind.F_NotRecursive };
+  let shouldAddWhileLoop : boolean = true;
+  let inferredType : PossibleReturnType = null;
+  const iter = findReturnStatements(label, body);
+
+  while (!hasRecursionTypeBeenDetermined(recursionType)) {
+    const next = iter.next();
+    if (next.done) { break; }
+    if (next.value === "has-while-loop") {
+      shouldAddWhileLoop = false;
+      continue;
+    }
+
+    const node : ts.Expression = next.value;
+    const recursionForReturn : Recursion | NotRecursive = extractRecursionKindFromExpression(extractCache, functionName, node);
+    addToCache(extractCache, node, recursionForReturn);
+
+    if (recursionForReturn.kind === RecursionTypeKind.NotRecursive) {
+      const refinement = refineTypeForExpression(recursionType, node, inferredType);
+      recursionType = refinement.recursionType;
+      inferredType = refinement.inferredType;
+    }
+    else {
+      recursionType = refineRecursionType(recursionType, inferredType, recursionForReturn);
+    }
+  }
+
+  return { recursionType, shouldAddWhileLoop, extractCache };
+}
+
+function hasRecursionTypeBeenDetermined(recursion : FunctionRecursion | NotRecursiveFunction) {
+  switch (recursion.kind) {
+    case FunctionRecursionKind.F_NotRecursive: return false;
+    case FunctionRecursionKind.F_PlainRecursion: return false;
+    case FunctionRecursionKind.F_BooleanRecursion: return true;
+    case FunctionRecursionKind.F_MultiplyRecursion: return true;
+    case FunctionRecursionKind.F_MultipleDataConstructionRecursion: return true;
+    case FunctionRecursionKind.F_DataConstructionRecursion: return false;
+    case FunctionRecursionKind.F_AddRecursion: return recursion.numbersConfirmed;
+    case FunctionRecursionKind.F_ConcatRecursion: return false;
+    case FunctionRecursionKind.F_ListRecursion: {
+      // We need to know for sure on which side there will be concatenation.
+      return recursion.left === true && recursion.right === true;
+    }
+    case FunctionRecursionKind.F_StringConcatRecursion:
+      // We need to know for sure on which side there will be concatenation.
+      return recursion.left === true && recursion.right === true;
+  }
+}
+
+function refineRecursionType(
+  recursionType : FunctionRecursion | NotRecursiveFunction,
+  inferredType : PossibleReturnType,
+  recursion : Recursion | NotRecursive
+) : FunctionRecursion | NotRecursiveFunction {
+  switch (recursionType.kind) {
+    case FunctionRecursionKind.F_BooleanRecursion:
+      return recursionType;
+
+    case FunctionRecursionKind.F_MultiplyRecursion:
+      return recursionType;
+
+    case FunctionRecursionKind.F_MultipleDataConstructionRecursion:
+      return recursionType;
+
+    case FunctionRecursionKind.F_NotRecursive:
+      return toFunctionRecursion(recursion, inferredType, false);
+
+    case FunctionRecursionKind.F_PlainRecursion:
+      return toFunctionRecursion(recursion, inferredType, true);
+
+    case FunctionRecursionKind.F_DataConstructionRecursion: {
+      if (recursion.kind === RecursionTypeKind.DataConstructionRecursion && recursion.property !== recursionType.property) {
+        return { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion };
+      }
+      return recursionType;
+    }
+
+    case FunctionRecursionKind.F_AddRecursion: {
+      switch (recursion.kind) {
+        case RecursionTypeKind.AddRecursion: {
+          if (recursion.adds === "strings" || inferredType === "strings" || inferredType === "strings-or-lists") {
+            return {
+              kind: FunctionRecursionKind.F_StringConcatRecursion,
+              left: recursionType.left || !!recursion.left,
+              right: recursionType.right || !!recursion.right
+            };
+          }
+          return {
+            kind: FunctionRecursionKind.F_AddRecursion,
+            numbersConfirmed: recursion.adds === "numbers" || inferredType === "numbers",
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right
+          };
+        }
+        case RecursionTypeKind.ConcatRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_StringConcatRecursion,
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right
+          };
+        }
+        default: {
+          return recursionType;
+        }
+      }
+    };
+
+    case FunctionRecursionKind.F_ListRecursion: {
+      switch (recursion.kind) {
+        case RecursionTypeKind.ConcatRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_ListRecursion,
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right
+          };
+        }
+        case RecursionTypeKind.ListOperationsRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_ListRecursion,
+            left: recursionType.left || recursion.left.length > 0,
+            right: recursionType.right || !!recursion.right
+          };
+        }
+        default: {
+          return recursionType;
+        }
+      }
+    }
+
+    case FunctionRecursionKind.F_StringConcatRecursion: {
+      switch (recursion.kind) {
+        case RecursionTypeKind.AddRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_StringConcatRecursion,
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right
+          };
+        }
+        case RecursionTypeKind.ConcatRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_StringConcatRecursion,
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right
+          };
+        }
+        default: {
+          return recursionType;
+        }
+      }
+    }
+
+    case FunctionRecursionKind.F_ConcatRecursion: {
+      switch (recursion.kind) {
+        case RecursionTypeKind.ConcatRecursion: {
+          if (recursion.concatenates === "strings") {
+            return {
+              kind: FunctionRecursionKind.F_StringConcatRecursion,
+              left: recursionType.left || !!recursion.left,
+              right: recursionType.right || !!recursion.right
+            };
+          }
+          if (recursion.concatenates === "lists") {
+            return {
+              kind: FunctionRecursionKind.F_ListRecursion,
+              left: recursionType.left || !!recursion.left,
+              right: recursionType.right || !!recursion.right
+            };
+          }
+          return {
+            kind: FunctionRecursionKind.F_ConcatRecursion,
+            left: recursionType.left || !!recursion.left,
+            right: recursionType.right || !!recursion.right,
+            hasPlainRecursionCalls: recursionType.hasPlainRecursionCalls
+          };
+        }
+        case RecursionTypeKind.ListOperationsRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_ListRecursion,
+            left: recursionType.left || recursion.left.length > 0,
+            right: recursionType.right || !!recursion.right
+          };
+        }
+        case RecursionTypeKind.PlainRecursion: {
+          return {
+            kind: FunctionRecursionKind.F_ConcatRecursion,
+            left: recursionType.left,
+            right: recursionType.right,
+            hasPlainRecursionCalls: true
+          };
+        }
+        default: {
+          return recursionType;
+        }
+      }
+    }
+  }
+}
+
+function refineTypeForExpression(
+  recursionType : FunctionRecursion | NotRecursiveFunction,
+  node : ts.Expression,
+  inferredType : PossibleReturnType
+) : { recursionType : FunctionRecursion | NotRecursiveFunction, inferredType : PossibleReturnType } {
+  switch (recursionType.kind) {
+    case FunctionRecursionKind.F_BooleanRecursion:
+    case FunctionRecursionKind.F_MultiplyRecursion:
+    case FunctionRecursionKind.F_MultipleDataConstructionRecursion:
+    case FunctionRecursionKind.F_ListRecursion:
+    case FunctionRecursionKind.F_DataConstructionRecursion:
+    case FunctionRecursionKind.F_StringConcatRecursion: {
+      return {recursionType, inferredType };
+    }
+
+    case FunctionRecursionKind.F_NotRecursive:
+    case FunctionRecursionKind.F_PlainRecursion: {
+      return {
+        recursionType,
+        inferredType: determineType(node, inferredType)
+      };
+    }
+
+    case FunctionRecursionKind.F_AddRecursion: {
+      inferredType = determineType(node, inferredType);
+      if (inferredType === "strings" || inferredType === "strings-or-lists") {
+        recursionType = {
+          kind: FunctionRecursionKind.F_StringConcatRecursion,
+          left: recursionType.left,
+          right: recursionType.right
+        };
+      }
+      else if (inferredType === "numbers") {
+        recursionType = {
+          kind: FunctionRecursionKind.F_AddRecursion,
+          numbersConfirmed: true,
+          left: recursionType.left,
+          right: recursionType.right
+        };
+      }
+      return { recursionType, inferredType };
+    }
+
+    case FunctionRecursionKind.F_ConcatRecursion: {
+      inferredType = determineType(node, inferredType);
+      if (inferredType === "strings" || inferredType === "numbers-or-strings") {
+        recursionType = {
+          kind: FunctionRecursionKind.F_StringConcatRecursion,
+          left: recursionType.left,
+          right: recursionType.right
+        };
+      }
+      else if (inferredType === "lists") {
+        recursionType = {
+          kind: FunctionRecursionKind.F_ListRecursion,
+          left: recursionType.left,
+          right: recursionType.right
+        };
+      }
+      return { recursionType, inferredType };
+    }
+  }
+}
+
+function* findReturnStatements(label : string, body : ts.Node) : Generator<ts.Expression | "has-while-loop", void, null> {
+  let nodesToVisit : Array<ts.Node> = [body];
+  let node : ts.Node | undefined;
+
+  loop: while (node = nodesToVisit.shift()) {
+    if (ts.isParenthesizedExpression(node)) {
+      nodesToVisit = [node.expression, ...nodesToVisit];
+      continue loop;
+    }
+
+    if (ts.isBlock(node)) {
+      nodesToVisit = [...node.statements, ...nodesToVisit];
+      continue loop;
+    }
+
+    if (ts.isLabeledStatement(node)) {
+      nodesToVisit.unshift(node.statement);
+      if (node.label.text === label) {
+        yield "has-while-loop";
+      }
+      continue loop;
+    }
+
+    if (ts.isWhileStatement(node)) {
+      nodesToVisit.unshift(node.statement);
+      continue loop;
+    }
+
+    if (ts.isIfStatement(node)) {
+      if (node.elseStatement) {
+        nodesToVisit.unshift(node.elseStatement);
+      }
+      nodesToVisit.unshift(node.thenStatement);
+      continue loop;
+    }
+
+    if (ts.isSwitchStatement(node)) {
+      nodesToVisit = [
+        ...node.caseBlock.clauses.flatMap(clause => [...clause.statements]),
+        ...nodesToVisit
+      ];
+      continue loop;
+    }
+
+    if (ts.isReturnStatement(node) && node.expression) {
+      if (ts.isConditionalExpression(node.expression)) {
+        nodesToVisit = [
+          ts.createReturn(node.expression.whenTrue),
+          ts.createReturn(node.expression.whenFalse),
+          ...nodesToVisit
+        ];
+        continue loop;
+      }
+
+      if (ts.isParenthesizedExpression(node.expression)) {
+        nodesToVisit.unshift(ts.createReturn(node.expression.expression));
+        continue loop;
+      }
+
+      yield node.expression;
+      continue loop;
+    }
+  }
+}
+
+const START = ts.createIdentifier("$start");
+const END = ts.createIdentifier("$end");
+const TAIL = ts.createIdentifier("$tail");
+const FIELD = ts.createIdentifier("$field");
+const RESULT = ts.createIdentifier("$result");
+const LEFT = ts.createIdentifier("$left");
+const RIGHT = ts.createIdentifier("$right");
+
+function consDeclarations(left : boolean, right : boolean) {
+  return [
+    ...(left ? consLeftDeclarations : []),
+    ...(right ? [consrightDeclaration] : [])
+  ];
+}
+
+const consLeftDeclarations =
+  [
+    // `var $start = _List_Cons(undefined, _List_Nil);`
+    ts.createVariableStatement(
+      undefined,
+      [ts.createVariableDeclaration(
+        START,
+        undefined,
+        consToList(
+          ts.createIdentifier("undefined"),
+          ts.createIdentifier(EMPTY_LIST)
+        )
+      )]
+    ),
+    // `var $end = $start;`
+    ts.createVariableStatement(
+      undefined,
+      [ ts.createVariableDeclaration(
+          END,
+          undefined,
+          START
+        )
+      ]
+    )
+  ];
+
+// `var $tail = _List_Nil;`
+const consrightDeclaration =
+  ts.createVariableStatement(
+    undefined,
+    [ts.createVariableDeclaration(
+      TAIL,
+      undefined,
+      ts.createIdentifier(EMPTY_LIST)
+    )]
+  );
+
+const multipleConstructorDeclarations =
+[
+  // `var $start = { a: null };`
+  ts.createVariableStatement(
+    undefined,
+    [ts.createVariableDeclaration(
+      START,
+      undefined,
+      ts.createObjectLiteral([
+        ts.createPropertyAssignment("a", ts.createNull())
+      ])
+    )]
+  ),
+  // `var $end = $start;`
+  ts.createVariableStatement(
+    undefined,
+    [ ts.createVariableDeclaration(
+        END,
+        undefined,
+        START
+      )
+    ]
+  ),
+  // `var $field = 'a';`
+  ts.createVariableStatement(
+    undefined,
+    [ ts.createVariableDeclaration(
+        FIELD,
+        undefined,
+        ts.createLiteral('a')
+      )
+    ]
+  )
+];
+
+// `var $result = <n>;`
+function resultDeclaration(n : number) {
+  return ts.createVariableStatement(
+      undefined,
+      [ts.createVariableDeclaration(
+        RESULT,
+        undefined,
+        ts.createLiteral(n)
+      )]
+    );
+}
+
+function stringConsDeclaration(left : boolean, right: boolean) {
+  let declarations = [];
+  if (left) {
+    declarations.push(
+      //`$left = ""`
+      ts.createVariableDeclaration(
+        LEFT,
+        undefined,
+        ts.createStringLiteral("")
+      )
+    );
+  }
+
+  if (right) {
+    declarations.push(
+      //`$right = ""`
+      ts.createVariableDeclaration(
+        RIGHT,
+        undefined,
+        ts.createStringLiteral("")
+      )
+    );
+  }
+
+  return ts.createVariableStatement(undefined, declarations);
+}
+
+function constructorDeclarations(property : string) {
+  return [
+    // `var $start = { <property> : null };`
+    ts.createVariableStatement(
+      undefined,
+      [ts.createVariableDeclaration(
+        START,
+        undefined,
+        ts.createObjectLiteral([
+          ts.createPropertyAssignment(property, ts.createNull())
+        ])
+      )]
+    ),
+    // `var $end = $start;`
+    ts.createVariableStatement(
+      undefined,
+      [ ts.createVariableDeclaration(
+          END,
+          undefined,
+          START
+        )
+      ]
+    )
+  ];
+}
+
+function updateFunctionBody(extractCache : ExtractCache, functionsToInsert : Set<string>, recursionType : FunctionRecursion, shouldAddWhileLoop : boolean, functionName : string, label : string, parameterNames : Array<string>, body : ts.Block, context : Context) : ts.Block {
+    const updatedBlock = ts.visitEachChild(body, updateRecursiveCallVisitor, context);
+
+  function updateRecursiveCallVisitor(node: ts.Node): ts.VisitResult<ts.Node> {
+    if (ts.isBlock(node)
+     || ts.isLabeledStatement(node)
+     || ts.isWhileStatement(node)
+     || ts.isSwitchStatement(node)
+     || ts.isCaseClause(node)
+     || ts.isCaseBlock(node)
+     || ts.isDefaultClause(node)
+    ) {
+      return ts.visitEachChild(node, updateRecursiveCallVisitor, context);
+    }
+
+    if (ts.isIfStatement(node)) {
+      return ts.updateIf(
+        node,
+        node.expression,
+        ts.visitNode(node.thenStatement, updateRecursiveCallVisitor),
+        ts.visitNode(node.elseStatement, updateRecursiveCallVisitor)
+      )
+    }
+
+    if (ts.isReturnStatement(node)
+      && node.expression
+    ) {
+      return updateReturnStatement(extractCache, functionsToInsert, recursionType, functionName, label, parameterNames, node.expression) || node;
+    }
+
+    return node;
+  }
+
+  const declarations = declarationsForRecursiveFunction(recursionType);
+
+  if (shouldAddWhileLoop) {
+    return ts.createBlock(
+      [
+        ...declarations,
+        // `<label>: while (true) { <block> }`
+        ts.createLabel(label, ts.createWhile(ts.createTrue(), updatedBlock))
+      ],
+      true
+    );
+  }
+
+  return ts.updateBlock(
+    updatedBlock,
+    [
+      ...declarations,
+      ...updatedBlock.statements
+    ]
+  );
+}
+
+function declarationsForRecursiveFunction(recursionType : FunctionRecursion) : ts.Statement[] {
+  switch (recursionType.kind) {
+    case FunctionRecursionKind.F_PlainRecursion:
+    case FunctionRecursionKind.F_ConcatRecursion:
+    case FunctionRecursionKind.F_BooleanRecursion: {
+      return [];
+    }
+    case FunctionRecursionKind.F_AddRecursion: {
+      // `var $result = 0;`
+      return [resultDeclaration(0)];
+    }
+
+    case FunctionRecursionKind.F_StringConcatRecursion: {
+      return [stringConsDeclaration(recursionType.left, recursionType.right)];
+    }
+
+    case FunctionRecursionKind.F_MultiplyRecursion: {
+      // `var $result = 1;`
+      return [resultDeclaration(1)];
+    }
+
+    case FunctionRecursionKind.F_ListRecursion: {
+      return consDeclarations(recursionType.left, recursionType.right);
+    }
+
+    case FunctionRecursionKind.F_DataConstructionRecursion: {
+      return constructorDeclarations(recursionType.property);
+    }
+
+    case FunctionRecursionKind.F_MultipleDataConstructionRecursion: {
+      return multipleConstructorDeclarations;
+    }
+  }
+}
+
+function returnStatementToBlock(expression : ts.Statement[] | ts.ReturnStatement | null, original : ts.Expression) : ts.Block {
+  if (expression === null) {
+    return ts.createBlock([
+      ts.createReturn(original)
+    ]);
+  }
+  
+  if (!Array.isArray(expression)) {
+    return ts.createBlock([expression]);
+  }
+
+  return ts.createBlock(expression);
+}
+
+function updateReturnStatement(
+  extractCache : ExtractCache,
+  functionsToInsert : Set<string>,
+  recursionType : FunctionRecursion,
+  functionName : string,
+  label : string,
+  parameterNames : Array<string>,
+  expression : ts.Expression
+) : ts.Statement[] | ts.ReturnStatement | null {
+  if (ts.isConditionalExpression(expression)) {
+    const maybeLeft = updateReturnStatement(extractCache, functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenTrue);
+    const maybeRight = updateReturnStatement(extractCache, functionsToInsert, recursionType, functionName, label, parameterNames, expression.whenFalse);
+    if (maybeLeft === null && maybeRight === null) {
+      return null;
+    }
+
+    return [
+      ts.createIf(
+        expression.condition,
+        returnStatementToBlock(maybeLeft, expression.whenTrue),
+        returnStatementToBlock(maybeRight, expression.whenFalse),
+      )
+    ];
+  }
+
+  if (ts.isParenthesizedExpression(expression)) {
+    return updateReturnStatement(extractCache, functionsToInsert, recursionType, functionName, label, parameterNames, expression.expression);
+  }
+
+  const extract : Recursion | NotRecursive =
+    getCachedExtract(extractCache, expression)
+    || extractRecursionKindFromExpression(extractCache, functionName, expression);
+
+  switch (recursionType.kind) {
+    case FunctionRecursionKind.F_AddRecursion: {
+      return updateReturnStatementForArithmeticOperation(
+        {
+          neutralValue: 0,
+          binaryToken: ts.SyntaxKind.PlusToken,
+          assignmentToken: ts.SyntaxKind.PlusEqualsToken,
+        },
+        extract,
+        label,
+        parameterNames,
+        expression
+      );
+    }
+
+    case FunctionRecursionKind.F_StringConcatRecursion: {
+      return updateReturnStatementForStringConcat(
+        recursionType,
+        extract,
+        label,
+        parameterNames,
+        expression
+      );
+    }
+
+    case FunctionRecursionKind.F_MultiplyRecursion: {
+      return updateReturnStatementForArithmeticOperation(
+        {
+          neutralValue: 1,
+          binaryToken: ts.SyntaxKind.AsteriskToken,
+          assignmentToken: ts.SyntaxKind.AsteriskEqualsToken,
+        },
+        extract,
+        label,
+        parameterNames,
+        expression
+      );
+    }
+
+    case FunctionRecursionKind.F_ListRecursion: {
+      return updateReturnStatementForListRecursion(recursionType, functionsToInsert, extract, label, parameterNames, expression);
+    }
+
+    case FunctionRecursionKind.F_DataConstructionRecursion: {
+      return updateReturnStatementForDataConstruction(recursionType.property, extract, label, parameterNames, expression);
+    }
+
+    case FunctionRecursionKind.F_MultipleDataConstructionRecursion: {
+      return updateReturnStatementForMultipleDataConstruction(extract, label, parameterNames, expression)
+    }
+
+    case FunctionRecursionKind.F_BooleanRecursion: {
+      if (extract.kind === RecursionTypeKind.PlainRecursion) {
+        return createContinuation(label, parameterNames, extract.arguments);
+      }
+      if (extract.kind === RecursionTypeKind.BooleanRecursion) {
+        return createBooleanContinuation(label, parameterNames, extract.booleanKind, extract.expression, extract.arguments);
+      }
+      return null;
+    }
+
+    case FunctionRecursionKind.F_PlainRecursion:
+    case FunctionRecursionKind.F_ConcatRecursion: {
+      if (extract.kind === RecursionTypeKind.PlainRecursion) {
+        return createContinuation(label, parameterNames, extract.arguments);
+      }
+      return null;
+    }
+  }
+}
+
+
+function updateReturnStatementForListRecursion(recursion : ListRecursion, functionsToInsert : Set<string>, extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) : ts.Statement[] | ts.ReturnStatement {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionTypeKind.ConcatRecursion) {
+    let leftOperations : ts.Statement[] = [];
+    if (extract.left) {
+      leftOperations = [copyListAndAddToEnd(functionsToInsert, extract.left)];
+    }
+
+    let rightOperations : ts.Statement[] = [];
+    if (extract.right) {
+      rightOperations = [addListToTail(extract.right)];
+    }
+
+    return [
+      ...leftOperations,
+      ...rightOperations,
+      ...createContinuation(label, parameterNames, extract.arguments)
+    ];
+  }
+
+  if (extract.kind === RecursionTypeKind.ListOperationsRecursion) {
+    return updateReturnStatementForListOperationsRecursion(functionsToInsert, label, parameterNames, extract);
+  }
+
+  const isValueEmpty = ts.isIdentifier(expression) && expression.text === EMPTY_LIST;
+
+  function returnStart() {
+    // `return $start.b;`
+    return ts.createReturn(
+      ts.createPropertyAccess(START, "b")
+    );
+  }
+
+  // End of the recursion, add the value to the list and return the whole list.
+
+  if (recursion.left) {
+    if (recursion.right) {
+      if (isValueEmpty) {
+        return [
+          // `$end.b = $tail;`
+          ts.createExpressionStatement(
+            ts.createAssignment(
+              ts.createPropertyAccess(END, "b"),
+              TAIL
+            )
+          ),
+          returnStart()
+        ];
+      }
+      return [
+        // `$end.b = A2($elm$core$List$append, <expression>, $tail);`
+        ts.createExpressionStatement(
+          ts.createAssignment(
+            ts.createPropertyAccess(END, "b"),
+            combineValueAndTail(expression)
+          )
+        ),
+        returnStart()
+      ];
+    }
+
+    // We know it's a left recursion only
+
+    if (isValueEmpty) {
+      // Adding `[]` would not do anything, so don't add it
+      return returnStart();
+    }
+
+    // `$end.b = <expression>;`
+    return [
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          ts.createPropertyAccess(
+            END,
+            "b"
+          ),
+          expression
+        )
+      ),
+      returnStart()
+    ];
+  }
+
+  // We know it's a right recursion only
+  if (isValueEmpty) {
+    // Adding `[]` would not do anything, so don't add it
+    // `return $tail;`
+    return ts.createReturn(TAIL);
+  }
+
+  // `return A2($elm$core$List$append, <expression>, $tail);`
+  return ts.createReturn(combineValueAndTail(expression));
+}
+
+function updateReturnStatementForListOperationsRecursion(functionsToInsert : Set<string>, label : string, parameterNames : Array<string>, extract : ListOperationsRecursion) : ts.Statement[] {
+  let rightOperations : ts.Statement[] = [];
+  if (extract.right) {
+    rightOperations = [addListToTail(extract.right)];
+  }
+
+  return [
+    ...leftListOperationsRecursion(functionsToInsert, extract.left),
+    ...rightOperations,
+    ...createContinuation(label, parameterNames, extract.arguments)
+  ];
+}
+
+function leftListOperationsRecursion(functionsToInsert : Set<string>, operations : ListOperation[]) : ts.Statement[] {
+  if (operations.length === 0) {
+    return [];
+  }
+
+  const [lastItem, ...otherItems] = operations;
+  if (otherItems.length === 0) {
+    return [
+      // `$end = $end.b = _List_Cons(<lastItem>, _List_Nil);` or `$end = $end.b = _Utils_copyListAndGetEnd(_List_Nil, <lastItem>);`
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          END,
+          ts.createAssignment(
+            ts.createPropertyAccess(END, "b"),
+            createNewListOperationValue(functionsToInsert)(ts.createIdentifier(EMPTY_LIST), lastItem)
+          )
+        )
+      )
+    ];
+  }
+
+  const $newEnd = ts.createIdentifier("$newEnd");
+
+  const newValue : ts.Expression = otherItems.reduce(createNewListOperationValue(functionsToInsert), $newEnd);
+
+  return [
+    // `var $newEnd = _List_Cons(<lastItem>, _List_Nil);` or `var $newEnd = _Utils_copyListAndGetEnd(_List_Nil, <lastItem>);`
+    ts.createVariableStatement(
+      undefined,
+      [ts.createVariableDeclaration(
+        $newEnd,
+        undefined,
+        createNewListOperationValue(functionsToInsert)(ts.createIdentifier(EMPTY_LIST), lastItem),
+      )]
+    ),
+    // `$end.b = <newValue>`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        ts.createPropertyAccess(END,"b"),
+        newValue
+      )
+    ),
+    // `$end = $newEnd;`
+    ts.createExpressionStatement(
+      ts.createBinary(
+        END,
+        ts.SyntaxKind.EqualsToken,
+        $newEnd
+      )
+    )
+  ];
+}
+
+function createNewListOperationValue(functionsToInsert : Set<string>) {
+  return (list : ts.Expression, { kind, expression } : ListOperation) : ts.Expression => {
+    switch (kind) {
+      case "cons": {
+        return consToList(expression, list);
+      }
+      case "append": {
+        return copyListAndGetEnd(functionsToInsert, expression, list);
+      }
+    }
+  }
+}
+
+type ArithmeticData = {
+  neutralValue: number | string,
+  binaryToken: ts.SyntaxKind,
+  assignmentToken: ts.CompoundAssignmentOperator,
+}
+
+function updateReturnStatementForArithmeticOperation(
+  operation: ArithmeticData,
+  extract : Recursion | NotRecursive,
+  label : string,
+  parameterNames : Array<string>,
+  expression : ts.Expression
+) : ts.Statement[] | ts.ReturnStatement | null {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionTypeKind.AddRecursion) {
+    return createArithmeticContinuation(
+      operation,
+      label,
+      parameterNames,
+      combineExpressionsWithPlus(extract.left, extract.right),
+      extract.arguments
+    );
+  }
+
+  if (extract.kind === RecursionTypeKind.MultiplyRecursion) {
+    return createArithmeticContinuation(
+      operation,
+      label,
+      parameterNames,
+      extract.expression,
+      extract.arguments
+    );
+  }
+
+  // End of the recursion, return the result combined with the return value
+  if (ts.isLiteralExpression(expression) && expression.text === (operation.neutralValue + '')) {
+    return ts.createReturn(RESULT);
+  }
+
+  // `return $result + <expression>;` for addition
+  // `return $result * <expression>;` for multiplication
+  return ts.createReturn(
+    ts.createBinary(
+      RESULT,
+      // Added "any" because it works but could not figure out how to make it typecheck
+      (ts.createToken(operation.binaryToken) as any),
+      expression
+    )
+  );
+}
+
+function updateReturnStatementForStringConcat(
+  recursion: StringConcatRecursion,
+  extract : Recursion | NotRecursive,
+  label : string,
+  parameterNames : Array<string>,
+  expression : ts.Expression
+) : ts.Statement[] | ts.ReturnStatement | null {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionTypeKind.AddRecursion) {
+    return createStringConcatContinuation(label, parameterNames, extract.left, extract.right, extract.arguments);
+  }
+
+  if (extract.kind === RecursionTypeKind.ConcatRecursion) {
+    return createStringConcatContinuation(label, parameterNames, extract.left, extract.right, extract.arguments);
+  }
+
+  // End of the recursion, return the result combined with the return value
+  return ts.createReturn(
+    combineExpressionsWithPlus(
+      recursion.left ? LEFT : null,
+      combineExpressionsWithPlus(
+        ts.isLiteralExpression(expression) && expression.text === '' ? null : expression,
+        recursion.right ? RIGHT : null,
+      )
+    )
+  );
+}
+
+function updateReturnStatementForDataConstruction(property : string, extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionTypeKind.DataConstructionRecursion) {
+    return createDataConstructionContinuation(label, extract.property, parameterNames, extract.expression, extract.arguments);
+  }
+
+  // End of the recursion, add the value to the $end and return the start.
+
+  // `return $start.<property>;`
+  const returnStatement = ts.createReturn(
+    ts.createPropertyAccess(
+      START,
+      property
+    )
+  );
+
+  return [
+    // `$end.<property> = <expression>;`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        ts.createPropertyAccess(
+          END,
+          property
+        ),
+        expression
+      )
+    ),
+    returnStatement
+  ];
+}
+
+function updateReturnStatementForMultipleDataConstruction(extract : Recursion | NotRecursive, label : string, parameterNames : Array<string>, expression : ts.Expression) {
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return createContinuation(label, parameterNames, extract.arguments);
+  }
+
+  if (extract.kind === RecursionTypeKind.DataConstructionRecursion) {
+    return createMultipleDataConstructionContinuation(label, extract.property, parameterNames, extract.expression, extract.arguments);
+  }
+
+  // End of the recursion, add the value to the $end and return the start.
+  return [
+    // `$end[$field] = <expression>;`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        ts.createElementAccess(
+          END,
+          FIELD
+        ),
+        expression
+      )
+    ),
+    // `return $start.a;`
+    ts.createReturn(
+      ts.createPropertyAccess(
+        START,
+        ts.createIdentifier("a")
+      )
+    )
+  ];
+}
+
+function toFunctionRecursion(recursion : Recursion | NotRecursive, inferredType : PossibleReturnType, hasPlainRecursionCalls : boolean) : FunctionRecursion | NotRecursiveFunction {
+  switch (recursion.kind) {
+    case RecursionTypeKind.NotRecursive:
+      return { kind: FunctionRecursionKind.F_NotRecursive };
+    case RecursionTypeKind.PlainRecursion:
+      return { kind: FunctionRecursionKind.F_PlainRecursion };
+    case RecursionTypeKind.ListOperationsRecursion: {
+      return {
+        kind: FunctionRecursionKind.F_ListRecursion,
+        left: recursion.left.length > 0,
+        right: !!recursion.right
+      };
+    }
+    case RecursionTypeKind.BooleanRecursion:
+      return { kind: FunctionRecursionKind.F_BooleanRecursion };
+    case RecursionTypeKind.DataConstructionRecursion:
+      return { kind: FunctionRecursionKind.F_DataConstructionRecursion, property: recursion.property };
+    case RecursionTypeKind.MultipleDataConstructionRecursion:
+      return { kind: FunctionRecursionKind.F_MultipleDataConstructionRecursion };
+    case RecursionTypeKind.AddRecursion: {
+      if (recursion.adds === "strings" || inferredType === "strings" || inferredType === "strings-or-lists") {
+        return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
+      }
+      return { kind: FunctionRecursionKind.F_AddRecursion, numbersConfirmed: recursion.adds === "numbers", left: !!recursion.left, right: !!recursion.right };
+    }
+    case RecursionTypeKind.ConcatRecursion: {
+      if (recursion.concatenates === "strings" || inferredType === "strings" || inferredType === "numbers-or-strings") {
+        return { kind: FunctionRecursionKind.F_StringConcatRecursion, left: !!recursion.left, right: !!recursion.right };
+      }
+      else if (recursion.concatenates === "lists" || inferredType === "lists") {
+        return { kind: FunctionRecursionKind.F_ListRecursion, left: !!recursion.left, right: !!recursion.right };
+      }
+      return {
+        kind: FunctionRecursionKind.F_ConcatRecursion,
+        left: !!recursion.left,
+        right: !!recursion.right,
+        hasPlainRecursionCalls: hasPlainRecursionCalls
+      };
+    }
+    case RecursionTypeKind.MultiplyRecursion:
+      return { kind: FunctionRecursionKind.F_MultiplyRecursion };
+  }
+}
+
+function extractRecursionKindFromExpression(extractCache : ExtractCache, functionName : string, node : ts.Expression) : Recursion | NotRecursive {
+  if (ts.isParenthesizedExpression(node)) {
+    return extractRecursionKindFromExpression(extractCache, functionName, node.expression);
+  }
+
+  if (ts.isCallExpression(node)) {
+    return extractRecursionKindFromCallExpression(extractCache, functionName, node);
+  }
+
+  if (ts.isBinaryExpression(node) && node.operatorToken) {
+    return extractRecursionKindFromBinaryExpression(extractCache, functionName, node);
+  }
+
+  return { kind: RecursionTypeKind.NotRecursive };
+}
+
+function extractRecursionKindFromCallExpression(extractCache : ExtractCache, functionName : string, node : ts.CallExpression) : Recursion | NotRecursive {
+  if (!ts.isIdentifier(node.expression)) {
+    return { kind: RecursionTypeKind.NotRecursive };
+  }
+
+  // Is "fn(...)"
+  if (node.expression.text === functionName) {
+    return {
+      kind: RecursionTypeKind.PlainRecursion,
+      arguments: [...node.arguments]
+    };
+  }
+
+  const [firstArg, secondArg, thirdArg] = node.arguments;
+  // Is "_Utils_ap(...)"
+  if (node.expression.text === UTILS_AP) {
+    let recursion = null;
+    if (ts.isCallExpression(secondArg)) {
+      recursion = extractRecursionKindFromUtilsAppendExpression(extractCache, functionName, secondArg, {left: firstArg});
+    }
+    if (!recursion && ts.isCallExpression(firstArg)) {
+      recursion = extractRecursionKindFromUtilsAppendExpression(extractCache, functionName, firstArg, {right: secondArg});
+    }
+    return recursion || { kind: RecursionTypeKind.NotRecursive };
+  }
+
+  // Is "AX(fn, ...)"
+  if (!node.expression.text.startsWith("A")
+    || !ts.isIdentifier(firstArg)
+  ) {
+    return { kind: RecursionTypeKind.NotRecursive };
+  }
+
+  if (firstArg.text === functionName) {
+    return {
+      kind: RecursionTypeKind.PlainRecursion,
+      arguments: node.arguments.slice(1)
+    };
+  }
+
+  // Elm: Is x :: <recursive call>
+  // JS: Is A2($elm$core$List$cons, x, <recursive call>)
+  if (firstArg.text === "$elm$core$List$cons" && ts.isCallExpression(thirdArg)) {
+    const thirdArgExtract = extractRecursionKindFromExpression(extractCache, functionName, thirdArg);
+    if (thirdArgExtract.kind === RecursionTypeKind.PlainRecursion) {
+      return {
+        kind: RecursionTypeKind.ListOperationsRecursion,
+        left: [{ kind: "cons", expression: secondArg }],
+        right: null,
+        arguments: thirdArgExtract.arguments
+      };
+    }
+
+    if (thirdArgExtract.kind === RecursionTypeKind.ConcatRecursion) {
+      const left : ListOperation[] =
+        thirdArgExtract.left
+        ? [ { kind: "append", expression: thirdArgExtract.left } ]
+        : [];
+      left.push({ kind: "cons", expression: secondArg });
+      return {
+        kind: RecursionTypeKind.ListOperationsRecursion,
+        left: left,
+        right: thirdArgExtract.right,
+        arguments: thirdArgExtract.arguments
+      };
+    }
+
+    if (thirdArgExtract.kind === RecursionTypeKind.ListOperationsRecursion) {
+      thirdArgExtract.left.push({ kind: "cons", expression: secondArg });
+      return thirdArgExtract;
+    }
+
+    return { kind: RecursionTypeKind.NotRecursive };
+  }
+
+  // Is constructor call
+  // Elm: `type X = Y <args> X <args> | ... ; Y <...> <recursive call> <...>
+  // JS: `return AX(Y, ..., <recursive call>, ...);
+  if (isDataConstructor(firstArg.text)) {
+    let extract : Recursion | NotRecursive = { kind: RecursionTypeKind.NotRecursive };
+
+    for (let i = 1; extract.kind === RecursionTypeKind.NotRecursive && i < node.arguments.length; i++) {
+      const argExtract = extractRecursionKindFromExpression(extractCache, functionName, node.arguments[i]);
+      // TODO Support nested data construction
+      if (argExtract.kind === RecursionTypeKind.PlainRecursion) {
+        const argumentsWithHole : ts.Expression[] = [...node.arguments];
+        argumentsWithHole[i] = ts.createNull();
+
+        extract = {
+          kind: RecursionTypeKind.DataConstructionRecursion,
+          // TODO Only works for custom types, not record type alias constructors or other functions
+          property: "abcdefghijklmnopqrstuvwxyz"[i - 1],
+          expression: ts.updateCall(
+            node,
+            node.expression,
+            undefined,
+            argumentsWithHole
+          ),
+          arguments: argExtract.arguments
+        };
+      }
+    }
+
+    return extract;
+  }
+
+  return { kind: RecursionTypeKind.NotRecursive };
+}
+
+function extractRecursionKindFromUtilsAppendExpression(extractCache : ExtractCache, functionName : string, expression : ts.Expression, args: { left ?: ts.Expression, right ?: ts.Expression }) : Recursion | null {
+  const extract = extractRecursionKindFromExpression(extractCache, functionName, expression);
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return {
+      kind: RecursionTypeKind.ConcatRecursion,
+      left : args.left || null,
+      right : args.right || null,
+      arguments : extract.arguments,
+      concatenates: (args.left && isThisAStringOrList(args.left))
+        || (args.right && isThisAStringOrList(args.right))
+        || null
+    };
+  }
+  else if (extract.kind === RecursionTypeKind.ConcatRecursion) {
+    if (args.left) {
+      extract.left = combineExpressionsWithUtilsAp(extract.left, args.left);
+      extract.concatenates = extract.concatenates || isThisAStringOrList(args.left);
+    } else if (args.right) {
+      extract.right = combineExpressionsWithUtilsAp(args.right, extract.right);
+      extract.concatenates = extract.concatenates || isThisAStringOrList(args.right);
+    }
+    return extract;
+  }
+  else if (extract.kind === RecursionTypeKind.ListOperationsRecursion) {
+    if (args.left) {
+      extract.left.push({kind: "append", expression: args.left});
+    } else if (args.right) {
+      extract.right = combineExpressionsWithUtilsAp(args.right, extract.right);
+    }
+    return extract;
+  }
+
+  return null;
+}
+
+function isDataConstructor(functionName : string) : boolean {
+  // Checks whether the function name is a native data constructor by checking
+  // whether the name starts with an upper case.
+  const splits = functionName.split("$");
+  const last = splits[splits.length - 1];
+  return !!last && last[0] === last[0].toUpperCase();
+}
+
+function extractRecursionKindFromBinaryExpression(extractCache : ExtractCache, functionName : string, node : ts.BinaryExpression) : Recursion | NotRecursive {
+  if (node.operatorToken.kind === ts.SyntaxKind.BarBarToken || node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
+    return extractRecursionKindFromBooleanExpression(extractCache, functionName, node);
+  }
+
+  if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+    const extract = extractRecursionKindFromAdditionExpression(extractCache, functionName, node.right, node.left, false)
+    if (extract.kind === RecursionTypeKind.NotRecursive) {
+      return extractRecursionKindFromAdditionExpression(extractCache, functionName, node.left, node.right, true);
+    }
+    return extract;
+  }
+
+  if (node.operatorToken.kind === ts.SyntaxKind.AsteriskToken) {
+    const extract = extractRecursionKindFromMultiplicationExpression(extractCache, functionName, node.right, node.left)
+    if (extract.kind === RecursionTypeKind.NotRecursive) {
+      return extractRecursionKindFromMultiplicationExpression(extractCache, functionName, node.left, node.right);
+    }
+    return extract;
+  }
+
+  return { kind: RecursionTypeKind.NotRecursive };
+}
+
+function extractRecursionKindFromBooleanExpression(extractCache : ExtractCache, functionName : string, node : ts.BinaryExpression) : Recursion | NotRecursive {
+  const extract = extractRecursionKindFromExpression(extractCache, functionName, node.right);
+
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return {
+      kind: RecursionTypeKind.BooleanRecursion,
+      expression: node.left,
+      booleanKind: node.operatorToken.kind === ts.SyntaxKind.BarBarToken ? BooleanKind.Or : BooleanKind.And,
+      arguments: extract.arguments
+    };
+  }
+
+  if (extract.kind === RecursionTypeKind.BooleanRecursion) {
+    // `<node.left> && <expressions from node.right>` (operation can be either && or ||)
+    extract.expression = ts.createBinary(node.left, node.operatorToken, extract.expression);
+    return extract;
+  }
+
+  return { kind: RecursionTypeKind.NotRecursive };
+}
+
+function extractRecursionKindFromAdditionExpression(extractCache : ExtractCache, functionName : string, expression : ts.Expression, otherOperand : ts.Expression, isLeft : boolean) : Recursion | NotRecursive {
+  const extract = extractRecursionKindFromExpression(extractCache, functionName, expression);
+
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return {
+      kind: RecursionTypeKind.AddRecursion,
+      left: isLeft ? null : otherOperand,
+      right: isLeft ? otherOperand : null,
+      arguments: extract.arguments,
+      adds: isThisANumberOrString(otherOperand)
+    };
+  }
+
+  if (extract.kind === RecursionTypeKind.AddRecursion) {
+    if (isLeft) {
+      // `<expression> + <expressions from otherOperand>`
+      extract.right = combineExpressionsWithPlus(extract.right, otherOperand);
+    } else {
+      // `<expressions from otherOperand> + <expression>`
+      extract.left = combineExpressionsWithPlus(otherOperand, extract.left);
+    }
+    extract.adds = extract.adds || isThisANumberOrString(otherOperand);
+    return extract;
+  }
+
+  // TODO If the function is otherwise plain recursive in other places, then we should still make this function plain recursive.
+  return { kind: RecursionTypeKind.NotRecursive };
+}
+
+function combineExpressionsWithPlus(left : ts.Expression | null, right : ts.Expression | null) : ts.Expression {
+  if (!left) {
+    // We're assuming there's always one out of left or right that exists,
+    // otherwise we shouldn't have had to call this function.
+    return right || ts.createNull();
+  }
+  if (!right) { return left; }
+  return ts.createBinary(left, ts.SyntaxKind.PlusToken, right);
+}
+
+function combineExpressionsWithUtilsAp(left : ts.Expression | null, right : ts.Expression | null) : ts.Expression {
+  if (!left) {
+    // We're assuming there's always one out of left or right that exists,
+    // otherwise we shouldn't have had to call this function.
+    return right || ts.createNull();
+  }
+  if (!right) { return left; }
+  return ts.createCall(ts.createIdentifier(UTILS_AP), undefined, [left, right]);
+}
+
+// TODO Use determineType instead
+function isThisANumberOrString(node : ts.Expression) : "numbers" | "strings" | null {
+  if (ts.isParenthesizedExpression(node)) {
+    return isThisANumberOrString(node.expression);
+  }
+
+  if (ts.isStringLiteral(node)) {
+    return "strings";
+  }
+
+  if (ts.isNumericLiteral(node)) {
+    return "numbers";
+  }
+
+  if (ts.isBinaryExpression(node)) {
+    if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+      return isThisANumberOrString(node.left) || isThisANumberOrString(node.right);
+    }
+    if (node.operatorToken.kind === ts.SyntaxKind.AsteriskToken
+      || node.operatorToken.kind === ts.SyntaxKind.MinusToken
+      || node.operatorToken.kind === ts.SyntaxKind.SlashToken
+      || node.operatorToken.kind === ts.SyntaxKind.AsteriskAsteriskToken
+    ) {
+      return "numbers";
+    }
+  }
+
+  return null;
+}
+
+// TODO Use determineType instead
+function isThisAStringOrList(node : ts.Expression) : "strings" | "lists" | null {
+  if (ts.isParenthesizedExpression(node)) {
+    return isThisAStringOrList(node.expression);
+  }
+
+  if (ts.isStringLiteral(node)) {
+    return "strings";
+  }
+
+  if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+    return "strings";
+  }
+
+  if (ts.isIdentifier(node) && node.text === EMPTY_LIST) {
+    return "lists";
+  }
+
+  if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === LIST_FROM_ARRAY) {
+    return "lists";
+  }
+
+  return null;
+}
+
+function extractRecursionKindFromMultiplicationExpression(extractCache : ExtractCache, functionName : string, expression : ts.Expression, otherOperand : ts.Expression) : Recursion | NotRecursive {
+  const extract = extractRecursionKindFromExpression(extractCache, functionName, expression);
+
+  if (extract.kind === RecursionTypeKind.PlainRecursion) {
+    return {
+      kind: RecursionTypeKind.MultiplyRecursion,
+      expression: otherOperand,
+      arguments: extract.arguments
+    };
+  }
+
+  if (extract.kind === RecursionTypeKind.MultiplyRecursion) {
+    // `<expressions from otherOperand> * <expression>`
+    extract.expression = ts.createBinary(otherOperand, ts.SyntaxKind.AsteriskAsteriskToken, extract.expression);
+    return extract;
+  }
+
+  // TODO If the function is otherwise plain recursive in other places, then we should still make this function plain recursive.
+  return { kind: RecursionTypeKind.NotRecursive };
+}
+
+function createContinuation(label : string, parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  return [
+    ...paramReassignments(parameterNames, newArguments),
+    // `continue <label>;`
+    ts.createContinue(label)
+  ];
+}
+
+function copyListAndAddToEnd(functionsToInsert : Set<string>, expression : ts.Expression) : ts.Statement {
+  // $end = _Utils_copyListAndGetEnd($end, <expression>);
+  return ts.createExpressionStatement(
+    ts.createBinary(
+      END,
+      ts.SyntaxKind.EqualsToken,
+      copyListAndGetEnd(functionsToInsert, expression, END)
+    )
+  );
+}
+
+function copyListAndGetEnd(functionsToInsert : Set<string>, expression : ts.Expression, list : ts.Expression) : ts.Expression {
+  functionsToInsert.add(COPY_LIST_AND_GET_END);
+  // _Utils_copyListAndGetEnd(<list>, <expression>);
+  return ts.createCall(
+    ts.createIdentifier(COPY_LIST_AND_GET_END),
+    undefined,
+    [list, expression]
+  );
+}
+
+function combineValueAndTail(value : ts.Expression) {
+  // `A2($elm$core$List$append, <value>, $tail);`
+  return ts.createCall(
+    ts.createIdentifier("A2"),
+    undefined,
+    [
+      ts.createIdentifier(LIST_APPEND),
+      value,
+      TAIL
+    ]
+  );
+}
+
+function addListToTail(value : ts.Expression) : ts.ExpressionStatement {
+  // `$tail = A2($elm$core$List$append, <value>, $tail);`
+  return ts.createExpressionStatement(
+    ts.createBinary(
+      TAIL,
+      ts.SyntaxKind.EqualsToken,
+      combineValueAndTail(value)
+    )
+  );
+}
+
+function createArithmeticContinuation(operation: ArithmeticData, label : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  return [
+    // `$result += <expression>;` for addition
+    // `$result *= <expression>;` for multiplication
+    ts.createExpressionStatement(
+      ts.createBinary(
+        RESULT,
+        operation.assignmentToken,
+        expression
+      )
+    ),
+    ...createContinuation(label, parameterNames, newArguments)
+  ];
+}
+
+function createStringConcatContinuation(label : string, parameterNames : Array<string>, left : ts.Expression | null, right : ts.Expression | null, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  let result = createContinuation(label, parameterNames, newArguments);
+
+  if (right) {
+    // `$right = <expression> + $right;`
+    result.unshift(
+      ts.createExpressionStatement(
+        ts.createBinary(
+          RIGHT,
+          ts.SyntaxKind.EqualsToken,
+          ts.createBinary(
+            right,
+            ts.SyntaxKind.PlusToken,
+            RIGHT
+          )
+        )
+      )
+    );
+  }
+
+  if (left) {
+    // `$left += <expression>;`
+    result.unshift(
+      ts.createExpressionStatement(
+        ts.createBinary(
+          LEFT,
+          ts.SyntaxKind.PlusEqualsToken,
+          left
+        )
+      )
+    );
+  }
+  return result;
+}
+
+function createDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  return [
+    assignToStaticDataProperty(property, expression),
+    ...createContinuation(label, parameterNames, newArguments)
+  ];
+}
+
+function createMultipleDataConstructionContinuation(label : string, property : string, parameterNames : Array<string>, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  return [
+    assignToDynamicDataProperty(expression),
+    // `$field = '<property>';`
+    ts.createExpressionStatement(
+      ts.createAssignment(
+        FIELD,
+        ts.createLiteral(property)
+      )
+    ),
+    ...createContinuation(label, parameterNames, newArguments)
+  ];
+}
+
+function createBooleanContinuation(label : string, parameterNames : Array<string>, mainOperator: BooleanKind, expression : ts.Expression, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  const ifExpr =
+    mainOperator === BooleanKind.Or
+      ? // if (<condition>) { return true; }
+        ts.createIf(
+          expression,
+          ts.createBlock([
+            ts.createReturn(ts.createTrue())
+          ])
+        )
+      : // if (!<condition>) { return false; }
+        ts.createIf(
+          ts.createLogicalNot(expression),
+          ts.createBlock([
+            ts.createReturn(ts.createFalse())
+          ])
+        );
+
+  return [
+    ifExpr,
+    ...createContinuation(label, parameterNames, newArguments)
+  ];
+}
+
+function paramReassignments(parameterNames : Array<string>, newArguments : Array<ts.Expression>) : Array<ts.Statement> {
+  let assignments : Array<ts.VariableDeclaration> = [];
+  let reassignments : Array<ts.Statement> = [];
+  const filteredParameters : Array<{ name: string; value: ts.Expression; }> = [];
+
+  parameterNames.forEach((name, index) => {
+    const value : ts.Expression = newArguments[index];
+    if (ts.isIdentifier(value) && name === value.text) {
+      return;
+    }
+    filteredParameters.push({name, value});
+  });
+
+  if (filteredParameters.length === 1) {
+    // `<param> = <new param value>;`
+    return [
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          ts.createIdentifier(filteredParameters[0].name),
+          filteredParameters[0].value
+        )
+      )
+    ];
+  }
+
+  filteredParameters.forEach(({name, value}) => {
+    const tempName = `$temp$${name}`;
+    assignments.push(
+      // `$temp$<param> = <new param value>;`
+      ts.createVariableDeclaration(
+        tempName,
+        undefined,
+        value
+      )
+    );
+    reassignments.push(
+      // `<param> = $temp$<param>;`
+      ts.createExpressionStatement(
+        ts.createAssignment(
+          ts.createIdentifier(name),
+          ts.createIdentifier(tempName)
+        )
+      )
+    );
+  });
+
+  return [
+    ts.createVariableStatement(
+      undefined,
+      ts.createVariableDeclarationList(assignments)
+    ),
+    ...reassignments
+  ];
+}
+
+function consToList(element : ts.Expression, list : ts.Expression) : ts.Expression {
+  return ts.createCall(
+    ts.createIdentifier(LIST_CONS),
+    undefined,
+    [
+      element,
+      list
+    ]
+  );
+}
+
+function assignToStaticDataProperty(property : string, expression : ts.Expression) : ts.Statement {
+  // `$end = $end.<property> = <expression where recursive call has been replaced by null>;`
+  return ts.createExpressionStatement(
+    ts.createAssignment(
+      END,
+      ts.createAssignment(
+        ts.createPropertyAccess(
+          END,
+          property
+        ),
+        expression
+      )
+    )
+  );
+}
+
+function assignToDynamicDataProperty(expression : ts.Expression) : ts.Statement {
+  // `$end = $end[$field] = <expression where recursive call has been replaced by null>;`
+  return ts.createExpressionStatement(
+    ts.createAssignment(
+      END,
+      ts.createAssignment(
+        ts.createElementAccess(
+          END,
+          FIELD
+        ),
+        expression
+      )
+    )
+  );
+}
+
+
+/*******************************************
+ * Cache *
+ *******************************************/
+
+
+type ExtractCache = Map<String, Recursion | NotRecursive>;
+
+function addToCache(extractCache : ExtractCache, expression : ts.Expression, recursion : Recursion | NotRecursive) : Recursion | NotRecursive {
+    extractCache.set(nodeKey(expression), recursion);
+    return recursion;
+}
+
+function getCachedExtract(extractCache : Map<String, Recursion | NotRecursive>, expression : ts.Expression) : Recursion | NotRecursive | null {
+    return extractCache.get(nodeKey(expression)) || null;
+}
+
+function nodeKey(expression : ts.Expression) : string {
+    return expression.pos + ":" + expression.end;
+}
+
+/*******************************************
+ * Adding new functions to the source file *
+ *******************************************/
+
+function introduceFunctions(functionsToInsert : Set<string>, sourceFile : ts.SourceFile, forTests: boolean, context : Context) {
+  let nativeFunctionNodes: ts.Node[] = [];
+  for (const nativeFunction of functionsToInsert) {
+    nativeFunctionNodes.push(ast(newFunctionDefinitions[nativeFunction]));
+  }
+
+  return ts.visitNode(sourceFile, prependNodes(nativeFunctionNodes, context, forTests));
+}
+
+/* Taken from recordUpdate.ts and updated, maybe mutualize these? */
+function prependNodes(nodes: ts.Node[], context: ts.TransformationContext, forTests: boolean) {
+  if (forTests) {
+    const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      if (ts.isFunctionDeclaration(node) || ts.isVariableStatement(node)) {
+        return nodes.concat(node);
+      }
+
+      return ts.visitEachChild(node, visitorHelp, context);
+    }
+
+    return visitorHelp;
+  }
+
+  const visitorHelp = (node: ts.Node): ts.VisitResult<ts.Node> => {
+    if (isFirstFWrapper(node)) {
+      return nodes.concat(node);
+    }
+
+    return ts.visitEachChild(node, visitorHelp, context);
+  }
+
+  return visitorHelp;
+}
+
+function isFirstFWrapper(node: ts.Node): boolean {
+    return ts.isFunctionDeclaration(node) && node?.name?.text === 'F';
+}
