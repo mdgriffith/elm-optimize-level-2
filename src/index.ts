@@ -25,10 +25,10 @@ export async function run(options: {
  * Transform JS source (compiled output of `elm make`)
  * Handy for making build tool plugins (e.g, parcel, snowpack, webpack, etc.)
  */
-export function transform(
+export async function transform(
   jsSource: string,
   o3Enabled = false,
-): string {
+): Promise<string> {
 
   if (jsSource == '') {
     throw new Error('elm-optimize-level-2: JS source is empty.');

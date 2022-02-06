@@ -87,7 +87,7 @@ export async function run(
     throw new Error('Target JS file is empty.');
   }
 
-  const transformed = Transform.transform(
+  const transformed = await Transform.transform(
     dirname,
     jsSource,
     elmFilePath,

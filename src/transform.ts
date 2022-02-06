@@ -33,13 +33,13 @@ export type Options = {
   verbose: boolean;
 };
 
-export const transform = (
+export const transform = async (
   _dir: string,
   jsSource: string,
   elmfile: string | undefined,
   verbose: boolean,
   transforms: Transforms
-): string => {
+): Promise<string> => {
   let source = ts.createSourceFile('elm.js', jsSource, ts.ScriptTarget.ES2018);
 
   let parsedVariants = primitives;
