@@ -2,10 +2,10 @@ module Suite exposing (suite)
 
 {-| -}
 
-import V8.Benchmark.Runner.Json exposing (..)
 import Dict
 import Json.Encode
 import List
+import V8.Benchmark.Runner.Json exposing (..)
 
 
 type MyType
@@ -344,7 +344,7 @@ functionCalling =
                     , five = five
                     , six = six
                     }
-        , benchmark "Calling a function with 6 argsl" <|
+        , benchmark "Calling a function with 6 args" <|
             \_ ->
                 functionWithArgs one two three four five six
         ]
