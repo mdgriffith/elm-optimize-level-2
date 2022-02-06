@@ -1,9 +1,9 @@
 var $elm$core$List$concat = function (lists) {
-  var tmp = _List_Cons(undefined, _List_Nil);
-  var end = tmp;
   if (!lists.b) {
     return _List_Nil;
   }
+  var tmp = _List_Cons(undefined, _List_Nil);
+  var end = tmp;
   for (; lists.b.b; lists = lists.b) {
     var xs = lists.a;
     for (; xs.b; xs = xs.b) {
