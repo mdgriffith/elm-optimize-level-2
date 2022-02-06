@@ -89,6 +89,7 @@ export const transform = async (
     [transforms.replacements != null, replacementTransformer ],
     [transforms.fastCurriedFns, Replace.from_file('/../replacements/faster-function-wrappers') ],
     [transforms.replaceListFunctions,  Replace.from_file('/../replacements/list') ],
+    [transforms.replaceSetFunctions,  Replace.from_file('/../replacements/set') ],
     [transforms.replaceStringFunctions, Replace.from_file('/../replacements/string') ],
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
