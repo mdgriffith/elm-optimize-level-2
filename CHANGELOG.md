@@ -6,4 +6,6 @@
 
 - Bump typescript compiler to 4.5.5
 
+- Expose `transform: (jsSource: string) => string` JS API. Useful for build toolchains.
 
+- Update chromedriver to work with latest version of Chrome

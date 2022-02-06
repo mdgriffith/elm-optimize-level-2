@@ -51,9 +51,9 @@ MyFunction_fn(one two)
 
 ## Results Summary
 
-- Included in `elm-optimize-level-2` tool\*\*
+- Included in `elm-optimize-level-2` tool
 - Potentially large positive effect on speed
-- Likley small but positive effect on asset size
+- Likely small but positive effect on asset size
 
 This has lead to dramatic speedups in some cases, especially when a large number of smaller functions are called and the overhead of calling twice as many functions is significant.
 
@@ -103,7 +103,7 @@ f_unwrapped(
 
 This transformation works with separately defined functions too.
 
-# Passing in Unwrappable Functions to Higher Order Functions
+## Results Summary
 
 **Future Work**
 
@@ -448,9 +448,9 @@ function map(func, list) {
 }
 ```
 
-# Skip Allocating Tuples in Case Statements
+# Skip Allocating Tuples in Case Expression
 
-It's pretty common to put things in a tuple (or threeple) to start a case statement.
+It's pretty common to put things in a tuple (or threeple) to start a case expression.
 
 ```elm
     case (a, b) of
@@ -459,6 +459,8 @@ It's pretty common to put things in a tuple (or threeple) to start a case statem
 ```
 
 We could skip allocating the tuple though.
+
+**Note:** the elm compiler seems to already optimize this.
 
 # String Joining
 

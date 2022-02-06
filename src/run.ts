@@ -72,11 +72,7 @@ export async function run(
       output: 'output/elm.opt.js',
       cwd: dirname,
       optimize: true,
-      processOpts:
-      // ignore stdout
-      {
-        stdio: ['inherit', 'ignore', 'inherit'],
-      },
+      processOpts: options.processOpts,
     });
     if (jsSource != '') {
       log('Compiled, optimizing JS...');

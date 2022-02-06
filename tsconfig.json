@@ -19,7 +19,8 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "baseUrl": "./",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "newLine": "lf"
   },
   "include": [
     "src"
