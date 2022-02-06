@@ -1,4 +1,4 @@
-import { transformCode } from './inlineWrappedFunctions.test';
+import { transformCode } from './helpers/transformCode';
 import { createPassUnwrappedFunctionsTransformer } from '../src/transforms/passUnwrappedFunctions';
 import { createInlineContext } from '../src/transforms/inlineWrappedFunctions';
 
