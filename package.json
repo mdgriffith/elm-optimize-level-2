@@ -22,6 +22,7 @@
   },
   "scripts": {
     "test": "jest",
+    "test-elm": "cd test/Elm ; sh run.sh",
     "help": "ts-node -T src/index.ts --help",
     "prepare": "tsc --project tsconfig.json && npm run copy-replacements",
     "build": "tsc --project tsconfig.json && npm run copy-replacements",
