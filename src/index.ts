@@ -1,23 +1,25 @@
 import * as Run from './run';
-import * as Transform from './transform'
-import { toolDefaults } from "./types";
+import * as Transform from './transform';
+import { toolDefaults } from './types';
 
 export async function run(options: {
-  inputFilePath: string | undefined,
-  outputFilePath: string,
-  optimizeSpeed: boolean,
+  inputFilePath: string[];
+  outputFilePath: string;
+  optimizeSpeed: boolean;
   processOpts: {
-    stdio: [string, string, string],
-  } | null,
+    stdio: [string, string, string];
+  } | null;
 }) {
   return Run.run(
     {
       ...options,
       verbose: false,
-      processOpts: options.processOpts || { stdio: ['inherit', 'ignore', 'inherit'] },
+      processOpts: options.processOpts || {
+        stdio: ['inherit', 'ignore', 'inherit'],
+      },
     },
     '',
-    () => { }
+    () => {}
   );
 }
 
@@ -27,19 +29,17 @@ export async function run(options: {
  */
 export async function transform(
   jsSource: string,
-  o3Enabled = false,
+  o3Enabled = false
 ): Promise<string> {
-
   if (jsSource == '') {
     throw new Error('elm-optimize-level-2: JS source is empty.');
   }
 
   return Transform.transform(
-    "unused dirName param",
+    'unused dirName param',
     jsSource,
     undefined,
     false,
     toolDefaults(o3Enabled, null)
-  )
+  );
 }
-

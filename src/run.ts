@@ -9,11 +9,11 @@ import * as fs from 'fs';
 
 export async function run(
   options: {
-    inputFilePath: string | undefined,
-    outputFilePath: string,
-    optimizeSpeed: boolean,
-    verbose: boolean,
-    processOpts: { stdio: [string, string, string] },
+    inputFilePath: string[];
+    outputFilePath: string;
+    optimizeSpeed: boolean;
+    verbose: boolean;
+    processOpts: { stdio: [string, string, string] };
   },
   helpInformation: string,
   log: (message?: any, ...optionalParams: any[]) => void
@@ -27,7 +27,11 @@ export async function run(
   let elmFilePath = undefined;
 
   const replacements = null;
-  const inputFilePath = options.inputFilePath;
+  let inputFilePath = options.inputFilePath[0];
+  if (options.inputFilePath[0] == 'make') {
+    inputFilePath = options.inputFilePath[1];
+  }
+
   const o3Enabled = options.optimizeSpeed;
 
   // if (program.initBenchmark) {
@@ -77,10 +81,14 @@ export async function run(
     if (jsSource != '') {
       log('Compiled, optimizing JS...');
     } else {
-      throw new Error('An error occurred when compiling your application with Elm 0.19.1.');
+      throw new Error(
+        'An error occurred when compiling your application with Elm 0.19.1.'
+      );
     }
   } else {
-    throw new Error(`Please provide a path to an Elm file.\n${helpInformation}`.trim());
+    throw new Error(
+      `Please provide a path to an Elm file.\n${helpInformation}`.trim()
+    );
   }
 
   if (jsSource == '') {
@@ -92,13 +100,16 @@ export async function run(
     jsSource,
     elmFilePath,
     options.verbose,
-    toolDefaults(o3Enabled, replacements),
+    toolDefaults(o3Enabled, replacements)
   );
 
   // Make sure all the folders up to the output file exist, if not create them.
   // This mirrors elm make behavior.
   const outputDirectory = path.dirname(options.outputFilePath);
-  if (path.dirname(inputFilePath) !== outputDirectory && !fs.existsSync(outputDirectory)) {
+  if (
+    path.dirname(inputFilePath) !== outputDirectory &&
+    !fs.existsSync(outputDirectory)
+  ) {
     fs.mkdirSync(outputDirectory, { recursive: true });
   }
 
