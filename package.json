@@ -1,7 +1,7 @@
 {
   "name": "elm-optimize-level-2",
   "description": "A second level of optimization for the Javascript that the Elm Compiler produces.",
-  "version": "0.2.3",
+  "version": "0.3.4",
   "license": "BSD-3-Clause",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

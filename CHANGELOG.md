@@ -1,4 +1,4 @@
-# Upcoming
+# 0.3.4
 
 - Fix "phantom comments" issue. The sourceFile's comments were intermingling
   with optimized-record output causing runtime exceptions in some cases. It's
