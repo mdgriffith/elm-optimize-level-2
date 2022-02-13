@@ -13,3 +13,5 @@ testcases/**/output/*.jitlog
 testcases/**/output/*.summary
 
 .idea
+
+test/Elm/dist
