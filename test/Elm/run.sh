@@ -1,4 +1,4 @@
-
+# The main goal here is to have some guarantee that the transformed elm code functions as normally.
 
 # Compile normally
 elm make src/Tests.elm --output=dist/elm.js --optimize
