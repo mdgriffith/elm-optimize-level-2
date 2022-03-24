@@ -1,5 +1,7 @@
 port module Tests exposing (..)
 
+import SHA256
+
 
 main : Program {} () ()
 main =
@@ -32,6 +34,7 @@ suite =
     describe "Tests for js code replacements"
         [ list
         , string
+        , sha2
         ]
 
 
@@ -57,6 +60,7 @@ run testcase =
                 )
                 []
                 tests
+                |> List.map (\failure -> name ++ " -> " ++ failure)
 
 
 test =
@@ -124,4 +128,14 @@ string =
             \_ ->
                 "nananananananananana"
                     == String.repeat 10 "na"
+        ]
+
+
+sha2 : Test
+sha2 =
+    describe "Sha 2"
+        [ test "sha256(\"Input\") == \"36ecb4f8669133ce744c21982ba4abe2ecd7086e1dc2226ccd6f266f3a5005f8\"" <|
+            \_ ->
+                SHA256.toHex (SHA256.fromString "Input")
+                    == "36ecb4f8669133ce744c21982ba4abe2ecd7086e1dc2226ccd6f266f3a5005f8"
         ]
