@@ -1,9 +1,7 @@
 import ts from 'typescript';
+import {parseAXFunction, parseFXFunction} from "./utils/ElmWrappers";
+
 export type Pattern<T> = (node: ts.Node) => T | undefined;
-
-const invocationRegex = /A(?<arity>[1-9]+[0-9]*)/;
-
-const wrapperRegex = /F(?<arity>[1-9]+[0-9]*)/;
 
 type WrappedInvocation = {
   args: ts.Expression[];
@@ -17,11 +15,9 @@ export const matchWrappedInvocation: Pattern<WrappedInvocation> = node => {
     const expression = node.expression;
     // detects f(..)
     if (ts.isIdentifier(expression)) {
-      const maybeMatch = expression.text.match(invocationRegex);
       // detects A123(...)
-      if (maybeMatch && maybeMatch.groups) {
-        const arity = Number(maybeMatch.groups.arity);
-
+      const arity = parseAXFunction(expression.text);
+      if (arity) {
         const allArgs = node.arguments;
         const [funcName, ...args] = allArgs;
 
@@ -52,12 +48,12 @@ type Wrapping = {
 };
 
 export const matchWrapping: Pattern<Wrapping> = node => {
+  // Detects FX(...)
   if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
-    const maybeMatch = node.expression.text.match(wrapperRegex);
-
-    if (maybeMatch && maybeMatch.groups) {
+    const arity = parseFXFunction(node.expression.text);
+    if (arity) {
       return {
-        arity: Number(maybeMatch.groups.arity),
+        arity: arity,
         wrappedExpression: node.arguments[0],
       };
     }

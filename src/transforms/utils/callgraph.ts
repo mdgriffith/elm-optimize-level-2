@@ -1,10 +1,7 @@
 import * as ts from "typescript";
+import {parseAXFunction, parseFXFunction} from "./ElmWrappers";
 
 const functionsToIgnore: string[] = []; // optionally ['require', 'parseInt', 'exec', 'reject', 'resolve'];
-const invocationRegex = /A(?<arity>[1-9]+[0-9]*)/;
-const wrapperRegex = /F(?<arity>[1-9]+[0-9]*)/;
-
-
 
 export type CallGraph = {
   all: string[],
@@ -80,8 +77,7 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
         contextFn = node.name.text;
 
         // match F{n} wrapper
-        const fnWrapper = node.initializer.expression.text.match(wrapperRegex);
-        if (fnWrapper && fnWrapper.groups) {
+        if (parseFXFunction(node.initializer.expression.text)) {
             graph.all.push(fn_var_name);
             node.initializer.forEachChild((child) => {
                 if (ts.isFunctionExpression(child)) {
@@ -128,10 +124,7 @@ function extractFunctionCalls(node: ts.Node, sourceFile: ts.SourceFile, indentLe
   if (ts.isCallExpression(node) && !already_inspected) {
     
     if (ts.isIdentifier(node.expression)) {
-
-      const maybeMatch = node.expression.text.match(invocationRegex);
-      if (maybeMatch && maybeMatch.groups) {
-        
+      if (parseAXFunction(node.expression.text)) {
         let found_index = 0
         node.forEachChild((child) => {
           if (found_index == 1 && ts.isIdentifier(child) && contextFn ){
