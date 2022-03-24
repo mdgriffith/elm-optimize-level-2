@@ -1,3 +1,8 @@
+#/bin/sh
+
+# Stop execution if a command fails
+set -ex
+
 # The main goal here is to have some guarantee that the transformed elm code functions as normally.
 
 # Compile normally
