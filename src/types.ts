@@ -36,6 +36,7 @@ export type Transforms = {
   unusedValues: boolean;
   replaceListFunctions: boolean;
   replaceStringFunctions: boolean;
+  lambdaifyFunctionComposition: boolean;
   recordUpdates: boolean;
   v8Analysis: boolean;
   fastCurriedFns: boolean;
@@ -87,6 +88,7 @@ export const emptyOpts: Transforms = {
   unusedValues: false,
   replaceListFunctions: false,
   replaceStringFunctions: false,
+  lambdaifyFunctionComposition: true,
   recordUpdates: false,
   v8Analysis: false,
   fastCurriedFns: false,
@@ -109,6 +111,7 @@ export function toolDefaults(o3Enabled: boolean, replacements: { string: string 
         unusedValues: false,
         replaceListFunctions: true,
         replaceStringFunctions: false,
+        lambdaifyFunctionComposition: true,
         recordUpdates: o3Enabled,
         v8Analysis: false,
         fastCurriedFns: true,
@@ -132,6 +135,7 @@ export function benchmarkDefaults(o3Enabled: boolean, replacements: { string: st
         unusedValues: false,
         replaceListFunctions: true,
         replaceStringFunctions: false,
+        lambdaifyFunctionComposition: true,
         recordUpdates: o3Enabled,
         v8Analysis: false,
         fastCurriedFns: true,
@@ -160,6 +164,7 @@ export const previous: Previous =
         unusedValues: false,
         replaceListFunctions: false,
         replaceStringFunctions: false,
+        lambdaifyFunctionComposition: true,
         recordUpdates: false,
         v8Analysis: false,
         fastCurriedFns: false,

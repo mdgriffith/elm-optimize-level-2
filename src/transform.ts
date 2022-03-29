@@ -12,6 +12,7 @@ import {
   createInlineListFromArrayTransformer,
 } from './transforms/inlineListFromArray';
 import { inlineEquality } from './transforms/inlineEquality';
+import { lambdaifyFunctionComposition } from './transforms/lambdaifyFunctionComposition';
 
 import {
   objectUpdate,
@@ -100,6 +101,7 @@ export const transform = async (
     [transforms.replacements != null || replacements.length > 0, await Replace.fromFiles(transforms.replacements || {}, replacements)],
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
+    [transforms.lambdaifyFunctionComposition, lambdaifyFunctionComposition],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
     [transforms.inlineEquality, inlineEquality()],
     [transforms.inlineNumberToString, inlineNumberToString()],
