@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import {parseAXFunction, parseFXFunction} from "./utils/ElmWrappers";
 
 /*
 
@@ -53,10 +54,6 @@ export type FuncSplit = {
 
 const deriveRawLambdaName = (wrappedName: string): string =>
   wrappedName + '_fn';
-
-const wrapperRegex = /^F(?<arity>[1-9]+[0-9]*)$/;
-
-const invocationRegex = /^A(?<arity>[1-9]+[0-9]*)$/;
 
 function reportInlinining(split: FuncSplit, { inlined }: InlineContext) {
   switch (split.type) {
@@ -181,14 +178,12 @@ const createSplitterVisitor = (
         // detects "var a = f(..)"
         if (ts.isIdentifier(callExpression)) {
           // detects "var a = F123(..)"
-          const wrapperMatch = callExpression.text.match(wrapperRegex);
-          if (wrapperMatch && wrapperMatch.groups) {
+          const arity = parseFXFunction(callExpression.text);
+          if (arity) {
             const args = node.initializer.arguments;
             // checks that it should be called with only one argument
             if (args.length === 1) {
               const [maybeFuncExpression] = args;
-
-              const arity = Number(wrapperMatch.groups.arity);
               const originalName = node.name.text;
 
               // detects var a = F123(innerFunc)
@@ -266,8 +261,7 @@ const createSplitterVisitor = (
             let funcName = callExpression.text;
             let isWrappedWithA = false;
             // but it can be also A2(func, 1,2) with larger number of args.
-            const maybeMatch = callExpression.text.match(invocationRegex);
-            if (maybeMatch && maybeMatch.groups) {
+            if (parseAXFunction(callExpression.text)) {
               const invocationArgs = node.initializer.arguments;
               const [funcIdentifier, ...restOfArgs] = invocationArgs;
 
@@ -411,11 +405,9 @@ const createInlinerVisitor = (
       const expression = node.expression;
       // detects f(..)
       if (ts.isIdentifier(expression)) {
-        const maybeMatch = expression.text.match(invocationRegex);
         // detects A123(...)
-        if (maybeMatch && maybeMatch.groups) {
-          const arity = Number(maybeMatch.groups.arity);
-
+        const arity = parseAXFunction(expression.text);
+        if (arity) {
           const allArgs = node.arguments;
           const [funcName, ...args] = allArgs;
 
@@ -522,12 +514,11 @@ function checkIfFunctionReturnsWrappedFunction(
     ts.isCallExpression(returnExpression) &&
     ts.isIdentifier(returnExpression.expression)
   ) {
-    const maybeWrapper = returnExpression.expression.text.match(wrapperRegex);
-
-    if (maybeWrapper && maybeWrapper.groups) {
+    const resultArity = parseFXFunction(returnExpression.expression.text);
+    if (resultArity) {
       return {
         arity,
-        resultArity: Number(maybeWrapper.groups.arity),
+        resultArity: resultArity,
       };
     }
   }
