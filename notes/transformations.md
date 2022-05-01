@@ -471,3 +471,12 @@ We can replace this implementation with a faster one that traverses the list and
 
 * Not included in elm-optimize-level-2 tool
 * The implementation used is similar to the improved String.join implementation [here](https://gitlab.com/e-neighborhood-watch/elm-string-benchmarks/#stringjoin) which sees some serious improvements over Elm's normal String.join.
+
+# List Zipping
+
+For the existing implementions of list zipping functions, (ie `List.map2`, `List.map3`, `List.map4`, and `List.map5`) Elm builds a Javascript array containing the results and then converts it to an Elm `List`.
+We can replace this implementation with a faster one that builds the result `List` with no intermediate steps.
+
+## Results Summary
+
+* The improved implementations of `List.map2` and `List.map3` are benchmarked [here](https://gitlab.com/e-neighborhood-watch/elm/elm-zip-benchmarks#elm-zip-benchmarks), which sees performance improvements over Elm's normal `List.map2` and `List.map3`.
