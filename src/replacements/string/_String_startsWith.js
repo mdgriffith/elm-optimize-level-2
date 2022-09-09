@@ -3,10 +3,10 @@ var _String_startsWith = F2(
         var prefixLength = prefix.length;
         var i = -1;
         if (str.length < prefixLength) {
-            return $elm$core$Basics$False;
+            return false;
         }
         while (++i < prefixLength) {
-            if (prefix[i] !== str[i]) { return $elm$core$Basics$False; }
+            if (prefix[i] !== str[i]) { return false; }
         }
-        return $elm$core$Basics$True;
+        return true;
     });
