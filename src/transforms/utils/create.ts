@@ -15,7 +15,7 @@ export function create(name: string, body: ts.Node): ts.Node {
         ts.isExpressionStatement(body) &&
         ts.isBinaryExpression(body.expression)
     ) {
-        return ts.createVariableDeclaration(name, undefined, body.expression.right);
+        return ts.factory.createVariableDeclaration(name, undefined, undefined, body.expression.right);
     }
     return body;
 }

@@ -38,21 +38,28 @@ const createVariantObjectLiteral = (
   slotsCount: number,
   mode: Mode
 ): ts.ObjectLiteralExpression => {
-  return ts.createObjectLiteral([
-    ts.createPropertyAssignment(
+  return ts.factory.createObjectLiteralExpression([
+    ts.factory.createPropertyAssignment(
       '$',
       mode === Mode.Dev
-        ? ts.createStringLiteral(name)
-        : ts.createNumericLiteral(index.toString())
+        ? ts.factory.createStringLiteral(name)
+        : ts.factory.createNumericLiteral(index.toString())
     ),
     // existing arguments
     ...argNames
       .slice(0, slotsCount)
-      .map((arg) => ts.createPropertyAssignment(arg, ts.createIdentifier(arg))),
+      .map((arg) =>
+        ts.factory.createPropertyAssignment(
+          arg,
+          ts.factory.createIdentifier(arg)
+        )
+      ),
     // fillings with nulls for the rest
     ...argNames
       .slice(slotsCount, totalTypeSlotCount)
-      .map((arg) => ts.createPropertyAssignment(arg, ts.createNull())),
+      .map((arg) =>
+        ts.factory.createPropertyAssignment(arg, ts.factory.createNull())
+      ),
   ]);
 };
 
@@ -61,7 +68,7 @@ const createCtorVariant = (
   slotsCount: number,
   mode: Mode
 ): ts.Expression => {
-  const funcExpression = ts.createFunctionExpression(
+  const funcExpression = ts.factory.createFunctionExpression(
     undefined, // modifiers
     undefined, //asteriskToken
     undefined, //name
@@ -69,7 +76,7 @@ const createCtorVariant = (
     argNames
       .slice(0, slotsCount)
       .map((arg) =>
-        ts.createParameter(
+        ts.factory.createParameterDeclaration(
           undefined,
           undefined,
           undefined,
@@ -80,8 +87,8 @@ const createCtorVariant = (
         )
       ),
     undefined, //type
-    ts.createBlock([
-      ts.createReturn(
+    ts.factory.createBlock([
+      ts.factory.createReturnStatement(
         createVariantObjectLiteral(replacement, slotsCount, mode)
       ),
     ])
@@ -89,8 +96,8 @@ const createCtorVariant = (
 
   if (slotsCount > 1) {
     // wrap it in Fn
-    return ts.createCall(
-      ts.createIdentifier('F' + slotsCount.toString()),
+    return ts.factory.createCallExpression(
+      ts.factory.createIdentifier('F' + slotsCount.toString()),
       undefined,
       [funcExpression]
     );
@@ -137,17 +144,19 @@ export const createCustomTypesTransformer = (
           if (node.name.text === replacement.jsName) {
             const slotsCount = extractNumberOfSlots(node.initializer);
             if (slotsCount === 0) {
-              return ts.updateVariableDeclaration(
+              return ts.factory.updateVariableDeclaration(
                 node,
                 node.name,
+                undefined,
                 node.type,
                 createVariantObjectLiteral(replacement, slotsCount, mode)
               );
             }
 
-            return ts.updateVariableDeclaration(
+            return ts.factory.updateVariableDeclaration(
               node,
               node.name,
+              undefined,
               node.type,
               createCtorVariant(replacement, slotsCount, mode)
             );

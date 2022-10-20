@@ -220,18 +220,20 @@ const createSplitterVisitor = (
                   type: 'raw_func',
                 });
 
-                const lambdaDeclaration = ts.createVariableDeclaration(
+                const lambdaDeclaration = ts.factory.createVariableDeclaration(
                   rawLambdaName,
+                  undefined,
                   undefined,
                   maybeFuncExpression
                 );
 
-                const newDeclaration = ts.updateVariableDeclaration(
+                const newDeclaration = ts.factory.updateVariableDeclaration(
                   node,
                   node.name,
                   undefined,
-                  ts.createCall(callExpression, undefined, [
-                    ts.createIdentifier(rawLambdaName),
+                  undefined,
+                  ts.factory.createCallExpression(callExpression, undefined, [
+                    ts.factory.createIdentifier(rawLambdaName),
                   ])
                 );
 
@@ -302,28 +304,30 @@ const createSplitterVisitor = (
               });
 
               const argsIdentifiers = appliedArgs.map((name) =>
-                ts.createIdentifier(name)
+                ts.factory.createIdentifier(name)
               );
 
               return [
                 ...appliedArgsNodes.map((argExpression, i) =>
-                  ts.createVariableDeclaration(
+                  ts.factory.createVariableDeclaration(
                     nameOfArg(i),
+                    undefined,
                     undefined,
                     argExpression
                   )
                 ),
 
-                ts.updateVariableDeclaration(
+                ts.factory.updateVariableDeclaration(
                   node,
                   node.name,
                   undefined,
-                  ts.updateCall(
+                  undefined,
+                  ts.factory.updateCallExpression(
                     node.initializer,
                     callExpression,
                     undefined,
                     isWrappedWithA
-                      ? [ts.createIdentifier(funcName), ...argsIdentifiers]
+                      ? [ts.factory.createIdentifier(funcName), ...argsIdentifiers]
                       : argsIdentifiers
                   )
                 ),
@@ -376,10 +380,11 @@ const createSplitterVisitor = (
 
               return [
                 node,
-                ts.createVariableDeclaration(
-                  ts.createIdentifier(rawFunName),
+                ts.factory.createVariableDeclaration(
+                  ts.factory.createIdentifier(rawFunName),
                   undefined,
-                  ts.createPropertyAccess(node.name, ts.createIdentifier(inner_fn_name))
+                  undefined,
+                  ts.factory.createPropertyAccessExpression(node.name, ts.factory.createIdentifier(inner_fn_name))
                 ),
               ];
             }
@@ -423,8 +428,8 @@ const createInlinerVisitor = (
 
             if (split && split.arity === arity) {
               reportInlinining(split, inlineContext);
-              return ts.createCall(
-                ts.createIdentifier(split.rawLambdaName),
+              return ts.factory.createCallExpression(
+                ts.factory.createIdentifier(split.rawLambdaName),
                 undefined,
                 args.map((arg) => ts.visitNode(arg, inliner))
               );
@@ -440,12 +445,12 @@ const createInlinerVisitor = (
             ) {
               inlineContext.inlined.partialApplications += 1;
 
-              return ts.createCall(
-                ts.createIdentifier(partialApplication.split.rawLambdaName),
+              return ts.factory.createCallExpression(
+                ts.factory.createIdentifier(partialApplication.split.rawLambdaName),
                 undefined,
                 [
                   ...partialApplication.appliedArgs.map((name) =>
-                    ts.createIdentifier(name)
+                    ts.factory.createIdentifier(name)
                   ),
                   ...args.map((arg) => ts.visitNode(arg, inliner)),
                 ]
@@ -464,12 +469,12 @@ const createInlinerVisitor = (
           ) {
             inlineContext.inlined.partialApplications += 1;
 
-            return ts.createCall(
-              ts.createIdentifier(partialApplication.split.rawLambdaName),
+            return ts.factory.createCallExpression(
+              ts.factory.createIdentifier(partialApplication.split.rawLambdaName),
               undefined,
               [
                 ...partialApplication.appliedArgs.map((name) =>
-                  ts.createIdentifier(name)
+                  ts.factory.createIdentifier(name)
                 ),
                 ...node.arguments.map((arg) => ts.visitNode(arg, inliner)),
               ]

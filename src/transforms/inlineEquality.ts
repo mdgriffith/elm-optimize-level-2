@@ -43,7 +43,7 @@ export const inlineEquality = (): ts.TransformerFactory<ts.SourceFile> => contex
           if (inferredPrimitive) {
             // Documentation for creating nodes using the typescript compiler:
             // https://github.com/microsoft/TypeScript/blob/2c08affa0d0d7fc55f15ab22e0326b93326d21d8/src/compiler/factory/nodeFactory.ts
-            return ts.createStrictEquality(
+            return ts.factory.createStrictEquality(
               node.arguments[0],
               node.arguments[1]
             );

@@ -45,7 +45,7 @@ export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.So
           return ts.updateVariableStatement(
             node,
             undefined,
-            ts.updateVariableDeclarationList(declList, filteredDeclarations)
+            ts.factory.updateVariableDeclarationList(declList, filteredDeclarations)
           );
         }
       }
