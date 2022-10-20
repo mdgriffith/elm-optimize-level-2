@@ -61,8 +61,8 @@ import { Mode } from '../types';
 
 const listElementMarker = (mode: Mode): ts.Expression =>
   mode === Mode.Dev
-    ? ts.createStringLiteral('::')
-    : ts.createNumericLiteral('1');
+    ? ts.factory.createStringLiteral('::')
+    : ts.factory.createNumericLiteral('1');
 
 export const InlineMode = Union({
   UsingConsFunc: of(null),

@@ -44,9 +44,9 @@ export const replaceVDomNode = (): ts.TransformerFactory<ts.SourceFile> => conte
         node.expression.text == '_VirtualDom_node' &&
         node.arguments.length == 1
       ) {
-        return ts.createCall(ts.createIdentifier('A2'), undefined, [
-          ts.createIdentifier('_VirtualDom_nodeNS'),
-          ts.createIdentifier('undefined'),
+        return ts.factory.createCallExpression(ts.factory.createIdentifier('A2'), undefined, [
+          ts.factory.createIdentifier('_VirtualDom_nodeNS'),
+          ts.factory.createIdentifier('undefined'),
           node.arguments[0],
         ]);
       }
@@ -84,10 +84,10 @@ function replaceVDomWithNSInline(node: ts.Node): ts.Node | undefined {
       ts.isIdentifier(firstArg) &&
       firstArg.text === '$elm$virtual_dom$VirtualDom$node'
     ) {
-      return ts.createCall(ts.createIdentifier('A4'), undefined, [
-        ts.createIdentifier('_VirtualDom_nodeNS'),
-        ts.createIdentifier('undefined'),
-        ts.createCall(ts.createIdentifier('_VirtualDom_noScript'), undefined, [
+      return ts.factory.createCallExpression(ts.factory.createIdentifier('A4'), undefined, [
+        ts.factory.createIdentifier('_VirtualDom_nodeNS'),
+        ts.factory.createIdentifier('undefined'),
+        ts.factory.createCallExpression(ts.factory.createIdentifier('_VirtualDom_noScript'), undefined, [
           node.arguments[1],
         ]),
         node.arguments[2],
@@ -113,29 +113,29 @@ function replaceVDomWithNSInline(node: ts.Node): ts.Node | undefined {
 //     node.initializer &&
 //     ts.isFunctionExpression(node.initializer)
 //   ) {
-//     let newCall = ts.createCall(ts.createIdentifier('A4'), undefined, [
-//       ts.createIdentifier('_VirtualDom_nodeNS'),
-//       ts.createIdentifier('undefined'),
-//       ts.createCall(ts.createIdentifier('_VirtualDom_noScript'), undefined, [
-//         ts.createIdentifier('tag'),
+//     let newCall = ts.factory.createCallExpression(ts.factory.createIdentifier('A4'), undefined, [
+//       ts.factory.createIdentifier('_VirtualDom_nodeNS'),
+//       ts.factory.createIdentifier('undefined'),
+//       ts.factory.createCallExpression(ts.factory.createIdentifier('_VirtualDom_noScript'), undefined, [
+//         ts.factory.createIdentifier('tag'),
 //       ]),
-//       ts.createIdentifier('attrs'),
-//       ts.createIdentifier('kids'),
+//       ts.factory.createIdentifier('attrs'),
+//       ts.factory.createIdentifier('kids'),
 //     ]);
 
-//     let newFn = ts.createCall(ts.createIdentifier('F3'), undefined, [
-//       ts.createFunctionExpression(
+//     let newFn = ts.factory.createCallExpression(ts.factory.createIdentifier('F3'), undefined, [
+//       ts.factory.createFunctionExpression(
 //         undefined,
 //         undefined,
 //         undefined,
 //         undefined,
 //         [param('tag'), param('attrs'), param('kids')],
 //         undefined,
-//         ts.createBlock([ts.createReturn(newCall)])
+//         ts.createBlock([ts.factory.createReturnStatement(newCall)])
 //       ),
 //     ]);
 
-//     return ts.createVariableDeclaration(
+//     return ts.factory.createVariableDeclaration(
 //       '$elm$virtual_dom$VirtualDom$node',
 //       undefined,
 //       newFn
@@ -146,11 +146,11 @@ function replaceVDomWithNSInline(node: ts.Node): ts.Node | undefined {
 // }
 
 // function param(name: string) {
-//   return ts.createParameter(
+//   return ts.factory.createParameterDeclaration(
 //     undefined,
 //     undefined,
 //     undefined,
-//     ts.createIdentifier(name),
+//     ts.factory.createIdentifier(name),
 //     undefined,
 //     undefined,
 //     undefined
