@@ -19,7 +19,7 @@ export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = contex
         const functionName = arity ? getName(node.arguments[0]) : node.expression.text;
 
         if (functionName && isOptimizableFunction(functionName)) {
-          return ts.factory.updateCallExpression(
+          node = ts.factory.updateCallExpression(
             node,
             node.expression,
             node.typeArguments,
