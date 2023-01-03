@@ -102,9 +102,9 @@ export const transform = async (
     [transforms.replacements != null || replacements.length > 0, await Replace.fromFiles(transforms.replacements || {}, replacements)],
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
+    [transforms.arraysForHtml, supportArraysForHtml],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
     [transforms.inlineEquality, inlineEquality()],
-    [transforms.arraysForHtml, supportArraysForHtml],
     [transforms.inlineNumberToString, inlineNumberToString()],
     [
       transforms.listLiterals == InlineLists.AsObjects,
