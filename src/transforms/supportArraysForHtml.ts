@@ -21,6 +21,10 @@ export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = contex
           arity
             ? {functionName: getName(node.arguments[0]), args: node.arguments.slice(1)}
             : {functionName: callExpression.text, args: node.arguments};
+
+        if (functionName && isOptimizableFunction(functionName)) {
+
+        }
       }
       return ts.visitEachChild(node, visitor, context);
     };
@@ -34,4 +38,8 @@ function getName(expr: ts.Expression): string | null {
     return expr.text;
   }
   return null;
+}
+
+function isOptimizableFunction(_functionName: string): boolean {
+  return true;
 }
