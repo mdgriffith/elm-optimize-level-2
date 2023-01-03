@@ -25,6 +25,7 @@ import { inlineNumberToString } from './transforms/inlineNumberToString';
 import { reportFunctionStatusInBenchmarks, v8Debug } from './transforms/analyze';
 import { recordUpdate } from './transforms/recordUpdate';
 import * as Replace from './transforms/replace';
+import {supportArraysForHtml, supportArraysForHtmlReplacements} from "./transforms/supportArraysForHtml";
 
 export type Options = {
   compile: boolean;
@@ -93,6 +94,7 @@ export const transform = async (
     [transforms.fastCurriedFns, '/../replacements/faster-function-wrappers'],
     [transforms.replaceListFunctions, '/../replacements/list'],
     [transforms.replaceStringFunctions, '/../replacements/string'],
+    [transforms.arraysForHtml, supportArraysForHtmlReplacements],
   ]);
 
   let inlineCtx: InlineContext | undefined;
@@ -100,6 +102,7 @@ export const transform = async (
     [transforms.replacements != null || replacements.length > 0, await Replace.fromFiles(transforms.replacements || {}, replacements)],
     [transforms.v8Analysis, v8Debug],
     [transforms.variantShapes, normalizeVariantShapes],
+    [transforms.arraysForHtml, supportArraysForHtml],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
     [transforms.inlineEquality, inlineEquality()],
     [transforms.inlineNumberToString, inlineNumberToString()],
