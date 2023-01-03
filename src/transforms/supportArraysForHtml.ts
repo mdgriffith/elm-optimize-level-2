@@ -10,8 +10,19 @@ import {parseAXFunction} from "./utils/ElmWrappers";
 
 export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = context => {
   return sourceFile => {
+    const knownFunctionsToOptimize : Set<string> = new Set(['$elm$html$Html$node']);
+
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
-      const knownFunctionsToOptimize : Set<string> = new Set(['$elm$html$Html$node']);
+      if (ts.isVariableDeclaration(node)
+        && ts.isIdentifier(node.name)
+        && node.initializer
+        && ts.isCallExpression(node.initializer)
+        && ts.isIdentifier(node.initializer.expression)
+        && node.initializer.expression.text === '_VirtualDom_node'
+      ) {
+        knownFunctionsToOptimize.add(node.name.text);
+        return ts.visitEachChild(node, visitor, context);
+      }
 
       if (ts.isCallExpression(node)
         && ts.isIdentifier(node.expression)
