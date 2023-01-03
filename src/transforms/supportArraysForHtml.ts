@@ -42,6 +42,12 @@ function removeListFromArray(node: ts.Expression): ts.Expression {
     return node.arguments[0];
   }
 
+  if (ts.isIdentifier(node)
+    && node.text === '_List_Nil'
+  ) {
+    return ts.factory.createArrayLiteralExpression([]);
+  }
+
   return node;
 }
 
