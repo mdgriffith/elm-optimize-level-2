@@ -5,6 +5,9 @@ import {supportArraysForHtml} from "../src/transforms/supportArraysForHtml";
 
 test('it removes the _List_fromArray call for functions that create DOM nodes', () => {
   const initialCode = `
+    var $elm$html$Html$div = _VirtualDom_node('div');
+    var $elm$html$Html$button = _VirtualDom_node('button');
+    var $elm$html$Html$p = _VirtualDom_node('p');
     var view = A2(
       $elm$html$Html$div,
       _List_fromArray([
@@ -30,6 +33,9 @@ test('it removes the _List_fromArray call for functions that create DOM nodes', 
   `;
 
   const expectedOutputCode = `
+    var $elm$html$Html$div = _VirtualDom_node('div');
+    var $elm$html$Html$button = _VirtualDom_node('button');
+    var $elm$html$Html$p = _VirtualDom_node('p');
     var view = A2(
       $elm$html$Html$div,
       [
@@ -61,6 +67,7 @@ test('it removes the _List_fromArray call for functions that create DOM nodes', 
 
 test('it removes the _List_fromArray call for partially applied functions', () => {
   const initialCode = `
+    var $elm$html$Html$div = _VirtualDom_node('div');
     var partialView1 = A2(
       $elm$html$Html$node,
       'web-component',
@@ -81,6 +88,7 @@ test('it removes the _List_fromArray call for partially applied functions', () =
   `;
 
   const expectedOutputCode = `
+    var $elm$html$Html$div = _VirtualDom_node('div');
     var partialView1 = A2(
       $elm$html$Html$node,
       'web-component',
