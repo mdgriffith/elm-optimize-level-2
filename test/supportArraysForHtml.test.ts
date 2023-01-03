@@ -103,3 +103,22 @@ test('it removes the _List_fromArray call for partially applied functions', () =
   const { actual, expected } = transformCode(initialCode, expectedOutputCode, supportArraysForHtml);
   expect(actual).toBe(expected);
 });
+
+test('should not remove _List_fromArray from non-supported functions', () => {
+  const initialCode = `
+    var a = A2(
+      $author$project$Module$someFunction,
+      _List_fromArray([1, 2, 3]),
+      value
+    );
+
+    var b = $author$project$Module$someOtherFunction(
+      _List_fromArray([1, 2, 3])
+    );
+    
+    var c = _List_fromArray([1, 2, 3]);
+  `;
+
+  const { actual, expected } = transformCode(initialCode, initialCode, supportArraysForHtml);
+  expect(actual).toBe(expected);
+});
