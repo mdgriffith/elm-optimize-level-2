@@ -35,6 +35,13 @@ export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = contex
 };
 
 function removeListFromArray(node: ts.Expression): ts.Expression {
+  if (ts.isCallExpression(node)
+    && ts.isIdentifier(node.expression)
+    && node.expression.text === '_List_fromArray'
+  ) {
+    return node.arguments[0];
+  }
+
   return node;
 }
 
