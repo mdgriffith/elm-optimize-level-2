@@ -103,7 +103,7 @@ export const transform = async (
     [transforms.variantShapes, normalizeVariantShapes],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
     [transforms.inlineEquality, inlineEquality()],
-    [true, supportArraysForHtml],
+    [transforms.arraysForHtml, supportArraysForHtml],
     [transforms.inlineNumberToString, inlineNumberToString()],
     [
       transforms.listLiterals == InlineLists.AsObjects,
