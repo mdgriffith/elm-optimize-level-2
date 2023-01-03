@@ -11,6 +11,8 @@ import {parseAXFunction} from "./utils/ElmWrappers";
 export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = context => {
   return sourceFile => {
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      const knownFunctionsToOptimize : Set<string> = new Set();
+
       if (ts.isCallExpression(node)
         && ts.isIdentifier(node.expression)
         && node.arguments.length > 0
@@ -18,7 +20,7 @@ export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = contex
         const arity = parseAXFunction(node.expression.text);
         const functionName = arity ? getName(node.arguments[0]) : node.expression.text;
 
-        if (functionName && isOptimizableFunction(functionName)) {
+        if (functionName && isOptimizableFunction(functionName, knownFunctionsToOptimize)) {
           node = ts.factory.updateCallExpression(
             node,
             node.expression,
@@ -58,6 +60,6 @@ function getName(expr: ts.Expression): string | null {
   return null;
 }
 
-function isOptimizableFunction(functionName: string): boolean {
-  return functionName.startsWith('$elm$html$Html$');
+function isOptimizableFunction(functionName: string, knownFunctionsToOptimize : Set<string>): boolean {
+  return functionName.startsWith('$elm$html$Html$') || knownFunctionsToOptimize.has(functionName);
 }
