@@ -25,7 +25,7 @@ import { inlineNumberToString } from './transforms/inlineNumberToString';
 import { reportFunctionStatusInBenchmarks, v8Debug } from './transforms/analyze';
 import { recordUpdate } from './transforms/recordUpdate';
 import * as Replace from './transforms/replace';
-import {supportArraysForHtml} from "./transforms/supportArraysForHtml";
+import {supportArraysForHtml, supportArraysForHtmlReplacements} from "./transforms/supportArraysForHtml";
 
 export type Options = {
   compile: boolean;
@@ -94,6 +94,7 @@ export const transform = async (
     [transforms.fastCurriedFns, '/../replacements/faster-function-wrappers'],
     [transforms.replaceListFunctions, '/../replacements/list'],
     [transforms.replaceStringFunctions, '/../replacements/string'],
+    [transforms.arraysForHtml, supportArraysForHtmlReplacements],
   ]);
 
   let inlineCtx: InlineContext | undefined;

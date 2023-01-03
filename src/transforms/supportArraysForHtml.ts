@@ -7,10 +7,11 @@ TODO Docs
 import ts from 'typescript';
 import {parseAXFunction} from "./utils/ElmWrappers";
 
+export const supportArraysForHtmlReplacements = '/../replacements/virtual-dom';
 
 export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = context => {
   return sourceFile => {
-    const knownFunctionsToOptimize : Set<string> = new Set(['$elm$html$Html$node']);
+    const knownFunctionsToOptimize: Set<string> = new Set(['$elm$html$Html$node']);
 
     const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isVariableDeclaration(node)
@@ -71,6 +72,6 @@ function getName(expr: ts.Expression): string | null {
   return null;
 }
 
-function isOptimizableFunction(functionName: string, knownFunctionsToOptimize : Set<string>): boolean {
+function isOptimizableFunction(functionName: string, knownFunctionsToOptimize: Set<string>): boolean {
   return knownFunctionsToOptimize.has(functionName);
 }
