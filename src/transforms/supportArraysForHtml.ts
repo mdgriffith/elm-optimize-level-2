@@ -58,6 +58,6 @@ function getName(expr: ts.Expression): string | null {
   return null;
 }
 
-function isOptimizableFunction(_functionName: string): boolean {
-  return true;
+function isOptimizableFunction(functionName: string): boolean {
+  return functionName.startsWith('$elm$html$Html$');
 }
