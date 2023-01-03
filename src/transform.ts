@@ -25,6 +25,7 @@ import { inlineNumberToString } from './transforms/inlineNumberToString';
 import { reportFunctionStatusInBenchmarks, v8Debug } from './transforms/analyze';
 import { recordUpdate } from './transforms/recordUpdate';
 import * as Replace from './transforms/replace';
+import {supportArraysForHtml} from "./transforms/supportArraysForHtml";
 
 export type Options = {
   compile: boolean;
@@ -102,6 +103,7 @@ export const transform = async (
     [transforms.variantShapes, normalizeVariantShapes],
     [transforms.inlineFunctions, createFunctionInlineTransformer(verbose, transforms.fastCurriedFns)],
     [transforms.inlineEquality, inlineEquality()],
+    [true, supportArraysForHtml],
     [transforms.inlineNumberToString, inlineNumberToString()],
     [
       transforms.listLiterals == InlineLists.AsObjects,
