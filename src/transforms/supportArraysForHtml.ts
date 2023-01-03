@@ -15,15 +15,16 @@ export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = contex
         && ts.isIdentifier(node.expression)
         && node.arguments.length > 0
       ) {
-        const callExpression = node.expression;
-        const arity = parseAXFunction(callExpression.text);
-        const {functionName, args} =
-          arity
-            ? {functionName: getName(node.arguments[0]), args: node.arguments.slice(1)}
-            : {functionName: callExpression.text, args: node.arguments};
+        const arity = parseAXFunction(node.expression.text);
+        const functionName = arity ? getName(node.arguments[0]) : node.expression.text;
 
         if (functionName && isOptimizableFunction(functionName)) {
-
+          return ts.factory.updateCallExpression(
+            node,
+            node.expression,
+            node.typeArguments,
+            node.arguments.map(removeListFromArray)
+          );
         }
       }
       return ts.visitEachChild(node, visitor, context);
@@ -32,6 +33,10 @@ export const supportArraysForHtml: ts.TransformerFactory<ts.SourceFile> = contex
     return ts.visitNode(sourceFile, visitor);
   };
 };
+
+function removeListFromArray(node: ts.Expression): ts.Expression {
+  return node;
+}
 
 function getName(expr: ts.Expression): string | null {
   if (ts.isIdentifier(expr)) {
