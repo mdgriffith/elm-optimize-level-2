@@ -27,9 +27,9 @@ export async function run(
   let elmFilePath = undefined;
 
   const replacements = null;
-  let inputFilePath = options.inputFilePath[0];
-  if (options.inputFilePath[0] == 'make') {
-    inputFilePath = options.inputFilePath[1];
+  let inputFilePaths = options.inputFilePath;
+  if (inputFilePaths[0] == 'make') {
+    inputFilePaths.shift();
   }
 
   const o3Enabled = options.optimizeSpeed;
@@ -67,12 +67,14 @@ export async function run(
   //       process.exit(0)
   //   }
 
-  if (inputFilePath && inputFilePath.endsWith('.js')) {
-    jsSource = fs.readFileSync(inputFilePath, 'utf8');
+  if (inputFilePaths.length === 1 && inputFilePaths[0].endsWith('.js')) {
+    jsSource = fs.readFileSync(inputFilePaths[0], 'utf8');
     log('Optimizing existing JS...');
-  } else if (inputFilePath && inputFilePath.endsWith('.elm')) {
-    elmFilePath = inputFilePath;
-    jsSource = compileToStringSync([inputFilePath], {
+  } else if (
+    inputFilePaths.every((inputFilePath) => inputFilePath.endsWith('.elm'))
+  ) {
+    elmFilePath = inputFilePaths;
+    jsSource = compileToStringSync(inputFilePaths, {
       output: 'output/elm.opt.js',
       cwd: dirname,
       optimize: true,
@@ -107,17 +109,37 @@ export async function run(
   // This mirrors elm make behavior.
   const outputDirectory = path.dirname(options.outputFilePath);
   if (
-    path.dirname(inputFilePath) !== outputDirectory &&
+    inputFilePaths.every(
+      (inputFilePath) => path.dirname(inputFilePath) !== outputDirectory
+    ) &&
     !fs.existsSync(outputDirectory)
   ) {
     fs.mkdirSync(outputDirectory, { recursive: true });
   }
 
   fs.writeFileSync(options.outputFilePath, transformed);
-  const fileName = path.basename(inputFilePath);
+
   log('Success!');
   log('');
-  log(`   ${fileName} ───> ${options.outputFilePath}`);
+  if (inputFilePaths.length === 1) {
+    const fileName = path.basename(inputFilePaths[0]);
+    log(`   ${fileName} ───> ${options.outputFilePath}`);
+  } else {
+    const maxLength = inputFilePaths
+      .map((inputFilePath) => path.basename(inputFilePath).length)
+      .reduce((max, len) => Math.max(max, len), 0);
+    const fill = maxLength + 4;
+    let isFirst = true;
+    for (const inputFilePath of inputFilePaths) {
+      const fileName = path.basename(inputFilePath) + ' ';
+      if (isFirst) {
+        log(`   ${fileName.padEnd(fill, '-')}+──> ${options.outputFilePath}`);
+        isFirst = false;
+      } else {
+        log(`   ${fileName.padEnd(fill, '-')}+`);
+      }
+    }
+  }
   log('');
   return options.outputFilePath;
 }

@@ -36,7 +36,7 @@ export type Options = {
 export const transform = async (
   _dir: string,
   jsSource: string,
-  elmfile: string | undefined,
+  elmfiles: string[] | string | undefined,
   verbose: boolean,
   transforms: Transforms
 ): Promise<string> => {
@@ -54,7 +54,7 @@ export const transform = async (
   let source = ts.createSourceFile('elm.js', jsSourceWithoutComments, ts.ScriptTarget.ES2018);
 
   let parsedVariants = primitives;
-  if (elmfile && transforms.variantShapes) {
+  if (elmfiles && transforms.variantShapes) {
     // const elmSource = fs.readFileSync(elmfile, 'utf8');
     // parsedVariants = parseElm({
     //   author: 'author',
