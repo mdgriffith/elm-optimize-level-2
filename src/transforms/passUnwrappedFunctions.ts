@@ -103,11 +103,11 @@ export const createPassUnwrappedFunctionsTransformer = (
                 match.arity === funcToModify.arity
               ) {
                 // transforms A2(func, a,b) into func(a,b)
-                return ts.createCall(
+                return ts.factory.createCallExpression(
                   match.calleeName,
                   undefined,
                   // recursively transform all calls within a function
-                  match.args.map((arg) => ts.visitNode(arg, modifyFunction))
+                  match.args.map((arg) => ts.visitNode(arg, modifyFunction) as ts.Expression)
                 );
               }
 
@@ -127,11 +127,11 @@ export const createPassUnwrappedFunctionsTransformer = (
 
               // recursive call to itself
               if (calledFuncIdentifier.text === funcToModify.funcName) {
-                return ts.createCall(
-                  ts.createIdentifier(deriveNewFuncName(funcToModify.funcName)),
+                return ts.factory.createCallExpression(
+                  ts.factory.createIdentifier(deriveNewFuncName(funcToModify.funcName)),
                   undefined,
                   nodeInModifyFunc.arguments.map((arg) =>
-                    ts.visitNode(arg, modifyFunction)
+                    ts.visitNode(arg, modifyFunction) as ts.Expression
                   )
                 );
               }
@@ -161,13 +161,13 @@ export const createPassUnwrappedFunctionsTransformer = (
                   bailOut = true;
                 }
 
-                return ts.createCall(
-                  ts.createIdentifier(
+                return ts.factory.createCallExpression(
+                  ts.factory.createIdentifier(
                     deriveNewFuncName(calledFuncIdentifier.text)
                   ),
                   undefined,
                   nodeInModifyFunc.arguments.map((arg) =>
-                    ts.visitNode(arg, modifyFunction)
+                    ts.visitNode(arg, modifyFunction) as ts.Expression
                   )
                 );
               }
@@ -183,15 +183,16 @@ export const createPassUnwrappedFunctionsTransformer = (
           const newFuncExpression = ts.visitNode(
             funcToModify.funcExpression,
             modifyFunction
-          );
+          ) as ts.Expression;
 
           if (bailOut) {
             foundFunctions.delete(funcToModify.funcName);
           } else {
             return [
               node,
-              ts.createVariableDeclaration(
+              ts.factory.createVariableDeclaration(
                 deriveNewFuncName(funcToModify.funcName),
+                undefined,
                 undefined,
                 newFuncExpression
               ),
@@ -231,23 +232,23 @@ export const createPassUnwrappedFunctionsTransformer = (
               // inside the function body. If they differ (e.g., F3 passed where A2
               // is used), unwrapping would break partial application semantics.
               if (match && match.arity === funcToUnwrap.arity) {
-                return ts.createCall(
-                  ts.createIdentifier(deriveNewFuncName(expression.text)),
+                return ts.factory.createCallExpression(
+                  ts.factory.createIdentifier(deriveNewFuncName(expression.text)),
                   undefined,
                   [
                     ...args
                       .slice(0, funcToUnwrap.parameterPos)
                       .map((a) =>
-                        ts.visitNode(a, replaceUsagesWithUnwrappedVersion)
+                        ts.visitNode(a, replaceUsagesWithUnwrappedVersion) as ts.Expression
                       ),
                     ts.visitNode(
                       match.wrappedExpression,
                       replaceUsagesWithUnwrappedVersion
-                    ),
+                    ) as ts.Expression,
                     ...args
                       .slice(argPos + 1)
                       .map((a) =>
-                        ts.visitNode(a, replaceUsagesWithUnwrappedVersion)
+                        ts.visitNode(a, replaceUsagesWithUnwrappedVersion) as ts.Expression
                       ),
                   ]
                 );
@@ -258,20 +259,20 @@ export const createPassUnwrappedFunctionsTransformer = (
                   existingSplit &&
                   existingSplit.arity === funcToUnwrap.arity
                 ) {
-                  return ts.createCall(
-                    ts.createIdentifier(deriveNewFuncName(expression.text)),
+                  return ts.factory.createCallExpression(
+                    ts.factory.createIdentifier(deriveNewFuncName(expression.text)),
                     undefined,
                     [
                       ...args
                         .slice(0, funcToUnwrap.parameterPos)
                         .map((a) =>
-                          ts.visitNode(a, replaceUsagesWithUnwrappedVersion)
+                          ts.visitNode(a, replaceUsagesWithUnwrappedVersion) as ts.Expression
                         ),
-                      ts.createIdentifier(existingSplit.rawLambdaName),
+                      ts.factory.createIdentifier(existingSplit.rawLambdaName),
                       ...args
                         .slice(argPos + 1)
                         .map((a) =>
-                          ts.visitNode(a, replaceUsagesWithUnwrappedVersion)
+                          ts.visitNode(a, replaceUsagesWithUnwrappedVersion) as ts.Expression
                         ),
                     ]
                   );
@@ -294,12 +295,12 @@ export const createPassUnwrappedFunctionsTransformer = (
     const withUnwrappedFunctions = ts.visitNode(
       copiedSource,
       addFunctionsWithoutUnwrapping
-    );
+    ) as ts.SourceFile;
 
     const withInlinedCalls = ts.visitNode(
       withUnwrappedFunctions,
       replaceUsagesWithUnwrappedVersion
-    );
+    ) as ts.SourceFile;
 
     return withInlinedCalls;
   };

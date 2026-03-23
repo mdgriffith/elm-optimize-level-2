@@ -115,8 +115,8 @@ const visitBrowser = async (
   const safariOptions = new safari.Options();
 
   if (options.headless) {
-    firefoxOptions.headless();
-    chromeOptions.headless();
+    firefoxOptions.addArguments('--headless');
+    chromeOptions.addArguments('--headless');
     // safariOptions.headless();
   }
   // Should probably make this configurable...

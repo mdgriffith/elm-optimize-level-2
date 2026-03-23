@@ -108,10 +108,10 @@ export const createFunctionInlineTransformer = (
       ignoreTopLevel === 'for tests',
       arityBasedFunctionNames
     );
-    const splittedNode = ts.visitNode(sourceFile, splitter);
+    const splittedNode = ts.visitNode(sourceFile, splitter) as ts.SourceFile;
 
     const inliner = createInlinerVisitor(inlineContext, context);
-    const result = ts.visitNode(splittedNode, inliner);
+    const result = ts.visitNode(splittedNode, inliner) as ts.SourceFile;
 
     if (logOverview) {
       reportInlineTransformResult(inlineContext);
@@ -220,18 +220,20 @@ const createSplitterVisitor = (
                   type: 'raw_func',
                 });
 
-                const lambdaDeclaration = ts.createVariableDeclaration(
+                const lambdaDeclaration = ts.factory.createVariableDeclaration(
                   rawLambdaName,
+                  undefined,
                   undefined,
                   maybeFuncExpression
                 );
 
-                const newDeclaration = ts.updateVariableDeclaration(
+                const newDeclaration = ts.factory.updateVariableDeclaration(
                   node,
                   node.name,
                   undefined,
-                  ts.createCall(callExpression, undefined, [
-                    ts.createIdentifier(rawLambdaName),
+                  undefined,
+                  ts.factory.createCallExpression(callExpression, undefined, [
+                    ts.factory.createIdentifier(rawLambdaName),
                   ])
                 );
 
@@ -302,28 +304,29 @@ const createSplitterVisitor = (
               });
 
               const argsIdentifiers = appliedArgs.map((name) =>
-                ts.createIdentifier(name)
+                ts.factory.createIdentifier(name)
               );
 
               return [
                 ...appliedArgsNodes.map((argExpression, i) =>
-                  ts.createVariableDeclaration(
+                  ts.factory.createVariableDeclaration(
                     nameOfArg(i),
+                    undefined,
                     undefined,
                     argExpression
                   )
                 ),
 
-                ts.updateVariableDeclaration(
+                ts.factory.updateVariableDeclaration(
                   node,
                   node.name,
                   undefined,
-                  ts.updateCall(
-                    node.initializer,
+                  undefined,
+                  ts.factory.createCallExpression(
                     callExpression,
                     undefined,
                     isWrappedWithA
-                      ? [ts.createIdentifier(funcName), ...argsIdentifiers]
+                      ? [ts.factory.createIdentifier(funcName), ...argsIdentifiers]
                       : argsIdentifiers
                   )
                 ),
@@ -376,10 +379,11 @@ const createSplitterVisitor = (
 
               return [
                 node,
-                ts.createVariableDeclaration(
-                  ts.createIdentifier(rawFunName),
+                ts.factory.createVariableDeclaration(
+                  ts.factory.createIdentifier(rawFunName),
                   undefined,
-                  ts.createPropertyAccess(node.name, ts.createIdentifier(inner_fn_name))
+                  undefined,
+                  ts.factory.createPropertyAccessExpression(node.name, ts.factory.createIdentifier(inner_fn_name))
                 ),
               ];
             }
@@ -423,10 +427,10 @@ const createInlinerVisitor = (
 
             if (split && split.arity === arity) {
               reportInlinining(split, inlineContext);
-              return ts.createCall(
-                ts.createIdentifier(split.rawLambdaName),
+              return ts.factory.createCallExpression(
+                ts.factory.createIdentifier(split.rawLambdaName),
                 undefined,
-                args.map((arg) => ts.visitNode(arg, inliner))
+                args.map((arg) => ts.visitNode(arg, inliner) as ts.Expression)
               );
             }
 
@@ -440,14 +444,14 @@ const createInlinerVisitor = (
             ) {
               inlineContext.inlined.partialApplications += 1;
 
-              return ts.createCall(
-                ts.createIdentifier(partialApplication.split.rawLambdaName),
+              return ts.factory.createCallExpression(
+                ts.factory.createIdentifier(partialApplication.split.rawLambdaName),
                 undefined,
                 [
                   ...partialApplication.appliedArgs.map((name) =>
-                    ts.createIdentifier(name)
+                    ts.factory.createIdentifier(name)
                   ),
-                  ...args.map((arg) => ts.visitNode(arg, inliner)),
+                  ...args.map((arg) => ts.visitNode(arg, inliner) as ts.Expression),
                 ]
               );
             }
@@ -464,14 +468,14 @@ const createInlinerVisitor = (
           ) {
             inlineContext.inlined.partialApplications += 1;
 
-            return ts.createCall(
-              ts.createIdentifier(partialApplication.split.rawLambdaName),
+            return ts.factory.createCallExpression(
+              ts.factory.createIdentifier(partialApplication.split.rawLambdaName),
               undefined,
               [
                 ...partialApplication.appliedArgs.map((name) =>
-                  ts.createIdentifier(name)
+                  ts.factory.createIdentifier(name)
                 ),
-                ...node.arguments.map((arg) => ts.visitNode(arg, inliner)),
+                ...node.arguments.map((arg) => ts.visitNode(arg, inliner) as ts.Expression),
               ]
             );
           }

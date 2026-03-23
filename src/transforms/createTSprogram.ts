@@ -33,7 +33,7 @@ export const createProgramFromSource = (
       if (name === sourceCopy.fileName) {
         return sourceCopy;
       } else {
-        return serveLibFile(name, languageVersion);
+        return serveLibFile(name, languageVersion as ts.ScriptTarget);
       }
     },
     writeFile: () => {},

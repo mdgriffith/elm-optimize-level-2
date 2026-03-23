@@ -19,12 +19,12 @@ export const inlineNumberToString = (): ts.TransformerFactory<ts.SourceFile> => 
             expression.text === INT_2_STRING) &&
           node.arguments.length == 1
         ) {
-          return ts.createAdd(node.arguments[0], ts.createIdentifier('""'));
+          return ts.factory.createBinaryExpression(node.arguments[0], ts.SyntaxKind.PlusToken, ts.factory.createIdentifier('""'));
         }
       }
       return ts.visitEachChild(node, visitor, context);
     };
 
-    return ts.visitNode(sourceFile, visitor);
+    return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
   };
 };

@@ -26,7 +26,7 @@ export const replace = (
             return ts.visitEachChild(node, visitor, context);
         };
 
-        return ts.visitNode(sourceFile, visitor);
+        return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
     };
 };
 

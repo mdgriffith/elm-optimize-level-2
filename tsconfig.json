@@ -20,7 +20,8 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "esModuleInterop": true,
-    "newLine": "lf"
+    "newLine": "lf",
+    "skipLibCheck": true
   },
   "include": [
     "src"

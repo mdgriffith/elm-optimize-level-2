@@ -9,13 +9,13 @@ export const recordUpdate = (): ts.TransformerFactory<ts.SourceFile> =>
     const updateSet = new Map<string, number>();
     ts.visitNode(sourceFile, registerUpdateStatements(propSet, updateSet, context));
 
-    const replacedUpdates = ts.visitNode(sourceFile, replaceUpdateStatements(updateSet, context));
-    const replacedLiterals = ts.visitNode(replacedUpdates, replaceObjectLiterals(propSet, registry, context));
+    const replacedUpdates = ts.visitNode(sourceFile, replaceUpdateStatements(updateSet, context)) as ts.SourceFile;
+    const replacedLiterals = ts.visitNode(replacedUpdates, replaceObjectLiterals(propSet, registry, context)) as ts.SourceFile;
 
     const recordStatements = createRecordStatements(registry);
     const reusableUpdateStatements = createReusableUpdateStatements(updateSet);
     const statementsToPrepend = recordStatements.concat(reusableUpdateStatements);
-    const insertedCtors = ts.visitNode(replacedLiterals, prependNodes(statementsToPrepend, context));
+    const insertedCtors = ts.visitNode(replacedLiterals, prependNodes(statementsToPrepend, context)) as ts.SourceFile;
 
     return insertedCtors;
 }
@@ -138,30 +138,31 @@ function generateCodeForReusableUpdate(objName: string, shape: string, objectPro
  
     const updateFnName = `$$update__${shape.replace(/,/g, '__')}`;
 
-    const initialArgs: Array<ts.Expression> = [ ts.createIdentifier(objName)  ];
+    const initialArgs: Array<ts.Expression> = [ ts.factory.createIdentifier(objName)  ];
     const newValues = objectProperties.map((it) => (it as ts.PropertyAssignment).initializer);
     const args = initialArgs.concat(newValues);
 
-    return ts.createCall(
-        ts.createIdentifier(updateFnName),
+    return ts.factory.createCallExpression(
+        ts.factory.createIdentifier(updateFnName),
         undefined,
         args
     );
 }
 
 function generateCodeForSingleUpdate(objName: string, objectProperties: Array<ts.ObjectLiteralElementLike>): ts.Node {
-    const copyId = ts.createIdentifier('$r');
+    const copyId = ts.factory.createIdentifier('$r');
 
-    const cloneObj = ts.createVariableStatement(
+    const cloneObj = ts.factory.createVariableStatement(
         undefined,
-        ts.createVariableDeclarationList([
-            ts.createVariableDeclaration(
+        ts.factory.createVariableDeclarationList([
+            ts.factory.createVariableDeclaration(
                 copyId,
                 undefined,
-                ts.createCall(
-                    ts.createPropertyAccess(
-                        ts.createIdentifier(objName),
-                        ts.createIdentifier('$c')
+                undefined,
+                ts.factory.createCallExpression(
+                    ts.factory.createPropertyAccessExpression(
+                        ts.factory.createIdentifier(objName),
+                        ts.factory.createIdentifier('$c')
                     ),
                     undefined,
                     []
@@ -171,24 +172,24 @@ function generateCodeForSingleUpdate(objName: string, objectProperties: Array<ts
     );
 
     const propSetters: ts.Statement[] = objectProperties.
-        map((it) => ts.createExpressionStatement(
-            ts.createBinary(
-                ts.createPropertyAccess(
+        map((it) => ts.factory.createExpressionStatement(
+            ts.factory.createBinaryExpression(
+                ts.factory.createPropertyAccessExpression(
                     copyId,
                     it.name as ts.Identifier
                 ),
-                ts.createToken(ts.SyntaxKind.EqualsToken),
+                ts.factory.createToken(ts.SyntaxKind.EqualsToken),
                 (it as ts.PropertyAssignment).initializer
             )
     ));
 
-    const retStmt = ts.createReturn(copyId);
+    const retStmt = ts.factory.createReturnStatement(copyId);
 
     propSetters.push(retStmt);
 
     const block = [ cloneObj as ts.Statement ].concat(propSetters);
 
-    return ts.createImmediatelyInvokedFunctionExpression(block);
+    return ts.factory.createImmediatelyInvokedFunctionExpression(block);
 }
 
 
@@ -211,9 +212,9 @@ function replaceObjectLiterals(propSet: Set<string>, registry: RecordRegistry, c
         }
 
         const recordClassName = registry.register(objectLiteral);
-        const recordConstruction = ts.createParen(
-            ts.createNew(
-                ts.createIdentifier(recordClassName),
+        const recordConstruction = ts.factory.createParenthesizedExpression(
+            ts.factory.createNewExpression(
+                ts.factory.createIdentifier(recordClassName),
                 undefined,
                 objectLiteral.properties.map((it) => (it as ts.PropertyAssignment).initializer)
             )

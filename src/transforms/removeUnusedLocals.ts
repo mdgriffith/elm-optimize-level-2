@@ -15,7 +15,7 @@ export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.So
 
     let removedCount = 0;
 
-    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+    const visitor = (node: ts.Node): ts.VisitResult<ts.Node | undefined> => {
       // detects function f(..){..}
       if (
         ts.isFunctionDeclaration(node) &&
@@ -42,10 +42,10 @@ export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.So
           // only update remove some of the declarations
           removedCount +=
             declList.declarations.length - filteredDeclarations.length;
-          return ts.updateVariableStatement(
+          return ts.factory.updateVariableStatement(
             node,
             undefined,
-            ts.updateVariableDeclarationList(declList, filteredDeclarations)
+            ts.factory.updateVariableDeclarationList(declList, filteredDeclarations)
           );
         }
       }
@@ -54,12 +54,12 @@ export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.So
     };
 
     // TODO make this code pretty
-    let result = ts.visitNode(sourceCopy, visitor);
+    let result = ts.visitNode(sourceCopy, visitor) as ts.SourceFile;
     unused = collectUnusedVariables(result);
 
     while (unused.length > 0) {
       console.log('found unused nextRound:', unused.length);
-      result = ts.visitNode(result, visitor);
+      result = ts.visitNode(result, visitor) as ts.SourceFile;
       unused = collectUnusedVariables(result);
     }
     console.log('totalRemoveCount:', removedCount);
@@ -92,7 +92,7 @@ function collectUnusedVariables(
       if (name === 'elm.js') {
         return sourceFile;
       } else {
-        return serveLibFile(name, languageVersion);
+        return serveLibFile(name, languageVersion as ts.ScriptTarget);
       }
     },
     writeFile: () => {},
