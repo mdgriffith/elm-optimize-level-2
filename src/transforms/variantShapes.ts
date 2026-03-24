@@ -72,6 +72,7 @@ const createCtorVariant = (
         ts.factory.createParameterDeclaration(
           undefined,
           undefined,
+          undefined,
           arg,
           undefined,
           undefined,

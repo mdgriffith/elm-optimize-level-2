@@ -15,7 +15,7 @@ export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.So
 
     let removedCount = 0;
 
-    const visitor = (node: ts.Node): ts.VisitResult<ts.Node | undefined> => {
+    const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       // detects function f(..){..}
       if (
         ts.isFunctionDeclaration(node) &&
