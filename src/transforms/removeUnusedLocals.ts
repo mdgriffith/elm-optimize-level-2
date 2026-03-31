@@ -53,13 +53,17 @@ export const createRemoveUnusedLocalsTransform = (): ts.TransformerFactory<ts.So
       return ts.visitEachChild(node, visitor, context);
     };
 
-    // TODO make this code pretty
+    // Re-parse after each transform pass to get a clean AST.
+    // TS5's type checker crashes on transformed ASTs with removed nodes
+    // because internal node references become broken.
     let result = ts.visitNode(sourceCopy, visitor) as ts.SourceFile;
+    result = ts.createSourceFile('elm.js', printer.printFile(result), ts.ScriptTarget.ES2018);
     unused = collectUnusedVariables(result);
 
     while (unused.length > 0) {
       console.log('found unused nextRound:', unused.length);
       result = ts.visitNode(result, visitor) as ts.SourceFile;
+      result = ts.createSourceFile('elm.js', printer.printFile(result), ts.ScriptTarget.ES2018);
       unused = collectUnusedVariables(result);
     }
     console.log('totalRemoveCount:', removedCount);
