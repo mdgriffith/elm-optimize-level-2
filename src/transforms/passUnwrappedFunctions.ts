@@ -227,7 +227,10 @@ export const createPassUnwrappedFunctionsTransformer = (
               const match = matchWrapping(funcParameter);
 
               // it means that it is something like (..., F3(function (a,b,c) {...}), ...)
-              if (match) {
+              // Only unwrap if the F-wrapper arity matches the A-call arity used
+              // inside the function body. If they differ (e.g., F3 passed where A2
+              // is used), unwrapping would break partial application semantics.
+              if (match && match.arity === funcToUnwrap.arity) {
                 return ts.createCall(
                   ts.createIdentifier(deriveNewFuncName(expression.text)),
                   undefined,
