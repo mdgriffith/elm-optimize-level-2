@@ -1,0 +1,11 @@
+node_modules/
+generated/src/
+generated/dist/
+generated/manifest.json
+generate.mjs
+coverage/
+.c8_output/
+.elm-pages/
+elm-stuff/
+script/elm-stuff/
+codegen/Gen/

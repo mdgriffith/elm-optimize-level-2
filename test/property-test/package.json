@@ -1,0 +1,16 @@
+{
+  "name": "eol2-property-tests",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "generate": "elm-pages bundle-script GenerateProgram --output generate.mjs && node generate.mjs",
+    "test": "node harness.mjs",
+    "property-test": "sh run.sh"
+  },
+  "devDependencies": {
+    "c8": "^10.1.0",
+    "elm": "^0.19.1-6",
+    "elm-codegen": "^0.6.3",
+    "elm-pages": "^3.3.0"
+  }
+}
