@@ -3,26 +3,14 @@ This handles functions for operations that this tool doesnt provide as a CLI, bu
 So
     - minification
     - gzip
-    - running prepack
 
 
 */
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { prepackFileSync } from 'prepack';
 import * as Terser from 'terser';
 import * as Compress from '@gfx/zopfli';
-
-export function prepack(input: string): string {
-  const { code } = prepackFileSync([input], {
-    debugNames: true,
-    inlineExpressions: true,
-    maxStackDepth: 1200, // that didn't help
-  });
-  return code;
-}
-
 
 export type Post = {
     minify: Boolean,
