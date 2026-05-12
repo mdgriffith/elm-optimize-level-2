@@ -137,7 +137,7 @@ var elm$core$Maybe$Just = function (a) {
 var elm$core$Maybe$Nothing = { $: 1, a: null };
 ```
 
-This does require information from the Elm code itself, which we're currently getting through `elm-tree-sitter`.
+This requires information from the Elm code itself. The current implementation only uses built-in primitive variant metadata.
 
 ## Results Summary
 

@@ -1,5 +1,4 @@
 import { primitives } from './parsing/primitives';
-// import { parseElm } from './parsing/parseElm';
 import ts from 'typescript';
 import { createCustomTypesTransformer } from './transforms/variantShapes';
 import { Mode, Transforms, InlineLists } from './types';
@@ -55,20 +54,6 @@ export const transform = async (
 
   let parsedVariants = primitives;
   if (elmfile && transforms.variantShapes) {
-    // const elmSource = fs.readFileSync(elmfile, 'utf8');
-    // parsedVariants = parseElm({
-    //   author: 'author',
-    //   project: 'project',
-    //   source: elmSource,
-    // }).concat(parsedVariants);
-    // We have the ability to parse for more variant shapes,
-    // Though I think we should include this once we understand the shapes a bit better.
-    // There are also questions about 1. shipping a file with *all type* defined in elm-package
-    // and 2. making it so that the parser is only parsing the user's intended project
-    // and not scanning a dir like node_modules.
-    // However, once we handle those, we can turn these back on!
-    // .concat(parseDir('elm-packages'))
-    // .concat(parseDir(dir));
     // we dont care about types that have no slots on any variants
     parsedVariants = parsedVariants.filter((variant) => {
       return variant.totalTypeSlotCount != 0;

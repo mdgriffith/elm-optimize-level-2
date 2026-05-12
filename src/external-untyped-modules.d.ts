@@ -2,8 +2,6 @@ declare module 'node-elm-compiler' {
   export function compileToStringSync(files: string[], options: object): string;
 }
 
-declare module 'tree-sitter-elm';
-
 declare module 'prepack' {
   // https://prepack.io/getting-started.html
   export type PrepackOptions = {

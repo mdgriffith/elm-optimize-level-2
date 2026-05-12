@@ -22,8 +22,6 @@ var elm$core$Maybe$Nothing = {$: 1, a: null};
 
 The V8 engine is likely better able to optimize these objects if they have the same shape, even if they're stubbed in with `null`.
 
-This does require information from the Elm code itself, which we're currently getting through `elm-tree-sitter`.
-
 */
 
 import ts from 'typescript';
