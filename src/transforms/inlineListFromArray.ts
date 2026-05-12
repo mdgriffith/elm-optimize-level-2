@@ -61,8 +61,8 @@ import { Mode } from '../types';
 
 const listElementMarker = (mode: Mode): ts.Expression =>
   mode === Mode.Dev
-    ? ts.createStringLiteral('::')
-    : ts.createNumericLiteral('1');
+    ? ts.factory.createStringLiteral('::')
+    : ts.factory.createNumericLiteral('1');
 
 export const InlineMode = Union({
   UsingConsFunc: of(null),
@@ -75,8 +75,8 @@ const LIST_FROM_ARRAY_F_NAME = '_List_fromArray';
 const LIST_NIL_NAME = '_List_Nil';
 const LIST_CONS_F_NAME = '_List_cons';
 
-const listNil = ts.createIdentifier(LIST_NIL_NAME);
-const listConsCall = ts.createIdentifier(LIST_CONS_F_NAME);
+const listNil = ts.factory.createIdentifier(LIST_NIL_NAME);
+const listConsCall = ts.factory.createIdentifier(LIST_CONS_F_NAME);
 
 export const createInlineListFromArrayTransformer = (
   inlineMode: InlineMode
@@ -100,16 +100,16 @@ export const createInlineListFromArrayTransformer = (
               (list: ts.Expression, element: ts.Expression): ts.Expression => {
                 return InlineMode.match(inlineMode, {
                   UsingConsFunc: (): ts.Expression =>
-                    ts.createCall(listConsCall, undefined, [
-                      ts.visitNode(element, visitor),
+                    ts.factory.createCallExpression(listConsCall, undefined, [
+                      ts.visitNode(element, visitor) as ts.Expression,
                       list,
                     ]),
 
                   UsingLiteralObjects: mode =>
-                    ts.createObjectLiteral([
-                      ts.createPropertyAssignment('$', listElementMarker(mode)),
-                      ts.createPropertyAssignment('a', element),
-                      ts.createPropertyAssignment('b', list),
+                    ts.factory.createObjectLiteralExpression([
+                      ts.factory.createPropertyAssignment('$', listElementMarker(mode)),
+                      ts.factory.createPropertyAssignment('a', element),
+                      ts.factory.createPropertyAssignment('b', list),
                     ]),
                 });
               },
@@ -122,6 +122,6 @@ export const createInlineListFromArrayTransformer = (
       return ts.visitEachChild(node, visitor, context);
     };
 
-    return ts.visitNode(sourceFile, visitor);
+    return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
   };
 };

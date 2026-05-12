@@ -19,7 +19,7 @@ function allTransformsConfig() {
   const config = toolDefaults(true, null); // start with O3
   config.replaceVDomNode = true;
   config.inlineNumberToString = true;
-  config.listLiterals = 'asCons'; // InlineLists.AsCons
+  config.listLiterals = 'list_as_cons'; // InlineLists.AsCons
   config.arrowFns = true;
   config.shorthandObjectLiterals = true;
   config.unusedValues = true;

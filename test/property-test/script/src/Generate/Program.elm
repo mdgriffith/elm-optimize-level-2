@@ -254,6 +254,7 @@ buildFile index customTypes recordDefs functionDefs listAndPrimOps =
             , buildCustomTypeDecls customTypes
             , buildRecordDecls recordDefs
             , buildFunctionDecls functionDefs
+            , buildArityMismatchDecls
             , [ buildComputeResult customTypes recordDefs functionDefs listAndPrimOps ]
             , Generate.HtmlTests.declarations
             , [ buildMain ]
@@ -545,9 +546,7 @@ buildComputeResult customTypes recordDefs functionDefs listAndPrimOps =
                             , [ buildNestedCaseTestExpr customTypes ]
                             , [ buildListOperationsTestExpr ]
                             , [ Elm.val "htmlTestResult" ]
-                            -- NOTE: buildArityMismatchTestExpr is disabled until
-                            -- the unwrap-arity branch fix is merged. Re-enable with:
-                            -- , [ buildArityMismatchTestExpr ]
+                            , [ buildArityMismatchTestExpr ]
                             ]
                 in
                 Gen.String.call_.join
