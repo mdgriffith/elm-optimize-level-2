@@ -15,7 +15,7 @@
     "url": "https://github.com/mdgriffith/elm-optimize-level-2.git"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "bin": {
     "elm-optimize-level-2": "./bin/elm-optimize-level-2"
@@ -71,7 +71,13 @@
     "ts-union": "^2.2.1",
     "typescript": "^5.9.3"
   },
+  "overrides": {
+    "nan": "^2.26.2"
+  },
+  "resolutions": {
+    "nan": "^2.26.2"
+  },
   "volta": {
-    "node": "16.14.2"
+    "node": "22.22.2"
   }
 }
