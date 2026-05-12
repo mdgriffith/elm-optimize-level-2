@@ -44,9 +44,9 @@ export const replaceVDomNode = (): ts.TransformerFactory<ts.SourceFile> => conte
         node.expression.text == '_VirtualDom_node' &&
         node.arguments.length == 1
       ) {
-        return ts.createCall(ts.createIdentifier('A2'), undefined, [
-          ts.createIdentifier('_VirtualDom_nodeNS'),
-          ts.createIdentifier('undefined'),
+        return ts.factory.createCallExpression(ts.factory.createIdentifier('A2'), undefined, [
+          ts.factory.createIdentifier('_VirtualDom_nodeNS'),
+          ts.factory.createIdentifier('undefined'),
           node.arguments[0],
         ]);
       }
@@ -66,7 +66,7 @@ export const replaceVDomNode = (): ts.TransformerFactory<ts.SourceFile> => conte
       return ts.visitEachChild(node, visitor, context);
     };
 
-    return ts.visitNode(sourceFile, visitor);
+    return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
   };
 };
 
@@ -84,10 +84,10 @@ function replaceVDomWithNSInline(node: ts.Node): ts.Node | undefined {
       ts.isIdentifier(firstArg) &&
       firstArg.text === '$elm$virtual_dom$VirtualDom$node'
     ) {
-      return ts.createCall(ts.createIdentifier('A4'), undefined, [
-        ts.createIdentifier('_VirtualDom_nodeNS'),
-        ts.createIdentifier('undefined'),
-        ts.createCall(ts.createIdentifier('_VirtualDom_noScript'), undefined, [
+      return ts.factory.createCallExpression(ts.factory.createIdentifier('A4'), undefined, [
+        ts.factory.createIdentifier('_VirtualDom_nodeNS'),
+        ts.factory.createIdentifier('undefined'),
+        ts.factory.createCallExpression(ts.factory.createIdentifier('_VirtualDom_noScript'), undefined, [
           node.arguments[1],
         ]),
         node.arguments[2],

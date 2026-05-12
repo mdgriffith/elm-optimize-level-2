@@ -66,7 +66,7 @@ const createReplaceUtilsUpdateWithObjectSpread = (
       return ts.visitEachChild(node, visitor, context);
     };
 
-    return ts.visitNode(sourceFile, visitor);
+    return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
   };
 };
 const OBJECT_UPDATE = '_Utils_update';
@@ -82,17 +82,17 @@ const inlineObjectAssign = (): ts.TransformerFactory<ts.SourceFile> => (
           ts.isIdentifier(node.expression) &&
           node.expression.text === OBJECT_UPDATE
         ) {
-          return ts.createCall(
-            ts.createIdentifier('Object.assign'),
+          return ts.factory.createCallExpression(
+            ts.factory.createIdentifier('Object.assign'),
             undefined,
-            [ts.createObjectLiteral(), node.arguments[0], node.arguments[1]]
+            [ts.factory.createObjectLiteralExpression(), node.arguments[0], node.arguments[1]]
           );
         }
       }
 
       return ts.visitEachChild(node, visitor, context);
     };
-    return ts.visitNode(sourceFile, visitor);
+    return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
   };
 };
 
@@ -111,20 +111,20 @@ const inlineObjectSpread = (): ts.TransformerFactory<ts.SourceFile> => (
           node.arguments[1].forEachChild((child) => {
             if (ts.isPropertyAssignment(child)) {
               props.push(
-                ts.createPropertyAssignment(child.name, child.initializer)
+                ts.factory.createPropertyAssignment(child.name, child.initializer)
               );
             }
           });
 
-          return ts.createObjectLiteral(
-            [ts.createSpreadAssignment(node.arguments[0])].concat(props)
+          return ts.factory.createObjectLiteralExpression(
+            [ts.factory.createSpreadAssignment(node.arguments[0])].concat(props)
           );
         }
       }
 
       return ts.visitEachChild(node, visitor, context);
     };
-    return ts.visitNode(sourceFile, visitor);
+    return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
   };
 };
 
@@ -149,13 +149,13 @@ export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.So
           ts.isReturnStatement(returnStatement) &&
           returnStatement.expression !== undefined
         ) {
-          return ts.createArrowFunction(
+          return ts.factory.createArrowFunction(
             undefined,
             undefined,
             node.parameters,
             undefined,
             undefined,
-            ts.visitNode(returnStatement.expression, visitor)
+            ts.visitNode(returnStatement.expression, visitor) as ts.Expression
             // returnStatement.expression
           );
         }
@@ -173,20 +173,21 @@ export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.So
           ts.isReturnStatement(returnStatement) &&
           returnStatement.expression !== undefined
         ) {
-          return ts.createVariableStatement(
+          return ts.factory.createVariableStatement(
             undefined,
-            ts.createVariableDeclarationList(
+            ts.factory.createVariableDeclarationList(
               [
-                ts.createVariableDeclaration(
+                ts.factory.createVariableDeclaration(
                   node.name,
                   undefined,
-                  ts.createArrowFunction(
+                  undefined,
+                  ts.factory.createArrowFunction(
                     undefined,
                     undefined,
                     node.parameters,
                     undefined,
                     undefined,
-                    ts.visitNode(returnStatement.expression, visitor)
+                    ts.visitNode(returnStatement.expression, visitor) as ts.Expression
                   )
                 ),
               ]
@@ -199,7 +200,7 @@ export const convertFunctionExpressionsToArrowFuncs: ts.TransformerFactory<ts.So
       return ts.visitEachChild(node, visitor, context);
     };
 
-    return ts.visitNode(sourceFile, visitor);
+    return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
   };
 };
 
@@ -221,11 +222,11 @@ export const convertToObjectShorthandLiterals: ts.TransformerFactory<ts.SourceFi
               prop.name.text === prop.initializer.text
             ) {
               // bingo
-              props.push(ts.createShorthandPropertyAssignment(prop.name.text));
+              props.push(ts.factory.createShorthandPropertyAssignment(prop.name.text));
               shortenedCount += 1;
               hasAnyTransforms = true;
             } else {
-              const visitedAssignment = ts.visitNode(prop.initializer, visitor);
+              const visitedAssignment = ts.visitNode(prop.initializer, visitor) as ts.Expression;
               if (visitedAssignment === prop.initializer) {
                 // found nothing in initializer
                 props.push(prop);
@@ -233,7 +234,7 @@ export const convertToObjectShorthandLiterals: ts.TransformerFactory<ts.SourceFi
                 // initializer has some transforms too
                 hasAnyTransforms = true;
                 props.push(
-                  ts.updatePropertyAssignment(
+                  ts.factory.updatePropertyAssignment(
                     prop,
                     prop.name,
                     visitedAssignment
@@ -247,14 +248,14 @@ export const convertToObjectShorthandLiterals: ts.TransformerFactory<ts.SourceFi
         }
 
         if (hasAnyTransforms) {
-          return ts.updateObjectLiteral(node, props);
+          return ts.factory.createObjectLiteralExpression(props);
         }
       }
 
       return ts.visitEachChild(node, visitor, context);
     };
 
-    const res = ts.visitNode(sourceFile, visitor);
+    const res = ts.visitNode(sourceFile, visitor) as ts.SourceFile;
 
     console.log(
       'convertToObjectsShorthand -> shortened assignments:',

@@ -178,7 +178,7 @@ export const v8Debug: ts.TransformerFactory<ts.SourceFile> = context => {
             }
             return ts.visitEachChild(node, visitor, context);
         };
-        return ts.visitNode(sourceFile, visitor);
+        return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
     };
 };
 
@@ -205,7 +205,6 @@ export const reportFunctionStatusInBenchmarks: ts.TransformerFactory<ts.SourceFi
             }
             return ts.visitEachChild(node, visitor, context);
         };
-        return ts.visitNode(sourceFile, visitor);
+        return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
     };
 };
-  

@@ -7,7 +7,7 @@ function createJestConfig(_, rootDir = __dirname) {
     moduleFileExtensions: ['ts', 'js'],
     collectCoverageFrom: ['src/**/*.{ts,tsx,js,jsx}'],
     testMatch: ['<rootDir>/test/*.(spec|test).ts'],
-    testURL: 'http://localhost',
+    testEnvironmentOptions: { url: 'http://localhost' },
     rootDir,
     watchPlugins: [
       require.resolve('jest-watch-typeahead/filename'),
