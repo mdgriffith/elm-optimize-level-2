@@ -63,7 +63,7 @@
     "commander": "^12.1.0",
     "node-elm-compiler": "^5.0.4",
     "ts-union": "^2.2.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3 || ^6.0.0"
   },
   "overrides": {
     "node-elm-compiler": {
