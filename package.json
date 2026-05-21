@@ -70,9 +70,6 @@
       "cross-spawn": "6.0.6"
     }
   },
-  "resolutions": {
-    "node-elm-compiler/cross-spawn": "6.0.6"
-  },
   "volta": {
     "node": "22.22.2"
   }
